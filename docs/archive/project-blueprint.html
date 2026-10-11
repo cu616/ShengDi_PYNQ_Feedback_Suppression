@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「声堤」项目蓝图与三人分工 · 2026 FPGA 竞赛自主选题</title>
+<style>
+:root{
+  --bg:#f7f7f5; --card:#ffffff; --ink:#1c1c1a; --ink2:#55544f; --ink3:#8a8880;
+  --line:#e4e3de; --line2:#d2d1ca;
+  --blue:#185FA5; --blue-bg:#E6F1FB; --blue-line:#B5D4F4;
+  --amber:#854F0B; --amber-bg:#FAEEDA; --amber-line:#FAC775;
+  --green:#3B6D11; --green-bg:#EAF3DE; --green-line:#C0DD97;
+  --red:#A32D2D; --red-bg:#FCEBEB; --red-line:#F7C1C1;
+  --purple:#534AB7; --purple-bg:#EEEDFE; --purple-line:#CECBF6;
+  --teal:#0F6E56; --teal-bg:#E1F5EE; --teal-line:#9FE1CB;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:14.5px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1100px;margin:0 auto;padding:44px 26px 90px}
+h1{font-size:29px;font-weight:600;line-height:1.35;margin:0 0 10px;letter-spacing:-.4px}
+h2{font-size:21px;font-weight:600;margin:0 0 6px;letter-spacing:-.2px}
+h3{font-size:16px;font-weight:600;margin:26px 0 10px}
+h4{font-size:14.5px;font-weight:600;margin:18px 0 6px}
+p{margin:0 0 12px}
+.sub{color:var(--ink2);font-size:14px;margin:0 0 4px}
+.meta{color:var(--ink3);font-size:13px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:34px}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 28px;margin:0 0 20px}
+.tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;border:1px solid;margin:0 6px 6px 0;white-space:nowrap}
+.t-b{background:var(--blue-bg);border-color:var(--blue-line);color:var(--blue)}
+.t-a{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
+.t-g{background:var(--green-bg);border-color:var(--green-line);color:var(--green)}
+.t-r{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+.t-p{background:var(--purple-bg);border-color:var(--purple-line);color:var(--purple)}
+.t-t{background:var(--teal-bg);border-color:var(--teal-line);color:var(--teal)}
+.callout{border-left:3px solid;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:14px}
+.c-amber{border-color:var(--amber);background:var(--amber-bg)}
+.c-red{border-color:var(--red);background:var(--red-bg)}
+.c-blue{border-color:var(--blue);background:var(--blue-bg)}
+.c-green{border-color:var(--green);background:var(--green-bg)}
+.c-teal{border-color:var(--teal);background:var(--teal-bg)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0}
+th{text-align:left;font-weight:600;font-size:12.5px;color:var(--ink2);padding:9px 10px;border-bottom:2px solid var(--line2);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fbfbf9}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.stat{background:#fbfbf9;border:1px solid var(--line);border-radius:11px;padding:15px 17px}
+.stat .n{font-size:20px;font-weight:600;line-height:1.25;letter-spacing:-.4px}
+.stat .l{font-size:12.5px;color:var(--ink2);line-height:1.55;margin-top:4px}
+.role{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.role .hd{padding:13px 17px;font-size:15px;font-weight:600}
+.role .bd{padding:14px 17px;font-size:13.5px}
+.role-a .hd{background:var(--blue-bg);color:var(--blue);border-bottom:1px solid var(--blue-line)}
+.role-b .hd{background:var(--purple-bg);color:var(--purple);border-bottom:1px solid var(--purple-line)}
+.role-c .hd{background:var(--teal-bg);color:var(--teal);border-bottom:1px solid var(--teal-line)}
+.week{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:16px 0}
+.week .wh{padding:12px 17px;background:#fbfbf9;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.week .wh .t{font-size:15px;font-weight:600}
+.wr{display:grid;grid-template-columns:104px 1fr;border-bottom:1px solid var(--line)}
+.wr:last-child{border-bottom:none}
+.wl{padding:11px 13px;font-size:12.5px;font-weight:600;color:var(--ink2);border-right:1px solid var(--line);background:#fdfdfb}
+.wc{padding:11px 15px;font-size:13.5px}
+.ms{padding:12px 17px;background:var(--green-bg);font-size:13.5px;border-top:1px solid var(--green-line)}
+.plan-note{background:var(--amber-bg);border-top:1px solid var(--amber-line);padding:11px 17px;font-size:13px}
+ul,ol{margin:8px 0 12px;padding-left:21px}
+li{margin:5px 0}
+li::marker{color:var(--ink3)}
+code{background:#f1efea;padding:1px 6px;border-radius:5px;font-size:12.5px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+pre{background:#f7f6f2;border:1px solid var(--line);border-radius:10px;padding:15px 17px;overflow-x:auto;
+  font-size:12px;line-height:1.65;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;margin:12px 0}
+.kv{font-size:13.5px}
+.src{font-size:12px;color:var(--ink3);margin-top:6px;line-height:1.6}
+@media(max-width:860px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .wrap{padding:26px 15px 60px}
+  section{padding:20px 16px}
+  h1{font-size:22px}
+  .wr{grid-template-columns:1fr}
+  .wl{border-right:none;border-bottom:1px solid var(--line)}
+  pre{font-size:10.5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>「声堤」项目蓝图与三人分工</h1>
+<p class="sub">面向扩声与助听的声反馈抑制与稳定裕度提升系统 · AMD Zynq 平台</p>
+<p class="meta">2026-09-24　|　初级组（本科生）· 3 人队　|　距作品提交（11-04 18:00）剩 <b>41 天</b></p>
+
+<div class="callout c-red">
+<p style="margin:0 0 8px"><b>先看三个必须提前解决的矛盾。</b>它们决定了整份计划的形状：</p>
+<ul style="margin:0" class="kv">
+<li><b>① 三人不能串行。</b>如果 A 做完通路 B 才开始写算法，第 4 周才会发现"数据进不来"，那时已经没时间了。所以第一周就要并行开工，且<b>第 1–2 周必须打通电学环回</b>作为技术风险闸口。</li>
+<li><b>② 必须有人专职"实验台 + 测量 + 交付物"。</b>技能包 15 分 + 文档与可复现 15 分 = <b>30 分</b>，加上全部实测数据与视频，都挂在这一条线上。这是最容易被团队集体忽略、也是丢分最多的地方。</li>
+<li><b>③ 必须留一个闭环联调缓冲周。</b>闭环不收敛是这类系统的头号风险。第 4 周只做这一件事，不安排别的。</li>
+</ul>
+</div>
+
+<section>
+<h2>一、项目定位</h2>
+<table>
+<thead><tr><th style="width:110px">项目</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td><b>一句话定位</b></td><td>在 AMD Zynq 平台上实现一套实时的声反馈抑制系统，在啸叫形成之前消除声学回路中的反馈成分，从而提高系统可稳定工作的音量上限。</td></tr>
+<tr><td><b>核心命题</b></td><td>声反馈是<b>正反馈</b>，不是噪声——不存在"逐步削弱"的路径，只有"是否越过了临界线"。而处理环节本身就位于回路之中，它引入的延迟会直接进入循环、影响稳定条件。<b>因此降低延迟不是性能优化，而是能否工作的前提。</b></td></tr>
+<tr><td><b>两个场景</b></td><td>会议室 / 教室等场合的扩声系统；助听设备（麦克风与受话器距离极近，反馈耦合更强）</td></tr>
+<tr><td><b>平台</b></td><td>PYNQ-Z2（Zynq XC7Z020：85K 逻辑单元、220 DSP48、630KB BRAM、512MB DDR3），板载 ADAU1761 24 位音频 Codec</td></tr>
+<tr><td><b>工具</b></td><td>Vivado / Vitis 2025.2 或 2026.1（指南要求，须在报告中声明实际版本）</td></tr>
+</tbody>
+</table>
+
+<h3>三个创新点（对应 30 分"创新性与应用价值"）</h3>
+<table>
+<thead><tr><th style="width:26px">#</th><th style="width:170px">创新点</th><th>内容与验证方式</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><b>确定性延迟下的<br>多模式在线切换</b></td>
+<td>依托 PL 侧恒定在微秒量级的算法延迟，在"稳态低步长 / 突变大步长 / 持续音冻结"三种模式间切换，而不向声学环路引入额外延迟。<br><b>验证：</b>反馈路径突变后恢复稳定的时间，与连续自适应方案对比（文献参照量级：连续约 20 s，短时注入约 200 ms）</td></tr>
+<tr><td>2</td><td><b>把"误切人声"<br>变成可测指标</b></td>
+<td>现有方案的头号抱怨是误触发导致声音发闷。本作品定义<b>误切率</b>：在持续音（长笛、弦乐、管风琴和弦）与真实啸叫上分别统计误判次数。<br><b>验证：</b>误切率数值 + 与纯陷波方案的对照</td></tr>
+<tr><td>3</td><td><b>延迟—增益<br>权衡曲线</b></td>
+<td>在 PL 内插入<b>可配置的人工延迟</b>（0 / 10 / 20 / 40 / 80 个采样点），逐点测最大稳定增益，画出"延迟降低 → 可多开多少 dB"的定量关系。<br><b>验证：</b>一条曲线，把"确定性延迟"的工程价值直接量化</td></tr>
+</tbody>
+</table>
+<p class="src">创新点 3 的实验设计是本作品最有说服力的一张图——它把一句抽象的"低延迟很重要"变成了可测量的因果关系。务必在第 5 周完成。</p>
+</section>
+
+<section>
+<h2>二、系统架构</h2>
+
+<h3>2.1 分层视图</h3>
+<pre>┌──────────────────────────────────────────────────────────────┐
+│  物理层    麦克风 ◄──── 声学反馈路径 F ────► 扬声器 / 耳机     │
+└───────────────────────┬──────────────────┬───────────────────┘
+                        │                  │
+┌───────────────────────▼──────────────────▼───────────────────┐
+│  器件层    PYNQ-Z2  (Zynq XC7Z020)                            │
+│                                                               │
+│   ┌─────────────────────────┐   ┌─────────────────────────┐  │
+│   │  PS 侧  (ARM Cortex-A9) │   │  PL 侧  (可编程逻辑)     │  │
+│   │  Linux + PYNQ + Python  │◄──┤  音频前端 / 相减器 /     │  │
+│   │  参数控制 / 数据记录    │   │  自适应滤波 / 稳定性检测 │  │
+│   │  实时绘图 / 指标统计    ├──►│  增益管理 / 探针注入 /   │  │
+│   │                         │   │  人工延迟（实验用）      │  │
+│   └─────────────────────────┘   └─────────────────────────┘  │
+│              ▲   AXI-Lite                │   I2S / AXI-Stream │
+│              └──────── 控制与状态 ───────┴──── 音频数据 ──────┤
+└───────────────────────────────────────────────────────────────┘
+                        │
+┌───────────────────────▼───────────────────────────────────────┐
+│  外设层    ADAU1761 Codec → 小扬声器 / 耳机；驻极体麦克风      │
+│  实验台    密闭声学耦合腔（定量实验）+ 开放空间台（现场演示）  │
+└───────────────────────────────────────────────────────────────┘</pre>
+
+<h3>2.2 PL 侧模块清单</h3>
+<table>
+<thead><tr><th style="width:140px">模块</th><th style="width:60px">实现</th><th>职责</th><th style="width:130px">关键输出</th></tr></thead>
+<tbody>
+<tr><td><code>audio_frontend</code></td><td>RTL</td><td>I2S 收发时序；48 kHz / 16 bit；DC 阻断（一阶高通）</td><td>mic / spk stream</td></tr>
+<tr><td><code>delay_line</code></td><td>RTL + BRAM</td><td>存储最近 LF 个扬声器输出样本作为参考信号；LF 可配置（默认 256，最高 512）</td><td>ref_window[LF]</td></tr>
+<tr><td><code>fir_adaptive</code></td><td>RTL</td><td>计算反馈估计 ŷ(n) = wᵀ·u(n)。<b>256 阶用 64 个乘法器分时复用</b>（4 拍完成一次卷积）；48 kHz 下 125 MHz 时钟余量充足</td><td>y_hat</td></tr>
+<tr><td><code>nlms_update</code></td><td>RTL</td><td>系数更新 w ← w + μ·e(n)·u(n)/(‖u‖²+ε)；含系数泄漏防发散、误差钳位</td><td>w[]</td></tr>
+<tr><td><code>subtractor</code></td><td>RTL</td><td>e(n) = mic(n) − ŷ(n)；饱和处理</td><td>e_stream</td></tr>
+<tr><td><code>stability_detector</code></td><td>RTL</td><td>短时 FFT（256 点）+ 峰值判据（峰/邻域能量比、峰/谐波能量比）+ N 帧持续性判据</td><td>howl_flag, freq</td></tr>
+<tr><td><code>adapt_scheduler</code></td><td>RTL (FSM)</td><td>三模式切换：<b>稳态</b>（小步长）／<b>突变</b>（大步长）／<b>冻结</b>（检测到持续音时停止更新，防误抵消节目音频）</td><td>mode, mu</td></tr>
+<tr><td><code>gain_manager</code></td><td>RTL</td><td>增益平滑（斜坡，避免咔哒声）；接近临界时主动降增益作为保险</td><td>gain_out</td></tr>
+<tr><td><code>probe_injector</code></td><td>RTL</td><td>短时低电平噪声注入，用于快速估计反馈路径（去相关，缓解有偏估计）</td><td>probe_en</td></tr>
+<tr><td><code>artificial_delay</code></td><td>RTL</td><td><b>为创新点 3 专门加入</b>：可配置延迟插入（0–80 采样点）</td><td>delay_sel</td></tr>
+<tr><td><code>metrics_engine</code></td><td>RTL</td><td>计数器、状态记录、延迟标记；经 AXI-Lite 暴露给 PS</td><td>寄存器组</td></tr>
+<tr><td><code>afc_top</code></td><td>RTL</td><td>顶层连线：AXI-Stream 数据通路 + AXI-Lite 控制通路</td><td>.bit / .hwh</td></tr>
+</tbody>
+</table>
+
+<h3>2.3 寄存器映射（AXI-Lite）</h3>
+<table>
+<thead><tr><th style="width:90px">偏移</th><th style="width:120px">名称</th><th style="width:56px">读写</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>0x00</code></td><td>CTRL</td><td>RW</td><td>bit0 enable，bit1 reset，bit2 probe_en，bit[5:4] mode_force</td></tr>
+<tr><td><code>0x04</code></td><td>STATUS</td><td>RO</td><td>bit0 howl_flag，bit[3:1] cur_mode，bit4 converged，bit5 probe_busy</td></tr>
+<tr><td><code>0x08</code></td><td>MU</td><td>RW</td><td>步长（Q1.15 定点）</td></tr>
+<tr><td><code>0x0C</code></td><td>GAIN</td><td>RW</td><td>输出增益（Q1.15）</td></tr>
+<tr><td><code>0x10</code></td><td>DELAY_SEL</td><td>RW</td><td>人工延迟选择：0 / 10 / 20 / 40 / 80 采样点</td></tr>
+<tr><td><code>0x14</code></td><td>HOWL_FREQ</td><td>RO</td><td>检测到的啸叫频点（bin 索引）</td></tr>
+<tr><td><code>0x18</code></td><td>ERR_PWR</td><td>RO</td><td>误差信号功率（收敛性观察用）</td></tr>
+<tr><td><code>0x1C</code></td><td>LEAK_CFG</td><td>RW</td><td>系数泄漏系数（防发散保险，Q0.16）</td></tr>
+</tbody>
+</table>
+<p class="src">这张表请同步写进 <code>docs/interface.md</code>，作为"接口定义"的交付内容——它是"设计完整性"这一评分项的直接证据。</p>
+</section>
+
+<section>
+<h2>三、关键设计决策（开工前必须定）</h2>
+<p class="kv">下面六条如果不提前定，第 3 周一定会返工。</p>
+<table>
+<thead><tr><th style="width:110px">决策点</th><th style="width:180px">选项</th><th>推荐与理由</th></tr></thead>
+<tbody>
+<tr><td><b>① 自适应算法</b></td>
+<td>(a) 时域 NLMS<br>(b) 分块频域 LMS<br>(c) 两者都做</td>
+<td><b>先做 (a)，把 (c) 作为优化项。</b>时域 NLMS 最直观、最容易调通、资源可控（256 阶用 64 个乘法器分时复用即可）。"多算法在线切换"这个创新点可以先通过<b>一套结构 + 三组参数</b>（稳态小步长／突变大步长／冻结）实现，语义上仍然成立，实现风险却低得多。若第 3 周有余力，再引入分块频域作为第二支。<br><b>不要一开始就上频域</b>——定点、缩放、窗函数三件事一起调会失控。</td></tr>
+<tr><td><b>② 滤波器长度</b></td>
+<td>128 / 256 / 512 阶</td>
+<td><b>默认 256，可配置到 512。</b>密闭耦合腔路径很短（传播 &lt;1 ms），128 阶就够；开放空间有混响，需要 512 阶。做成参数化，两个台子各用各的值——这本身就是"参数化设计"的加分点。</td></tr>
+<tr><td><b>③ 去相关策略</b></td>
+<td>短时噪声注入 / PEM 预白化 / 不做</td>
+<td><b>先做短时噪声注入。</b>实现简单、效果可验证（文献量级：约 200 ms 内可估出路径），而且它天然支撑"快速重收敛"这个创新点。PEM 预白化留作第 4 周备选。<b>绝对不要什么都不做</b>——有偏估计会让滤波器去抵消节目音频，这是本方案最典型的失效模式。</td></tr>
+<tr><td><b>④ 定点字长</b></td>
+<td>16 / 24 bit 数据，32 bit 累加</td>
+<td><b>音频 16 bit，系数 24 bit，累加器 32 bit。</b>先用浮点黄金参考跑出系数与信号的动态范围，再据此定标。DSP48 是 25×18 乘法器，24 位系数不浪费资源。<b>若第 4 周发现发散，第一件事是把累加器升到 40 bit，而不是去调步长。</b></td></tr>
+<tr><td><b>⑤ 稳定性检测判据</b></td>
+<td>时域 / 频域</td>
+<td><b>频域。</b>用 256 点短时 FFT + 峰值判据。关键不是"检测到尖峰"，而是<b>区分啸叫与持续音</b>——要利用三个特征：频率锁定在房间声学上、幅值单调增长、在同一频点反复出现。这正是创新点 2 的技术基础。</td></tr>
+<tr><td><b>⑥ 冻结策略</b></td>
+<td>开关 / 阈值可调</td>
+<td><b>做成可配置，并记录触发次数与持续时间。</b>冻结是防止误抵消节目音频的最后一道闸，它本身就是创新点 2 的实测数据来源（"误切率"的分子）。</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>四、硬件与实验台</h2>
+<div class="grid2">
+<div>
+<h4>采购清单</h4>
+<table>
+<thead><tr><th>物品</th><th style="width:62px">数量</th><th style="width:80px">预算</th></tr></thead>
+<tbody>
+<tr><td>PYNQ-Z2 开发板</td><td>1</td><td>¥1000–1400</td></tr>
+<tr><td>小扬声器（3W）</td><td>2</td><td>¥30–80</td></tr>
+<tr><td>驻极体麦克风模块</td><td>2</td><td>¥10–40</td></tr>
+<tr><td>密闭耦合腔（亚克力/木盒）</td><td>1</td><td>¥20–80</td></tr>
+<tr><td>3.5mm 线材 / 转接头（含 TRRS）</td><td>若干</td><td>¥20–40</td></tr>
+<tr><td>吸音棉 / 亚克力胶</td><td>—</td><td>¥20</td></tr>
+<tr><td colspan="2"><b>合计增量</b></td><td><b>¥100–260</b></td></tr>
+</tbody>
+</table>
+<p class="src">TRRS 线序是本项目第一个坑：PYNQ-Z2 用 4 段式插头，三段式可能接触不良。多备几种转接头，第 1 周就验证。</p>
+</div>
+<div>
+<h4>密闭声学耦合腔规格</h4>
+<ul class="kv">
+<li><b>尺寸：</b>约 150 × 100 × 80 mm 的亚克力或木质盒</li>
+<li><b>内部：</b>固定一只小扬声器（模拟受话器）+ 一只驻极体麦克风（模拟助听器麦），间距可调（做几个卡槽位）</li>
+<li><b>泄漏孔：</b>盒壁开可更换孔径的孔（3 / 6 / 10 mm 三档），<b>用来精确控制反馈强度做参数扫描</b></li>
+<li><b>内壁：</b>贴少量吸音棉，减少腔内驻波（否则频响会有深谷，干扰判据）</li>
+<li><b>为什么不直接开放空间：</b>环境噪声会让实验不可复现。定量数据全部来自密闭腔；开放空间台只用于演示</li>
+<li><b>额外好处：</b>这个腔体<b>本身就是助听器的声学模型</b>——助听器本来就是 把麦克风和受话器装在几厘米的腔体里。一个台子服务两个场景的叙事</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<h2>五、三人分工</h2>
+<div class="callout c-blue">
+<p style="margin:0" class="kv"><b>分工原则：</b>按<b>"可独立验收的模块"</b>切，而不是按"前端/后端"切。每个人都要有能拿出来验收的产物，否则第 4 周会分不清是谁的问题。同时，三人各自负责报告的一个章节、贡献一条技能包。</p>
+</div>
+
+<div class="grid3" style="margin-top:16px">
+<div class="role role-a">
+<div class="hd">A · 通路负责人</div>
+<div class="bd">
+<b>主责：</b>音频 I/O 数据通路、AXI 接口、overlay 集成、PS–PL 通信、板级联调<br><br>
+<b>交付物：</b>
+<ul style="margin:6px 0">
+<li>可用的 <code>audio_in/out</code> overlay（.bit / .hwh）</li>
+<li><b>电学环回延迟报告</b>（第 1–2 周的闸口交付）</li>
+<li>AXI-Lite 寄存器 Python 驱动</li>
+<li>资源与时序报告</li>
+</ul>
+<b>技能包：</b><code>audio_loopback_latency</code>、<code>streaming_dsp_scaffold</code><br>
+<b>报告章节：</b>系统架构、软硬件划分依据
+</div>
+</div>
+
+<div class="role role-b">
+<div class="hd">B · 算法负责人</div>
+<div class="bd">
+<b>主责：</b>Python 黄金参考、Delay Line + FIR + NLMS、稳定性检测、模式调度、定点定标<br><br>
+<b>交付物：</b>
+<ul style="margin:6px 0">
+<li>黄金参考模型（可在离线数据上复现闭环）</li>
+<li>滤波核心 RTL + 与黄金参考逐采样点比对报告</li>
+<li>步长等参数的可用范围扫描结果</li>
+<li>消融实验数据</li>
+</ul>
+<b>技能包：</b><code>adapt_filter_bench</code><br>
+<b>报告章节：</b>算法原理、定点与资源权衡
+</div>
+</div>
+
+<div class="role role-c">
+<div class="hd">C · 测量与交付负责人</div>
+<div class="bd">
+<b>主责：</b>实验台、指标测量 SOP、数据采集、演示视频、技能包与报告统筹、开源仓库<br><br>
+<b>交付物：</b>
+<ul style="margin:6px 0">
+<li>密闭耦合腔 + 开放空间台</li>
+<li><b>MSG 基线数字</b>（无抑制器时的临界增益）</li>
+<li>指标汇总表 + 原始日志 + 波形证据</li>
+<li>演示视频、技能包 README、报告统稿、开源仓库</li>
+</ul>
+<b>技能包：</b><code>gain_scan_bench</code> + 统筹四件套<br>
+<b>报告章节：</b>实验方法、实测结果、复现说明
+</div>
+</div>
+</div>
+
+<div class="callout c-teal" style="margin-top:16px">
+<p style="margin:0" class="kv"><b>为什么 C 分担最重的"非技术"工作量？</b>因为文档与可复现（15 分）+ 大模型协作与技能包（15 分）= <b>30 分</b>，加上全部实测数据与演示视频，都挂在 C 这条线上。如果三个人都去做 RTL，这 30 分会在最后一周被草草应付——这正是大多数队伍丢分的地方。<b>C 不是"打杂"，C 负责的是评分表里权重最高的两个非技术项，以及全部证据链。</b><br><br>
+<b>交叉规则：</b>每周一次"接口对齐会"（30 分钟，A 主持）；任何人不得自行修改寄存器映射或滤波器长度，改动须通知另外两人。</p>
+</div>
+</section>
+
+<section>
+<h2>六、41 天逐周计划</h2>
+<p class="kv">每周统一结构：<b>A / B / C 三条并行任务线</b> → <b>周末里程碑</b> → <b>验收标准</b>。没通过里程碑就不进下一周，先补救。</p>
+
+<div class="week">
+<div class="wh"><span class="t">第 1 周 · 9/24–9/30　地基与风险闸口</span><span class="tag t-r">决定性的一周</span></div>
+<div class="wr"><div class="wl">A</div><div class="wc">
+<b>① 今天就下单全部采购</b>（板卡到货周期决定开工时间）<br>
+<b>② 装 PYNQ 镜像、跑通官方 base overlay</b>，确认能启动、能连 Jupyter<br>
+<b>③ 验证 TRRS 音频口</b>：用 Python 录音回放，确认板载 Codec 能收能发<br>
+<b>④ 建 Vivado 工程骨架</b>，导入 PYNQ-Z2 board file，先跑通一个 GPIO overlay
+</div></div>
+<div class="wr"><div class="wl">B</div><div class="wc">
+<b>① 写 Python 黄金参考</b>：麦克风信号 = 节目信号 + 反馈路径 FIR 卷积 + 噪声；实现 NLMS + 相减，在纯软件里跑闭环<br>
+<b>② 用合成数据验证收敛</b>：给定已知反馈路径，看能否把 MSG 抬起来<br>
+<b>③ 参数敏感性初探</b>：扫步长 μ 与滤波器长度 LF，找出能收敛的区间，记进笔记
+</div></div>
+<div class="wr"><div class="wl">C</div><div class="wc">
+<b>① 做密闭耦合腔</b>（粘盒子、开三档泄漏孔、贴吸音棉）<br>
+<b>② 用手机或电脑录一段"真实啸叫"样本</b>——既是演示素材，也是黄金参考的真实测试输入<br>
+<b>③ 规划测量方案</b>：确认实验室有没有双通道示波器；没有就先想备用方案（录音环回 + 互相关法）<br>
+<b>④ 建仓库骨架</b>与目录结构，把 <code>metrics.csv</code> 表头先定好
+</div></div>
+<div class="ms"><b>里程碑 M1（9/30）：</b>板卡能启动并录音回放；黄金参考能在离线数据上收敛；密闭腔做出来且能拉到啸叫。</div>
+<div class="plan-note"><b>闸口：</b>如果第 1 周结束还拉不出啸叫，说明耦合腔设计有问题——立刻改成更小的腔体、或更近的麦/喇叭间距。<b>不要带着这个不确定性进入第 2 周。</b></div>
+</div>
+
+<div class="week">
+<div class="wh"><span class="t">第 2 周 · 10/1–10/7　通路与算法并行推进</span></div>
+<div class="wr"><div class="wl">A</div><div class="wc">
+<b>① I2S 收发 RTL</b>：配置 ADAU1761（I2C），实现 48 kHz / 16 bit 收发<br>
+<b>② 打通 PL 侧数据回环</b>：AD → PL → DDR → DA（先不接算法，纯搬运）<br>
+<b>③ <span class="tag t-r">本项目的技术风险闸口</span></b>：用双通道示波器测"电学环回延迟"（DA 直接接回 AD），记录 P50/P95/P99/最大值<br>
+<b>④ AXI-Lite 寄存器框架</b>：按 2.3 节映射表实现控制与状态通道，Python 能读写
+</div></div>
+<div class="wr"><div class="wl">B</div><div class="wc">
+<b>① 黄金参考扩展</b>：加入 DC 阻断、噪声注入、稳定性检测（频域峰值判据）<br>
+<b>② 用密闭腔实测的反馈路径</b>替换合成路径，重跑收敛测试<br>
+<b>③ 开始写 RTL</b>：<code>delay_line</code> + <code>fir_adaptive</code>（先做 64 乘法器分时复用版本）<br>
+<b>④ 生成仿真测试向量</b>：把黄金参考的输入输出导出为 <code>.mem</code>，供 testbench 使用
+</div></div>
+<div class="wr"><div class="wl">C</div><div class="wc">
+<b>① 测 MSG 基线</b>：不加任何抑制，用增益扫描脚本自动找到当前临界增益，<b>这是后面所有 ASG 数字的零点</b><br>
+<b>② 写出增益扫描脚本</b>（缓慢提增益 → 检测啸叫 → 记录临界值 → 重复 10 次取统计量）<br>
+<b>③ 三档泄漏孔各测一遍</b>，建立"反馈强度—MSG 基线"对照表<br>
+<b>④ 延迟测量 SOP 成文</b>，含接线图与操作步骤
+</div></div>
+<div class="ms"><b>里程碑 M2（10/7）：</b>板级电学环回延迟有数字；MSG 基线有数字；黄金参考已用真实反馈路径验证。</div>
+<div class="plan-note"><b>闸口：</b>电学环回延迟如果超过 3 ms，要立刻查是 Codec 群延迟还是缓冲深度问题——这个数字直接决定后面能拿到多少 ASG，是整个项目的地基。</div>
+</div>
+
+<div class="week">
+<div class="wh"><span class="t">第 3 周 · 10/8–10/14　核心实现与仿真验证</span></div>
+<div class="wr"><div class="wl">A</div><div class="wc">
+<b>① 把滤波核心接进数据通路</b>：AXI-Stream 连接，注意背压与握手<br>
+<b>② 缓存一致性处理</b>：DMA 与 ARM 之间的数据同步（PYNQ 最经典的坑）<br>
+<b>③ overlay 集成与封装</b>，生成 .bit / .hwh，PS 侧 Python 能加载并控制<br>
+<b>④ 初版资源与时序报告</b>：LUT/FF/BRAM/DSP 占用、WNS
+</div></div>
+<div class="wr"><div class="wl">B</div><div class="wc">
+<b>① 完成 <code>nlms_update</code> + <code>subtractor</code></b>，含系数泄漏与误差钳位<br>
+<b>② <span class="tag t-r">与黄金参考逐采样点比对</span></b>：用第 2 周导出的 <code>.mem</code> 向量，误差需落在定点精度内（目标：相对误差 &lt; 1e-3）<br>
+<b>③ 补上 <code>stability_detector</code> + <code>adapt_scheduler</code></b>（三模式 FSM）<br>
+<b>④ 加 <code>artificial_delay</code></b>（创新点 3 需要）<br>
+<b>⑤ 定点定标</b>：根据浮点结果确定系数与信号的 Q 格式
+</div></div>
+<div class="wr"><div class="wl">C</div><div class="wc">
+<b>① 延迟测量装置正式化</b>：双通道示波器 + 冲击法，或声学环回 + 互相关法，两种都跑一遍互相验证<br>
+<b>② 写误切率测试脚本</b>：准备持续音素材（长笛/弦乐/管风琴和弦各 3 段，各 30 秒）+ 真实啸叫素材<br>
+<b>③ 技能包 <code>audio_loopback_latency</code> 成形</b>（此时它已有真实使用经验）<br>
+<b>④ 开始整理大模型协作记录</b>——趁还记得清，把前两周的踩坑与纠错写下来
+</div></div>
+<div class="ms"><b>里程碑 M3（10/14）：</b>RTL 与黄金参考数值一致；overlay 能在板上加载并控制。</div>
+<div class="plan-note"><b>本周最关键的一件事是"逐采样点比对"。</b>不要用"听起来差不多"判断正确性。定点化引入的偏差只有在数值层面才看得清，而它会直接决定闭环能否收敛。</div>
+</div>
+
+<div class="week">
+<div class="wh"><span class="t">第 4 周 · 10/15–10/21　闭环联调（只做这一件事）</span><span class="tag t-a">缓冲周</span></div>
+<div class="wr"><div class="wl">A</div><div class="wc">
+<b>① 闭环时序调试</b>：数据通路每一级的延迟都要能定位，用 ILA 抓时序<br>
+<b>② 保证 PL 处理延迟恒定</b>：这是创新点 1 的前提，任何分支都不能让延迟变化<br>
+<b>③ PS 侧基线实现</b>：把同一套 NLMS 用 Python/C 在 ARM 上跑一遍，<b>记录延迟与 P99 抖动</b>——这是"为什么必须放在 PL 里"的对照证据
+</div></div>
+<div class="wr"><div class="wl">B</div><div class="wc">
+<b>① 联调收敛性</b>：先电学环回，再密闭腔。步长从小开始，宁可慢也要稳<br>
+<b>② 调三模式切换</b>：稳态 / 突变 / 冻结的触发条件与阈值<br>
+<b>③ 加防发散保险</b>：系数泄漏 + 误差钳位 + 增益管理，三级兜底<br>
+<b>④ 若时间允许</b>，尝试加入 PEM 预白化或分块频域作为第二算法支
+</div></div>
+<div class="wr"><div class="wl">C</div><div class="wc">
+<b>① 搭建测试矩阵</b>：3 档泄漏孔 × 3 档增益余量 × 2 种节目信号 = 18 组工况<br>
+<b>② 每组跑一遍并记录</b>：是否稳定、恢复时间、有无异常<br>
+<b>③ 拍第一批视频素材</b>：啸叫失控、系统压住、参数突变后恢复<br>
+<b>④ 技能包 <code>gain_scan_bench</code> 成形</b>
+</div></div>
+<div class="ms"><b>里程碑 M4（10/21）：</b>密闭腔内闭环稳定运行，ASG &gt; 0（开启系统后 MSG 确实提升）。</div>
+<div class="plan-note"><b>本周不要安排任何其他任务。</b>闭环不收敛是这类系统的头号风险，它会吃掉所有留给它的时间。如果到第 4 周末仍不收敛，启动降级方案（见风险登记册 R1）。</div>
+</div>
+
+<div class="week">
+<div class="wh"><span class="t">第 5 周 · 10/22–10/28　指标实测与素材采集</span><span class="tag t-g">出结果的一周</span></div>
+<div class="wr"><div class="wl">C 主导</div><div class="wc">
+<b>① MSG 增益扫描</b>：关闭 / 开启抑制器两条曲线，算出 ASG<br>
+<b>② 延迟分位数</b>：P50 / P95 / P99 / 最大值（<b>务必分开报告，不要只给平均值</b>）<br>
+<b>③ 误切率</b>：持续音 vs 真实啸叫的误判统计，并与纯陷波方案对照<br>
+<b>④ 反馈路径收敛时间</b>：突变后恢复稳定的时间（三模式切换的效果）<br>
+<b>⑤ 音质损伤</b>：有节目信号时的 THD+N<br>
+<b>⑥ <span class="tag t-g">延迟—增益权衡曲线</span></b>（创新点 3）：人工延迟 0/10/20/40/80 采样点，逐点测 MSG
+</div></div>
+<div class="wr"><div class="wl">A</div><div class="wc">
+<b>① 资源与时序终版报告</b>：LUT/FF/BRAM/DSP、时序收敛状态、WNS、PL 时钟频率<br>
+<b>② PS 与 PL 对比数据整理</b>：延迟、抖动、CPU 占用<br>
+<b>③ 完善 <code>docs/architecture.md</code> 与 <code>docs/interface.md</code></b>
+</div></div>
+<div class="wr"><div class="wl">B</div><div class="wc">
+<b>① 消融实验</b>：逐模块开关（去 DC 阻断 / 去噪声注入 / 去稳定性检测 / 去三模式切换），量化每个模块的贡献<br>
+<b>② 参数敏感性</b>：步长与滤波器长度对 ASG 的影响<br>
+<b>③ 写失败分析</b>：哪些场景仍然做不好、原因是什么（指南明确要求写这一节）
+</div></div>
+<div class="ms"><b>里程碑 M5（10/28）：</b>指标汇总表完成；演示可稳定复现；原始日志与波形证据齐备。</div>
+<div class="plan-note"><b>拍素材要趁这一周。</b>真啸叫起燃的瞬间、系统压住的瞬间、移动麦克风后恢复的瞬间——这些镜头一旦错过就要重新搭台。用手机随手拍，但要有意识地拍。</div>
+</div>
+
+<div class="week">
+<div class="wh"><span class="t">第 6 周 · 10/29–11/4　交付</span><span class="tag t-r">硬截止</span></div>
+<div class="wr"><div class="wl">全员</div><div class="wc">
+<b>① 技能包四件套定稿</b>：每项 README 要写清<b>适用场景 / 使用方法 / 失效条件 / 在本队题目之外还能用在哪</b>（最后一条是通用性的证明，指南要求）<br>
+<b>② 大模型协作记录整理</b>：按"任务类型 → 提示词 → 模型回答 → 我如何发现它是错的 → 修正 → 沉淀成技能包哪一条"的结构<br>
+<b>③ 设计报告</b>：选题背景与创新点 / 设计原理与功能框图 / 软硬件划分与接口 / 优化前后对比 / 协作记录 / 技能包提炼过程 / 复现说明 / 失败分析<br>
+<b>④ 演示视频</b>：剪辑、配音、字幕<br>
+<b>⑤ 开源仓库</b>：目录名与文件名全部英文小写（指南硬要求），加 MIT 或 Apache-2.0 许可<br>
+<b>⑥ 逐项核对提交清单</b>
+</div></div>
+<div class="ms"><b>里程碑 M6（11/4 18:00）：</b><b>提交完成。</b>建议 11/3 完成主体，11/4 只做检查——不要卡在截止前两小时。</div>
+</div>
+
+<div class="week">
+<div class="wh"><span class="t">决赛准备期 · 11/5–11/19（15 天）</span></div>
+<div class="wr"><div class="wl">A</div><div class="wc"><b>FPGA 基础编程能力考核练习</b>（决赛现场有这一关）：Vivado 流程、时序约束、常见接口协议的盲做练习</div></div>
+<div class="wr"><div class="wl">B</div><div class="wc"><b>答辩技术问题准备</b>：把"为什么必须是 FPGA""为什么不能用转接板或纯软件替代""有偏估计怎么处理"这三个必答题的标准回答写熟</div></div>
+<div class="wr"><div class="wl">C</div><div class="wc"><b>英文海报</b>（指南硬要求：一页英文 PPT，按 AMD 模板，<b>不含队伍信息</b>，A4 彩色打印）+ 现场演示流程彩排</div></div>
+<div class="ms"><b>时间：</b>11/20–11/22，南京江北新区。含现场编程考核 + 实物演示 + 答辩。</div>
+</div>
+</section>
+
+<section>
+<h2>七、指标与测量方法</h2>
+<table>
+<thead><tr><th style="width:110px">指标</th><th style="width:56px">类别</th><th>定义与测量方法</th></tr></thead>
+<tbody>
+<tr><td><b>MSG</b><br>最大稳定增益</td><td>核心</td><td>从低到高缓慢提升系统增益，记录刚开始啸叫的电平。用粉噪或扫频，脚本自动执行，<b>重复 10 次以上取统计量</b></td></tr>
+<tr><td><b>ASG</b><br>附加稳定增益</td><td>核心</td><td>开启抑制器后的 MSG 减去关闭时的 MSG（dB）。<b>这是行业衡量抑制技术价值的唯一标准，也是最重要的一张图</b></td></tr>
+<tr><td>端到端延迟</td><td>核心</td><td>从麦克风拾取到扬声器输出。<b>报告 P50 / P95 / P99 / 最大值，并说明测量起点与终点、时钟同步方法</b></td></tr>
+<tr><td>反馈路径<br>收敛时间</td><td>核心</td><td>人为突变反馈条件（移动麦克风 / 更换泄漏孔径），从突变到恢复稳定所需时间</td></tr>
+<tr><td><b>误切率</b></td><td>创新</td><td>输入持续音（长笛/弦乐/管风琴和弦）与真实啸叫，分别统计被误判的次数。需说明判定窗口与阈值</td></tr>
+<tr><td>音质损伤</td><td>补充</td><td>有节目信号输入时的 THD+N；条件允许时用 POLQA / PESQ 做客观评分，与纯陷波方案对照</td></tr>
+<tr><td>资源与时序</td><td>补充</td><td>LUT / FF / BRAM / DSP48 占用率、时序收敛状态、WNS、PL 侧最高时钟频率</td></tr>
+<tr><td>PS 基线对比</td><td>补充</td><td>同一算法在 ARM 上的延迟与 P99 抖动，作为"为什么必须放 PL"的对照</td></tr>
+</tbody>
+</table>
+<div class="callout c-amber">
+<p style="margin:0" class="kv"><b>测量纪律三条：</b>① 每项指标必须注明具体硬件型号、输入规格、软件版本、采样率、测试次数与时长；② 延迟与抖动类指标<b>必须报分位数与最大值，不能用平均值代替</b>；③ 性能对比必须条件相同，并保留原始日志、测试脚本与示波器截图作为证据。</p>
+</div>
+</section>
+
+<section>
+<h2>八、风险登记册</h2>
+<table>
+<thead><tr><th style="width:32px">#</th><th style="width:140px">风险</th><th style="width:56px">概率</th><th style="width:56px">影响</th><th>对策与触发条件</th></tr></thead>
+<tbody>
+<tr><td><b>R1</b></td><td><b>闭环不收敛 / 发散</b><br><span class="tag t-r">头号风险</span></td><td>中高</td><td>严重</td>
+<td><b>三级兜底：</b>① 步长从小开始，宁可慢也要稳；② 系数泄漏 + 误差钳位；③ 增益管理作为最后保险（判定接近临界就先降增益，粗糙但可靠）。<br><b>触发条件：</b>第 4 周末仍不收敛 → 启动降级：放弃三模式切换，只做"固定反馈路径 + 冻结更新"的最小版本，把创新点 1 改叙述为"实现并验证冻结机制"，保住功能正确性 20 分</td></tr>
+<tr><td><b>R2</b></td><td>自适应滤波器误抵消节目音频（有偏估计）</td><td>高</td><td>中</td>
+<td>实现短时噪声注入去相关；冻结机制兜底。<b>即使没完全解决，如实报告也是加分项</b>——指南明确要求写失败分析。<br><b>触发条件：</b>节目音频出现可闻失真 → 先加大泄漏系数，再缩短滤波器长度</td></tr>
+<tr><td><b>R3</b></td><td>器材到货延迟</td><td>中</td><td>严重</td>
+<td><b>今天就下单。</b>板卡若延迟，先用赛事方远程板卡或实验室板卡开工（B 的黄金参考、C 的实验台都不依赖板卡）</td></tr>
+<tr><td><b>R4</b></td><td>TRRS 音频口接触不良</td><td>中高</td><td>中</td>
+<td>多备转接头与线材，第 1 周就验证。<b>触发条件：</b>录音无声或只有单声道 → 换 4 段式插头</td></tr>
+<tr><td><b>R5</b></td><td>定点精度不足导致收敛变差</td><td>中</td><td>中</td>
+<td>先用 16 位数据 / 24 位系数 / 32 位累加。<b>触发条件：</b>数值比对误差超 1e-3 或闭环发散 → 累加器升到 40 位（<b>先改字长，不要先去调步长</b>）</td></tr>
+<tr><td><b>R6</b></td><td>耦合腔频响有深谷，干扰啸叫判据</td><td>中</td><td>中</td>
+<td>内壁贴吸音棉；调整麦克风与扬声器的相对角度避开腔体简正模式。<b>触发条件：</b>MSG 基线在不同频率上差异过大</td></tr>
+<tr><td><b>R7</b></td><td>没有双通道示波器</td><td>中</td><td>中</td>
+<td>备用方案：录音环回 + 互相关法（同时录输入输出，做互相关求时延）。<b>第 1 周就确认设备可得性，不要拖到第 3 周</b></td></tr>
+<tr><td><b>R8</b></td><td>最后一周文档与技能包赶工</td><td>高</td><td>中</td>
+<td>C 从第 3 周起每周整理一次记录，不要留到最后。<b>触发条件：</b>第 5 周末技能包还没第一版 → 停止一切技术优化，全员转文档</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>九、仓库结构（指南要求目录名纯英文）</h2>
+<pre>acoustic-feedback-suppressor/
+├── README.md                      # 项目简介 + 复现步骤
+├── docs/
+│   ├── architecture.md            # 系统架构与数据流图
+│   ├── interface.md               # 寄存器映射、I2S 时序约定
+│   ├── experiment_setup.md        # 耦合腔规格、接线、测量 SOP
+│   └── metrics.md                 # 指标定义与口径
+├── src/
+│   ├── rtl/                       # afc_top / audio_frontend / fir_adaptive ...
+│   ├── hls/                       # 可选的 HLS 版本
+│   └── ps/
+│       ├── afc_driver.py
+│       └── notebooks/
+│           ├── 01_loopback_latency.ipynb
+│           ├── 02_gain_scan.ipynb
+│           └── 03_metrics.ipynb
+├── sim/
+│   ├── tb/                        # testbench
+│   └── vectors/                   # 黄金参考导出的 .mem 向量
+├── build/
+│   ├── build_overlay.tcl          # 可复现构建脚本
+│   └── report/                    # 综合与实现报告
+├── board/
+│   ├── bit/ .hwh/ .xsa/           # 上板产物
+│   └── run_*.py                   # 运行脚本
+├── data/
+│   ├── raw/                       # 原始录音
+│   └── golden/                    # 黄金参考输入输出
+├── metrics/
+│   ├── metrics.csv                # 指标汇总表
+│   ├── logs/                      # 原始日志
+│   ├── scripts/                   # 测试脚本
+│   └── evidence/                  # 示波器截图 / 波形
+├── skill/                         # 技能包（四件套）
+│   └── README.md
+└── report/
+    ├── design_report.md
+    └── llm_collaboration_log.md</pre>
+</section>
+
+<section>
+<h2>十、交付物对照评分表</h2>
+<table>
+<thead><tr><th style="width:170px">评分项</th><th style="width:52px">权重</th><th>对应的交付物</th><th style="width:56px">负责人</th></tr></thead>
+<tbody>
+<tr><td><b>创新性与应用价值</b></td><td>30</td>
+<td>创新点 1（三模式切换：报告 + 收敛时间数据）／创新点 2（误切率指标与实测）／创新点 3（延迟—增益权衡曲线）／双场景叙事（扩声 + 助听）</td><td>B + C</td></tr>
+<tr><td>性能与资源优化效果</td><td>20</td>
+<td>ASG 实测／延迟分位数／PS 与 PL 对比／资源占用与时序报告／消融实验</td><td>A + B</td></tr>
+<tr><td>功能正确性与设计完整性</td><td>20</td>
+<td>上板实测输出／仿真与 Golden 比对／系统架构图与数据流图／接口定义文档</td><td>A + B</td></tr>
+<tr><td>大模型协作与技能包</td><td>15</td>
+<td>协作记录（含提示词、回答、自我纠错轨迹）／技能包四件套 + README（含通用性说明）</td><td>C 统筹，三人各出一条</td></tr>
+<tr><td>文档质量与可复现性</td><td>15</td>
+<td>设计报告／复现说明／<code>build_overlay.tcl</code> 可复现构建／开源仓库（MIT 或 Apache-2.0）</td><td>C 统稿</td></tr>
+</tbody>
+</table>
+
+<h3>技能包四件套（每项都要写清"在本队题目之外还能用在哪"）</h3>
+<table>
+<thead><tr><th style="width:190px">技能包</th><th>内容</th><th style="width:56px">提出人</th></tr></thead>
+<tbody>
+<tr><td><code>audio_loopback_latency</code></td><td>通用音频通路延迟测量工具：含电学环回与声学环回两种模式，自动报告 P50/P95/P99/最大值。任何做实时音频的队伍都会需要</td><td>A</td></tr>
+<tr><td><code>streaming_dsp_scaffold</code></td><td>流式定点 DSP 工程骨架：采样率管理的时钟域处理、AXI-Stream 接口模板、定点字长选择经验规则</td><td>A</td></tr>
+<tr><td><code>adapt_filter_bench</code></td><td>自适应滤波器黄金参考比对工具：把 RTL 输出与 Python 参考逐采样点自动对齐并算误差曲线，定位定点化偏差</td><td>B</td></tr>
+<tr><td><code>gain_scan_bench</code></td><td>增益扫描与稳定性判据自动化脚本：自动执行"缓慢提增益 → 检测啸叫 → 记录临界值 → 重复取统计量"</td><td>C</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>十一、本周（9/24–9/30）立刻要做的六件事</h2>
+<ol>
+<li><b>今天就下单</b>：PYNQ-Z2、小扬声器 ×2、驻极体麦克风模块 ×2、亚克力盒、3.5mm 线材与多种转接头、吸音棉</li>
+<li><b>今天确认设备可得性</b>：实验室有没有双通道示波器？没有就立刻准备互相关法备选方案</li>
+<li><b>C 开始做耦合腔</b>（这件事不依赖板卡，可以立即开工）</li>
+<li><b>B 开始写黄金参考</b>（也不依赖板卡，纯 Python 就能跑）</li>
+<li><b>A 整理 Vivado / PYNQ 环境</b>与工程骨架，同时把仓库骨架和 <code>metrics.csv</code> 表头定下来</li>
+<li><b>三人开一次 30 分钟的接口对齐会</b>：把第二节的寄存器映射表和三、四节的六条设计决策逐条确认，形成书面记录——这份记录将来直接进报告的"软硬件划分依据"</li>
+</ol>
+<div class="callout c-green">
+<p style="margin:0" class="kv"><b>最后提醒一件事：</b>这份计划里，<b>第 1–2 周的两个闸口（能拉到啸叫 / 电学环回延迟有数字）比后面任何技术工作都重要</b>。这两个数字决定了作品的上限，而且它们必须在你有时间补救的时候暴露出来。千万不要为了"看起来进展快"而跳过它们。</p>
+</div>
+</section>
+
+<p class="src" style="margin-top:28px;padding-top:16px;border-top:1px solid var(--line)">
+<b>说明：</b>本蓝图中涉及的赛道规则、器件范围、评分权重、提交要求与开源约定，均取自《全国大学生嵌入式芯片与系统设计竞赛'2026 FPGA 赛道选题指南（AMD）》；PYNQ-Z2 器件规格取自 AMD 官方开发板文档。文中引用的对比量级（连续自适应收敛约 20 s、短时噪声注入约 200 ms、传统陷波方案附加稳定增益 3–5 dB）来自公开学术文献，仅作为实验参照，实际数值以本队第 5 周实测为准。
+</p>
+
+</div>
+</body>
+</html>

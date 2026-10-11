@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「声堤」保姆级入门教程 · 从零开始</title>
+<style>
+:root{
+  --bg:#f7f7f5; --card:#ffffff; --ink:#1c1c1a; --ink2:#55544f; --ink3:#8a8880;
+  --line:#e4e3de; --line2:#d2d1ca;
+  --blue:#185FA5; --blue-bg:#E6F1FB; --blue-line:#B5D4F4;
+  --amber:#854F0B; --amber-bg:#FAEEDA; --amber-line:#FAC775;
+  --green:#3B6D11; --green-bg:#EAF3DE; --green-line:#C0DD97;
+  --red:#A32D2D; --red-bg:#FCEBEB; --red-line:#F7C1C1;
+  --purple:#534AB7; --purple-bg:#EEEDFE; --purple-line:#CECBF6;
+  --teal:#0F6E56; --teal-bg:#E1F5EE; --teal-line:#9FE1CB;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding:44px 26px 100px}
+h1{font-size:30px;font-weight:600;line-height:1.35;margin:0 0 10px;letter-spacing:-.4px}
+h2{font-size:22px;font-weight:600;margin:0 0 6px;letter-spacing:-.2px}
+h3{font-size:17px;font-weight:600;margin:26px 0 10px}
+h4{font-size:15px;font-weight:600;margin:18px 0 6px}
+p{margin:0 0 13px}
+.sub{color:var(--ink2);font-size:14px;margin:0 0 4px}
+.meta{color:var(--ink3);font-size:13px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:34px}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 30px;margin:0 0 20px}
+.tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;border:1px solid;margin:0 6px 6px 0;white-space:nowrap}
+.t-b{background:var(--blue-bg);border-color:var(--blue-line);color:var(--blue)}
+.t-a{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
+.t-g{background:var(--green-bg);border-color:var(--green-line);color:var(--green)}
+.t-r{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+.t-p{background:var(--purple-bg);border-color:var(--purple-line);color:var(--purple)}
+.t-t{background:var(--teal-bg);border-color:var(--teal-line);color:var(--teal)}
+.callout{border-left:3px solid;border-radius:0 10px 10px 0;padding:15px 19px;margin:17px 0;font-size:14.5px}
+.c-amber{border-color:var(--amber);background:var(--amber-bg)}
+.c-red{border-color:var(--red);background:var(--red-bg)}
+.c-blue{border-color:var(--blue);background:var(--blue-bg)}
+.c-green{border-color:var(--green);background:var(--green-bg)}
+.c-teal{border-color:var(--teal);background:var(--teal-bg)}
+.c-purple{border-color:var(--purple);background:var(--purple-bg)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:15px 0}
+th{text-align:left;font-weight:600;font-size:12.5px;color:var(--ink2);padding:9px 11px;border-bottom:2px solid var(--line2);white-space:nowrap}
+td{padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fbfbf9}
+.step{display:grid;grid-template-columns:38px 1fr;gap:14px;margin:16px 0;align-items:start}
+.step .num{width:30px;height:30px;border-radius:9px;background:var(--blue-bg);color:var(--blue);
+  border:1px solid var(--blue-line);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600}
+.step .bd{font-size:14.5px;padding-top:2px}
+.term{background:#fbfbf9;border:1px solid var(--line);border-radius:11px;padding:14px 18px;margin:14px 0}
+.term .n{font-weight:600;font-size:14.5px;margin-bottom:5px}
+.term .p{font-size:14px;color:var(--ink2)}
+ul,ol{margin:8px 0 13px;padding-left:22px}
+li{margin:6px 0}
+li::marker{color:var(--ink3)}
+code{background:#f1efea;padding:2px 7px;border-radius:5px;font-size:13px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
+pre{background:#f7f6f2;border:1px solid var(--line);border-radius:10px;padding:15px 18px;overflow-x:auto;
+  font-size:13px;line-height:1.7;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;margin:13px 0}
+.kv{font-size:14.5px}
+.src{font-size:12px;color:var(--ink3);margin-top:6px;line-height:1.6}
+.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 30px;margin:0 0 20px}
+.toc ol{margin:6px 0 0;padding-left:22px;font-size:14.5px}
+.toc li{margin:4px 0}
+@media(max-width:820px){
+  .wrap{padding:26px 15px 60px}
+  section{padding:20px 17px}
+  h1{font-size:23px}
+  pre{font-size:11.5px}
+  .step{grid-template-columns:30px 1fr;gap:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>「声堤」保姆级入门教程</h1>
+<p class="sub">从"完全没碰过 FPGA"开始，一步一步把板子点亮、把声音听见、把算法跑通</p>
+<p class="meta">2026-09-24　|　配套《项目蓝图与三人分工》使用　|　面向初级组 3 人队</p>
+
+<div class="callout c-green">
+<p style="margin:0 0 10px"><b>写在最前面：这份教程的四条约定</b></p>
+<ol style="margin:0" class="kv">
+<li><b>每个术语第一次出现时，我先把它的意思用大白话讲清楚，再告诉你它叫什么。</b>所以你会看到"相当于一个……（术语：XX）"这种写法。这是刻意的，不要跳过。</li>
+<li><b>假设你什么都不知道。</b>包括"什么是 FPGA""什么是 Verilog""怎么连接网线"这类问题，我都会写。如果你已经会了，可以快读。</li>
+<li><b>教程只讲你们这个项目需要的东西。</b>不会教你怎么做 CPU、怎么做图像处理——那些你们用不上。</li>
+<li><b>凡是我不确定的地方，我会明说"这里要先验证"。</b>你照着做的时候如果卡住了，先看第 11 章的排查手册。</li>
+</ol>
+</div>
+
+<div class="toc">
+<h2 style="margin-bottom:10px">目录</h2>
+<ol>
+<li><b>先建立正确的心理模型</b>——搞清楚我们在做什么（零术语）</li>
+<li><b>硬件准备</b>——买什么、怎么挑、收到货先做什么</li>
+<li><b>电脑上要装什么</b>——Vivado、PYNQ 镜像、SD 卡</li>
+<li><b>把板子第一次点亮</b>——从零到看见 Jupyter 网页</li>
+<li><b>确认板子能听声音</b>——全项目第一个风险闸口</li>
+<li><b>理解我们的核心算法</b>——自适应滤波器到底在干什么</li>
+<li><b>开发工作流</b>——从想法到硬件的五步</li>
+<li><b>搭实验台</b>——那个"密闭盒子"是怎么回事</li>
+<li><b>三个人各需要懂到什么程度</b></li>
+<li><b>术语速查表</b>——大白话对译</li>
+<li><b>常见错误排查手册</b></li>
+<li><b>每周该看哪几章</b></li>
+</ol>
+</div>
+
+<section>
+<h2>第 1 章　先建立正确的心理模型</h2>
+<p class="kv">这一章不涉及任何操作。但如果你跳过它，后面每一步你都会是"照着敲但不知道为什么"，那样在答辩和调试时会非常被动。</p>
+
+<h3>1.1 我们做的东西到底是什么</h3>
+<p>先讲一个你可能见过的场景：<b>在会议室或者教室里，有人拿着话筒说话，突然"吱——"一声刺耳的尖啸出来了，所有人捂耳朵。</b>这就是我们项目要解决的问题。</p>
+<p>它为什么会发生？因为话筒和音箱同时开着：</p>
+<ol>
+<li>音箱发出的声音，被话筒又收进去了</li>
+<li>话筒收到的声音被放大，从音箱放出来</li>
+<li>这次放出来的声音更大，又被话筒收进去</li>
+<li>越滚越大……</li>
+</ol>
+<p>声音在"话筒 → 设备 → 音箱 → 空气 → 话筒"这个圈里转。"术语：<b>声反馈</b>。<b>关键点：它是一个"越滚越大"的过程，不是"一直存在的干扰"。</b></p>
+<div class="callout c-amber">
+<p style="margin:0"><b>这个区别非常重要，请记牢。</b><br>
+一般的噪声（比如空调嗡嗡声）是<b>一直存在、大小差不多</b>的，所以你可以"慢慢把它压小"。<br>
+而啸叫是<b>滚雪球</b>：它要么没滚起来，要么几毫秒内就滚到失控。<b>中间没有"稍微有点啸叫"这个状态。</b><br>
+这意味着——<b>我们必须在它滚起来之前就动手。</b>等听见了再处理，已经晚了。</p>
+</div>
+<p>那么"动手"的方式是什么？我们的办法是：<b>想办法预测出"音箱的声音绕一圈回来后变成什么样"，然后从话筒收到的信号里把这个"绕回来的部分"减掉。</b></p>
+<p>用一个比喻：<b>你在一间有回音的房间里说话，回音会干扰你。如果你能提前知道自己的声音在这个房间里会产生什么样的回音，你就可以在脑子里把回音"抵消"掉，只听见自己真正想听的东西。</b>我们要做的，就是让电路学会这件事。</p>
+
+<h3>1.2 FPGA 是什么？为什么不能用普通电脑</h3>
+<p><b>普通电脑（CPU）</b>：像一个非常聪明的厨师。你给他一张菜谱，他一条一条做，做得飞快。但<b>他一次只能做一件事</b>——所以如果要同时做一千道菜，得排队。</p>
+<p><b>FPGA</b>：不是厨师，是<b>一大片空地</b>。你可以自己在上面铺导线、装零件，搭出任何你想要的<b>电路</b>。搭起来很费劲，但搭好之后，<b>所有事情同时发生</b>，而且时间是<b>精确可预测</b>的。</p>
+<div class="term">
+<div class="n">FPGA（Field Programmable Gate Array，现场可编程门阵列）</div>
+<div class="p">是一块"电路可以事后重新搭"的芯片。它不是执行指令的单片机，而是一堆可以自由连接的数字逻辑单元。你用一套"描述电路长什么样"的语言（叫<b>硬件描述语言</b>）告诉它怎么连，它就变成那个电路。</div>
+</div>
+<p>那我们为什么非要用它？因为我们的项目有两个死要求：</p>
+<table>
+<thead><tr><th style="width:150px">要求</th><th>为什么普通电脑做不到</th></tr></thead>
+<tbody>
+<tr><td><b>声音必须"实时"穿过电路</b><br>延迟要小到微秒级</td><td>电脑上跑音频，声音要在内存里排队、等操作系统调度。典型的延迟是 10 毫秒以上（是我们目标的几千倍）。</td></tr>
+<tr><td><b>每一秒都不许有例外</b></td><td>电脑后台还要干别的事（更新界面、检查网络）。所以它的延迟是"平均 10 毫秒，有时 50 毫秒"。<b>而我们要的是"每一次都是 1 微秒，一次都不许慢"。</b>术语：<b>确定性</b>。</td></tr>
+</tbody>
+</table>
+<p>第 2 条是重点。用生活比喻：<b>普通电脑像一条车流量不稳定的路，平均车速还行，但偶尔会堵。</b>而我们要的是一条<b>施工标准严格、保证全程匀速的专用轨道</b>——因为我们的"货物"（声音）如果在路上多待了一会儿，回到起点时"对不上表"，整个系统就会失控。</p>
+
+<h3>1.3 为什么"延迟"是这件事的命门</h3>
+<p>这一段是你们整个项目最重要的认知，请慢读。</p>
+<p>声音在空气里传播，速度大约是 <b>每毫秒 34 厘米</b>。假设话筒到音箱 1 米，那声音"跑过去再跑回来"光是空气里这段就要大约 <b>6 毫秒</b>。</p>
+<p>现在关键问题来了：声音是一种<b>波</b>，波有"起伏的节奏"（术语：<b>相位</b>）。</p>
+<ul>
+<li>如果绕一圈回来时，<b>起伏恰好和原来的反着</b>，两者就会<b>互相抵消</b>——系统稳定。</li>
+<li>如果绕一圈回来时，<b>起伏恰好和原来一致</b>，两者就会<b>叠加</b>——系统失控，啸叫。</li>
+</ul>
+<p>而"绕一圈要多久"这个时间，直接决定了回来时是"反着的"还是"一致的"。</p>
+<div class="callout c-red">
+<p style="margin:0"><b>由此推出一条结论，它是整个项目的立论基础：</b><br>
+我们的电路自己在处理声音时也要花时间。这部分时间会<b>加进"绕一圈"的总时间里</b>，从而改变回来时的相位。<br>
+<b>所以：我们的处理延迟越大，系统能承受的音量上限就越低。延迟每降低一点，就能多开一点音量。</b><br>
+在这个项目里，延迟不是"性能好不好的问题"，而是"系统能不能工作的前提"。</p>
+</div>
+<p>顺便说一个行业词汇：系统"刚好要失控"时的音量，叫 <b>MSG（最大稳定增益）</b>；我们的技术能让这个上限提高多少，叫 <b>ASG（附加稳定增益）</b>。<b>整个行业就是用这两个数字来评价"一个啸叫抑制方案有多好"的。</b>你们作品里最重要的一张图，就是 ASG。</p>
+
+<h3>1.4 PS 和 PL：一块板子上的两个人</h3>
+<p>你们要用的板子叫 <b>PYNQ-Z2</b>，上面有一颗芯片叫 <b>Zynq</b>。这颗芯片有意思的地方在于，它里面其实住了"两个人"：</p>
+<div class="term">
+<div class="n">PS（Processing System，处理系统）</div>
+<div class="p">就是一个普通的双核 ARM CPU，跟我们手机里的处理器是一类东西。它能跑 Linux 操作系统、能上网、能存文件、能算复杂的数学。<b>相当于办公室里的经理。</b></div>
+</div>
+<div class="term">
+<div class="n">PL（Programmable Logic，可编程逻辑）</div>
+<div class="p">就是 1.2 节说的"那块可以自己搭电路的空地"。<b>相当于车间里的流水线。</b>声音要被微秒级地处理，就得在这里搭。</div>
+</div>
+<p>他们俩怎么配合？</p>
+<ul>
+<li><b>经理（PS）</b>负责：决定参数、看数据、画图、把结果存下来、给你看网页界面。</li>
+<li><b>流水线（PL）</b>负责：真正让声音以极低延迟穿过去。</li>
+<li><b>他们之间靠一条叫 AXI 的"传送带"通信。</b>分为两种：一种是慢速但用来"下命令、看状态"的（术语：<b>AXI-Lite</b>），一种是高速用来"搬数据"的（术语：<b>AXI-Stream</b>）。</li>
+</ul>
+<p class="kv"><b>为什么这个划分对你们重要？</b>因为你们的分工就是按这个来的：<b>跟"经理"打交道的活（Python 脚本、绘图、测量）和跟"流水线"打交道的活（写电路）是两套技能。</b></p>
+
+<h3>1.5 PYNQ 帮我们省掉了什么</h3>
+<p>回到 1990 年代：要在 FPGA 上做点事，你得先在电脑上设计电路，生成一个"电路配置文件"，用专门的线把文件灌进板子，然后板子里发生的一切你几乎看不见——没有屏幕、没有文件系统、没有调试信息。</p>
+<p>后来有人想："能不能让 FPGA 用起来像写 Python 一样？"于是有了 PYNQ。</p>
+<div class="term">
+<div class="n">PYNQ（读作 "pink"，Python Productivity for Zynq）</div>
+<div class="p">一个跑在 Zynq 板子上的软件环境。它让你可以在<b>浏览器里打开一个网页版的 Python 编辑器</b>，直接在网页里写 Python 代码，而这段代码可以<b>控制 PL 里搭好的电路</b>（加载它、给它设参数、读它的输出）。</div>
+</div>
+<p>这对你们的意义非常大：</p>
+<ul>
+<li><b>你可以先完全不懂硬件，用 Python 把整套逻辑跑通</b>，看到结果是对的，再考虑把它挪进硬件。</li>
+<li>加载一个"电路"变得像写一行代码一样简单：<code>overlay = Overlay('xxx.bit')</code>，电路就生效了。</li>
+<li>那个叫 Jupyter 的网页编辑器，可以<b>边写边跑边看结果</b>，还能直接画图。</li>
+</ul>
+<div class="term">
+<div class="n">Overlay（覆盖层 / 电路配置包）</div>
+<div class="p">就是"你们设计好的那块电路"。它通常由两个文件组成：<code>.bit</code>（电路本身）和 <code>.hwh</code>（一份说明书，告诉 Python 这块电路有哪些接口、怎么调用）。在 PYNQ 里，加载 overlay 就等于"把这块电路接到板子上"。</div>
+</div>
+
+<h3>1.6 我们的方案：三步走</h3>
+<p>现在把上面所有东西串起来。我们的做法可以概括成三句话：</p>
+<div class="step"><div class="num">1</div><div class="bd"><b>让电路"猜"出音箱到话筒这条回路的特性。</b>它在电路里维护一个"猜想的模型"，不断用实际收到的声音来修正自己的猜想。</div></div>
+<div class="step"><div class="num">2</div><div class="bd"><b>用这个猜想，算出"绕回来的那部分声音大概长什么样"，然后从话筒信号里减掉它。</b>这样系统就"看不见"那个反馈了，回路被切断。</div></div>
+<div class="step"><div class="num">3</div><div class="bd"><b>同时盯着有没有啸叫的苗头。</b>如果检测到回路条件突然变了（比如有人走动、把话筒挪了位置），就快速重新"猜"；如果检测到的是正常音乐而不是啸叫，就暂停动作，免得把音乐也当成啸叫减掉了。</div></div>
+<p>第 3 步就是你们作品的<b>"三模式切换"</b>创新点，后面第 6 章会详细讲。</p>
+</section>
+
+<section>
+<h2>第 2 章　硬件准备</h2>
+
+<h3>2.1 必买清单</h3>
+<table>
+<thead><tr><th style="width:150px">东西</th><th style="width:56px">数量</th><th style="width:88px">大概价格</th><th>买的时候注意什么</th></tr></thead>
+<tbody>
+<tr><td><b>PYNQ-Z2 开发板</b></td><td>1</td><td>¥1000–1400</td><td><b>今天就下单</b>。这是唯一一样没法替代的东西。买的时候确认是 <b>TUL PYNQ-Z2</b>（不是 PYNQ-Z1 也不是别的板子）。有些商家会送 SD 卡和电源，优先选这种。</td></tr>
+<tr><td>microSD 卡</td><td>1</td><td>¥30–50</td><td><b>至少 16GB，Class 10 以上。</b>这是板子的"硬盘"——板子是从这张卡启动系统的。别买杂牌的，读写慢会导致启动失败。</td></tr>
+<tr><td>小扬声器（3W 左右）</td><td>2</td><td>¥15–40/个</td><td>一个放进密闭盒子里，一个放在外面做演示。带 3.5mm 插头的最好。</td></tr>
+<tr><td>驻极体麦克风模块</td><td>2</td><td>¥5–20/个</td><td>要买<b>带 3.5mm 插头</b>的（不是只有裸露引脚的）。搜索"驻极体麦克风 3.5mm"。</td></tr>
+<tr><td>3.5mm 线材与转接头</td><td>若干</td><td>¥20–40</td><td><b>这是最容易翻车的地方，看下一节的专门说明。</b></td></tr>
+<tr><td>亚克力盒或小木盒</td><td>1</td><td>¥15–30</td><td>约 150×100×80 mm。淘宝搜"亚克力盒 透明 定做"或直接买现成尺寸。</td></tr>
+<tr><td>钻头或打孔工具</td><td>1 套</td><td>¥10–30</td><td>用来在盒子上开"泄漏孔"，3mm / 6mm / 10mm 三种大小。</td></tr>
+<tr><td>吸音棉</td><td>1 小块</td><td>¥10–20</td><td>贴在盒子内壁，减少回音。</td></tr>
+<tr><td>网线</td><td>1</td><td>¥5</td><td>板子和电脑通信要用。</td></tr>
+<tr><td>micro USB 线</td><td>1</td><td>¥5</td><td>给板子供电兼串口调试。<b>注意是 micro USB 不是 Type-C。</b></td></tr>
+</tbody>
+</table>
+<p class="kv"><b>合计大约 ¥1100–1700。</b>除了板子本身，其他加起来不到 300 块。</p>
+
+<div class="callout c-red">
+<h4 style="margin:0 0 8px">2.2 关于 3.5mm 插头的坑（请务必读完）</h4>
+<p style="margin:0 0 8px" class="kv">PYNQ-Z2 板子上的音频接口是<b>四段式（TRRS）</b>的——就是一个插头上分了 4 个金属环，能同时传"耳机左、耳机右、麦克风、地线"。</p>
+<p style="margin:0 0 8px" class="kv">但是市面上大量的耳机/麦克风是<b>三段式（TRS）</b>的（只有 3 个环）。<b>三段式插进四段式插座，可能接触不良——表现是"完全没声音"或者"只有一个声道有声音"。</b></p>
+<p style="margin:0" class="kv"><b>怎么办：</b>买的时候多买几种——① 四段式转三段式的转换头、② 三段式转四段式的转换头、③ 一根 3.5mm 公对公线。总共花不了几十块，但能省掉你两天排查时间。<b>收到货第一件事就是挨个试。</b></p>
+</div>
+
+<h3>2.3 收到货先做什么（开箱检查清单）</h3>
+<ol>
+<li>打开板子包装，找到一块小卡片或说明书，<b>确认板子型号是 PYNQ-Z2</b>。</li>
+<li>找出板子上那个<b>"BOOT"跳线</b>（一个黑色小帽子，套在三根针中的两根上）。确认它套在 <b>SD 那一侧</b>。这个跳线决定板子从哪里启动程序。</li>
+<li>把板子上的所有接口看一遍，对照本教程第 4 章的接线图，<b>先认位置，别急着通电</b>。</li>
+<li>把麦克风、扬声器、各种转接头都拿出来，<b>先物理上试插一遍</b>，看看哪个能插进去、哪个插不到底。</li>
+<li>把采购清单核对一遍，缺什么立刻补单。</li>
+</ol>
+</section>
+
+<section>
+<h2>第 3 章　电脑上要装什么</h2>
+
+<h3>3.1 总览：一共三件事</h3>
+<table>
+<thead><tr><th style="width:150px">要装的东西</th><th style="width:110px">装在哪</th><th>干什么用的</th></tr></thead>
+<tbody>
+<tr><td><b>Vivado</b></td><td>你的电脑</td><td>设计电路、仿真、生成 overlay 文件。<b>这是最重的一个，几十 GB。</b></td></tr>
+<tr><td><b>PYNQ 镜像</b></td><td>SD 卡上（不是电脑）</td><td>板子的操作系统。烧进 SD 卡后插到板子上。</td></tr>
+<tr><td><b>烧写工具</b></td><td>你的电脑</td><td>把镜像文件写进 SD 卡的小软件。</td></tr>
+</tbody>
+</table>
+<div class="term">
+<div class="n">Vivado（读作 "vi-VA-do"）</div>
+<div class="p">AMD（原 Xilinx）出的 FPGA 开发软件。你在里面"画"或"写"电路，它负责把它变成板子能用的文件。相当于 FPGA 世界的 Photoshop + 编译器。</div>
+</div>
+
+<h3>3.2 装 Vivado 的详细步骤</h3>
+<div class="step"><div class="num">1</div><div class="bd">
+<b>注册 AMD 账号。</b>访问 AMD 官网的开发者板块，用邮箱注册一个免费账号。<b>用学校邮箱更容易通过。</b>
+</div></div>
+<div class="step"><div class="num">2</div><div class="bd">
+<b>下载安装器。</b>在下载页面找 "Vivado ML Edition"。<b>版本要求：竞赛指南规定用 2025.2 或 2026.1（推荐 2026.1）。</b>选 "Vivado ML Standard"（免费版）先试；安装时选 "Vivado"（不要选 Vitis 全套，那个更大——不过如果你们后面要用 HLS，就需要一起装）。
+</div></div>
+<div class="step"><div class="num">3</div><div class="bd">
+<b>安装。</b>下载下来是一个几 GB 的安装器，运行后它还会联网下载几十 GB 的组件。这个过程可能要 1–3 小时，<b>建议晚上开始装，第二天早上看结果。</b>
+</div></div>
+<div class="step"><div class="num">4</div><div class="bd">
+<b>关键注意三点：</b><br>
+① <b>安装路径里绝对不能有中文和空格</b>，比如 <code>D:\Xilinx\Vivado\2026.1</code> 是对的，<code>D:\我的软件\Vivado 2026</code> 会出各种奇怪错误。<br>
+② 安装时勾选器件系列，<b>至少要勾 Zynq-7000 系列</b>（我们的板子芯片型号是 XC7Z020）。<br>
+③ 留出足够磁盘空间，<b>建议预留 100GB 以上</b>。
+</div></div>
+<div class="callout c-amber">
+<p style="margin:0" class="kv"><b>如果安装后新建工程时找不到 XC7Z020 这个器件</b>，说明你的版本里没包含它。解决办法：去 AMD 大学计划（University Program）申请教育授权，拿到支持全部器件的 Enterprise 版本。<b>这件事要提前做，不要等到第 2 周才发现。</b></p>
+</div>
+
+<h3>3.3 下载 PYNQ 镜像并烧进 SD 卡</h3>
+<div class="step"><div class="num">1</div><div class="bd">
+<b>下载镜像。</b>搜索 "PYNQ-Z2 image download"，进入 PYNQ 官方站点，找到 PYNQ-Z2 对应的镜像文件（是一个几百 MB 到 2GB 的 <code>.img</code> 文件）。<b>认准文件名里带 "PYNQ-Z2" 的那个</b>，别下成 PYNQ-Z1 或 ZCU104 的。
+</div></div>
+<div class="callout c-purple">
+<p style="margin:0" class="kv"><b>这里有一个"要先验证"的未知项（第 1 周必须解决）：</b>PYNQ 镜像的版本和 Vivado 的版本是<b>有对应关系</b>的——如果差太远，你后面加载 overlay 时可能会报错说"文件格式不认识"。<br>
+<b>行动：</b>下载镜像时，顺手在 PYNQ 官方文档里查一下"这个 PYNQ 版本对应哪个 Vivado 版本"。如果和竞赛要求的 2025.2/2026.1 对不上，就在第 1 周先试一次"最简单的 overlay 能不能加载"，不行就换镜像版本。<b>这个坑必须在有时间的第 1 周暴露出来。</b></p>
+</div>
+<div class="step"><div class="num">2</div><div class="bd">
+<b>准备烧写工具。</b>Windows 上推荐 <b>balenaEtcher</b>（免费、图形界面、傻瓜式）；也可以用 <b>Rufus</b>。下载安装，都是免费软件。
+</div></div>
+<div class="step"><div class="num">3</div><div class="bd">
+<b>烧写。</b>打开 Etcher → 选 "Flash from file" 选那个 <code>.img</code> 文件 → 选目标设备（<b>仔细核对是那张 SD 卡！选错会把你的 U 盘或移动硬盘格式化掉</b>）→ 点 Flash。<br>
+烧完后 Etcher 可能会提示"这张卡需要格式化"，<b>点取消，不要格式化</b>（那是因为 Windows 不认识 Linux 分区）。
+</div></div>
+<div class="callout c-red">
+<p style="margin:0" class="kv"><b>这一步最常见的错误：选错目标磁盘，把电脑上的移动硬盘清空了。</b>点 Flash 之前，<b>把 SD 卡的容量和盘符念一遍，再核对屏幕上显示的容量。</b>多花 10 秒，省一场灾难。</p>
+</div>
+</section>
+
+<section>
+<h2>第 4 章　把板子第一次点亮</h2>
+<p class="kv">这一章完成后，你会在浏览器里看到一个 Jupyter 网页并且能跑 Python。<b>这一天是整个项目最有成就感的一天，别急，慢慢来。</b></p>
+
+<h3>4.1 接线（顺序很重要）</h3>
+<div class="step"><div class="num">1</div><div class="bd"><b>插 SD 卡。</b>板子<b>背面</b>有一个 microSD 卡槽，把烧好的卡插进去，听到"咔"一声到位。</div></div>
+<div class="step"><div class="num">2</div><div class="bd"><b>确认 BOOT 跳线在 SD 位置。</b>（第 2.3 节检查过的那根跳线）</div></div>
+<div class="step"><div class="num">3</div><div class="bd"><b>接网线。</b>把板子和你的电脑接到<b>同一个路由器</b>上（这是最简单的方案）。<b>如果实验室没有路由器</b>，可以拿一根网线直接连板子和电脑（第 4.4 节有说明）。</div></div>
+<div class="step"><div class="num">4</div><div class="bd"><b>接 micro USB 线。</b>从板子接到电脑。这根线有两个作用：给板子供电（如果没接外部电源），以及提供一个"串口"让你能看到板子启动的过程——<b>出问题时这是救命的东西</b>。</div></div>
+<div class="step"><div class="num">5</div><div class="bd"><b>最后才通电。</b>如果商家送了 7–15V 的电源适配器，先用 USB 供电试试（板子功耗不大）；如果 USB 供电不稳，再接适配器。</div></div>
+
+<h3>4.2 看板子启动</h3>
+<p>通电后，板子上应该有几个 LED 亮起来。<b>第一次启动会慢一些（1–2 分钟）</b>，因为它在初始化系统。</p>
+<p>想确认它是不是真的在正常启动，可以打开电脑上的"串口终端"工具（Windows 上用 <b>PuTTY</b> 或 <b>MobaXterm</b>），找到板子对应的 COM 口，波特率设 <b>115200</b>，就能看到滚动的启动日志。<b>如果日志停在某一行不动了，或者反复重启，把那几行截图，这就是排查问题的第一手材料。</b></p>
+
+<h3>4.3 找到板子的网络地址</h3>
+<div class="term">
+<div class="n">为什么要找地址</div>
+<div class="p">PYNQ 的编程界面是一个<b>网页</b>。要打开这个网页，你得知道板子在网络里的"门牌号"（术语：<b>IP 地址</b>）。</div>
+</div>
+<p><b>方案一（推荐，用路由器）：</b>登录你的路由器管理页面（一般是浏览器打开 <code>192.168.1.1</code> 或 <code>192.168.0.1</code>，看路由器背面的说明），在"已连接设备"列表里找一个名字叫 <b>pynq</b> 的设备，记下它的 IP。</p>
+<p><b>方案二（网线直连电脑）：</b>把电脑的网卡手动设置成固定地址 <code>192.168.2.1</code>，子网掩码 <code>255.255.255.0</code>，然后板子的地址就是 <b><code>192.168.2.99</code></b>。<br>
+<span class="src">（Windows 设置路径：控制面板 → 网络和共享中心 → 更改适配器设置 → 右键那个网卡 → 属性 → Internet 协议版本 4 → 使用下面的 IP 地址）</span></p>
+
+<h3>4.4 打开编程界面</h3>
+<p>在电脑浏览器里输入：</p>
+<pre>http://pynq:9090
+    （如果上面这个打不开，就换成）
+http://板子的IP地址:9090</pre>
+<p>会弹出一个登录框：<b>用户名 <code>xilinx</code>，密码 <code>xilinx</code></b>（这是 PYNQ 默认的）。</p>
+<p>登录后你会看到一个网页版的文件管理 + Python 编辑器，这就是 <b>Jupyter</b>。</p>
+<div class="callout c-blue">
+<p style="margin:0" class="kv"><b>打个比方：</b>现在你的电脑就像是"远程桌面"连上了板子。你在网页里写的每一行 Python，<b>都是在板子上运行的</b>，不是在你这台电脑上跑的。这一点很重要——很多人会搞混，然后在错误的机器上找文件。</p>
+</div>
+
+<h3>4.5 第一个程序：点亮 LED</h3>
+<p>在 Jupyter 里新建一个 Notebook（右上角 New → Python 3），然后<b>一格一格地</b>输入下面的代码，每输一格按 <b>Shift + Enter</b> 运行。</p>
+<pre># 第 1 格：导入 PYNQ 的"电路加载器"
+from pynq import Overlay
+
+# 第 2 格：加载板子自带的"基础电路"
+# 这个文件是出厂就有的，不需要你自己设计
+base = Overlay("base.bit")
+
+# 第 3 格：看看板子上有哪些"可以控制的东西"
+print(base.ip_dict.keys())
+
+# 第 4 格：点亮一颗 LED
+# 注意：具体名字要用第 3 格打印出来的结果替换
+base.leds[0].on()
+
+# 第 5 格：关掉
+base.leds[0].off()</pre>
+<div class="callout c-green">
+<p style="margin:0" class="kv"><b>看到板子上的 LED 亮了？</b>恭喜，你已经完成了"用 Python 控制硬件"这件事。这是整个项目里所有后续操作的基础模式——<b>写一行 Python，板子上的电路就动一下。</b><br>
+<b>如果没亮：</b>先看第 4 格有没有报错；如果报"对象不存在"，说明第 3 格打印出来的名字和 <code>leds</code> 不一样，把第 3 格的输出复制给我或者自己对照着改。</p>
+</div>
+</section>
+
+<section>
+<h2>第 5 章　确认板子能听声音（全项目第一个闸口）</h2>
+
+<h3>5.1 为什么这一章必须排在前面</h3>
+<p>我们整个项目都建立在"板子能采到声音、也能放出声音"这个前提上。如果这个前提不成立，后面所有工作都是白做。</p>
+<p><b>所以第 1 周就要把这件事验证掉。</b>不要等到第 3 周写完了算法才发现"哦原来音频进不来"。</p>
+
+<h3>5.2 音频有两条路，先搞清楚走哪条</h3>
+<p>这是新手最容易糊涂的地方。板子上的音频芯片（型号 ADAU1761）接在哪里，决定了你有两条完全不同的使用路径：</p>
+<table>
+<thead><tr><th style="width:130px">路径</th><th>怎么走</th><th style="width:110px">适合做什么</th></tr></thead>
+<tbody>
+<tr><td><b>路径 A：<br>通过 PL（我们的主线）</b></td>
+<td>音频芯片 ↔ PL 里的电路 ↔ PS。<br>声音<b>真的经过了你们设计的电路</b>，所以延迟能压到极低。</td>
+<td><b>我们的正式方案</b>。最终作品必须走这条。</td></tr>
+<tr><td><b>路径 B：<br>通过 Linux 音频</b></td>
+<td>用板子上 Linux 系统自带的音频工具（<code>arecord</code> / <code>aplay</code>）直接录放。</td>
+<td>用来<b>快速验证硬件好坏</b>，或者当路径 A 还没搭好时的临时替代。</td></tr>
+</tbody>
+</table>
+<div class="callout c-purple">
+<p style="margin:0 0 8px"><b>这里有一个必须自己去查清楚的未知项。</b>PYNQ 的不同版本里，板子自带的"基础电路"是否包含音频部件，情况可能不一样。</p>
+<p style="margin:0" class="kv"><b>第 1 周的行动步骤：</b><br>
+<b>①</b> 在 Jupyter 里看看有没有 <code>/base/</code> 这个目录，翻一翻里面有没有跟 audio 相关的示例 Notebook。<br>
+<b>②</b> 试一下 <code>base.audio</code> 这个写法能不能用（在第 4.5 节那个 notebook 里接着写一格）。<br>
+<b>③</b> 到 PYNQ 官方文档里找 <b>PYNQ-Z2 Base Overlay</b> 那一页，它明确列出了这个基础电路包含哪些部件。<br>
+<b>④</b> 如果发现有音频部件 → 直接用它录音，半天就能验证完。<br>
+<b>⑤</b> 如果没有 → <b>不要慌，这反而可能是好事</b>：因为你们无论如何都要自己写一个音频采集的电路（这是负责"通路"那位成员第 2 周的任务），只是把这个任务提前了一周。<br>
+<b>把这一步的结论写在你们的工作日志里，它会成为报告里"软硬件划分依据"的第一手材料。</b></p>
+</div>
+
+<h3>5.3 验证步骤与判定标准</h3>
+<p>无论走哪条路，验证的目标就三个，<b>每一条都要能用"看得到的证据"回答</b>：</p>
+<table>
+<thead><tr><th style="width:170px">要验证什么</th><th>怎么验证</th><th style="width:120px">合格的标志</th></tr></thead>
+<tbody>
+<tr><td><b>麦克风能采到声音</b></td><td>录 5 秒，对着麦克风说话或拍手</td><td>存下来的文件里有明显的声音起伏</td></tr>
+<tr><td><b>扬声器能放出声音</b></td><td>播放刚才录的那段</td><td>能听见你说的话或拍手声</td></tr>
+<tr><td><b>能构成一个回路</b></td><td>把麦克风靠近扬声器，把音量开大</td><td><b>能听到啸叫</b> ← 这一步最关键</td></tr>
+</tbody>
+</table>
+<div class="callout c-red">
+<p style="margin:0" class="kv"><b>第三条"能听到啸叫"是整个项目启动的标志。</b>听起来很反直觉——我们做的产品就是防啸叫的，为什么要把"能啸叫"当成功？<br>
+因为：<b>如果系统根本啸叫不起来，你就没有"问题"可以解决。</b>后面所有指标（MSG、ASG）都是围绕"啸叫临界点"定义的。所以第一步必须先能造出啸叫。<br>
+具体做法：把麦克风对着扬声器，慢慢把增益（音量）往上推，直到"吱——"一声出来。<b>把这个临界点的音量记下来——这就是你们的 MSG 基线数字。</b></p>
+</div>
+
+<h3>5.4 没听见声音怎么办</h3>
+<p>按这个顺序排查，<b>一次只改一个变量</b>：</p>
+<ol>
+<li><b>线插对了吗？</b>重新插一次，插到底。换一个转接头试。</li>
+<li><b>是不是三段式插头？</b>换四段式的试（回到第 2.2 节）。</li>
+<li><b>音量是 0 吗？</b>Linux 下可以用 <code>alsamixer</code> 命令调音量，看看是不是被静音了。</li>
+<li><b>麦克风和扬声器是同一个设备吗？</b>确认你插的是板子上的音频口，不是电脑上的。</li>
+<li><b>换个扬声器/麦克风试。</b>先排除是外设坏了还是板子坏了。</li>
+<li>以上都不行，就是路径 A 那边电路还没搭好——去推负责通路的成员。</li>
+</ol>
+</section>
+
+<section>
+<h2>第 6 章　理解我们的核心算法</h2>
+<p class="kv">这一章是整个项目的"灵魂"。看懂这一章，你在答辩时就能回答评委最可能问的那几个问题。</p>
+
+<h3>6.1 我们从不知道"回声长什么样"开始</h3>
+<p>回到 1.1 节的比方：你要减掉房间的回音，但你<b>不知道</b>这个房间的回音具体是什么样的——每个房间、每次话筒和音箱的位置都不一样，你不可能提前量好。</p>
+<p>所以只能"猜"。而且得猜得越来越准。</p>
+
+<h3>6.2 自适应滤波器 = 一个不断试错的模仿器</h3>
+<div class="term">
+<div class="n">滤波器</div>
+<div class="p">一个能"改造声音"的数学工具。给它输入一段声音，它输出另一段。比如你可以做一个滤波器，让它把低音变弱、或者让声音有回音。</div>
+</div>
+<div class="term">
+<div class="n">自适应滤波器</div>
+<div class="p">一个"会自己调整自己"的滤波器。它不需要你告诉它该怎么做，它靠"每次做错了多少"来自己改。<b>术语里的"自适应"就是这个意思。</b></div>
+</div>
+<p>它工作的循环是这样：</p>
+<div class="step"><div class="num">1</div><div class="bd"><b>猜。</b>用当前的滤波器，把"音箱放出去的声音"处理一遍，得到一个"猜测的回声"。</div></div>
+<div class="step"><div class="num">2</div><div class="bd"><b>减。</b>把话筒收到的信号，减去这个"猜测的回声"。</div></div>
+<div class="step"><div class="num">3</div><div class="bd"><b>看剩了多少。</b>剩下的部分越小，说明猜得越准。<b>这个"剩下的部分"，术语叫误差（符号通常写作 e）。</b></div></div>
+<div class="step"><div class="num">4</div><div class="bd"><b>改。</b>根据"剩了多少"和"当时音箱在放什么"，微调滤波器的参数，让它下次猜得更准一点。<b>术语：系数更新。</b></div></div>
+<p>这四步<b>每秒钟重复几万次</b>（我们的采样率是 48000，也就是每秒 48000 次），很快它就猜得很准了。</p>
+<div class="callout c-teal">
+<p style="margin:0"><b>一个好用的比喻：</b>像一个蒙着眼睛的人在房间里学走直线。他每次走偏了、碰到墙，就记住"这个方向要偏一点"。走几百次之后他就能走直了。<br>
+<b>他不需要事先知道房间长什么样，他是靠"撞墙的反馈"学会的。</b>这就是"自适应"。</p>
+</div>
+
+<h3>6.3 最难的问题：分不清"自己说的话"和"回声"</h3>
+<p>现在讲这个领域最本质的困难，也是你们作品的创新点所在。<b>请慢读这一节。</b></p>
+<p>话筒收到的信号，其实是两样东西混在一起的：</p>
+<ul>
+<li><b>① 外面真的有人在说话</b>（这是我们想保留的）</li>
+<li><b>② 音箱漏回来的声音</b>（这是我们想减掉的）</li>
+</ul>
+<p>问题出在哪？<b>那个"漏回来的声音"，本来就是"外面人说的话"被放大后放出来的。</b>所以这两样东西<b>长得非常像</b>——它们的节奏、频率、波形都差不多。</p>
+<p>滤波器看到一个信号，又看到一个长得很像的信号，它就懵了：<b>我正在减掉的这个，到底是"回声"，还是"外面那个人本来就在说的话"？</b></p>
+<div class="callout c-red">
+<p style="margin:0 0 8px"><b>猜错的后果很严重。</b>如果它把"外面人说的话"也当成回声减掉了，那对方的声音就会变得闷、怪、像是从很远的地方传来——用户会觉得"这东西把声音弄坏了"。</p>
+<p style="margin:0" class="kv"><b>而现实中，行业里对这类产品的头号抱怨恰恰就是这个：</b>抑制器在正常讲话时也乱触发，把 2000–4000 赫兹这一段切掉了——而这一段恰恰是人说话"清晰度"最关键的部分，结果声音就发闷。<br>
+<b>所以你们的第二个创新点，就是把这个"模糊的抱怨"变成一个能测量的数字。</b>具体怎么测，见 6.5 节。</p>
+</div>
+
+<h3>6.4 我们的对策之一：往里面掺一点"记号"</h3>
+<p>既然问题在于"两个东西长得太像分不出来"，那最直接的思路就是：<b>给其中一个做个记号。</b></p>
+<p>怎么记？在音箱输出的信号里，<b>悄悄地掺一点点人耳听不见的、很低很低的噪声</b>。这个噪声是我们自己生成的，所以算法"认识"它——</p>
+<ul>
+<li>在话筒收到的信号里，<b>凡是带着这个记号的部分，就是音箱漏回来的</b>（因为那个记号只有我们发出去过）</li>
+<li><b>没带记号的部分，就是外面人真的在说的话</b></li>
+</ul>
+<p>这样滤波器就不会认错人了。</p>
+<div class="callout c-teal">
+<p style="margin:0"><b>比喻：</b>一群长得一模一样的人里，你要抓其中一个。给他戴一顶小帽子，你就能一眼认出他了。<br>
+<b>术语：</b>这个做法叫<b>探测噪声注入</b>；它属于一大类叫<b>去相关</b>的技术——目的都是让"回声"和"说话声"变得不一样，好让算法能分辨。</p>
+</div>
+
+<h3>6.5 我们的三个模式在干什么（创新点 1）</h3>
+<p>前面说过，现实情况会变：有人走动、把话筒挪了位置、换了个房间。这些都会让"回声的样子"突然改变。所以我们的系统要能在几种"心态"之间切换：</p>
+<table>
+<thead><tr><th style="width:110px">模式</th><th style="width:130px">什么时候进入</th><th>在干什么</th></tr></thead>
+<tbody>
+<tr><td><b>稳态模式</b></td><td>一切正常，回路没变</td>
+<td>慢慢地、小步地微调，"宁可慢也要稳"。这样调出来的结果最准，也不会因为调整太猛而把系统搞乱。</td></tr>
+<tr><td><b>突变模式</b></td><td>检测到回路条件突然变了</td>
+<td>换成一"大步"，快速重新学会新的回路。<b>要快</b>，因为这段时间系统是"没保护"状态的，啸叫可能趁虚而入。</td></tr>
+<tr><td><b>冻结模式</b></td><td>检测到持续音（比如长笛、弦乐）</td>
+<td><b>暂停调整。</b>理由是：持续音和啸叫在短时间内长得很像（都是"一个频率上一直响"）。既然分不清，那<b>宁可不动</b>，也不能误伤音乐。</td></tr>
+</tbody>
+</table>
+<p><b>为什么这件事值得做成一个创新点？</b>因为在普通电脑上做这个切换，切换本身要花时间，而<b>这个时间会加进"绕一圈"的总延迟里</b>（回到 1.3 节）——加的延迟又会让系统更不稳定，形成恶性循环。<br>
+而在 FPGA 上，我们能让电路的处理延迟<b>恒定不变</b>，切换模式不影响它。<b>这就是"必须用 FPGA"的直接论据。</b></p>
+
+<h3>6.6 第二个创新点：把"误切"变成数字</h3>
+<p>行业里大家只说"抑制器有时会误触发把声音弄闷"，但<b>没人给一个明确的量化口径</b>。你们可以定义并实测一个指标：</p>
+<div class="term">
+<div class="n">误切率（我们自己定义的指标）</div>
+<div class="p"><b>怎么测：</b>准备两批素材——① 一批"持续音"（长笛独奏、弦乐长音、管风琴和弦，各 3 段 30 秒）；② 一批"真实啸叫"录音。<br>
+分别让系统处理，统计：<b>本该安静的（真实啸叫）被放过了几次？本该放过的（音乐）被当成啸叫处理了几次？</b><br>
+<b>为什么有价值：</b>把一个模糊的抱怨变成了可以和别家方案对比的数字。这是可以做进报告、做进论文的贡献。</div>
+</div>
+
+<h3>6.7 第三个创新点：那条最有说服力的曲线</h3>
+<p>回到 1.3 节的结论——"延迟越低，能开的音量越高"。这句话听起来很有道理，但<b>到底低多少、能高多少？</b></p>
+<p>你们可以这样测：在电路里故意插入不同大小的延迟（0、10、20、40、80 个采样点），每一个延迟值下都测一遍 MSG，然后画一张图：</p>
+<ul>
+<li>横轴：插入的延迟</li>
+<li>纵轴：能稳定工作的音量上限（MSG）</li>
+</ul>
+<p><b>如果这条曲线是明显往下的，你们就用实验数据证明了"低延迟"的价值。</b>这是整个作品里最有说服力的一张图——它把一个抽象的形容词变成了一条可测量的因果关系。</p>
+<div class="callout c-blue">
+<p style="margin:0" class="kv">这也是为什么蓝图里专门加了一个 <code>artificial_delay</code> 模块——它不干别的，就是为了让你们能做这个实验。<b>这个小设计本身也能说明你们"知道怎么设计实验来验证自己的主张"。</b></p>
+</div>
+</section>
+
+<section>
+<h2>第 7 章　开发工作流：从想法到硬件</h2>
+<p class="kv">这一章讲的是你们接下来 6 周要反复走的流程。回到本文开头那张图。</p>
+
+<h3>7.1 为什么必须先写 Python</h3>
+<p>新手最容易犯的错误是：<b>一上来就用硬件描述语言写电路。</b>结果一个符号敲错，电路行为完全不对，而且硬件调试极慢——每次改一点都要重新编译几十分钟，还看不到中间过程。</p>
+<p>正确顺序是：<b>先用 Python 写</b>。因为 Python 里你能直接打印每一个数字、画图、单步调试。<b>先把"算法本身对不对"确认下来，再考虑"怎么变成电路"。</b></p>
+<div class="term">
+<div class="n">黄金参考（Golden Reference）</div>
+<div class="p">用 Python 写的那版算法。<b>它被认为是"绝对正确"的标准答案。</b>后面硬件做出来后，就用它的输出作为标准来对照。术语也叫"参考模型"。</div>
+</div>
+
+<h3>7.2 测试向量是什么</h3>
+<p>要让硬件和 Python 对比，你得给它们<b>喂同一批输入</b>，然后看输出是否一致。</p>
+<p>所以 Python 那边除了算结果，还要把<b>输入数据的每一个采样点</b>导成一个文件（通常是文本格式，一行一个数字），这个文件就叫<b>测试向量</b>。硬件仿真的时候读这个文件，逐点算，输出另一个文件，两边一比对就知道对不对。</p>
+
+<h3>7.3 什么是"逐采样点比对"</h3>
+<p>这是本项目最重要的验证手段。<b>不要用"听起来差不多"来判断对错。</b></p>
+<p>原因：硬件里数字的表示方式（术语：<b>定点数</b>）和 Python 里（<b>浮点数</b>）不一样。硬件为了省资源，把小数用"整数 + 约定的小数点位置"来表示，这会让每次计算都有一点点误差。单个误差很小，但<b>自适应滤波器的误差会累积</b>——因为它每一轮都在用上一轮的结果调整自己。误差滚起来，系统就发散了。</p>
+<p>所以必须<b>把两边的输出一个一个数字对上</b>，看偏差有多大、从第几个采样点开始偏离。这个工作很枯燥，但<b>它是唯一能提前发现"定点不够用"的方法。</b></p>
+
+<h3>7.4 Verilog 和 HLS 是什么，我们选哪个</h3>
+<div class="term">
+<div class="n">硬件描述语言（HDL）</div>
+<div class="p">用来描述"电路长什么样"的专门语言。最常用的是 <b>Verilog</b>。它写出来的东西看起来像代码，但<b>它描述的不是"执行步骤"，而是"电路连接"</b>。这是新手最不适应的地方。</div>
+</div>
+<div class="term">
+<div class="n">HLS（高层次综合）</div>
+<div class="p">一种"用 C++ 写算法，工具帮你自动变成电路"的技术。门槛比 Verilog 低，但<b>生成的电路往往不如手写的省资源、快</b>，而且出问题时不好调。</div>
+</div>
+<table>
+<thead><tr><th style="width:130px"></th><th>Verilog</th><th>HLS</th></tr></thead>
+<tbody>
+<tr><td>上手难度</td><td>高（要理解"并行"的思维）</td><td>低（会写 C++ 就行）</td></tr>
+<tr><td>资源效率</td><td>好（你可以精确控制）</td><td>一般</td></tr>
+<tr><td>调试</td><td>信号可追踪</td><td>出问题较难定位</td></tr>
+<tr><td><b>我们的建议</b></td><td colspan="2"><b>核心的滤波部分用 Verilog 手写</b>（因为它结构非常规整，就是"一堆乘法加法"，手写不难而且省资源）；<b>如果时间不够或某个模块逻辑复杂，用 HLS 兜底。</b>两种混用是允许的。</td></tr>
+</tbody>
+</table>
+
+<h3>7.5 完整的五步流程</h3>
+<table>
+<thead><tr><th style="width:32px">步</th><th style="width:170px">做什么</th><th>产出什么</th><th style="width:120px">谁负责</th></tr></thead>
+<tbody>
+<tr><td><b>①</b></td><td>用 Python 写算法</td><td>黄金参考脚本 + 一堆能画出来的图</td><td>算法成员</td></tr>
+<tr><td><b>②</b></td><td>生成测试向量</td><td>录音文件 + 对应的输入/输出数据文件</td><td>算法成员 + 测量成员</td></tr>
+<tr><td><b>③</b></td><td>写成硬件</td><td>Verilog / HLS 源码</td><td>算法成员 + 通路成员</td></tr>
+<tr><td><b>④</b></td><td>仿真逐点比对</td><td>误差曲线 + 比对报告</td><td>算法成员</td></tr>
+<tr><td><b>⑤</b></td><td>上板实测</td><td>实测数据、示波器截图、演示视频</td><td>全员</td></tr>
+</tbody>
+</table>
+<div class="callout c-amber">
+<p style="margin:0" class="kv"><b>第 ④ 步是分水岭。</b>很多队伍在这里偷懒——"仿真波形看着差不多就上板吧"。结果上板之后出现莫名其妙的问题，回头查的时候已经分不清是算法错、定点错、还是接口错。<b>请务必做完整。</b>它是你们报告里"功能正确性是如何确认的"这一节的核心内容。</p>
+</div>
+</section>
+
+<section>
+<h2>第 8 章　实验台：那个"密闭盒子"是怎么回事</h2>
+
+<h3>8.1 为什么不能直接在房间里测</h3>
+<p>因为在房间里测，<b>结果不可重复</b>。今天有人在走廊说话，明天空调开了，测出来的数据就不一样了。</p>
+<p>而你们要交的东西里，<b>所有数字都必须能被别人重复出来</b>（这是评分表里 15 分的"可复现性"）。所以定量实验必须在一个<b>可控</b>的环境里做。</p>
+
+<h3>8.2 密闭声学耦合腔：一个盒子里的小世界</h3>
+<div class="term">
+<div class="n">耦合腔（Coupling Cavity）</div>
+<div class="p">一个小盒子，里面同时装一只小扬声器和一只麦克风。扬声器放出的声音在这个封闭空间里来回反射，会强烈地回到麦克风那里——<b>人为制造出一个"很容易啸叫"的环境</b>。</div>
+</div>
+<p>为什么要做成盒子，而不是把麦克风直接怼到扬声器上？三个好处：</p>
+<ol>
+<li><b>可重复。</b>盒子封起来以后，外面的声音进不来，里面的结构每次都一样。同样的操作永远得到同样的结果。</li>
+<li><b>可调节。</b>盒子上开一个孔（叫"泄漏孔"），孔的直径可以换。<b>孔越大，漏出去的声音越多，反馈就越弱。</b>这样你们就能用三种不同大小的孔，制造三种不同的"困难程度"，一一测过去。</li>
+<li><b>它本身就是助听器的模型。</b>助听器就是把麦克风和受话器塞在一个几厘米的小腔体里——<b>你们这个盒子在物理上就是助听器面对的那个场景。</b>这一条在答辩时非常好用。</li>
+</ol>
+
+<h3>8.3 制作步骤</h3>
+<div class="step"><div class="num">1</div><div class="bd">买一个约 150×100×80mm 的透明亚克力盒（或小木盒）。<b>透明的好，因为评委能看进去。</b></div></div>
+<div class="step"><div class="num">2</div><div class="bd">在盒子内壁贴一层薄吸音棉。<b>不要贴满</b>，留一部分反射面，否则反馈太弱、啸叫不起来。</div></div>
+<div class="step"><div class="num">3</div><div class="bd">在内壁固定扬声器和麦克风。<b>先不要粘死</b>，用双面胶或魔术贴，方便调整距离和角度。</div></div>
+<div class="step"><div class="num">4</div><div class="bd">在盒子一侧钻一个孔，直径先做 6mm。另外准备 3mm 和 10mm 的替换片（可以用胶带临时封住再开不同大小的孔）。</div></div>
+<div class="step"><div class="num">5</div><div class="bd">把线引出来，接到板子上。孔引线的地方用胶封住，避免漏声。</div></div>
+<div class="step"><div class="num">6</div><div class="bd"><b>验证：</b>把音量慢慢推上去，看能不能啸叫。能叫 → 成功；不叫 → 把麦克风和扬声器靠近一点，或者换个更大的孔。</div></div>
+
+<h3>8.4 还要搭一个"开放空间台"</h3>
+<p>除了盒子，再用一个小扬声器 + 一个麦克风在桌面上摆一个简单的开放场景。<b>盒子用于出数据，开放台用于拍演示视频。</b></p>
+<p>为什么分两个？因为<b>盒子里发生的事，观众看不见也不知道在干什么</b>。但开放空间里"麦克风一靠近音箱就尖叫，装了这个系统就不叫了"——这个画面谁都能看懂。</p>
+</section>
+
+<section>
+<h2>第 9 章　三个人各需要懂到什么程度</h2>
+<p class="kv">不需要每个人都懂全部。下面按你们的三个角色列"最小必须知识"。<b>共同部分三个人都要懂。</b></p>
+
+<h3>共同必须（三个人都要）</h3>
+<ul>
+<li>第 1 章全部内容（<b>特别是 1.3 节"延迟为什么是命门"</b>——这是答辩必问的）</li>
+<li>第 4 章（板子怎么点亮、Jupyter 怎么用）</li>
+<li>第 5 章（怎么确认音频能用）</li>
+<li>第 6 章（核心算法在干什么）</li>
+<li>能说清楚：<b>我们为什么必须用 FPGA，不能用普通电脑。</b></li>
+</ul>
+
+<h3>通路成员（A）额外需要</h3>
+<ul>
+<li>第 3 章全部（Vivado 装好、会用）</li>
+<li>懂 <b>I2S 是什么</b>：一种传输数字音频的接口协议，用三根线传"时钟、左右声道标记、数据"。你们要自己写电路去收发它。</li>
+<li>懂 <b>AXI 接口</b>：PS 和 PL 之间的"传送带"。至少要会照着模板改，知道 AXI-Lite 用来传命令和状态。</li>
+<li>懂 <b>overlay 打包流程</b>：怎么从 Vivado 工程生成 <code>.bit</code> 和 <code>.hwh</code> 两个文件。</li>
+<li>会用 <b>ILA</b>：一个"电路里的示波器"，可以把电路内部的信号波形抓出来看。<b>这是硬件调试最重要的工具。</b></li>
+<li>会做<b>电学环回延迟测量</b>：把输出直接接回输入，测一个信号从进到出要多久。这是我们第一个硬指标。</li>
+</ul>
+
+<h3>算法成员（B）额外需要</h3>
+<ul>
+<li><b>NumPy / SciPy</b>：Python 里做数组运算和信号处理的库。黄金参考全靠它。</li>
+<li>懂 <b>FIR 滤波器</b>：一种"只由当前和过去若干输入决定输出"的滤波器。它的特点是没有反馈、绝对稳定，所以适合做我们的"反馈路径模型"。</li>
+<li>懂 <b>NLMS 算法</b>：自适应滤波器最常用的一种更新规则。核心思想就一句话——<b>"按这次误差的大小，按比例微调系数；输入信号越强，调整幅度越小"</b>（这个"除以信号强度"就是名字里 N 的来源，N = Normalized，归一化）。</li>
+<li>懂 <b>定点数</b>：硬件里怎么表示小数、怎么选字长、为什么要防溢出。</li>
+<li>懂 <b>FFT</b>：把信号从"随时间变化"变成"各个频率有多强"。用来检测啸叫。不用手写，用现成的 IP 核。</li>
+<li>会写 <b>testbench</b>：Verilog 的"测试程序"，读入测试向量、跑电路、把结果写出来。</li>
+</ul>
+
+<h3>测量与交付成员（C）额外需要</h3>
+<ul>
+<li>会用<b>示波器</b>（或者会用"录音 + 互相关"的替代方法测延迟）。</li>
+<li>会写<b>自动化测试脚本</b>：让"提音量 → 听有没有啸叫 → 记录临界值"这个过程自动跑 10 遍。</li>
+<li>懂<b>怎么把数据整理成表格</b>：每一行一项指标，写清测量条件、测试次数、证据文件在哪。<b>这是评分表明确要求的格式。</b></li>
+<li>会做<b>演示视频</b>：脚本、拍摄、剪辑、字幕。</li>
+<li>懂<b>怎么把踩过的坑写成别人能用的文档</b>：这是技能包的核心要求。</li>
+<li>负责<b>统稿和一致性</b>：报告里所有数字必须和指标表一致，术语写法要统一。</li>
+</ul>
+</section>
+
+<section>
+<h2>第 10 章　术语速查表</h2>
+<p class="kv">左边是大白话，右边是术语。跟人交流、写报告时用右边的说法；自己理解时用左边的。</p>
+<table>
+<thead><tr><th style="width:44%">大白话</th><th>术语 / 英文</th></tr></thead>
+<tbody>
+<tr><td>那块"电路可以事后重新搭"的芯片</td><td>FPGA（现场可编程门阵列）</td></tr>
+<tr><td>板子上跑 Linux 的那个"经理"CPU</td><td>PS（Processing System）</td></tr>
+<tr><td>板子上那片可以自己搭电路的"空地"</td><td>PL（Programmable Logic）</td></tr>
+<tr><td>把设计好的电路接到板子上</td><td>加载 Overlay</td></tr>
+<tr><td>描述电路长什么样的语言</td><td>Verilog / 硬件描述语言（HDL）</td></tr>
+<tr><td>用 C++ 写算法、工具自动变成电路</td><td>HLS（高层次综合）</td></tr>
+<tr><td>声音转圈、越滚越大的尖叫</td><td>啸叫 / 声反馈 / 自激振荡</td></tr>
+<tr><td>系统"刚好要失控"时的音量上限</td><td>MSG（最大稳定增益）</td></tr>
+<tr><td>我们的技术能把这个上限提高多少 dB</td><td>ASG（附加稳定增益）</td></tr>
+<tr><td>一个会自己学着改进的滤波器</td><td>自适应滤波器（Adaptive Filter）</td></tr>
+<tr><td>"猜的回声"减完之后剩下的那部分</td><td>误差信号 e(n)</td></tr>
+<tr><td>根据误差微调滤波器参数</td><td>系数更新</td></tr>
+<tr><td>一种更新规则：误差大就多改，输入强就少改</td><td>NLMS（归一化最小均方）</td></tr>
+<tr><td>一种没有反馈、绝对稳定的滤波器</td><td>FIR 滤波器</td></tr>
+<tr><td>分不清"回声"和"人声"导致估歪了</td><td>有偏估计</td></tr>
+<tr><td>往信号里掺一点人耳听不见的噪声当记号</td><td>探测噪声注入</td></tr>
+<tr><td>让"回声"和"人声"变得不一样的各种办法</td><td>去相关（Decorrelation）</td></tr>
+<tr><td>硬件里怎么表示小数</td><td>定点数 / Q 格式</td></tr>
+<tr><td>把信号拆成"各频率有多强"</td><td>FFT（快速傅里叶变换）</td></tr>
+<tr><td>电路里的示波器，能抓内部波形</td><td>ILA（集成逻辑分析仪）</td></tr>
+<tr><td>传输数字音频的三根线协议</td><td>I2S</td></tr>
+<tr><td>PS 和 PL 之间的"传送带"</td><td>AXI 总线（AXI-Lite / AXI-Stream）</td></tr>
+<tr><td>用 Python 写的那版"标准答案"算法</td><td>黄金参考（Golden Reference）</td></tr>
+<tr><td>喂给硬件的输入数据文件</td><td>测试向量（Test Vector）</td></tr>
+<tr><td>Verilog 的"测试程序"</td><td>Testbench</td></tr>
+<tr><td>把两次测量之间的偏差算出来</td><td>互相关（测延迟用）</td></tr>
+<tr><td>处理所需时间是固定可预测的，不会偶尔变慢</td><td>确定性（Determinism）</td></tr>
+<tr><td>把代码放在网上的仓库里，别人能下载复现</td><td>开源（Open Source，用 MIT / Apache-2.0 许可）</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>第 11 章　常见错误排查手册</h2>
+<p class="kv">按"现象 → 先查什么 → 最可能的原因"组织。<b>排查铁律：一次只改一个变量，改完立刻验证。</b></p>
+
+<h4>板子起不来 / LED 不亮 / 反复重启</h4>
+<ol>
+<li>检查 BOOT 跳线是不是在 SD 那一侧</li>
+<li>检查 SD 卡插好了没有（拔出来重插一次）</li>
+<li>换 USB 线（有些线只能充电不能传数据）</li>
+<li>换 USB 口，或者接 7–15V 电源适配器</li>
+<li>用串口终端看启动日志，看卡在哪一行</li>
+<li>SD 卡重新烧一次（烧写失败很常见，重烧有很大概率解决）</li>
+</ol>
+
+<h4>浏览器打不开 Jupyter</h4>
+<ol>
+<li>先确认板子和电脑在同一个网络里（同一个路由器）</li>
+<li>在电脑上打开命令行，<code>ping</code> 一下板子的地址，看通不通</li>
+<li>确认端口号是 <code>9090</code>，不是 80 或者 8888</li>
+<li>如果是网线直连，检查电脑网卡是不是设成了 <code>192.168.2.1</code></li>
+<li>等 2 分钟——第一次启动比较慢</li>
+</ol>
+
+<h4>加载 overlay 报错</h4>
+<ol>
+<li>检查 <code>.bit</code> 和 <code>.hwh</code> 两个文件<b>必须同名</b>（除了后缀），而且放在同一目录</li>
+<li>检查 PYNQ 版本和 Vivado 版本的对应关系（回到第 3.3 节那个提醒）</li>
+<li>检查 Vivado 工程里是不是真的选对了器件（XC7Z020）</li>
+<li>把完整报错信息抄下来去搜——这类错误社区里都有人遇到过</li>
+</ol>
+
+<h4>录不到音 / 放不出声</h4>
+<ol>
+<li>换转接头（三段式 vs 四段式的坑，回到第 2.2 节）</li>
+<li>检查系统音量是不是 0 或者被静音（Linux 下用 <code>alsamixer</code>）</li>
+<li>换一个麦克风/扬声器，排除外设坏了</li>
+<li>确认走的是哪条路径（PL 还是 Linux），别在一条路上查另一条路的问题</li>
+</ol>
+
+<h4>仿真结果和 Python 对不上</h4>
+<ol>
+<li><b>先看是"一开始就不对"还是"跑一会儿才不对"</b>——这个区别能定位一半的问题。<br>一开始就不对 → 大概率是数据格式、符号、位宽搞错了。<br>跑一会儿才不对 → 大概率是定点精度不够，误差累积了。</li>
+<li>检查测试向量文件里的数值格式（有没有小数点、有没有超出范围）</li>
+<li>检查定点定标：是不是把小数的位置搞错了（差一个 2 的幂次）</li>
+<li>把两边前 20 个数字手工打印出来对照，比看波形图直观得多</li>
+</ol>
+
+<h4>闭环跑起来就发散（声音越来越怪 / 尖啸不停）</h4>
+<ol>
+<li><b>先把步长调小</b>（也就是让它"学得慢一点"）。<b>这是最有效的一招。</b></li>
+<li>把滤波器长度缩短（先从 128 试起）</li>
+<li>加大"系数泄漏"（一个防止系数乱飘的保险丝）</li>
+<li>检查信号有没有溢出（定点加法超出范围会绕回去变成反向的大数，现象是剧烈震荡）</li>
+<li>先不要接真实的麦克风音箱，<b>用"电学环回"</b>（输出直接接回输入）调试，排除掉声学环境的干扰因素</li>
+<li>如果一直不收敛，<b>立刻切换到降级方案</b>（蓝图里风险 R1 写了）：只做"固定回路 + 冻结更新"的最小版本，先保住功能正确性那 20 分</li>
+</ol>
+
+<h4>三人互相等着对方</h4>
+<div class="callout c-amber">
+<p style="margin:0" class="kv">这是最常见的"非技术故障"，而且杀伤力比技术问题更大。判断信号：<b>连续两天没人提交新东西，都在等别人。</b><br>
+<b>对策：</b>① 每周一次的 30 分钟接口对齐会不能省；② 每项任务都要有"我能独立交付的东西"，如果发现某项任务必须等别人，就把它拆开；③ 一旦有人卡住，<b>当天就说出来</b>，不要让"我以为他快好了"拖过三天。</p>
+</div>
+</section>
+
+<section>
+<h2>第 12 章　每周该看哪几章</h2>
+<table>
+<thead><tr><th style="width:110px">时间</th><th style="width:170px">当周重点</th><th>建议重读</th></tr></thead>
+<tbody>
+<tr><td><b>第 1 周</b><br>9/24–9/30</td><td>环境、下单、板子点亮、音频验证</td><td>第 2 章、第 3 章、第 4 章、<b>第 5 章（重点）</b></td></tr>
+<tr><td><b>第 2 周</b><br>10/1–10/7</td><td>通路打通、黄金参考、测 MSG 基线</td><td>第 1.3 节（再读一遍）、第 7 章、第 8 章</td></tr>
+<tr><td><b>第 3 周</b><br>10/8–10/14</td><td>写硬件、仿真逐点比对</td><td><b>第 6 章、第 7.3 节（重点）</b>、第 9 章对应角色部分</td></tr>
+<tr><td><b>第 4 周</b><br>10/15–10/21</td><td>闭环联调（只做这一件事）</td><td>第 11 章"闭环发散"那节、第 8.3 节</td></tr>
+<tr><td><b>第 5 周</b><br>10/22–10/28</td><td>指标实测、拍素材</td><td>第 6.6、6.7 节、第 9 章（C 部分）</td></tr>
+<tr><td><b>第 6 周</b><br>10/29–11/4</td><td>交付：报告、视频、技能包、开源</td><td>第 10 章（统一术语写法）、第 11 章最后一节</td></tr>
+<tr><td><b>11/5–11/19</b></td><td>决赛准备</td><td><b>第 1 章 + 第 6 章（答辩必问）</b>、第 9 章</td></tr>
+</tbody>
+</table>
+
+<div class="callout c-green">
+<p style="margin:0 0 8px"><b>最后三个提醒</b></p>
+<ol style="margin:0" class="kv">
+<li><b>第 1 周那两个闸口（能拉到啸叫 / 板子能听声音）不要在时间充裕的时候跳过。</b>它们是整个项目的地基。</li>
+<li><b>遇到任何卡住超过半天的问题，立刻问人。</b>问队友、问老师、去 AMD 中文社区论坛发帖。前期的每个坑都有人踩过，不要自己硬扛。</li>
+<li><b>从第 3 周开始，每周花 30 分钟整理一下"这周踩了什么坑、怎么解决的"。</b>这些记录会变成技能包和报告里最有价值的部分——因为它是真实的、别人抄不走的。留到最后一周再回忆，一定写不全。</li>
+</ol>
+</div>
+</section>
+
+<p class="src" style="margin-top:28px;padding-top:16px;border-top:1px solid var(--line)">
+<b>关于本教程的几点说明：</b>① 文中标注"要先验证"的地方，是我在编写时无法确定、必须由你们在板子上实测确认的事项——它们的共同特点是<b>越早验证越好</b>，所以都排在了第 1 周。② Vivado 与 PYNQ 的具体版本、下载路径与安装界面可能随官方更新而变化，请以 AMD / PYNQ 官方文档为准。③ 第 10 章的术语对译是为了帮助理解，正式写报告时请使用规范的术语表述。④ 本教程配合《项目蓝图与三人分工》使用，两者的章节划分与任务节点是一致的。
+</p>
+
+</div>
+</body>
+</html>
