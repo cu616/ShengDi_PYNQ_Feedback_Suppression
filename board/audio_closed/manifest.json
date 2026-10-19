@@ -1,0 +1,24 @@
+{
+  "overlay": "audio_closed",
+  "frames": 16384,
+  "taps": 256,
+  "rate_hz": 48828.125,
+  "hardware_executed": false,
+  "hashes": {
+    "src/rtl/audio_pl_closed.v": "891766fa26390845aa8612b3add1931b07e797fcf46b1d45bea8209826ab0852",
+    "src/rtl/feedback_fir.v": "9fc3416122ce527ddd3feef5c7232d082fc789df56480a63e3243b103608db3f",
+    "src/vendor/pynq_v2_4/iis_ser.vhd": "0ca9f3da00c5c411cbabb8b32792444366178227c7a5d0005ed26665156268d8",
+    "src/vendor/pynq_v2_4/iis_deser.vhd": "af72dd1856a870e63b4e8cd5c69ea2ceeedae35fb788d9029db568711e533b12",
+    "build/scripts/create_audio_closed.tcl": "5de03a75eff725209c9893bdb7e4f402f069dda5c22b322c7b3fb80bd189034e",
+    "build/scripts/audio_bringup.xdc": "8bf3462f32fe240b8da8d397468026db1ed330c43f49747c648869b7c67eaa67",
+    "build/scripts/test_audio_closed.tcl": "74a982fe06c0e4aa8e7d648bc446944567d9ad5da09ee844b05da4be98a34d56",
+    "sim/audio/tb_audio_closed.v": "a2ba969725d97b56d3e1a26decde05e53394723c7001e222faa9255c77623ae2",
+    "board/audio_closed/closed_trial.py": "49526ab66b2fd224d96d0935e3bd589bea8207a74918e7dc904184b05ba15f67",
+    "board/audio_closed/residual_tools.py": "045f6fd1cfe5bb35f46b5625bab4ce1d85f5bb27e055d977a8a8021c58aa9e72",
+    "board/audio_closed/closed_tools.py": "7643726b465cb672fefbd179354e03d184d70572039e205d94370beb43b1616e",
+    "board/audio_closed/closed_batch.py": "26514ef1d5f29cb42a95a441f7a06b68079e410e95f3356fc5a9e971fdf2255b",
+    "board/audio_closed/audio_closed.bit": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+    "board/audio_closed/audio_closed.hwh": "328a1c608192328434dcd6b5be0c0e1d6e8b1c483bfc92a1b243129a997cf010"
+  },
+  "note": "Local build only. Inspect timing/DRC evidence; missing I/O constraints remain."
+}

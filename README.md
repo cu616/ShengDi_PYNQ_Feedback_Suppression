@@ -4,15 +4,21 @@ ShengDi_PYNQ_Feedback_Suppression 是基于 PYNQ-Z2 的声反馈抑制项目，�
 
 ## 当前状态
 
+**当前重点：基础闭环验收已经完成，下一交付必须推进实际抗啸叫效果对照。** 零模型和真实模型两模式的低增益板上数字核对通过，但尚未获得正常可听扩声条件下的稳定增益改善证据。停止重复基础试验；先分析已有标定数据以选择有效实验范围，再组织完整现场对照。静默范围分析尚未执行，八项固定增益批次也尚无返回结果，不应默认继续原计划。
+
+**接手AI必读：[重要提醒：实际进度与现场效率](docs/IMPORTANT-ai-progress.md)。** 用户要求禁止用琐碎、低信息量探索代替核心推进；现场实验集中准备、统一汇总，避免反复消耗用户时间。当前证据见 [项目进度](docs/progress.md)。
+
 截至2026-10-19，256抽头Q20反馈预测与残差核已接入PYNQ-Z2音频工程。首次板上开环采集16384帧，预测和残差均与整数参考逐样本一致，无饱和，预测误差降低6.92 dB。证据为用户返回的metadata及短噪声听感，详见 [板上实测记录](report/verification/audio_residual/board-result-2026-10-19.md)。
 
-本地已完成25项软件测试、RTL集成仿真和整板构建；[上板包](board/audio_residual/README.md)与[验证报告](report/verification/audio_residual/README.md)对应。**闭环稳定增益ASG、完整音质和端到端延迟仍未验证**；6.92 dB不是扩声音量增益。
+此前开环版本本地已完成25项软件测试、RTL集成仿真和整板构建；[上板包](board/audio_residual/README.md)与[验证报告](report/verification/audio_residual/README.md)对应。**闭环稳定增益ASG、完整音质和端到端延迟仍未验证**；6.92 dB不是扩声音量增益。
 
 旧记录的128/256/512抽头离线比较为4.28/9.80/10.17 dB，首版选择256；新旧记录和评分窗口不同，不能直接认定性能退化。历史过程保留在 [项目进度](docs/progress.md)。
 
 新队员从 [10月19日交接](docs/handoff-2026-10-19.md) 和 [入门导航](docs/getting-started.md) 开始，再读 [证据索引](report/evidence-index.md)。源码、构建脚本、操作模板和结果摘要纳入本次同步；原始NPZ、板上候选模型及含实测输出的Notebook仍留在板卡，克隆仓库不能自动复现实物指标。
 
 ## 开发入口
+
+- [三人并行分工及AI提示词](docs/parallel-work/README.md)：A实物/板卡、B数据/算法、C测评/工具，含详细任务、文件边界与验收。
 
 - [工程入门导航](docs/getting-started.md)：新队员按顺序阅读的入口，每一步都有文件、关注点和理解检查。
 

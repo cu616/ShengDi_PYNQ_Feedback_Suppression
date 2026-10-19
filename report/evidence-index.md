@@ -4,6 +4,10 @@
 
 | 要核对的内容 | 入口 | 证据类型 |
 |---|---|---|
+| 闭环最小版本地实现 | [闭环验证](verification/audio_closed/README.md) | 线级仿真、31项软件测试、整板构建；未上板 |
+| 用户四项闭环复测 | [结果和来源](verification/audio_closed/board-basic-repeat.md) | 用户返回metadata与未听到尖叫的反馈；无ASG结论 |
+| 批次控制 | [批次验证](verification/audio_closed/batch-control.md) | 38项本地软件测试；新流程尚未上板 |
+| 推进要求与并行职责 | [重要提醒](../docs/IMPORTANT-ai-progress.md)、[三人分工](../docs/parallel-work/README.md) | 用户明确要求及可复制AI提示词 |
 | 当前结论与历史变化 | [progress](../docs/progress.md) | 按阶段记录，较新条目优先 |
 | 首次板上FIR残差 | [10月19日结果](verification/audio_residual/board-result-2026-10-19.md) | 用户返回metadata，逐样本一致、6.92 dB开环；非ASG |
 | 开环残差整板集成 | [集成验证](verification/audio_residual/README.md) | 仿真、25项软件测试摘要及整板报告 |
