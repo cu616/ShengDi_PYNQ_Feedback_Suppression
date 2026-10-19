@@ -1,0 +1,4 @@
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+I2S_PATH_PASS: 12 channel words, signed attenuation, serial mute; frames=12
+$finish called at time : 265455 ns : File "D:/OCadence_Project/Flushbonading_FPGA_Contest/sim/audio/tb_audio_i2s.v" Line 40

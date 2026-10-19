@@ -1,3 +1,5 @@
 # 设计源码
 
-待导入实际使用的 RTL、HLS、Python 算法源码；当前没有已完成的啸叫抑制实现。按需要建立子目录，并保留第三方来源与许可。
+`rtl/`保存自定义音频通路、诊断及开环标定模块；`vendor/pynq_v2_4/`保存厂商I2S收发及许可证；`feedback/`保存路径拟合与定点软件参考。当前尚无已完成的实时啸叫抵消模块。
+
+模块依赖和数据流见 [工作区系统框图](../docs/workspace-architecture.md)，逐文件阅读顺序见 [核心代码指南](../docs/core-code-reading-guide.md)。

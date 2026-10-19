@@ -1,0 +1,24 @@
+test_board_gain_and_fixture_must_match (test_calibration.CalibrationTests.test_board_gain_and_fixture_must_match) ... ok
+test_data_contract_failures (test_calibration.CalibrationTests.test_data_contract_failures) ... ok
+test_hand_calculated_causality (test_calibration.CalibrationTests.test_hand_calculated_causality) ... ok
+test_integer_rounding_and_saturation (test_calibration.CalibrationTests.test_integer_rounding_and_saturation) ... ok
+test_noise_and_changed_path (test_calibration.CalibrationTests.test_noise_and_changed_path) ... ok
+test_npz_and_model_round_trip (test_calibration.CalibrationTests.test_npz_and_model_round_trip) ... ok
+test_quantized_fir_against_float (test_calibration.CalibrationTests.test_quantized_fir_against_float) ... ok
+test_recover_delayed_path_and_bias (test_calibration.CalibrationTests.test_recover_delayed_path_and_bias) ... ok
+test_reject_reused_validation_and_wrong_rate (test_calibration.CalibrationTests.test_reject_reused_validation_and_wrong_rate) ... ok
+test_reject_single_tone_and_silence (test_calibration.CalibrationTests.test_reject_single_tone_and_silence) ... ok
+test_divergence_guard_rejects_large_update (test_cancellation.CancellationTests.test_divergence_guard_rejects_large_update) ... ok
+test_hand_rounding_residual_and_bypass (test_cancellation.CancellationTests.test_hand_rounding_residual_and_bypass) ... ok
+test_nlms_frozen_matches_independent_convolution (test_cancellation.CancellationTests.test_nlms_frozen_matches_independent_convolution) ... ok
+test_nlms_recovers_known_path (test_cancellation.CancellationTests.test_nlms_recovers_known_path) ... ok
+test_saturation (test_cancellation.CancellationTests.test_saturation) ... ok
+test_zero_input_freezes_and_bad_parameters_rejected (test_cancellation.CancellationTests.test_zero_input_freezes_and_bad_parameters_rejected) ... ok
+test_corrupt_reference_restores_without_saving (test_capture_driver.DriverTests.test_corrupt_reference_restores_without_saving) ... ok
+test_restore_failure_still_mutes_codec_and_restores_pll (test_capture_driver.DriverTests.test_restore_failure_still_mutes_codec_and_restores_pll) ... ok
+test_success_and_no_import_playback (test_capture_driver.DriverTests.test_success_and_no_import_playback) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.637s
+
+OK

@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-18",
+  "scope": "uncommitted local source; no board image",
+  "files": [
+    {
+      "path": "src/rtl/feedback_fir.v",
+      "sha256": "9fc3416122ce527ddd3feef5c7232d082fc789df56480a63e3243b103608db3f"
+    },
+    {
+      "path": "src/feedback/cancellation.py",
+      "sha256": "b2dc7f353959d9e2f3e33fe0f89076f0bd2da859db38f81623ce3470fc32a01f"
+    },
+    {
+      "path": "scripts/make_fir_vectors.py",
+      "sha256": "07134f7830c809fc00f13ecf6e1b24f399eb773e2c17b07f65f1e9ee8c37b050"
+    },
+    {
+      "path": "scripts/compare_feedback_models.py",
+      "sha256": "334fba3a53cd46af581bbb7f07f09f3f55904492343637b01e70c22795728cc4"
+    },
+    {
+      "path": "sim/audio/tb_feedback_fir.v",
+      "sha256": "224e9b3aa20add46be8a591be306a6acea69f973667f975208ac8a4bdf41d1a0"
+    },
+    {
+      "path": "sim/feedback/test_cancellation.py",
+      "sha256": "927d519e85787700b30002cb99d68615a56e0e6e45a13b3e74aca09012d02859"
+    },
+    {
+      "path": "board/audio_calibrate/compare_lengths.py",
+      "sha256": "51f0f67e9abca30825c0cd04bf61fcbd28c3c0f7b01cc0c5c5d59606dab289a0"
+    },
+    {
+      "path": "build/scripts/test_feedback_fir.tcl",
+      "sha256": "fd3d1fb9aae299afa416775219c1fa73920a91cf63f1e31fed68239933c6b2a8"
+    },
+    {
+      "path": "build/scripts/implement_feedback_fir.tcl",
+      "sha256": "29fd4c37a7a75f816a1a4e8fd62d151a9c4b2b92a9343b4be8a472e18696e1c3"
+    }
+  ]
+}

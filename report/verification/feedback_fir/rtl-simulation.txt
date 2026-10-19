@@ -1,0 +1,4 @@
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+FEEDBACK_FIR_PASS samples=2304 latency=771 reload,bypass,saturation,busy,reset checked
+$finish called at time : 17825520 ns : File "D:/OCadence_Project/Flushbonading_FPGA_Contest/sim/audio/tb_feedback_fir.v" Line 57

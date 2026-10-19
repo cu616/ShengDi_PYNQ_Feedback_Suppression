@@ -1,0 +1,4 @@
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+AUDIO_CALIBRATE_PASS: two seeds, aligned ADC/reference, DAC bound, abort, reset, ADC failure
+$finish called at time : 1331395 ns : File "D:/OCadence_Project/Flushbonading_FPGA_Contest/sim/audio/tb_audio_calibrate.v" Line 97

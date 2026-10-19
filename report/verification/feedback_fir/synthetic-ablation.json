@@ -1,0 +1,44 @@
+{
+  "source": "synthetic",
+  "length_ablation": [
+    {
+      "taps": 128,
+      "floating_db": 10.2853402463041,
+      "full_integer_db": 10.28533803238381,
+      "residual_saturated_samples": 0,
+      "coefficient_abs_max": 0.496752457755256,
+      "estimated_core_cycles": 257,
+      "frame_budget_cycles": 2048
+    },
+    {
+      "taps": 256,
+      "floating_db": 11.78281614757914,
+      "full_integer_db": 11.782819545470648,
+      "residual_saturated_samples": 0,
+      "coefficient_abs_max": 0.4958351243035139,
+      "estimated_core_cycles": 513,
+      "frame_budget_cycles": 2048
+    },
+    {
+      "taps": 512,
+      "floating_db": 31.50837927746015,
+      "full_integer_db": 31.508388318218326,
+      "residual_saturated_samples": 0,
+      "coefficient_abs_max": 0.4960860858840331,
+      "estimated_core_cycles": 1025,
+      "frame_budget_cycles": 2048
+    }
+  ],
+  "adaptation": {
+    "source": "synthetic_independent_open_loop_excitation",
+    "path_change_frame": 8000,
+    "fixed_tail_db": -3.5436743429594832,
+    "adaptive_tail_db": 30.099746158375996,
+    "final_coefficient_l2_error": 0.005098366609647463,
+    "freeze_coefficients_exact": true,
+    "updates": 15999,
+    "rejected_updates": 0,
+    "limitation": "No closed-loop decorrelation or automatic double-talk detector; not a deployable AFC."
+  },
+  "interpretation": "Development comparisons, not final independent acceptance or ASG"
+}

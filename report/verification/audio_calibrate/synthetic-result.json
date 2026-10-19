@@ -1,0 +1,17 @@
+{
+  "validation": {
+    "validation_capture_id": "synthetic-demo-validation",
+    "validation_source": "synthetic",
+    "evaluated_frames": 16128,
+    "target_rms": 0.01598562189139665,
+    "residual_rms": 0.00010022507928510891,
+    "prediction_reduction_db": 44.055062557779586,
+    "interpretation": "open-loop prediction only; not ASG or closed-loop stability"
+  },
+  "condition_number": 1.7239731904957323,
+  "hardware_afc_verified": false,
+  "ridge": 1E-06,
+  "command": "python scripts/fit_feedback_path.py TRAIN.npz VALIDATION.npz MODEL.json --taps 256",
+  "source": "synthetic_only",
+  "taps": 256
+}

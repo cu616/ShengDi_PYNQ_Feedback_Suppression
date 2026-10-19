@@ -1,0 +1,32 @@
+[
+  {
+    "path": "src/feedback/calibration.py",
+    "before_sha256": "5f9ffdcfa210c4d2b40f926a015bb50f165649e2c6ba4c4866ee95d9005e3ca0",
+    "after_sha256": "6f6d42c73c1e801af4ac4317aa6f856a095d70ada2e1012ee23ebc675a1ce364",
+    "check": "Python AST identical"
+  },
+  {
+    "path": "board/audio_calibrate/open_loop_capture.py",
+    "before_sha256": "147a3d49452a2bbb1f275e1e7afae5f70f0a5d061fa9ed78f9e6000186036bd2",
+    "after_sha256": "6645878f3a0178a84689e4ded1130ecdf70427be6ffee2372c7d0bc31ddf07a6",
+    "check": "Python AST identical"
+  },
+  {
+    "path": "src/rtl/audio_pl_calibrate.v",
+    "before_sha256": "68ea1b8cf7e7476ee9a8c48365dbf09aa6c528ece1252b5b4e14cac1458ce0bc",
+    "after_sha256": "57aeda7f68152802e6dbc05fb21d2c33986e0a35f821fb59914a149ab585a3bf",
+    "check": "Verilog text excluding comments and whitespace identical"
+  },
+  {
+    "path": "src/rtl/audio_frame_path.v",
+    "before_sha256": "459b278154a6376648bd768a0db1d64703014f55599f16334e6afd52a723b7c5",
+    "after_sha256": "36e7a5b5baf69d1b0901a27dabdc2da247caa79fb2ee2ab9137163575664eabb",
+    "check": "Verilog text excluding comments and whitespace identical"
+  },
+  {
+    "path": "src/rtl/audio_pl_probe.v",
+    "before_sha256": "27326f43860c1f32a3a47d52164d98281d2a0a2a6cfea2643b1ea0fed5afb5e7",
+    "after_sha256": "c351c45d58ac663bcaf3e36a0e9e6310cfe889a555684e9090dd539445ce7421",
+    "check": "Verilog text excluding comments and whitespace identical"
+  }
+]

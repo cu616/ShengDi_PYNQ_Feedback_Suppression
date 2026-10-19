@@ -1,0 +1,47 @@
+{
+  "source": "synthetic",
+  "length_ablation": [
+    {
+      "taps": 128,
+      "floating_db": 10.240837213248353,
+      "common_warmup_frames": 512,
+      "full_integer_db": 10.240834881280215,
+      "residual_saturated_samples": 0,
+      "coefficient_abs_max": 0.496752457755256,
+      "estimated_core_cycles": 387,
+      "frame_budget_cycles": 2048
+    },
+    {
+      "taps": 256,
+      "floating_db": 11.757146420634612,
+      "common_warmup_frames": 512,
+      "full_integer_db": 11.757149579204478,
+      "residual_saturated_samples": 0,
+      "coefficient_abs_max": 0.4958351243035139,
+      "estimated_core_cycles": 771,
+      "frame_budget_cycles": 2048
+    },
+    {
+      "taps": 512,
+      "floating_db": 31.50837927746015,
+      "common_warmup_frames": 512,
+      "full_integer_db": 31.508388318218326,
+      "residual_saturated_samples": 0,
+      "coefficient_abs_max": 0.4960860858840331,
+      "estimated_core_cycles": 1539,
+      "frame_budget_cycles": 2048
+    }
+  ],
+  "adaptation": {
+    "source": "synthetic_independent_open_loop_excitation",
+    "path_change_frame": 8000,
+    "fixed_tail_db": -3.5436743429594832,
+    "adaptive_tail_db": 30.099746158375996,
+    "final_coefficient_l2_error": 0.005098366609647463,
+    "freeze_coefficients_exact": true,
+    "updates": 15999,
+    "rejected_updates": 0,
+    "limitation": "No closed-loop decorrelation or automatic double-talk detector; not a deployable AFC."
+  },
+  "interpretation": "Development comparisons, not final independent acceptance or ASG"
+}

@@ -24,12 +24,14 @@ source /d/OCadence_Project/Flushbonading_FPGA_Contest/scripts/enter-repo.sh
 
 ## 日常同步
 
+团队功能开发先按 [AI 开发规范](ai-development-policy.md) 在各自工作目录和任务分支进行，下面是当前任务分支上的提交操作。合并到 main 前由另一名队友核对改动和验证情况。
+
 ```bash
 git status
 git add <本次修改的文件路径>
 git diff --cached
 git commit -m "Describe the change"
-git push
+git push -u origin HEAD
 ```
 
 队友在其他电脑克隆同一远端。tmp/ 不上传，正式实验数据放入 data/ 并写说明。不要将账户凭据放入仓库。本次建仓沿用已有 Git 提交身份，不修改全局配置。

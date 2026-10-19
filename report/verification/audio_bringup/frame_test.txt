@@ -1,0 +1,81 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Wed Oct 14 21:03:02 2026
+# Process ID: 23504
+# Current directory: D:/OCadence_Project/Flushbonading_FPGA_Contest
+# Command line: vivado.exe -mode batch -nojournal -log tmp/pynq-reference/frame-test.log -source build/scripts/test_audio_frame_path.tcl
+# Log file: D:/OCadence_Project/Flushbonading_FPGA_Contest/tmp/pynq-reference/frame-test.log
+# Journal file: 
+#-----------------------------------------------------------
+source build/scripts/test_audio_frame_path.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# create_project -force frame_test $root/build/work/frame_test -part xc7z020clg400-1
+# add_files $root/src/rtl/audio_frame_path.v
+# add_files -fileset sim_1 $root/sim/audio/tb_audio_frame_path.v
+# set_property file_type SystemVerilog [get_files tb_audio_frame_path.v]
+# set_property top tb_audio_frame_path [get_filesets sim_1]
+# set_property xsim.simulate.runtime all [get_filesets sim_1]
+# launch_simulation
+INFO: [Vivado 12-5682] Launching behavioral simulation in 'D:/OCadence_Project/Flushbonading_FPGA_Contest/build/work/frame_test/frame_test.sim/sim_1/behav/xsim'
+INFO: [SIM-utils-51] Simulation object is 'sim_1'
+INFO: [SIM-utils-54] Inspecting design source files for 'tb_audio_frame_path' in fileset 'sim_1'...
+INFO: [USF-XSim-97] Finding global include files...
+INFO: [USF-XSim-98] Fetching design files from 'sim_1'...
+INFO: [USF-XSim-2] XSim::Compile design
+INFO: [USF-XSim-61] Executing 'COMPILE and ANALYZE' step in 'D:/OCadence_Project/Flushbonading_FPGA_Contest/build/work/frame_test/frame_test.sim/sim_1/behav/xsim'
+"xvlog --incr --relax -prj tb_audio_frame_path_vlog.prj"
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/OCadence_Project/Flushbonading_FPGA_Contest/src/rtl/audio_frame_path.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module audio_frame_path
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/OCadence_Project/Flushbonading_FPGA_Contest/sim/audio/tb_audio_frame_path.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module tb_audio_frame_path
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/OCadence_Project/Flushbonading_FPGA_Contest/build/work/frame_test/frame_test.sim/sim_1/behav/xsim/glbl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [USF-XSim-69] 'compile' step finished in '1' seconds
+INFO: [USF-XSim-3] XSim::Elaborate design
+INFO: [USF-XSim-61] Executing 'ELABORATE' step in 'D:/OCadence_Project/Flushbonading_FPGA_Contest/build/work/frame_test/frame_test.sim/sim_1/behav/xsim'
+Vivado Simulator 2018.3
+Copyright 1986-1999, 2001-2018 Xilinx, Inc. All Rights Reserved.
+Running: D:/Xilinx/Vivado/2018.3/bin/unwrapped/win64.o/xelab.exe -wto 746af5c634c648198cab29b8155c877b --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot tb_audio_frame_path_behav xil_defaultlib.tb_audio_frame_path xil_defaultlib.glbl -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+WARNING: [XSIM 43-4099] "D:/OCadence_Project/Flushbonading_FPGA_Contest/src/rtl/audio_frame_path.v" Line 2. Module audio_frame_path(MAX_FRAMES=4,STALL_CYCLES=16) doesn't have a timescale but at least one module in design has a timescale.
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module xil_defaultlib.audio_frame_path(MAX_FRAMES=4,ST...
+Compiling module xil_defaultlib.tb_audio_frame_path
+Compiling module xil_defaultlib.glbl
+Built simulation snapshot tb_audio_frame_path_behav
+
+****** Webtalk v2018.3 (64-bit)
+  **** SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+  **** IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+    ** Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+
+source D:/OCadence_Project/Flushbonading_FPGA_Contest/build/work/frame_test/frame_test.sim/sim_1/behav/xsim/xsim.dir/tb_audio_frame_path_behav/webtalk/xsim_webtalk.tcl -notrace
+INFO: [Common 17-206] Exiting Webtalk at Wed Oct 14 21:03:16 2026...
+run_program: Time (s): cpu = 00:00:00 ; elapsed = 00:00:09 . Memory (MB): peak = 274.785 ; gain = 0.000
+INFO: [USF-XSim-69] 'elaborate' step finished in '8' seconds
+INFO: [USF-XSim-4] XSim::Simulate design
+INFO: [USF-XSim-61] Executing 'SIMULATE' step in 'D:/OCadence_Project/Flushbonading_FPGA_Contest/build/work/frame_test/frame_test.sim/sim_1/behav/xsim'
+INFO: [USF-XSim-98] *** Running xsim
+   with args "tb_audio_frame_path_behav -key {Behavioral:sim_1:Functional:tb_audio_frame_path} -tclbatch {tb_audio_frame_path.tcl} -log {simulate.log}"
+INFO: [USF-XSim-8] Loading simulator feature
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+source tb_audio_frame_path.tcl
+## current_wave_config
+FRAME_PATH_PASS: 48 signed stereo cases, timeout, stall, rearm, mute, reset
+$finish called at time : 1786 ns : File "D:/OCadence_Project/Flushbonading_FPGA_Contest/sim/audio/tb_audio_frame_path.v" Line 41
+INFO: [USF-XSim-96] XSim completed. Design snapshot 'tb_audio_frame_path_behav' loaded.
+INFO: [USF-XSim-97] XSim simulation ran for all
+launch_simulation: Time (s): cpu = 00:00:00 ; elapsed = 00:00:14 . Memory (MB): peak = 274.785 ; gain = 0.000
+# close_sim
+INFO: [Simtcl 6-16] Simulation closed
+close_sim: Time (s): cpu = 00:00:00 ; elapsed = 00:00:05 . Memory (MB): peak = 274.785 ; gain = 0.000
+# close_project
+# exit
+INFO: [Common 17-206] Exiting Vivado at Wed Oct 14 21:03:23 2026...

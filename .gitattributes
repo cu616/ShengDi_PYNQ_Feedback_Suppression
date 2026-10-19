@@ -1,13 +1,9 @@
-* text=auto
-*.sh text eol=lf
-*.md text eol=lf
-*.py text eol=lf
-*.tcl text eol=lf
-*.v text eol=lf
-*.sv text eol=lf
-*.xdc text eol=lf
-*.pdf binary
-*.wav binary
+# Source and deployment manifests use byte-level SHA256. Preserve line endings
+# across clone/checkout so a matching package does not fail on another OS.
+*.py -text
+*.v -text
+*.vhd -text
+*.tcl -text
+*.xdc -text
+*.hwh -text
 *.bit binary
-*.png binary
-*.jpg binary

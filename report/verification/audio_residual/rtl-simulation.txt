@@ -1,0 +1,4 @@
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+AUDIO_RESIDUAL_PASS: 256 taps, two seeds, pin/reference/mic/prediction/residual alignment, fresh load, no-ADC bound, coefficient/busy fault, stop, reset
+$finish called at time : 1426841 ns : File "D:/OCadence_Project/Flushbonading_FPGA_Contest/sim/audio/tb_audio_residual.v" Line 120

@@ -1,0 +1,22 @@
+{
+  "overlay": "audio_residual",
+  "frames": 16384,
+  "taps": 256,
+  "rate_hz": 48828.125,
+  "hardware_executed": false,
+  "hashes": {
+    "src/rtl/audio_pl_residual.v": "c1096c00d3506dbbb078701ae86366f8cf8bd025f5e96df4cca71387026b9d77",
+    "src/rtl/feedback_fir.v": "9fc3416122ce527ddd3feef5c7232d082fc789df56480a63e3243b103608db3f",
+    "src/vendor/pynq_v2_4/iis_ser.vhd": "0ca9f3da00c5c411cbabb8b32792444366178227c7a5d0005ed26665156268d8",
+    "src/vendor/pynq_v2_4/iis_deser.vhd": "af72dd1856a870e63b4e8cd5c69ea2ceeedae35fb788d9029db568711e533b12",
+    "build/scripts/create_audio_residual.tcl": "dafc0919ca386aa4c77c6211d2ec1f2860557b7fa6d633773160a458bdcf17e7",
+    "build/scripts/audio_bringup.xdc": "8bf3462f32fe240b8da8d397468026db1ed330c43f49747c648869b7c67eaa67",
+    "build/scripts/test_audio_residual.tcl": "4149eb3a70fcbd9fd21631e2ad026194706e165e0fa1faf74b14a95c03d90aa8",
+    "sim/audio/tb_audio_residual.v": "c0d8b86530d378e11fb885a04dc969dde7746ca9a32bd03a4dd08a7370a4eb02",
+    "board/audio_residual/open_loop_residual.py": "eb354aa4cd58e6426af01f6e17835fed64d58e470e1605c0ff9a8cbeeacc3cde",
+    "board/audio_residual/residual_tools.py": "045f6fd1cfe5bb35f46b5625bab4ce1d85f5bb27e055d977a8a8021c58aa9e72",
+    "board/audio_residual/audio_residual.bit": "d42651d8c3a3e4ee0d885e214603ede75b81152bddd0dba40de49f6a5cceba57",
+    "board/audio_residual/audio_residual.hwh": "01cf3507f6ec7d785b3d0328265369123dd7aa26039ad71c27a2a19aebab48d1"
+  },
+  "note": "Local build only. Inspect timing/DRC evidence; missing I/O constraints remain."
+}

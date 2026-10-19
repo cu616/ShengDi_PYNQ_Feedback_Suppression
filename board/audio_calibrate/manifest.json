@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-16",
+  "sample_rate_hz_nominal": 48828.125,
+  "files": [
+    {
+      "path": "board/audio_calibrate/audio_calibrate.bit",
+      "sha256": "6e22cbfcf0d0e9c553b8d8c2b39a06e824dd4b0389a952deb115f25d717b18a7"
+    },
+    {
+      "path": "board/audio_calibrate/audio_calibrate.hwh",
+      "sha256": "944f97237e74fc45c7b8664c89c21caa3680c0afe8be7395e4a2b8263ddd3ae3"
+    },
+    {
+      "path": "board/audio_calibrate/open_loop_capture.py",
+      "sha256": "147a3d49452a2bbb1f275e1e7afae5f70f0a5d061fa9ed78f9e6000186036bd2"
+    },
+    {
+      "path": "src/rtl/audio_pl_calibrate.v",
+      "sha256": "68ea1b8cf7e7476ee9a8c48365dbf09aa6c528ece1252b5b4e14cac1458ce0bc"
+    },
+    {
+      "path": "src/vendor/pynq_v2_4/iis_ser.vhd",
+      "sha256": "0ca9f3da00c5c411cbabb8b32792444366178227c7a5d0005ed26665156268d8"
+    },
+    {
+      "path": "src/vendor/pynq_v2_4/iis_deser.vhd",
+      "sha256": "af72dd1856a870e63b4e8cd5c69ea2ceeedae35fb788d9029db568711e533b12"
+    },
+    {
+      "path": "build/scripts/create_audio_calibrate.tcl",
+      "sha256": "d3d7115da77a07b088425fc6bfc57ae436d23fe77f6cadb7fcb85ba384ca45f0"
+    },
+    {
+      "path": "build/scripts/audio_bringup.xdc",
+      "sha256": "8bf3462f32fe240b8da8d397468026db1ed330c43f49747c648869b7c67eaa67"
+    }
+  ],
+  "status": "built_not_board_tested",
+  "tool": "Vivado 2018.3",
+  "frames": 32768
+}
