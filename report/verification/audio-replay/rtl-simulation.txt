@@ -1,0 +1,7 @@
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+CLOSED_TIMING: ADC-valid-to-observed-FIR=772 clocks; ADC-valid-to-TX-load=2286 clocks; played[n+2]=source[n+2]+residual[n]
+CLOSED_TIMING: ADC-valid-to-observed-FIR=772 clocks; ADC-valid-to-TX-load=2286 clocks; played[n+2]=source[n+2]+residual[n]
+CLOSED_TIMING: ADC-valid-to-observed-FIR=772 clocks; ADC-valid-to-TX-load=2286 clocks; played[n+2]=source[n+2]+residual[n]
+AUDIO_REPLAY_PASS: zero model gain1 A/B, actual DAC history, online bypass, ring buffer, gain clip, stall, budget, abort, unloaded/coeff fault
+$finish called at time : 2731686 ns : File "D:/OCadence_Project/Flushbonading_FPGA_Contest/tmp/a-feedback/sim/audio/tb_audio_replay.v" Line 167

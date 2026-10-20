@@ -4,6 +4,10 @@
 > 其中"未上传/未验证"等字样只描述当日。**当前状态一律看 [STATE.md](../STATE.md)。**
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
+## 2026-10-20 A线交付预录语音程序与独立接口
+
+用户要求手机录好后停止外放、音响播放同时实时采样。A交付独立audio_replay RTL、bit/hwh、驱动与三格Notebook完整包；70项软件检查、RTL仿真及最终构建通过。首次构建时序失败已修复并保留证据。未操作板卡，真实听感仍待一次现场执行。接口变更：新增[audio-replay-v1](../contracts/audio-replay-v1.md)，旧接口保持不变；数字源加入实际输出，B/C消费注意事项见REQUESTS的R-005/R-006。[交付与检查证据](../../report/verification/audio-replay/README.md)。
+
 ## 2026-10-20 A线澄清二次确认并修正文案
 
 用户提供第二次摘要：模型范围已正常生成 `−35 dB` 单档，第一次 `READY` 已通过；脚本第二次提示要求 `START`，用户再次输入 `READY`，触发 `operator_cancel_before_start`。`trials=[]`、发声0秒，没有现场效果证据。已将第二次提示改为明确的“第二次确认：输入 START 才开始旁路/抵消配对”，并同步Notebook预检SHA和操作包；最新版尚未上传板卡。详见[现场记录](../../report/verification/field-validation/model-bound-zero-playback-2026-10-20.md)。

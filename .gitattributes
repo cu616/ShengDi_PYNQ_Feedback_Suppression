@@ -7,6 +7,9 @@
 *.xdc -text
 *.hwh -text
 *.bit binary
+board/audio_replay/README.md -text
+board/audio_replay/*.ipynb -text
+board/audio_replay/*.json -text
 
 # 时间线是只追加的：两个人同时往顶部加条目时，git 默认会判冲突。
 # union 合并会把双方新增的行都保留，正好符合"谁都不许删别人的条目"的规则。
