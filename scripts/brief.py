@@ -1,10 +1,10 @@
 """一条命令对齐：给刚拉完代码的 AI（或人）30 秒内看清全部上下文。
 
     python scripts/brief.py            # 全部
-    python scripts/brief.py --line b   # 只看我这条线相关的诉求
+    python scripts/brief.py --line b   # 只看 B 线
 
 输出只有几行，因为它的价值在于"不用读十分钟"。信息来源全部是文件，不靠聊天记录：
-  STATE.md 三条线的最后动作/当前卡点 → REQUESTS.md 的 open 行 → 各线日志最新一条 → 仓库状态
+  STATE.md 三条线的最后动作/当前卡点 → 各线日志最新一条 → 仓库状态
 """
 import argparse
 import re
@@ -20,7 +20,7 @@ LINK = re.compile(r'\[([^\]]*)\]\([^)]*\)')
 
 
 def plain(text):
-    """终端里把 markdown 链接显示成纯文字，别让 [R-001](REQUESTS.md) 刷屏。"""
+    """终端里把 markdown 链接显示成纯文字，别让 [STATE](STATE.md) 这类语法刷屏。"""
     return LINK.sub(r'\1', text)
 
 
@@ -57,24 +57,6 @@ def state_lines():
     return out
 
 
-def open_requests(line=None):
-    """返回 REQUESTS.md 里 open 的行（按"到"过滤）。"""
-    text = read('docs/REQUESTS.md')
-    rows = []
-    for raw in text.splitlines():
-        if not raw.startswith('|') or '| open |' not in raw:
-            continue
-        cells = [cell.strip() for cell in raw.strip().strip('|').split('|')]
-        if len(cells) < 6:
-            continue
-        rid, who, what, blocks = cells[0], cells[1], cells[2], cells[3]
-        target = who.split('→')[-1].strip().lower() if '→' in who else ''
-        if line and target != line:
-            continue
-        rows.append((rid, who, what, blocks))
-    return rows
-
-
 def latest_logs():
     """每条线日志最新的一条标题；没有分线日志时退回 progress.md。"""
     found = []
@@ -94,7 +76,7 @@ def latest_logs():
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--line', choices=('a', 'b', 'c'), default=None,
-                        help='只显示到这条线的诉求')
+                        help='标明你自己是哪条线')
     args = parser.parse_args(argv)
 
     head = git('log', '-1', '--format=%h %s')
@@ -111,14 +93,8 @@ def main(argv=None):
         if block:
             print('  %-12s ↳ %s' % ('', block))
 
-    rows = open_requests(args.line)
-    print('\n【要你做的事】%s' % ('（到 = %s）' % args.line.upper() if args.line else ''))
-    if not rows:
-        print('  没有指向你的未完成诉求。')
-    for rid, who, what, blocks in rows:
-        print('  %s %s' % (rid, who))
-        print('      要：%s' % plain(what)[:110])
-        print('      挡：%s' % plain(blocks)[:110])
+    print('\n【要队友配合的事】')
+    print('  不在仓库里。需要时让 AI 写成可转发的一段话，由人用微信发出去。')
 
     print('\n【最近日志】')
     for tag, head_line in latest_logs():
@@ -126,7 +102,7 @@ def main(argv=None):
 
     print('\n【下一步】')
     print('  1) 读 docs/lines/%s-*.md 确认自己的职责与文件边界' % (args.line or '<你的线>'))
-    print('  2) 改完按 AGENTS.md 收工六步：改 STATE 两行 → 追加日志 → 关诉求 → 放证据 → 给提交信息')
+    print('  2) 改完按 AGENTS.md 收工五步：改 STATE 两行 → 追加日志 → 放证据 → 给转发文字 → 给提交信息')
     print('  3) 提交前跑：python scripts/check_docs.py')
     return 0
 

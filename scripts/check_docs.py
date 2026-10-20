@@ -12,6 +12,8 @@
 3. 除 STATE.md 外，不许再出现"当前状态/当前重点/当前接手点/现阶段"这类**标题**。
    这是之前乱掉的直接原因：同一件事有四个家。
 4. 现行契约必须有"状态"行，否则别人无法判断它能不能被依赖。
+
+另外检查 STATE.md 三条线是否都维护了"最后动作/当前卡点"两行。
 """
 import argparse
 import re
@@ -111,39 +113,27 @@ def check_contract_status(files):
     return errors
 
 
-def check_requests():
-    """诉求表的结构检查 + 未完成数量，顺带确认 STATE 三条线都有"最后动作"行。
+def check_state():
+    """确认 STATE.md 三条线都有"最后动作/当前卡点"两行。
 
-    这两处是"拉取后 30 秒对齐"的基础：没有它们，对方拉完还得读十分钟。
+    这是"拉取后 30 秒对齐"的唯一支点：没有这两行，对方拉完还得读十分钟。
+    注意：需要队友配合的事不进仓库，由人转发，所以这里不检查任何诉求表。
     """
     errors, warnings, info = [], [], []
-    path = ROOT / 'docs/REQUESTS.md'
-    if not path.exists():
-        return ['docs/REQUESTS.md 不存在'], warnings, info
-    text = path.read_text(encoding='utf-8')
-    if '| 状态 |' not in text:
-        errors.append('docs/REQUESTS.md: 缺"状态"列')
-    rows = [line for line in text.splitlines()
-            if line.startswith('|') and ('| open |' in line or '| done |' in line)]
-    opened = sum(1 for line in rows if line.rstrip().endswith('| open |'))
-    for line in rows:
-        if len([cell for cell in line.split('|')]) < 8:
-            warnings.append('docs/REQUESTS.md: 有一行列数不足，可能缺"完成判据" -> %s'
-                            % line[:40])
-    info.append('REQUESTS: %d 条，其中 %d 条 open' % (len(rows), opened))
-
     state = ROOT / 'docs/STATE.md'
-    if state.exists():
-        body = state.read_text(encoding='utf-8')
-        for line_name in ('### A ', '### B ', '### C '):
-            start = body.find(line_name)
-            if start < 0:
-                warnings.append('docs/STATE.md: 找不到"%s"段' % line_name.strip())
-                continue
-            chunk = body[start:start + 400]
-            if '最后动作' not in chunk:
-                warnings.append('docs/STATE.md: "%s"段缺"最后动作"行，拉取后无法 30 秒对齐'
-                                % line_name.strip())
+    if not state.exists():
+        return ['docs/STATE.md 不存在'], warnings, info
+    body = state.read_text(encoding='utf-8')
+    for line_name in ('### A ', '### B ', '### C '):
+        start = body.find(line_name)
+        if start < 0:
+            warnings.append('docs/STATE.md: 找不到"%s"段' % line_name.strip())
+            continue
+        chunk = body[start:start + 400]
+        for field in ('最后动作', '当前卡点'):
+            if field not in chunk:
+                warnings.append('docs/STATE.md: "%s"段缺"%s"行，拉取后无法 30 秒对齐'
+                                % (line_name.strip(), field))
     return errors, warnings, info
 
 
@@ -155,9 +145,9 @@ def main(argv=None):
     files = sorted(md_files())
     errors = check_links(files) + check_contract_status(files)
     warnings = check_orphans(files) + check_risky_headings(files)
-    request_errors, request_warnings, info = check_requests()
-    errors += request_errors
-    warnings += request_warnings
+    state_errors, state_warnings, info = check_state()
+    errors += state_errors
+    warnings += state_warnings
 
     for line in errors:
         print('ERROR', line)
