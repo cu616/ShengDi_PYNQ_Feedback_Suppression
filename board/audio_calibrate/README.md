@@ -45,6 +45,6 @@ validation_meta = open_loop_capture(
 
 ## 恢复和代码位置
 
-脚本会恢复官方base与原PLL，并将Codec输出静音。旧Notebook的音频/MMIO对象失效，后续重新初始化。出现恢复异常时不要继续播放。软件估计器位于 `src/feedback/calibration.py`，电脑命令行入口为 `scripts/fit_feedback_path.py`；协议与限制见 `docs/interfaces/feedback-calibration-v1.md`。
+脚本会恢复官方base与原PLL，并将Codec输出静音。旧Notebook的音频/MMIO对象失效，后续重新初始化。出现恢复异常时不要继续播放。软件估计器位于 `src/feedback/calibration.py`，电脑命令行入口为 `scripts/fit_feedback_path.py`；协议与限制见 `docs/contracts/feedback-calibration-v1.md`。
 
 本目录校验值见 `manifest.json`。已知的外部音频I/O时序约束缺口仍保留，不以WNS正数宣称板级签核。

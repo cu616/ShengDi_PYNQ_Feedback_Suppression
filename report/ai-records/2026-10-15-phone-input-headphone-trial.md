@@ -21,12 +21,12 @@
 
 ## 手动对照的后续反馈
 
-AI 预先交付 [手动诊断单](../../docs/experiments/manual-headphone-check-2026-10-15.md)，用户后续回复：`stock_tone(volume=40, amplitude_dbfs=-18)`“能听到清晰3声”；`%run audio_probe/bounded_mic_trial.py`“无结果”；`bounded_mic_trial(headphones_confirmed=True, seconds=0.75, shift=0, hp_volume=40)`“只能听到电流斯拉的声音”。`%run` 只定义函数，没有文字输出属预期。用户尚未粘贴最后一格的完整输出，因此这轮不能复核自动静音和恢复标记。现场没有报告可辨手机人声；不把沙沙声记作直通通过。
+AI 预先交付 [手动诊断单](../../docs/log/experiments/2026-10-15-headphone-check.md)，用户后续回复：`stock_tone(volume=40, amplitude_dbfs=-18)`“能听到清晰3声”；`%run audio_probe/bounded_mic_trial.py`“无结果”；`bounded_mic_trial(headphones_confirmed=True, seconds=0.75, shift=0, hp_volume=40)`“只能听到电流斯拉的声音”。`%run` 只定义函数，没有文字输出属预期。用户尚未粘贴最后一格的完整输出，因此这轮不能复核自动静音和恢复标记。现场没有报告可辨手机人声；不把沙沙声记作直通通过。
 
 用户还指出“很早之前我们已经有代码验证过有尖锐啸叫通路”，随后明确确认正是在 `pAudio.select_line_in()`、`pAudio.set_volume(40)`、`pAudio.bypass(seconds=10)` 且音响接回箱内时发生。此前粘贴的官方音频 Notebook 文本有这段代码与“本次结束”输出，但没有运行期间信号或原始音频；啸叫听感来自用户追认。官方 bypass 声学闭环与自定义 PL 的证据范围分开。下一步停止增益试探，先用同条件官方 base 短录短播区分输入信噪比与 PL 实时数据路径问题。
 
 用户又提供 B 的完整输出：`{'hp_volume': 40, 'hp_db': -17, 'pl_shift': 0, 'pl_db_approx': -0.0}`、`{'planned_seconds': 0.75, 'elapsed_seconds': 0.751, 'frames': 36693, 'muted_at_end': True}`、`PL_CONTROL_MUTED True`、`STOCK_BASE_RESTORED`、`STOCK_PLL_READBACK 0271023c2103`。这补足控制与恢复证据，不改变“只有沙沙声、没有可辨人声”的现场判断。
 
-2026-10-16 追加：用户运行[官方录播对照](../../docs/experiments/stock-input-reference-2026-10-15.md)后，贴出 `RECORDED_SECONDS 3 FRAMES 144000` 和 `PLAYBACK_DONE_AND_CODEC_MUTED`，并报告“声音是有点底噪的清晰人声”。该结果是官方 base 的先录后播，不是实时 bypass，也不是自定义 PL；它排除了“当前输入根本没有可辨人声”这一简单解释。AI 下一步做自定义收发链的定向排查，不再让用户单纯逐档提高音量。
+2026-10-16 追加：用户运行[官方录播对照](../../docs/log/experiments/2026-10-15-stock-reference.md)后，贴出 `RECORDED_SECONDS 3 FRAMES 144000` 和 `PLAYBACK_DONE_AND_CODEC_MUTED`，并报告“声音是有点底噪的清晰人声”。该结果是官方 base 的先录后播，不是实时 bypass，也不是自定义 PL；它排除了“当前输入根本没有可辨人声”这一简单解释。AI 下一步做自定义收发链的定向排查，不再让用户单纯逐档提高音量。
 
 2026-10-16 静音连续捕获：用户明确回答“同意上传并运行静音诊断”，对象为新 `audio_capture.bit/.hwh` 和 `muted_frame_capture.py`，目的地板卡 Jupyter `base/audio/audio_capture/`，只采约 84 ms ADC 连续帧统计，结束恢复官方配置，不保存或上传原始录音。AI 已实际上传三文件并在独立 Notebook `muted_capture_2026-10-16.ipynb` 运行 `capture_stats('ambient')`。板上输出 4096 帧、`dac_muted=True`、左右 RMS −32.53/−32.51 dBFS、峰值 −18.89/−18.82 dBFS、左声道 100–5000 Hz 最大栅格 393.4 Hz；随后 `PL_CONTROL_MUTED True`、`STOCK_BASE_RESTORED`、`STOCK_PLL_READBACK 0271023c2103`，内核空闲。现场外部声源状态未核实，因此不把本轮标为安静底噪，也不将单一峰值判定为啸叫频率。此次仅证明自定义采样链可读回连续帧；没有人声听辨或反馈抑制证据。

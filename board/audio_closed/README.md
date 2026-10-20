@@ -106,4 +106,4 @@ print(json.dumps(cancel_result, indent=2))
 
 正常/异常均尝试PL静音、Codec静音、base恢复、PLL恢复。出现 `RESTORE_ERRORS` 时先断音响电源，不继续试验；重新加载官方base并确认其音频配置后再诊断。
 
-接口见 [closed v1](../../docs/interfaces/audio-closed-v1.md)，本地证据见 [验证记录](../../report/verification/audio_closed/README.md)。
+接口见 [closed v1](../../docs/contracts/audio-closed-v1.md)，本地证据见 [验证记录](../../report/verification/audio_closed/README.md)。

@@ -1,0 +1,16 @@
+# Muted ADC probe v1 (2026-10-15)
+>
+> **已冻结（2026-10-20）。** 本文描述的 overlay 是诊断或中间版本，已被 `audio-closed-v1` 取代；
+> 保留作历史依据，**不要按本文新增实现、也不要据此加载板卡**。
+> 现行契约见 [../README.md](../README.md)。
+
+
+This is a diagnostic variant of `audio_bringup`, not an AFC implementation. It uses the same PYNQ-Z2 pin constraints and I2S clocking, while retaining the original output enable gate. The existing `board/audio_bringup` bitstream is unchanged.
+
+The 100 MHz PL clock drives the receive path. `audio_path/sample_left` and `sample_right` are 24-bit two's-complement samples latched on `rx_valid`. They update even when the output control word is zero. They are most-recent-sample snapshots, not a FIFO or a contiguous recording; AXI reads of the two channels are not atomic. No overflow or dropped-frame information is provided. Frame count has the same limitations as `audio_bringup`.
+
+The 2018.3-generated HWH assigns `audio_control` to `0x41200000` and `audio_samples` to `0x41210000`. Each is an AXI GPIO. `audio_control` channel 1 data (`+0x0`) is the 32-bit output control word and channel 2 data (`+0x8`) is frame count. `audio_samples` channel 1 data (`+0x0`) is left, channel 2 data (`+0x8`) is right; only bits 23:0 are valid. Software sign-extends bit 23. The control word stays zero during the probe. Other offsets and future versions must be checked against their matching HWH/IP configuration rather than assumed from these values.
+
+Codec assumptions for the board script: ADAU1761 I2C at `0x3B` on PS `/dev/i2c-1`, 10 MHz PL MCLK and integer PLL R=5 to reach 50 MHz nominal. This is the same clock setup that passed the prior muted PLL check. The script selects line input, mutes codec output, collects only bounded min/max/distinct counts from the sample registers, then restores `base.bit` and the stock PLL. It does not save a WAV or enable the PL output. The physical line input channel and microphone electrical details still require on-site confirmation.
+
+Acceptance for this diagnostic: simulation checks both signed channel snapshots and the output mute gate; synthesis and implementation complete; on board, the PL frame count advances, the 50 MHz PLL locks, and at least one sample register changes with live input under mute. Distinct sample values alone are only evidence of incoming digital activity, not calibrated sound capture or feedback suppression. Board I/O timing remains provisional per `audio-bringup-v1.md`.

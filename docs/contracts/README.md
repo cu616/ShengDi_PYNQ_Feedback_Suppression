@@ -1,0 +1,48 @@
+# 接口契约
+
+> 契约 = 生产方与消费方必须共同遵守的硬约定（格式、时序、寄存器、版本）。
+> **改契约必须先通知消费方**，并在 [log/progress.md](../log/progress.md) 留一条"接口变更"。
+> 契约只增不删：旧版本冻结，不覆盖。
+
+## 现行契约（要遵守的只有这四份）
+
+| 契约 | 覆盖什么 | 生产方 | 消费方 | 状态 |
+|---|---|---|---|---|
+| [audio-closed-v1.md](audio-closed-v1.md) | 闭环 overlay 的控制位、增益编码、帧关系、缓存读回 | C | A / B | 已实现并构建，未上板验收 |
+| [feedback-fir-v1.md](feedback-fir-v1.md) | 定点抵消核：24 位 PCM / Q20 系数 / 58 位累加 / 771 拍 | B | C / A | 已验证（仿真 + 板上逐样本） |
+| [feedback-calibration-v1.md](feedback-calibration-v1.md) | 标定数据 NPZ 与模型 JSON 的字段、单位、拒绝条件 | B | A / C | 已验证（板卡实际执行） |
+| [path-analysis-v1.md](path-analysis-v1.md) | 逐频点分析与稳定增益估算的输入输出 JSON | B | A / C | 已实现，待真实数据 |
+
+四份之间的关系：
+
+```
+标定（calibration）→ 系数（fir）→ 闭环播放（closed）
+                                    ↘ 分析（path-analysis，只读前三者的产物）
+```
+
+## 冻结契约（不要再改，也不要在新工作里引用）
+
+这些是诊断阶段或中间版本留下的接口。**它们描述的东西现在仍然能跑，
+但已经不再是当前工作路径**；`board/` 下对应的 bit/hwh 也一并归档保留。
+
+| 契约 | 曾被用来 | 被谁取代 | 备注 |
+|---|---|---|---|
+| [frozen/audio-bringup-v1.md](frozen/audio-bringup-v1.md) | 最小 PL 直通、静音与帧计数 | audio-closed | 第一次证明 PL 能驱动 Codec |
+| [frozen/audio-probe-v1.md](frozen/audio-probe-v1.md) | 读最近一帧 ADC 值 | audio-capture | 只能读快照，不是连续录音 |
+| [frozen/audio-capture-v1.md](frozen/audio-capture-v1.md) | 片上缓存 4096 帧连续采样 | audio-residual | 只输出统计，不存 PCM |
+| [frozen/audio-diag-v1.md](frozen/audio-diag-v1.md) | 强制 `sdata_o` 为 0，查 TX 是否真的在发 | audio-closed | 证明内部有活动≠有声 |
+| [frozen/audio-tone-v1.md](frozen/audio-tone-v1.md) | PL 内部生成约 1 kHz 三声 | audio-closed | 证明 PL 能出声，不含 ADC 通路 |
+| [frozen/audio-residual-v1.md](frozen/audio-residual-v1.md) | 开环残差：256 抽头 FIR + 四路缓存 | audio-closed | 现由 closed 的零系数模式覆盖 |
+
+## 新增契约的格式
+
+用 [templates/interface-contract.md](../templates/interface-contract.md)。
+文件头必须有三行：
+
+```
+状态：草案 / 已协调 / 实现待验证 / 已验证 / 已冻结
+生产方：  · 消费方：
+最后变更：YYYY-MM-DD  原因：
+```
+
+没有"状态"行的契约，`scripts/check_docs.py` 会报错——因为无法判断它能不能被依赖。

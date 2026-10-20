@@ -1,65 +1,77 @@
 # 声堤：实时声反馈啸叫抑制系统
 
-ShengDi_PYNQ_Feedback_Suppression 是基于 PYNQ-Z2 的声反馈抑制项目，目标是在真实硬件上提高稳定扩声音量，并测量延迟、音质和 FPGA 资源开销。首版面向桌面扩声，助听场景留作后续探索。
+ShengDi_PYNQ_Feedback_Suppression 是基于 PYNQ-Z2 的声反馈抑制项目：
+在 PL 侧用定点 FIR 抵消扬声器回到麦克风的反馈，目标是在真实硬件上提高稳定扩声音量，
+并测量延迟、音质与 FPGA 资源开销。首版面向桌面扩声，助听场景留作后续探索。
 
-## 当前状态
+## 现在是什么状态
 
-**当前重点：基础闭环验收已经完成，下一交付必须推进实际抗啸叫效果对照。** 零模型和真实模型两模式的低增益板上数字核对通过，但尚未获得正常可听扩声条件下的稳定增益改善证据。停止重复基础试验；先分析已有标定数据以选择有效实验范围，再组织完整现场对照。静默范围分析尚未执行，八项固定增益批次也尚无返回结果，不应默认继续原计划。
+**不要在本文件维护状态。** 唯一权威是 [docs/STATE.md](docs/STATE.md)：
+已验证/未验证清单、关键数字口径、三条线各自进展、板卡占用、下一步，都在那里。
 
-**接手AI必读：[重要提醒：实际进度与现场效率](docs/IMPORTANT-ai-progress.md)。** 用户要求禁止用琐碎、低信息量探索代替核心推进；现场实验集中准备、统一汇总，避免反复消耗用户时间。当前证据见 [项目进度](docs/progress.md)。
+一句话摘要（仅供快速判断是否要深入）：工程链路与低增益数字核对已通过，
+**正常扩声条件下的抗啸叫效果与稳定增益（ASG）仍无证据**。
+所以任何"6.92 dB / 9.80 dB"都不是扩声音量提升，只是宽带预测误差降低。
 
-截至2026-10-19，256抽头Q20反馈预测与残差核已接入PYNQ-Z2音频工程。首次板上开环采集16384帧，预测和残差均与整数参考逐样本一致，无饱和，预测误差降低6.92 dB。证据为用户返回的metadata及短噪声听感，详见 [板上实测记录](report/verification/audio_residual/board-result-2026-10-19.md)。
+## 从哪里开始
 
-此前开环版本本地已完成25项软件测试、RTL集成仿真和整板构建；[上板包](board/audio_residual/README.md)与[验证报告](report/verification/audio_residual/README.md)对应。**闭环稳定增益ASG、完整音质和端到端延迟仍未验证**；6.92 dB不是扩声音量增益。
-
-旧记录的128/256/512抽头离线比较为4.28/9.80/10.17 dB，首版选择256；新旧记录和评分窗口不同，不能直接认定性能退化。历史过程保留在 [项目进度](docs/progress.md)。
-
-新队员从 [10月19日交接](docs/handoff-2026-10-19.md) 和 [入门导航](docs/getting-started.md) 开始，再读 [证据索引](report/evidence-index.md)。源码、构建脚本、操作模板和结果摘要纳入本次同步；原始NPZ、板上候选模型及含实测输出的Notebook仍留在板卡，克隆仓库不能自动复现实物指标。
-
-## 开发入口
-
-- [三人并行分工及AI提示词](docs/parallel-work/README.md)：A实物/板卡、B数据/算法、C测评/工具，含详细任务、文件边界与验收。
-
-- [工程入门导航](docs/getting-started.md)：新队员按顺序阅读的入口，每一步都有文件、关注点和理解检查。
-
-- [工作区结构与系统框图](docs/workspace-architecture.md)：目录用途、核心文件职责、实时直通/开环标定/建模流程及接口关系。
-
-- [核心代码阅读顺序](docs/core-code-reading-guide.md)：从实时直通、开环采集读到路径拟合与定点参考，核心源码已补中文注释。
-
-- [团队 AI 开发规范](docs/ai-development-policy.md)：分工、接口、验证、上板与协作记录；各人的 AI 从 [AGENTS.md](AGENTS.md) 开始。
-- [开发计划](docs/development-plan.md)：软硬件划分、算法路线、历史计划与验收条件。
-- [麦克风接口分析](docs/hardware/microphone-requirements.md)：已知输入条件和待确认参数。
-- [Git Bash 与仓库使用](docs/repository-guide.md)：定位本地目录、提交与同步。
-- [参考资料](references/README.md)：板卡手册、原理图与赛事指南。
-
-已确认设备为 PYNQ-Z2、MAX4466 和 USB 供电有源音响。官方软件使用 BaseOverlay("base.bit")，音频驱动 AudioADAU1761，I2C 编号 1。MAX4466 的实际供电、增益、声道接线需补记；当前 Vivado 为 2018.3，最小通路工程已有构建脚本。
-
-板上 Jupyter 当前通过 http://192.168.2.99:9090 访问。完整的一键复现流程尚未形成。数据与Notebook位置、当前备份缺口见交接说明；录音传输需明确授权。
+| 你是 | 入口 |
+|---|---|
+| 接手本仓库的 AI | [AGENTS.md](AGENTS.md) → [docs/STATE.md](docs/STATE.md) → [docs/REQUESTS.md](docs/REQUESTS.md) → [docs/lines/](docs/lines/) |
+| 第一次看这个项目的人 | [docs/INDEX.md](docs/INDEX.md)（按"我要做什么"导航） |
+| 想知道文档怎么组织、为什么这样组织 | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
+| 找旧路径找不到文件 | [docs/archive/MIGRATION-2026-10-20.md](docs/archive/MIGRATION-2026-10-20.md) |
 
 ## 目录
 
 ```text
-src/         RTL、Python算法源码及厂商依赖
-sim/         仿真与验证脚本
-build/       工程重建脚本与本地构建产物
-board/       上板程序、Overlay和操作说明
-data/        后续测试音频、参考结果与指标
-docs/        进度、实验、硬件说明及历史方案
-skill/       可复用开发与排查经验
-report/      设计报告及 AI 协作记录说明
-references/ 厂商与赛事参考资料
-scripts/     本地仓库辅助脚本
-tmp/         本地临时分析文件，不纳入 Git
+src/         RTL、Python 算法源码及厂商依赖
+sim/         仿真与软件测试
+build/       Vivado 工程重建脚本
+board/       上板 overlay、驱动与现场操作单
+docs/        文档：现状、契约、时间线、参考（唯一入口 docs/INDEX.md）
+skill/       可复用的开发与排查经验
+report/      证据：验证报告与 AI 协作原始记录
+references/  厂商手册、原理图与赛事资料
+scripts/     仓库辅助脚本（含文档守门 scripts/check_docs.py）
+data/        后续测试数据（当前为空，原始录音不入库）
+tmp/         本地临时文件，不纳入 Git
 ```
 
-待实现目录中的 README 仅说明预期内容，不代表功能已完成。文件路径采用英文，正文允许中文。
+`docs/` 内部分层（按变化速度，不按日期）：
 
-## 下一阶段
+```text
+docs/STATE.md        现状，覆盖式更新（唯一权威）
+docs/REQUESTS.md     线间诉求：谁要谁做什么、阻塞什么
+docs/WORKFLOW.md     3×(人+AI) 协作协议与拉取对齐流程
+docs/lines/          每条线的职责与边界
+docs/contracts/      现行接口契约（frozen/ 为已冻结的诊断接口）
+docs/log/            只追加的时间线：progress、experiments、handoffs
+docs/ref/            长期参考：架构、计划、教程、硬件
+docs/rules/          用户与团队的硬要求
+docs/archive/        冻结内容与迁移映射
+```
 
-先用已有数据统一新旧评价窗口，解释残差差异；随后开发限时、同等增益的闭环启用/旁路对照。补齐箱体、接线与增益记录，路径变化和自适应语音另行验收。
+## 常用命令
+
+```text
+# 软件测试（Python 需 NumPy）
+python -m unittest discover -s sim/feedback -p "test_*.py" -v
+
+# 用已有标定数据做逐频点分析与稳定增益估算（不需要板卡在线）
+python scripts/analyze_path.py --data-dir <含两个 npz 与候选 json 的目录> --output <结果.json>
+
+# 30 秒对齐：三条线到哪了、有没有等着我做的事（拉完代码先跑这个）
+python scripts/brief.py          # 可加 --line a|b|c 只看自己那条线
+
+# 文档守门：断链、孤儿、现状复述、契约状态头
+python scripts/check_docs.py
+```
 
 ## 资料使用与记录
 
-按团队要求使用 GitHub 私有仓库。当前未授予全部内容统一开源许可证；厂商 PDF 等第三方材料权利归原作者。赛前公开和许可证按届时规则处理，不自动改变可见性。
+按团队要求使用 GitHub 私有仓库。当前未授予全部内容统一开源许可证；
+厂商 PDF 等第三方材料权利归原作者。赛前公开与许可证按届时规则处理，不自动改变可见性。
 
-每次实验记录接线、输入选择、程序版本、结果和原始证据。推测与实测分开，历史计划保留日期；重要进度同步到本 README 和 docs/progress.md。
+推测与实测必须分开写，历史计划保留原始日期。原始录音未经同意不传出板卡；
+`data/` 中的原始音频不入库。
