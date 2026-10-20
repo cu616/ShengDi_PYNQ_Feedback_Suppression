@@ -121,7 +121,7 @@ def run_field_validation(fixture_id='box_v1_20261016',
         if ask('现场确认：配置与原标定夹具一致、固定语音源已就绪、音响可立即断电且本地采样已同意；输入 READY：').strip().upper() != 'READY':
             state.update(status='cancelled', stop_reason='operator_cancel_before_ready')
             return state
-        if ask('确认使用以上范围并开始；其余输入取消：').strip().upper() != 'START':
+        if ask('第二次确认：输入 START 才开始旁路/抵消配对；输入其他内容取消：').strip().upper() != 'START':
             state.update(status='cancelled', stop_reason='operator_cancel_before_start')
             return state
 

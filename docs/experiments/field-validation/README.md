@@ -18,10 +18,10 @@
 
 | 电脑本地完整路径 | 上传名 |
 |---|---|
-| `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\field_validation.py` | `field_validation.py` |
-| `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\field_trial.ipynb` | `field_trial.ipynb` |
-| `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\field_setup.json`（由上一步生成） | `field_setup.json` |
-| `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\manifest.json` | 仅板卡缺失时上传 |
+| `D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\board\audio_closed\field_validation.py` | `field_validation.py` |
+| `D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\board\audio_closed\field_trial.ipynb` | `field_trial.ipynb` |
+| `D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\board\audio_closed\field_setup.json`（由上一步生成） | `field_setup.json` |
+| `D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\board\audio_closed\manifest.json` | 仅板卡缺失时上传 |
 
 点击 `Upload` 选择文件；若再次出现 `Upload` 确认按钮，再点一次。覆盖同名运行器和Notebook。确认文件出现在板卡目录后打开Notebook。
 
@@ -37,7 +37,7 @@
 
 先确认箱盖、供电、接线、音响断电方式及固定位置手机循环语音；整批保持位置、Codec 音量、手机音量和接线不变。只有A操作板卡。输入框等待期间不能急停，尖叫或持续响声时立即切断音响电源。
 
-找到标题“代码格2：运行一次配对批次”、首行为 `field_result = field_validation.run_field_validation()` 的代码格，按 `Shift+Enter` 一次。阅读静音预检显示的模型哈希和增益范围；提示 `READY` 后启动手机循环语音，确认可断电后输入 `READY`；看到批次范围后输入 `START`。每项配置完成、准备听时再输入该项的 `START`。
+找到标题“代码格2：运行一次配对批次”、首行为 `field_result = field_validation.run_field_validation()` 的代码格，按 `Shift+Enter` 一次。第一次提示输入 `READY`：确认声源已就绪且能断电后输入。第二次提示输入 `START`：核对范围后输入。每项配置完成、准备听时，再按第三种提示输入该项的 `START`。输错或不想继续时，输入其他内容会取消/停止，不会开始下一项。
 
 每项听感按屏幕提示记录。听到尖叫、持续响声、杂音或出现恢复错误时停止；尖叫持续时先断音响电源。禁止运行无限循环或盲目提高增益。
 

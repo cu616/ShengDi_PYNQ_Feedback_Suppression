@@ -4,6 +4,10 @@
 > 其中"未上传/未验证"等字样只描述当日。**当前状态一律看 [STATE.md](../STATE.md)。**
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
+## 2026-10-20 A线澄清二次确认并修正文案
+
+用户提供第二次摘要：模型范围已正常生成 `−35 dB` 单档，第一次 `READY` 已通过；脚本第二次提示要求 `START`，用户再次输入 `READY`，触发 `operator_cancel_before_start`。`trials=[]`、发声0秒，没有现场效果证据。已将第二次提示改为明确的“第二次确认：输入 START 才开始旁路/抵消配对”，并同步Notebook预检SHA和操作包；最新版尚未上传板卡。详见[现场记录](../../report/verification/field-validation/model-bound-zero-playback-2026-10-20.md)。
+
 ## 2026-10-20 A线现场批次因模型增益上限零播放
 
 用户提供的 `field_651b97b20f6d/summary.json` 显示配置核验通过，候选模型 `L1=26.744`，估算小增益上限 `−28.545 dB`，扣除6 dB保护量后运行上限为 `−34.545 dB`。原计划从 `−30 dB` 开始，故 `gain_levels_db=[]`、`trials=[]`、`sound_seconds_completed=0`，脚本安全停止；无现场音频结论。A 已在本地将起点改为 `−35 dB`，该候选模型可生成一组成对档位，预计总发声4秒。新版尚未上传板卡，需下次现场前完成静音核验。具体证据和给B/C的事项见[现场记录](../../report/verification/field-validation/model-bound-zero-playback-2026-10-20.md)。
