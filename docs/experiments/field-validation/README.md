@@ -104,6 +104,8 @@
 
 `READY`和`START`提示都在软件静音阶段出现。现场输入只用于确认准备完成；音频只在某一项配置完成后，用户再次输入该项的 `START` 时开启。不要执行Notebook的Run All，也不要重复运行代码格2来跳过失败项。
 
+如果代码格2已经从 `In [*]` 变回执行编号，并输出 `结果：.../summary.json`，说明函数已退出，当前没有等待输入的 `READY` 框。`summary.json` 即使由异常退出也会生成，不代表批次成功。先在Jupyter文件列表打开 `base → audio → audio_closed → field_results → field_<id> → summary.json`，查看 `status` 和 `stop_reason`；不要直接重跑代码格2。只有运行中的代码格显示 `READY` 提示并在其下方出现输入框时，才在该框输入 `READY`。
+
 ### 第六步：下载并返回唯一结果文件
 
 Notebook结束或中途停止后，摘要位于板卡：

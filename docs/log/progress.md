@@ -24,6 +24,10 @@
 - `docs/INDEX.md`、`README.md` 的入口链路同步去掉诉求一环。
 
 没做什么：不改任何技术结论、不改 STATE 的现状与关键数字。
+## 2026-10-20 A 线澄清现场Notebook的READY输入位置
+
+用户反馈执行代码格2后找不到 `READY` 输入框。截图里执行编号已经返回，且输出 `summary.json` 路径，说明调用已退出而非等待输入。脚本在异常退出时同样保存摘要；具体停止原因需打开板卡 `field_results/field_<id>/summary.json` 查看 `status` 和 `stop_reason`。已把这一判别写入[操作包](../experiments/field-validation/README.md)与[恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。在停止原因明确前不重跑代码格2。
+
 ## 2026-10-20 A 线记录现场配置文件缺失的静音恢复步骤
 
 用户补传运行器后报告代码格1缺少板卡 `field_setup.json`。该检查在静音核验中，尚未运行批次。操作包补充单文件上传步骤：电脑本地配置模板上传至板卡 `base → audio → audio_closed`，确认列表出现后只重跑代码格1；模板须等现场条件确认后填写，不能为通过核验臆填。操作依据见[现场操作包](../experiments/field-validation/README.md)和[预检恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。没有播放音频。
