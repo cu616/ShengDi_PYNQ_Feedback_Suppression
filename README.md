@@ -17,7 +17,7 @@ ShengDi_PYNQ_Feedback_Suppression 是基于 PYNQ-Z2 的声反馈抑制项目：
 
 | 你是 | 入口 |
 |---|---|
-| 接手本仓库的 AI | [AGENTS.md](AGENTS.md) → [docs/STATE.md](docs/STATE.md) → [docs/REQUESTS.md](docs/REQUESTS.md) → [docs/lines/](docs/lines/) |
+| 接手本仓库的 AI | [AGENTS.md](AGENTS.md) → [docs/STATE.md](docs/STATE.md) → [docs/lines/](docs/lines/) |
 | 第一次看这个项目的人 | [docs/INDEX.md](docs/INDEX.md)（按"我要做什么"导航） |
 | 想知道文档怎么组织、为什么这样组织 | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
 | 找旧路径找不到文件 | [docs/archive/MIGRATION-2026-10-20.md](docs/archive/MIGRATION-2026-10-20.md) |
@@ -42,7 +42,6 @@ tmp/         本地临时文件，不纳入 Git
 
 ```text
 docs/STATE.md        现状，覆盖式更新（唯一权威）
-docs/REQUESTS.md     线间诉求：谁要谁做什么、阻塞什么
 docs/WORKFLOW.md     3×(人+AI) 协作协议与拉取对齐流程
 docs/lines/          每条线的职责与边界
 docs/contracts/      现行接口契约（frozen/ 为已冻结的诊断接口）

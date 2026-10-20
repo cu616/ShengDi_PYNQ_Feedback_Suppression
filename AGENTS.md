@@ -8,11 +8,12 @@
 
 1. [docs/STATE.md](docs/STATE.md) —— 现在在哪一步、什么已验证、什么没有、板卡是否空闲。
    **这是唯一权威。** 任何其他文件里的"当前状态"都视为历史快照。
-2. [docs/REQUESTS.md](docs/REQUESTS.md) —— **扫"状态=open 且到=你这条线"的行。**
-   那是别人在等你的活，优先级高于你自己排的计划。
-3. [docs/lines/](docs/lines/) 里属于你这条线的那份 —— 职责、文件边界、第一轮验收。
-4. 只在涉及接口时才读 [docs/contracts/README.md](docs/contracts/README.md) 的版本表，
+2. [docs/lines/](docs/lines/) 里属于你这条线的那份 —— 职责、文件边界、第一轮验收。
+3. 只在涉及接口时才读 [docs/contracts/README.md](docs/contracts/README.md) 的版本表，
    再点进现行契约。`contracts/frozen/` 下的不要读。
+
+**别人在等你做什么，不在仓库里。** 需要队友配合的事由人转发（微信/当面），
+仓库只记录自己做完了什么、卡在哪里。
 
 若是刚 `git pull` 过、距上次开工超过一天：再看
 [docs/log/progress.md](docs/log/progress.md) 顶部 1–3 条，弄清自上次以来变了什么。
@@ -27,8 +28,8 @@
 3. 改了接口 / 系数格式 / 寄存器：先改 [docs/contracts/](docs/contracts/) 并把版本号 +1，
    再在 log 里写一条"接口变更"，并通知另外两条线。
 4. 原始证据进 `report/verification/<主题>/`，逐字提示与纠错轨迹进 `report/ai-records/`。
-5. 如果完成了别人提的诉求，去 [docs/REQUESTS.md](docs/REQUESTS.md) 把对应行改成
-   `done` 并填交付物链接——**不填，对方会一直等着**。
+5. 把"需要队友配合的事"写成一段**可以直接转发的口语化文字**交给用户（不要写进仓库），
+   写清：要什么、卡住什么、怎么算完成。用户会用微信转给对方。
 6. 给出一段**可直接粘贴的提交信息**（格式见 WORKFLOW §9），并列出本次改动的文件。
    人只负责执行 git；不要让人来判断哪些文件该提交。
 

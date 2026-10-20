@@ -9,7 +9,6 @@
 | 我要… | 读这个 | 不要读 |
 |---|---|---|
 | 知道现在是什么状态、什么已验证 | [STATE.md](STATE.md) | progress.md（那是历史） |
-| 知道别人在等我做什么 / 我要别人做什么 | [REQUESTS.md](REQUESTS.md) | 散落在聊天里的口头约定 |
 | 知道 A/B/C 谁负责什么、边界在哪 | [lines/README.md](lines/README.md) | 旧 prompt 文件 |
 | 按我这条线开工 | [lines/a-field.md](lines/a-field.md) · [b](lines/b-algorithm.md) · [c](lines/c-measurement.md) | — |
 | 查某个接口 / 寄存器 / 系数格式 | [contracts/README.md](contracts/README.md) | frozen/ 下的诊断接口 |
@@ -24,7 +23,6 @@
 | 目录 | 放什么 | 更新方式 | 谁维护 | AI 何时读 |
 |---|---|---|---|---|
 | `STATE.md` | 现状、已验证/未验证、关键数字、板卡占用 | **原地覆盖** | 三条线各改自己那段 | **每次会话开始，必读** |
-| `REQUESTS.md` | 线间诉求：谁要谁做什么、阻塞什么、怎样算完成 | 建行 + 改状态 | 请求方建行，被请求方关行 | **每次会话开始，必读** |
 | `WORKFLOW.md` | 3×(人+AI) 协作协议、文档规则 | 很少改 | 团队共识 | 首次接手时读一遍 |
 | `lines/` | 每条线的职责、边界、验收 | 任务变更时改 | 各线自己 | 开工时读自己那份 |
 | `contracts/` | 现行接口契约（格式、时序、寄存器） | **版本化**，改前通知 | 生产方 | 涉及接口时读 |
