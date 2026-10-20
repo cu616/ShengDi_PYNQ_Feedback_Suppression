@@ -20,8 +20,8 @@
 
 ### A 实物与板卡
 
-**最后动作**：2026-10-20 在[操作包](experiments/field-validation/README.md)补充代码格2退出后通过 summary 判断 `READY` 是否等待及如何定位停止原因。
-**当前卡点**：现场正常扩声 A/B 尚未执行；需先查看本轮 `summary.json` 的 `status` 与 `stop_reason`，再按原因恢复。没有授权继续启动现场批次。
+**最后动作**：2026-10-20 根据 `summary.json` 中 `JSONDecodeError` 与零播放记录，补充现场配置JSON错误恢复步骤。
+**当前卡点**：现场正常扩声 A/B 尚未执行；需修复板卡 `field_setup.json` 语法并通过静音代码格1。配置实值和现场条件未确认前不启动代码格2。
 
 - 唯一操板者。
 - 下一个可交付：把 `training_box_v1.npz`、`validation_box_v1.npz`、

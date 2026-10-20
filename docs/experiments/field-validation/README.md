@@ -90,6 +90,12 @@
 
 该文件当前是待现场填写的模板；不要为通过代码格1而猜填夹具、接线、位置或音量。现场条件未确认时，完成代码格1后停下，不运行代码格2。现场条件确认后，按第三步填入实值、保存，再重新执行代码格1核验。
 
+#### `summary.json` 显示 `JSONDecodeError` 的恢复
+
+若 `stop_reason` 是 `JSONDecodeError: ... line N column M`，错误来自板卡上的 `field_setup.json` 文本格式。按提示打开板卡 `base → audio → audio_closed → field_setup.json`，定位第 N 行第 M 列附近修复，再保存。常见格式要求：属性名和字符串使用英文双引号；布尔值写 `true`/`false`，空值写 `null`，数值不加单位或引号；属性之间用英文逗号，最后一项后不加逗号。数组格式为 `[x, y, z]`。不要用 Python 单引号字典格式，也不要凭猜测填写现场值或确认标志。
+
+修正后先打开 `field_trial.ipynb`，只执行代码格1核验JSON及软件包。看到 `FIELD_PACKAGE_OK; NO_AUDIO_STARTED` 后，若现场值尚未确认就停止；若配置完整且现场确已就绪，再按第五步重新执行代码格2。前一份summary若 `trials`/`pairs` 为空且 `sound_seconds_completed` 为0，表示该次没有进入任何播放项；保留它作为失败记录，不覆盖或删除。
+
 ### 第五步：现场就绪后启动整批
 
 代码、配置和版本核验都完成后，再准备声源和音响。一次只由A控制板卡，不要同时运行其他音频Notebook。

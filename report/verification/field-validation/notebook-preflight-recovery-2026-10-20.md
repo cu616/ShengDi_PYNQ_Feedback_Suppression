@@ -20,6 +20,8 @@ Notebook已增加缺文件与哈希不匹配的明确报错，并把同一单文
 
 用户随后报告代码格1无法找到板卡 `field_setup.json`。运行器已通过哈希核验，停止在配置文件存在性检查，仍未导入并运行批次。只需上传电脑本地 `board/audio_closed/field_setup.json` 模板到相同板卡目录，再重跑代码格1。模板不含现场实值；现场条件未核对时不要臆填，也不要运行代码格2。操作步骤已补入[现场操作包](../../../docs/experiments/field-validation/README.md)。
 
+用户提供的后续summary显示 `status=stopped`、`trials=[]`、`pairs=[]`、`sound_seconds_completed=0`，`stop_reason=JSONDecodeError: Expecting value: line 12 column 33 (char 436)`。错误发生于读取配置JSON，未进入READY输入或任何播放项。板卡编辑版配置未提供给本地，故不能进一步断定具体非法字符；操作包已补充按行列定位及JSON语法恢复步骤。修正后先运行代码格1；代码格2仅在实值配置完整且现场条件确认后再运行。
+
 ## READY交互位置说明
 
 用户运行代码格2后，截图中的执行编号已返回数字，输出了 `结果：field_results/field_<id>/summary.json`，但没有显示READY提示。这表示函数已经退出，不存在可继续输入的交互框；脚本异常退出时也会保存summary并打印该路径。当前停止原因未知，必须先从板卡Jupyter文件列表打开 `base → audio → audio_closed → field_results → field_<id> → summary.json`，读取 `status` 与 `stop_reason`，再决定恢复步骤。未要求用户重跑或开始发声。

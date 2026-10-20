@@ -24,6 +24,10 @@
 - `docs/INDEX.md`、`README.md` 的入口链路同步去掉诉求一环。
 
 没做什么：不改任何技术结论、不改 STATE 的现状与关键数字。
+## 2026-10-20 A 线处理现场配置JSON解析失败
+
+用户返回的summary为 `status=stopped`、`trials=[]`、`pairs=[]`、`sound_seconds_completed=0`，错误指向板卡 `field_setup.json` 第12行第33列的 `JSONDecodeError`。据此确认该次没有进入READY交互或播放项；由于板卡编辑版配置未提供，未猜测非法字符。操作包新增按行列定位、JSON语法核对和先重跑静音代码格1的恢复步骤，见[恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。
+
 ## 2026-10-20 A 线澄清现场Notebook的READY输入位置
 
 用户反馈执行代码格2后找不到 `READY` 输入框。截图里执行编号已经返回，且输出 `summary.json` 路径，说明调用已退出而非等待输入。脚本在异常退出时同样保存摘要；具体停止原因需打开板卡 `field_results/field_<id>/summary.json` 查看 `status` 和 `stop_reason`。已把这一判别写入[操作包](../experiments/field-validation/README.md)与[恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。在停止原因明确前不重跑代码格2。
