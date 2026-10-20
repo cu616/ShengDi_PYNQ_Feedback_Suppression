@@ -6,7 +6,7 @@
 
 ## 第一步：填写电脑上的配置
 
-打开 [field_setup_ready_to_edit.json](../../../board/audio_closed/field_setup_ready_to_edit.json)，核对坐标原点及数组顺序：模块1 `[12,6,3]`、模块2 `[6,12,3]`。核对无误后另存为 `field_setup.json`。麦克风增益为 `cantcontrol`；扬声器无外置音量按钮已单独记录。
+打开 [field_setup_ready_to_edit.json](../../../board/audio_closed/field_setup_ready_to_edit.json)，核对坐标原点及数组顺序：模块1 `[12,6,3]`、模块2 `[6,12,3]`。核对无误后另存为 `field_setup.json`，覆盖本地空模板。麦克风增益为 `cantcontrol`；扬声器无外置音量按钮已单独记录。
 
 另存为 `field_setup.json`，放在电脑目录 `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\`。
 
@@ -14,7 +14,16 @@
 
 在板卡 Jupyter 文件页进入 `base → audio → audio_closed`，完整路径为 `/home/xilinx/jupyter_notebooks/base/audio/audio_closed/`。
 
-点击 `Upload`，上传电脑上的 `field_validation.py`、刚保存的 `field_setup.json` 和 `field_trial.ipynb`。若文件选择后再出现一次 `Upload`，再点一次确认。若板卡目录没有 `manifest.json`，也上传电脑上的 `manifest.json`；已有则保留。覆盖同名脚本和Notebook。
+上传以下电脑文件至该板卡目录：
+
+| 电脑本地完整路径 | 上传名 |
+|---|---|
+| `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\field_validation.py` | `field_validation.py` |
+| `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\field_trial.ipynb` | `field_trial.ipynb` |
+| `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\field_setup.json`（由上一步生成） | `field_setup.json` |
+| `D:\OCadence_Project\Flushbonading_FPGA_Contest\board\audio_closed\manifest.json` | 仅板卡缺失时上传 |
+
+点击 `Upload` 选择文件；若再次出现 `Upload` 确认按钮，再点一次。覆盖同名运行器和Notebook。确认文件出现在板卡目录后打开Notebook。
 
 确认文件列表出现以上文件后，点击打开 `field_trial.ipynb`。不要运行 `Run All`。
 
