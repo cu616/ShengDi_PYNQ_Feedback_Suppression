@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "fixture_id": "box_v1_20261016",
+  "calibration_match_original": true,
+  "operator_verified": true,
+  "codec_hp_volume": 40,
+  "sample_rate_hz": 48828.125,
+  "calibration_excitation": "audio_calibrate PL-generated known noise; external phone source stopped",
+  "wiring": {
+    "microphone_route": "MAX4466 -> LINE_IN",
+    "speaker_route": "PYNQ-Z2 HP+MIC -> powered speaker",
+    "channel_mapping_verified": true,
+    "max4466_supply_v": 5,
+    "max4466_gain_setting": "cantcontrol"
+  },
+  "box": {
+    "dimensions_cm": [17, 17, 7],
+    "lid_state": "closed",
+    "notes": "soundproof_cotton"
+  },
+  "microphone": {
+    "position_xyz_cm": [2, 2, 1],
+    "orientation": "xiangshang"
+  },
+  "speaker": {
+    "position_xyz_cm": [
+      [12, 6, 3],
+      [6, 12, 3]
+    ],
+    "orientation": "xiangshang",
+    "external_volume_control": "无外置音量调节按钮（现场已确认）",
+    "external_volume_control_verified": true
+  },
+  "normal_speech_source": {
+    "device": "phone",
+    "position_xyz_cm": [0, 3.5, 7],
+    "orientation": "xzhoufufangxiang",
+    "playback_volume_setting": "50%",
+    "loop_or_clip_id": "girl_volome"
+  },
+  "operator_notes": "实际坐标原点为盒子的一个角；扬声器坐标按数组顺序为模块1 [12,6,3]、模块2 [6,12,3]，单位cm。"
+}

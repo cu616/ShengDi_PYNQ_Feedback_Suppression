@@ -9,7 +9,7 @@ import numpy as np
 
 
 def model_gain_plan(model_path, fixture_id='box_v1_20261016', hp_volume=40,
-                    sample_rate=48828.125, start_db=-30.0, step_db=3.0,
+                    sample_rate=48828.125, start_db=-35.0, step_db=3.0,
                     max_pairs=8, margin_db=6.0):
     """Return a conservative model-based test ceiling and levels.
 
@@ -36,7 +36,8 @@ def model_gain_plan(model_path, fixture_id='box_v1_20261016', hp_volume=40,
         raise ValueError('candidate has no usable path energy')
     bound_db = float(-20.0 * np.log10(l1))
     ceiling_db = bound_db - margin_db
-    # The first useful step is 6 dB above the already completed, inaudible -36 dB check.
+    # Start at -35 dB: the previous -36 dB check was inaudible, while this remains
+    # inside the model-derived operating ceiling for the current candidate.
     levels = []
     for i in range(max_pairs):
         gain = start_db + step_db * i
@@ -114,7 +115,7 @@ def run_field_validation(fixture_id='box_v1_20261016',
                      hp_volume=40, source='fixed phone speech',
                      planned_max_sound_seconds=4.0 * len(plan['gain_levels_db']))
         if not plan['gain_levels_db']:
-            raise RuntimeError('model-derived safe range does not reach -30 dB; no playback authorized by this plan')
+            raise RuntimeError('model-derived safe range does not reach -35 dB; no playback authorized by this plan')
         print('本地模型估算（不是稳定阈值）：', json.dumps(plan, ensure_ascii=False))
         save()
         if ask('现场确认：配置与原标定夹具一致、固定语音源已就绪、音响可立即断电且本地采样已同意；输入 READY：').strip().upper() != 'READY':
