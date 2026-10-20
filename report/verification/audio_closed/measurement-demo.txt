@@ -1,0 +1,15 @@
+Command: python scripts/replay-audio.py --demo --output <new JSON> --trace <new CSV>
+CONTROLLED_REPLAY: 13/13 passed
+steady_tone: no_growth_detected; expected=no_growth_detected; delay=None
+broadband_noise: no_growth_detected; expected=no_growth_detected; delay=None
+voiced_proxy_not_real_speech: no_growth_detected; expected=no_growth_detected; delay=None
+short_tonal_burst: no_growth_detected; expected=no_growth_detected; delay=None
+quick_fade_then_steady: no_growth_detected; expected=no_growth_detected; delay=None
+growth_slow: suspected_howl; expected=suspected_howl; delay=0.502
+growth_off_bin: suspected_howl; expected=suspected_howl; delay=0.406
+growth_high_frequency: suspected_howl; expected=suspected_howl; delay=0.406
+full_scale_protection: full_scale; expected=full_scale; delay=None
+missing_middle: insufficient_data; expected=insufficient_data; delay=None
+tail_only: insufficient_data; expected=insufficient_data; delay=None
+model_loop_cancel: no_growth_detected; expected=no_growth_detected; delay=None
+model_loop_bypass: full_scale; expected=full_scale; delay=None

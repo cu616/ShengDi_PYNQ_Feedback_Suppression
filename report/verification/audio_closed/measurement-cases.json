@@ -1,0 +1,988 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "controlled_replay_validation",
+  "hardware_executed": false,
+  "cases": [
+    {
+      "name": "steady_tone",
+      "expected_verdict": "no_growth_detected",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "no_growth_detected",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [],
+        "first_suspected_howl": null,
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "broadband_noise",
+      "expected_verdict": "no_growth_detected",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "no_growth_detected",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [],
+        "first_suspected_howl": null,
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "voiced_proxy_not_real_speech",
+      "expected_verdict": "no_growth_detected",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "no_growth_detected",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [],
+        "first_suspected_howl": null,
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "short_tonal_burst",
+      "expected_verdict": "no_growth_detected",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "no_growth_detected",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [],
+        "first_suspected_howl": null,
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "quick_fade_then_steady",
+      "expected_verdict": "no_growth_detected",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "no_growth_detected",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [],
+        "first_suspected_howl": null,
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "growth_slow",
+      "expected_verdict": "suspected_howl",
+      "construction": "Known controlled signal; growth onset explicitly set",
+      "growth_onset_seconds": 0.25,
+      "alarm_delay_seconds": 0.502,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "suspected_howl",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [
+          {
+            "kind": "suspected_howl",
+            "frame": 12032,
+            "time_seconds": 0.752,
+            "peak_hz": 437.5,
+            "candidate_since_frame": 10752,
+            "evidence_first_frame": 2816,
+            "rise_db": 3.760342948962119,
+            "slope_db_per_second": 7.795042004430442,
+            "fit_r2": 0.9974605720736615
+          }
+        ],
+        "first_suspected_howl": {
+          "kind": "suspected_howl",
+          "frame": 12032,
+          "time_seconds": 0.752,
+          "peak_hz": 437.5,
+          "candidate_since_frame": 10752,
+          "evidence_first_frame": 2816,
+          "rise_db": 3.760342948962119,
+          "slope_db_per_second": 7.795042004430442,
+          "fit_r2": 0.9974605720736615
+        },
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "growth_off_bin",
+      "expected_verdict": "suspected_howl",
+      "construction": "Known controlled signal; growth onset explicitly set",
+      "growth_onset_seconds": 0.25,
+      "alarm_delay_seconds": 0.406,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "suspected_howl",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [
+          {
+            "kind": "suspected_howl",
+            "frame": 10496,
+            "time_seconds": 0.656,
+            "peak_hz": 921.875,
+            "candidate_since_frame": 9216,
+            "evidence_first_frame": 1280,
+            "rise_db": 8.980437298192996,
+            "slope_db_per_second": 19.51410565964467,
+            "fit_r2": 0.9543997776741069
+          }
+        ],
+        "first_suspected_howl": {
+          "kind": "suspected_howl",
+          "frame": 10496,
+          "time_seconds": 0.656,
+          "peak_hz": 921.875,
+          "candidate_since_frame": 9216,
+          "evidence_first_frame": 1280,
+          "rise_db": 8.980437298192996,
+          "slope_db_per_second": 19.51410565964467,
+          "fit_r2": 0.9543997776741069
+        },
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "growth_high_frequency",
+      "expected_verdict": "suspected_howl",
+      "construction": "Known controlled signal; growth onset explicitly set",
+      "growth_onset_seconds": 0.25,
+      "alarm_delay_seconds": 0.406,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "suspected_howl",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [
+          {
+            "kind": "suspected_howl",
+            "frame": 10496,
+            "time_seconds": 0.656,
+            "peak_hz": 7000.0,
+            "candidate_since_frame": 9216,
+            "evidence_first_frame": 1280,
+            "rise_db": 8.980371932409511,
+            "slope_db_per_second": 19.51477426030884,
+            "fit_r2": 0.9543722339704754
+          }
+        ],
+        "first_suspected_howl": {
+          "kind": "suspected_howl",
+          "frame": 10496,
+          "time_seconds": 0.656,
+          "peak_hz": 7000.0,
+          "candidate_since_frame": 9216,
+          "evidence_first_frame": 1280,
+          "rise_db": 8.980371932409511,
+          "slope_db_per_second": 19.51477426030884,
+          "fit_r2": 0.9543722339704754
+        },
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "full_scale_protection",
+      "expected_verdict": "full_scale",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "full_scale",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [
+          {
+            "kind": "full_scale",
+            "frame": 16000,
+            "time_seconds": 1.0
+          }
+        ],
+        "first_suspected_howl": null,
+        "full_scale_samples": 800,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 32000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 122,
+          "history_ready_windows": 90,
+          "spectral_intervals": [
+            [
+              0,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": []
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "missing_middle",
+      "expected_verdict": "insufficient_data",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "insufficient_data",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [],
+        "first_suspected_howl": null,
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 28800,
+          "fraction": 0.9,
+          "complete": false,
+          "observed_intervals": [
+            [
+              0,
+              12800
+            ],
+            [
+              16000,
+              32000
+            ]
+          ],
+          "missing_intervals": [
+            [
+              12800,
+              16000
+            ]
+          ],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 106,
+          "history_ready_windows": 42,
+          "spectral_intervals": [
+            [
+              0,
+              12800
+            ],
+            [
+              16000,
+              31872
+            ]
+          ],
+          "spectral_unanalyzed_intervals": [
+            [
+              12800,
+              16000
+            ],
+            [
+              31872,
+              32000
+            ]
+          ]
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "tail_only",
+      "expected_verdict": "insufficient_data",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 16000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "insufficient_data",
+        "analysis": {
+          "window_frames": 1024,
+          "hop_frames": 256,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 8000.0
+        },
+        "events": [],
+        "first_suspected_howl": null,
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 32000,
+          "observed_frames": 5376,
+          "fraction": 0.168,
+          "complete": false,
+          "observed_intervals": [
+            [
+              26624,
+              32000
+            ]
+          ],
+          "missing_intervals": [
+            [
+              0,
+              26624
+            ]
+          ],
+          "sufficient_contiguous_history": false,
+          "minimum_contiguous_frames": 10496,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 18,
+          "history_ready_windows": 0,
+          "spectral_intervals": [
+            [
+              26624,
+              32000
+            ]
+          ],
+          "spectral_unanalyzed_intervals": [
+            [
+              0,
+              26624
+            ]
+          ]
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "model_loop_cancel",
+      "expected_verdict": "no_growth_detected",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 8000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "no_growth_detected",
+        "analysis": {
+          "window_frames": 512,
+          "hop_frames": 128,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 4000.0
+        },
+        "events": [],
+        "first_suspected_howl": null,
+        "full_scale_samples": 0,
+        "coverage": {
+          "total_frames": 12000,
+          "observed_frames": 12000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              12000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 5248,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 90,
+          "history_ready_windows": 58,
+          "spectral_intervals": [
+            [
+              0,
+              11904
+            ]
+          ],
+          "spectral_unanalyzed_intervals": [
+            [
+              11904,
+              12000
+            ]
+          ]
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    },
+    {
+      "name": "model_loop_bypass",
+      "expected_verdict": "full_scale",
+      "construction": "Known controlled signal or pure-delay loop with analytic gain condition",
+      "growth_onset_seconds": null,
+      "alarm_delay_seconds": null,
+      "passed": true,
+      "result": {
+        "schema_version": 1,
+        "detector_version": "narrowband-growth-v1",
+        "offline_only": true,
+        "sample_rate_hz": 8000.0,
+        "config": {
+          "window_seconds": 0.064,
+          "hop_seconds": 0.016,
+          "growth_seconds": 0.5,
+          "confirm_seconds": 0.08,
+          "minimum_rise_db": 3.0,
+          "minimum_slope_db_per_second": 6.0,
+          "minimum_fit_r2": 0.85,
+          "minimum_tonal_fraction": 0.55,
+          "minimum_tonal_dbfs": -70.0,
+          "low_hz": 20.0,
+          "high_hz": 20000.0,
+          "frequency_tolerance_bins": 2
+        },
+        "verdict": "full_scale",
+        "analysis": {
+          "window_frames": 512,
+          "hop_frames": 128,
+          "history_windows": 33,
+          "fft_bin_hz": 15.625,
+          "monitored_first_bin_hz": 31.25,
+          "monitored_last_bin_hz": 4000.0
+        },
+        "events": [
+          {
+            "kind": "full_scale",
+            "frame": 100,
+            "time_seconds": 0.0125
+          }
+        ],
+        "first_suspected_howl": null,
+        "full_scale_samples": 11890,
+        "coverage": {
+          "total_frames": 12000,
+          "observed_frames": 12000,
+          "fraction": 1.0,
+          "complete": true,
+          "observed_intervals": [
+            [
+              0,
+              12000
+            ]
+          ],
+          "missing_intervals": [],
+          "sufficient_contiguous_history": true,
+          "minimum_contiguous_frames": 5248,
+          "minimum_contiguous_seconds": 0.656,
+          "analyzed_windows": 90,
+          "history_ready_windows": 58,
+          "spectral_intervals": [
+            [
+              0,
+              11904
+            ]
+          ],
+          "spectral_unanalyzed_intervals": [
+            [
+              11904,
+              12000
+            ]
+          ]
+        },
+        "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+      }
+    }
+  ],
+  "passed": 13,
+  "total": 13,
+  "interpretation": "Controlled fixtures only; not real-speech error rates or measured MSG/ASG"
+}

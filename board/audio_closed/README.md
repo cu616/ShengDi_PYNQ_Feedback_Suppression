@@ -2,6 +2,24 @@
 
 当前四项基础试验均已返回通过，后续请使用 [批次操作单](BATCH_GUIDE.md)，不用重复本页基础步骤。本页保留供首次接手者使用。
 
+## 电脑侧离线回放（不发声）
+
+在有 NumPy 的 Python 环境中，从仓库根目录执行。此电脑的独立解释器位于
+`tmp/python-env/Scripts/python.exe`；可用它替换下面命令里的 `python`。
+
+```text
+python scripts/replay-audio.py --demo --output tmp/replay-cases.json --trace tmp/replay-trace.csv
+python scripts/replay-audio.py --input <已有NPZ> --channel residual --output tmp/replay-result.json --trace tmp/replay-result.csv
+```
+
+输出路径必须是新文件，已有文件不会被覆盖。默认分析残差，也可选择 microphone、reference、prediction。
+工具不导入 PYNQ，不加载板卡、不播放声音、不上传录音。
+JSON 给出事件和覆盖情况，CSV 给出逐窗依据。现有闭环 NPZ 的尾缓存会保留原始帧号，
+不能通过把文件当作从 0 开始来掩盖未观测区间。
+数据、参数、结果口径与限制见 [离线测评契约](../../docs/contracts/audio-closed-v1.md#离线测评-v12026-10-20c)，
+受控例子和验证记录见 [回放证据](../../report/verification/audio_closed/batch-control.md#2026-10-20-离线增长判据与回放)。
+工具尚未接入板卡运行中的保护；使用离线结果不替代既有现场停止手段。
+
 ## 首次上传（已上传者跳过）
 
 在板卡Jupyter的base/audio新建audio_closed文件夹，将本地同名目录里的bit、hwh、三个py、manifest.json、closed_trial.ipynb上传。打开closed_trial.ipynb。

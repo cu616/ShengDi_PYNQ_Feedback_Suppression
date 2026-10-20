@@ -1,0 +1,4 @@
+ERROR report/verification/audio_closed/batch-control.md: 断链 -> measurement-doc-check.txt
+INFO  REQUESTS: 4 条，其中 2 条 open
+
+扫描 94 个 markdown 文件：1 错误，0 警告
