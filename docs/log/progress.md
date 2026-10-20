@@ -26,7 +26,7 @@
 没做什么：不改任何技术结论、不改 STATE 的现状与关键数字。
 ## 2026-10-20 A 线补齐现场配置字段说明并识别夹具不匹配风险
 
-用户贴出field_setup.json后确认，操作包此前没有逐字段填写说明。该内容存在JSON语法错误（缺布尔值、裸字符串、未引用百分比、注释），也把两只麦克风坐标放进单个音箱坐标字段。当前结构与标定记录只包含一只MAX4466；双麦克风夹具及模型适用性未知，且多个现场确认标志缺少依据。因此先停止本轮，不能把calibration_match_original设为true后继续。操作包已新增字段类型、用途、填写来源和本次具体错误清单；审查依据见[配置审查记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。
+用户贴出field_setup.json后澄清固定硬件是两个扬声器模块、一个MAX4466麦克风；此前把注释误读为双麦克风。操作包已修正为两组扬声器坐标，并区分麦克风增益与扬声器外置音量控制字段。配置仍有channel_mapping_verified空值与JSON注释等语法错误；operator_notes类型不符，音箱控制备注与确认标志矛盾。原标定资料没有完整记录扬声器布置，需先确认两只扬声器是否与标定条件相同，再决定夹具匹配标志。审查依据见[配置审查记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。
 
 ## 2026-10-20 A 线处理现场配置JSON解析失败
 

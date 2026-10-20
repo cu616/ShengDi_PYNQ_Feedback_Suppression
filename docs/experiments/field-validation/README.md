@@ -57,26 +57,26 @@
 | wiring.microphone_route / speaker_route | 字符串 | 按实际接线记录，模板值分别是 “MAX4466 -> LINE_IN”、“PYNQ-Z2 HP+MIC -> powered speaker”；若现场不同，停止并重新评估模型。 |
 | wiring.channel_mapping_verified | 布尔值 | 核对实际左右声道/输入映射后填 true 或 false；未知时不能留空。只有确认正确才继续。 |
 | wiring.max4466_supply_v | 数字 | 记录麦克风实测或电源标称供电电压，不带 V 字符。 |
-| wiring.max4466_gain_setting | 字符串或数字 | 记录前级实际增益档位/旋钮位置；不能留 null。不要猜测。 |
+| wiring.max4466_gain_setting | 字符串或数字 | 记录MAX4466麦克风前级实际增益档位/旋钮位置；若该模块确实没有可调增益，可写 “cantcontrol（模块无可调增益）”。这与扬声器音量控制是两个不同字段。 |
 | box.dimensions_cm | 三个数字的数组 | 箱体内尺寸 [长, 宽, 高]，单位厘米。 |
 | box.lid_state | 字符串 | 记录实际箱盖状态，例如 “closed”。 |
 | box.notes | 字符串 | 记录实际内衬/吸音材料等；没有可记录内容时写清 “无”，不要留 null。 |
 | microphone.position_xyz_cm | 三个数字的数组 | 当前模板只支持一只建模麦克风的位置。记录它相对已说明坐标原点的 [x, y, z]。 |
 | microphone.orientation | 字符串 | 描述这只麦克风的朝向，例如 “朝上”；写实际方向。 |
-| speaker.position_xyz_cm | 三个数字的数组 | 记录音箱位置，不是麦克风位置；只能填一组 [x, y, z]。 |
-| speaker.orientation | 字符串 | 记录音箱朝向，例如 “朝向箱体开口”；按实际填写。 |
-| speaker.external_volume_control | 字符串 | 记录音箱外置旋钮/控制器的实际状态；若没有，写 “无外置音量控制（现场已检查）”。 |
+| speaker.position_xyz_cm | 两组三维坐标 | 本项目现场使用两个固定扬声器模块时，按模块顺序填 [[x1, y1, z1], [x2, y2, z2]]；每组是对应扬声器的位置，不是麦克风位置。坐标单位厘米。 |
+| speaker.orientation | 字符串 | 记录两只扬声器的共同朝向，例如 “均朝向箱体开口”；若朝向不同，在字符串中分别注明编号与方向。 |
+| speaker.external_volume_control | 字符串 | 记录扬声器模块外置旋钮/控制器的实际状态；若现场确认没有，写 “无外置音量调节按钮（现场已确认）”。 |
 | speaker.external_volume_control_verified | 布尔值 | 实际检查并确认音箱音量不会由未知外置旋钮改变时才填 true。不能一边写“待核实”一边填 true。 |
 | normal_speech_source.device | 字符串 | 本次固定语音源设备，例如模板中的 “phone”。 |
 | normal_speech_source.position_xyz_cm | 三个数字的数组 | 手机相对同一坐标原点的位置。 |
 | normal_speech_source.orientation | 字符串 | 手机扬声器朝向。 |
 | normal_speech_source.playback_volume_setting | 数字或字符串 | 记录手机实际音量档位；百分比要写成字符串，如 “50%”，不能裸写 50%。 |
 | normal_speech_source.loop_or_clip_id | 字符串 | 记录循环文件名或片段标识，字符串必须加英文双引号。 |
-| operator_notes | 字符串 | 记录坐标原点、测量方式、两只麦克风等无法由当前模板表达的现场信息；本轮要求非空。 |
+| operator_notes | 字符串 | 记录坐标原点、测量方式、左右扬声器坐标顺序及其他无法由独立字段表达的现场信息；本轮要求非空文字，不能填布尔值 true。 |
 
-**当前模板只表达一只麦克风和一只音箱。** 你若现场确有两只麦克风，不能把六个坐标写进单个音箱坐标字段，也不能把 calibration_match_original 直接设为 true。现有标定文档记录的是一只 MAX4466；双麦克风布置与模型夹具的对应关系未经确认，本轮先停止，不运行代码格2。需要先恢复原标定的一只麦克风布置，或由B明确模型如何对应新的双麦克风接法后再更新配置结构。
+**当前模板表达一只MAX4466麦克风和两只扬声器模块。** 两只扬声器的位置必须写成两组三维数组，例如格式为 [[12, 6, 3], [6, 12, 3]]；这些数字只展示格式，不能代替现场测量。JSON中的 #注释必须删除。标定资料确认使用MAX4466，但没有完整记录两只扬声器的具体位置；只有确认原标定时也是这两只扬声器且位置、接线和其他条件一致，才可将 calibration_match_original 设为 true。若双扬声器布置与标定时不同或无法确认，停止本轮，不沿用旧模型。
 
-JSON格式注意：属性名和字符串用英文双引号；字符串值如 “closed” 必须带双引号；布尔值是小写 true / false；空值是 null；数组只放数字并以英文逗号分隔；JSON中不允许 # 注释。你返回的文本中 channel_mapping_verified 后没有值，closed、soundproof_cotton、xiangshang、xzhoufufangxiang、girl_volome 是未加引号的裸字符串，50% 也不是合法JSON值，行尾 #有两个麦克风 注释非法。这些都会造成解析错误。即使修好语法，max4466_gain_setting 与 operator_notes 仍为 null，会被运行器拒绝。
+JSON格式注意：属性名和字符串用英文双引号；字符串值如 “closed” 必须带双引号；布尔值是小写 true / false；空值是 null；数组只放数字并以英文逗号分隔；JSON中不允许 # 注释。你返回的文本中 channel_mapping_verified 后没有值，行尾 #有两个麦克风 注释非法；其余原先未加引号的裸字符串和50%也需要分别加双引号。max4466_gain_setting 现在写成字符串后格式有效，但应明确表示麦克风前级增益不可调。operator_notes 为 true 虽然是合法JSON布尔值，却不符合该字段要求的非空说明文字，应写成说明坐标原点与现场布置的字符串。
 
 仅在现场人员确认反馈路径与原标定夹具一致时，才把 calibration_match_original 和 operator_verified 设为 true；声道映射和扬声器音量控制核对也要按实际情况填写。模板中仍有空项、接线未确认或夹具不一致时，不进入下一步发声。脚本会拒绝不完整配置并保存停止原因。
 
