@@ -1,0 +1,6 @@
+模式           预测(conservative)       预测(phase)  模拟实测
+旁路           -2.02 dB               2.12 dB    2.11 dB
+抵消256抽头      4.16 dB                6.84 dB    6.48 dB
+抵消512抽头      13.11 dB               16.87 dB   15.23 dB
+
+判读：模拟值应落在 conservative..phase 之间，并靠近 phase。若模拟值低于 conservative 或高于 phase，先查分析与模拟哪一处错了。
