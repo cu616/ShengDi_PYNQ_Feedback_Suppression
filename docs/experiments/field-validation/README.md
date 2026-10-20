@@ -80,6 +80,16 @@
 
 若错误显示实际值 `bb56d866518814ce…`、预期值 `BB56D866518814CE…`，两者仅大小写不同，文件已匹配。把电脑本地修正版 [field_trial.ipynb](../../../board/audio_closed/field_trial.ipynb) 上传到同一板卡目录并覆盖旧Notebook，然后只重跑代码格1。不要重传 `field_validation.py`。
 
+#### 当前 `FileNotFoundError: field_setup.json` 的最短恢复
+
+这个错误也发生在代码格1的静音核验阶段。运行器文件及哈希已经通过，尚未开始发声。只补传配置模板：
+
+1. 在板卡 Jupyter 文件列表进入 `/home/xilinx/jupyter_notebooks/base/audio/audio_closed/`（`base → audio → audio_closed`）。
+2. 从电脑本地 [field_setup.json](../../../board/audio_closed/field_setup.json) 选择文件并点击 `Upload`；若出现第二个确认按钮，再点击一次。确认板卡列表出现 `field_setup.json`。
+3. 回到已打开的 `field_trial.ipynb`，只重跑“代码格1：软件包核验（静音）”、首行为 `import hashlib, importlib, json` 的代码格。成功标志为 `FIELD_PACKAGE_OK; NO_AUDIO_STARTED`。
+
+该文件当前是待现场填写的模板；不要为通过代码格1而猜填夹具、接线、位置或音量。现场条件未确认时，完成代码格1后停下，不运行代码格2。现场条件确认后，按第三步填入实值、保存，再重新执行代码格1核验。
+
 ### 第五步：现场就绪后启动整批
 
 代码、配置和版本核验都完成后，再准备声源和音响。一次只由A控制板卡，不要同时运行其他音频Notebook。

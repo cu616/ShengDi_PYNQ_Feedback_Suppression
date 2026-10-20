@@ -24,6 +24,10 @@
 - `docs/INDEX.md`、`README.md` 的入口链路同步去掉诉求一环。
 
 没做什么：不改任何技术结论、不改 STATE 的现状与关键数字。
+## 2026-10-20 A 线记录现场配置文件缺失的静音恢复步骤
+
+用户补传运行器后报告代码格1缺少板卡 `field_setup.json`。该检查在静音核验中，尚未运行批次。操作包补充单文件上传步骤：电脑本地配置模板上传至板卡 `base → audio → audio_closed`，确认列表出现后只重跑代码格1；模板须等现场条件确认后填写，不能为通过核验臆填。操作依据见[现场操作包](../experiments/field-validation/README.md)和[预检恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。没有播放音频。
+
 ## 2026-10-20 A 线修正现场运行器SHA256大小写误判
 
 用户补传 `field_validation.py` 后，代码格1报告实值与预期哈希仅十六进制大小写不同，却因字符串区分大小写而拒绝文件。已把Notebook比较改为大小写归一，并在[操作包](../experiments/field-validation/README.md)说明：电脑本地运行器无需重传；只需覆盖上传新版 `field_trial.ipynb`，然后重跑代码格1。证据与恢复步骤见[预检恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。尚未运行代码格2或播放音频。
