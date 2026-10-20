@@ -14,3 +14,25 @@
 - 默认静音；系数每次试验完整重载清历史；预算独立于接收器；无新结果、busy、运行中改系数/增益/预算均故障静音。结束可读RAM；arm=0不擦除记录。
 
 每轮记录自变量bypass，保持bit哈希、系数、hp_volume、数字增益、时长、夹具和外部声源一致。零系数/增益1首先在线级仿真验收严格相等；现场零系数试验从低音量开始，不直接将“增益1”视为安全声学闭环。
+
+## 批次软件汇总 v2（2026-10-20，R-002）
+
+这是 `closed_batch.py` 的软件导出版本，硬件寄存器与 Closed v1 不变。
+`summary.json.schema_version` 从 1 升至 2；保留既有 `trials[].metadata`、
+`pairs` 及其字段含义，在每项 `trials[]` 增加以下直接读取字段，并导出为 CSV 同名列：
+
+| 字段 | 来源与口径 |
+|---|---|
+| `gain_q12` | 原样取自该项驱动返回的 `metadata.gain_q12`；是写入 PL 的整数增益编码，4096 表示 1 倍，不是模拟增益实测或独立寄存器回读 |
+| `hp_volume` | 原样取自该项 `metadata.hp_volume`；是 Codec 音量设置码，不是 dB |
+| `bit_sha256` | 原样取自该项 `metadata.bit_sha256`；是使用的 bit 文件 SHA256，不是 FPGA 配置内容回读 |
+
+消费者可用 `trials[i].gain_q12`、`trials[i].hp_volume`、`trials[i].bit_sha256`
+直接取值；原 `trials[i].metadata` 路径继续保留。支持 v1/v2 的消费者处理旧文件时可回退到
+`metadata`；原来严格要求 `schema_version == 1` 的消费者需要显式接受版本 2。
+
+取消、驱动中断或遥测字段缺失时，对应直接字段为 JSON `null`，CSV 留空；
+不从请求的 dB、批次音量或上一项推算、填补。两项字段均缺失也不判为配置一致。
+同一档位的旁路/抵消必须具有完全相同的实际配置（包括 `gain_q12`、`hp_volume`、
+`bit_sha256`）；不一致则保留各自原值、标记 `configuration_matches=false` 并停止整批。
+`asg_db` 仍为 `null`，软件汇总版本不改变实验效果的验收口径。
