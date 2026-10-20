@@ -20,8 +20,8 @@
 
 ### A 实物与板卡
 
-**最后动作**：2026-10-20 修正现场Notebook代码格1对缺少 `field_validation.py` 的报错提示，并在[操作包](experiments/field-validation/README.md)记录单文件上传恢复步骤。
-**当前卡点**：现场正常扩声 A/B 尚未执行；板卡缺少 `field_validation.py`，现场人员需按操作包上传后通过静音核验，再待现场条件确认。
+**最后动作**：2026-10-20 修正现场Notebook代码格1 SHA256 比较的大小写误判，并在[操作包](experiments/field-validation/README.md)记录只覆盖上传Notebook的恢复步骤。
+**当前卡点**：现场正常扩声 A/B 尚未执行；板卡需更新 `field_trial.ipynb` 并通过静音核验，之后等待现场条件确认。
 
 - 唯一操板者。
 - 下一个可交付：把 `training_box_v1.npz`、`validation_box_v1.npz`、

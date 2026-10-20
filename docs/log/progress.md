@@ -24,6 +24,10 @@
 - `docs/INDEX.md`、`README.md` 的入口链路同步去掉诉求一环。
 
 没做什么：不改任何技术结论、不改 STATE 的现状与关键数字。
+## 2026-10-20 A 线修正现场运行器SHA256大小写误判
+
+用户补传 `field_validation.py` 后，代码格1报告实值与预期哈希仅十六进制大小写不同，却因字符串区分大小写而拒绝文件。已把Notebook比较改为大小写归一，并在[操作包](../experiments/field-validation/README.md)说明：电脑本地运行器无需重传；只需覆盖上传新版 `field_trial.ipynb`，然后重跑代码格1。证据与恢复步骤见[预检恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。尚未运行代码格2或播放音频。
+
 ## 2026-10-20 A 线修复现场Notebook缺少运行器时的静音预检指引
 
 用户执行 `field_trial.ipynb` 代码格1时报告 `field_validation.py` 的 `FileNotFoundError`。回溯显示清单和闭环包哈希检查已通过，异常发生在运行器文件读取，代码格2尚未执行。已在Notebook中增加明确的缺文件/哈希不匹配提示，并在[操作包](../experiments/field-validation/README.md)写明只需把电脑本地 `board/audio_closed/field_validation.py` 上传到板卡 `base → audio → audio_closed`，确认文件出现后只重跑静音核验格。恢复记录见[静音预检记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。没有启动声源或运行批次。

@@ -13,3 +13,7 @@
 电脑本地 [运行器](../../../board/audio_closed/field_validation.py) 上传到板卡目录 `/home/xilinx/jupyter_notebooks/base/audio/audio_closed/`（Jupyter文件列表 `base → audio → audio_closed`）。确认列表出现文件后，只重跑标题“代码格1：软件包核验（静音）”、首行为 `import hashlib, importlib, json` 的代码格。预期 `FIELD_PACKAGE_OK; NO_AUDIO_STARTED`。哈希不匹配时停止，核对上传文件 SHA256 为 `BB56D866518814CECEA344C334099C9400D557C12A521C3292C20FD1AFA19EFA`；不运行代码格2，不重传bit/hwh或原始数据。
 
 Notebook已增加缺文件与哈希不匹配的明确报错，并把同一单文件恢复步骤加入[现场操作包](../../../docs/experiments/field-validation/README.md)。
+
+## 后续核验纠错
+
+用户补传运行器后，第二次代码格1报告实际 SHA256 为小写 `bb56...19efa`、预期为大写 `BB56...19EFA`。两串十六进制内容相同，仅大小写不同；Notebook 原比较是区分大小写的字符串比较，导致错误拒绝了正确文件。已将比较改为大小写归一后再判断。电脑本地 `field_validation.py` 不需重传；将修正版 `field_trial.ipynb` 覆盖上传到同一板卡目录，再重跑代码格1。仍处静音核验阶段，没有运行代码格2或播放音频。

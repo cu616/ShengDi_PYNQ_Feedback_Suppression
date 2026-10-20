@@ -76,7 +76,9 @@
 1. 在Jupyter文件列表进入板卡 `/home/xilinx/jupyter_notebooks/base/audio/audio_closed/`（`base → audio → audio_closed`），确认文件列表中没有 `field_validation.py`。
 2. 从电脑本地 [field_validation.py](../../../board/audio_closed/field_validation.py) 选择该文件，点击 `Upload`。若出现第二个确认 `Upload` 按钮，再点击一次。
 3. 等文件列表显示 `field_validation.py` 后，打开已修正的 `field_trial.ipynb`，只重跑标题“代码格1：软件包核验（静音）”、首行为 `import hashlib, importlib, json` 的代码格。
-4. 预期显示 `FIELD_PACKAGE_OK; NO_AUDIO_STARTED` 才继续代码格2。若报告哈希不匹配，停止并确认上传了上面链接的本地版本（预期SHA256为 `BB56D866518814CECEA344C334099C9400D557C12A521C3292C20FD1AFA19EFA`）；不要运行代码格2，不用重启Kernel或重传bitstream、hwh、NPZ。
+4. 预期显示 `FIELD_PACKAGE_OK; NO_AUDIO_STARTED` 才继续代码格2。SHA256十六进制字母大小写不影响摘要，核验不区分大小写；只有数字或字母内容不同才是哈希不匹配。不要运行代码格2，不用重启Kernel或重传bitstream、hwh、NPZ。
+
+若错误显示实际值 `bb56d866518814ce…`、预期值 `BB56D866518814CE…`，两者仅大小写不同，文件已匹配。把电脑本地修正版 [field_trial.ipynb](../../../board/audio_closed/field_trial.ipynb) 上传到同一板卡目录并覆盖旧Notebook，然后只重跑代码格1。不要重传 `field_validation.py`。
 
 ### 第五步：现场就绪后启动整批
 
