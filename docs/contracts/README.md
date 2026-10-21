@@ -10,6 +10,7 @@
 |---|---|---|---|---|
 | [audio-closed-v1.md](audio-closed-v1.md) | 闭环 overlay 的控制位、增益编码、帧关系、缓存读回 | C | A / B | 已实现并构建，未上板验收 |
 | [audio-replay-v1.md](audio-replay-v1.md) | 预录声源注入、实际混音反馈参考、限时播放及摘要 | A | A / B / C | 软件/仿真/构建完成，未上板 |
+| [audio-replay-sweep-v1.md](audio-replay-sweep-v1.md) | 已有数据选档、逐档成对试验与批次摘要 | A | A / B / C | 本地实现，未回归/上板 |
 | [feedback-fir-v1.md](feedback-fir-v1.md) | 定点抵消核：24 位 PCM / Q20 系数 / 58 位累加 / 771 拍 | B | C / A | 已验证（仿真 + 板上逐样本） |
 | [feedback-calibration-v1.md](feedback-calibration-v1.md) | 标定数据 NPZ 与模型 JSON 的字段、单位、拒绝条件 | B | A / C | 已验证（板卡实际执行） |
 | [path-analysis-v1.md](path-analysis-v1.md) | 逐频点分析与稳定增益估算的输入输出 JSON | B | A / C | 已实现，待真实数据 |
