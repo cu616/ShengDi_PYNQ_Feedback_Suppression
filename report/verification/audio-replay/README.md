@@ -126,3 +126,10 @@ SSH部署15项核对通过，HTTP只读读取确认busy=false、plan_ready=true�
 用户截图显示RuntimeError: No Devices Found，仍未生成录音。读取板卡pl_server/__init__.py确认只有XILINX_XRT环境存在时才注册EmbeddedDevice。系统/etc/profile.d/xrt_setup.sh设置XILINX_XRT=/usr；boardname.sh读取实际板型。加载后设备枚举结果为EmbeddedDevice / embedded_xrt0，BOARD=Pynq-Z2。本次仅枚举，未下载overlay或启动音频。
 
 新增start-panel.sh统一加载官方环境及PYNQ虚拟环境；面板启动预检设备，避免再次把环境错误留到用户点击录音后。部署核对16项文件，备份目录deploy-backup-20261021-173758。旧服务确认空闲且PID身份匹配后重启，保留会话与计划。实际录音、播放仍待用户触发。
+
+
+## 2026-10-21 录音初始化线程事件循环
+
+用户截图报RuntimeError: There is no current event loop in thread 'Thread-278 (work)'。板卡pynq/uio.py第74行在构造UIO控制器时调用asyncio.get_event_loop().add_reader；旧面板每次新建后台线程且未设置事件循环。
+
+面板改为max_workers=1的持久执行器，线程初始化时创建并设置事件循环，录音、批次和清理复用同一线程，避免UIO对象跨任务失去所属循环。启动预检向实际工作线程提交get_event_loop，异常保留完整栈。16项部署文件核对通过，备份deploy-backup-20261021-174532；重启前确认busy=false及PID命令行身份。未触发录音、播放；此次设备与事件循环预检不代表完整音频初始化已通过。

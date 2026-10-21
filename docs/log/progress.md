@@ -4,6 +4,10 @@
 > 其中"未上传/未验证"等字样只描述当日。**当前状态一律看 [STATE.md](../STATE.md)。**
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
+## 2026-10-21 A修复PYNQ后台线程事件循环
+
+现场初始化报No current event loop。读取板卡pynq/uio.py确认UIO注册依赖调用线程事件循环；将每次新建线程改为持久单音频工作线程，初始化并保留同一事件循环，启动预检实际工作线程，并记录完整异常栈。部署后重启空闲服务；未触发录音播放。[证据](../../report/verification/audio-replay/README.md)。
+
 ## 2026-10-21 A修复SSH服务XRT设备注册
 
 根据现场No Devices Found错误，读取板卡PYNQ源码确认设备注册依赖XILINX_XRT；加载板卡官方环境后枚举到EmbeddedDevice。加入启动脚本、启动设备检查并部署；未加载overlay或发声。[证据](../../report/verification/audio-replay/README.md)。

@@ -1,5 +1,8 @@
 """A's local-LAN operator panel. Startup never configures audio or plays sound."""
 import argparse
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+import traceback
 from collections import deque
 import contextlib
 import fcntl
@@ -24,6 +27,16 @@ PLAN = None
 REPLY = None
 TOKEN = ''
 ORIGIN = ''
+
+
+def initialize_audio_worker():
+    # PYNQ UIO binds readers to the calling thread's event loop. Keep the
+    # same thread and loop for recording, trials and overlay cleanup.
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+
+AUDIO_WORKER = ThreadPoolExecutor(max_workers=1, thread_name_prefix='shengdi-audio',
+                                  initializer=initialize_audio_worker)
 
 
 def ask(prompt):
@@ -95,6 +108,7 @@ def work(action):
         with LOCK:
             STATE['error'] = type(exc).__name__+': '+str(exc)
             LOG.append(STATE['error'])
+            LOG.append(traceback.format_exc())
             STATE['task'] = '已停止，请保留页面交给A处理'
     finally:
         with WAKE:
@@ -196,7 +210,7 @@ class Handler(BaseHTTPRequestHandler):
                         raise ValueError('录音配置前请先确认音响断电')
                     STATE.update(busy=True, stopped=False, waiting=None, result=None,
                                  task={'plan':'静默分析，不发声','record':'准备录音，音响保持断电','run':'本批运行，按提示操作'}[action])
-                    threading.Thread(target=work, args=(action,), daemon=True).start()
+                    AUDIO_WORKER.submit(work, action)
                 else:
                     raise ValueError('invalid route')
             self.send(200, b'{"ok":true}')
@@ -229,6 +243,10 @@ def main():
     LOG.append('PYNQ device ready: '+type(Device.active_device).__name__)
     import sys
     LOG.append('PYNQ runtime ready: '+sys.executable)
+    worker_loop = AUDIO_WORKER.submit(asyncio.get_event_loop).result(timeout=10)
+    if worker_loop.is_closed():
+        raise RuntimeError('Audio worker event loop is closed')
+    LOG.append('Audio worker event loop ready; NO_AUDIO_STARTED')
     ORIGIN = 'http://192.168.2.99:'+str(args.port)
     ThreadingHTTPServer(('192.168.2.99', args.port), Handler).serve_forever()
 
