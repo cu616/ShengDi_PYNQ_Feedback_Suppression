@@ -169,6 +169,11 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         status = command.read(8)
         # Stop on config/protocol fault. Saturation is counted, NEVER called ASG.
         while not (status & (1 | (3 << 17))) and time.monotonic() < deadline:
+            clip_counts = (clips.read(0), clips.read(8), source_len.read(8))
+            if any(clip_counts):
+                control.write(0, 0)
+                mute_codec()
+                raise RuntimeError('runtime saturation guard stopped playback; packed_prediction_residual=%d gain=%d mix=%d; no further gain authorized' % clip_counts)
             time.sleep(0.002)
             status = command.read(8)
         mute_codec()
