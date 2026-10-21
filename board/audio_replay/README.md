@@ -57,3 +57,11 @@
 出错或中断：先关闭音响，保留摘要，不连续重跑；内核重启后可重跑第1格产生新批次，已有录音不需重录。配置若修改，必须保存并重新执行第1格，内存中的旧计划不会自动更新。
 
 本流程是预录数字声源下的声反馈增益对照，直放可听不等同于正常麦克风扩声成立。若全部档位均正常，记录“已测范围未找到旁路失稳阈值”；不虚构MSG/ASG。已有数据不支持更高档位时，程序停止而非盲目升增益。
+
+
+### 第1格报Notebook哈希不匹配的恢复
+
+这是旧版把执行次数/输出也计入Notebook文件哈希导致的误判风险。新版只核验按顺序排列的代码格内容。
+已有旧包时，只需从电脑`D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\board\audio_replay\`上传新版`replay_session.py`与`manifest.json`，覆盖板卡`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/`同名文件；Upload后再次点击确认Upload。
+保留Notebook、标定数据、录音和已有结果，然后只重跑“第1格：静默选档”（首行`from pathlib import Path`）。
+这一步不发声；成功列出档位才继续第2格。若报“Notebook代码与程序包不匹配”，则需恢复配套Notebook，因为代码格内容确有差异。

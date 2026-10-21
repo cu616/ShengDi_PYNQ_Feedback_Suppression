@@ -18,6 +18,15 @@ def check_package():
         path = HERE / name
         if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise ValueError("软件包缺失或版本不匹配：" + str(path))
+    # Jupyter rewrites outputs, execution counts, cell IDs and metadata on save.
+    # Check executable sources in order, not those mutable presentation fields.
+    notebook = json.loads((HERE / 'replay_trial.ipynb').read_text(encoding='utf-8'))
+    sources = [''.join(cell.get('source', [])) for cell in notebook['cells']
+               if cell.get('cell_type') == 'code']
+    digest = hashlib.sha256(json.dumps(sources, ensure_ascii=False,
+                           separators=(',', ':')).encode('utf-8')).hexdigest()
+    if digest != manifest.get('notebook_code_sha256'):
+        raise ValueError('Notebook代码与程序包不匹配；请恢复配套replay_trial.ipynb（执行输出不影响校验）')
     print("REPLAY_PACKAGE_OK; NO_AUDIO_STARTED", flush=True)
     return manifest
 

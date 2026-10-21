@@ -4,6 +4,10 @@
 > 其中"未上传/未验证"等字样只描述当日。**当前状态一律看 [STATE.md](../STATE.md)。**
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
+## 2026-10-21 A修复Notebook保存导致的哈希拒绝
+
+用户返回package阶段停止摘要，无试验项、零发声。将Notebook校验从整文件改为代码格内容摘要，保留其他程序和bit/hwh字节校验，更新完整包及两文件恢复步骤。未拿到板卡Notebook，不能断言此次只改了输出；本次未上板。[修复证据](../../report/verification/audio-replay/README.md)。
+
 ## 2026-10-21 A补齐逐档增益批次
 
 根据用户一次性交付要求，新增已有标定数据静默选档和逐档抵消→旁路运行器，固定整批声源电平并自动保存配对/停止原因；完整包从10项更新为13项。接口变更：新增[audio-replay-sweep-v1](../contracts/audio-replay-sweep-v1.md)，旧硬件/接口保留。执行语法、打包与文档检查，未运行本版回归或上板，真实档位留待板卡数据计算。[实现记录](../../report/verification/audio-replay/README.md)。

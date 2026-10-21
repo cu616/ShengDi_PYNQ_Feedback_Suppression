@@ -79,7 +79,10 @@ def main():
     manifest = dict(schema_version=1, overlay="audio_replay", hardware_executed=False,
                     sample_rate_hz=48828.125, source_frames_max=131072,
                     source_format="signed16 -> signed24 << 8",
-                    hashes={n: digest(DEST / n) for n in names},
+                    hashes={n: digest(DEST / n) for n in names if n not in ('replay_trial.ipynb', 'README.md')},
+                    notebook_code_sha256=hashlib.sha256(json.dumps(
+                        [''.join(c['source']) for c in cells if c['cell_type']=='code'],
+                        ensure_ascii=False, separators=(',', ':')).encode('utf-8')).hexdigest(),
                     build_sources={p: digest(ROOT / p) for p in (
                         "src/rtl/audio_pl_replay.v", "src/rtl/feedback_fir.v",
                         "src/vendor/pynq_v2_4/iis_ser.vhd", "src/vendor/pynq_v2_4/iis_deser.vhd",

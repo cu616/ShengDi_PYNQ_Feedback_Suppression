@@ -81,3 +81,12 @@ python scripts/package_audio_replay.py
 源电平用拟合模型的分组级数峰值上界约束，频响范围含格点间导数补偿、训练/验证差异与6 dB裕量。
 它依赖夹具与已有数据的适用性，不能保证实物稳定。实际停止依赖硬件预算、饱和轮询和现场断电；
 听感逐项记录，未找到阈值如实结束。第1格失败返回摘要，不进入录音/播放。
+
+
+## 2026-10-21 Notebook文件哈希误判修复
+
+用户返回`sweep_cf1d5905f628`摘要：status=stopped，stage=package，trials/pairs为空，sound_seconds_completed=0，stop_reason指向replay_trial.ipynb文件哈希不匹配。
+未拿到板卡Notebook原文件，不能确定是否仅输出变化；确认旧实现会把Jupyter保存的执行次数/输出/元数据变化误当版本变化。
+修复为Notebook按顺序的代码格source规范JSON摘要，其他程序/bit/hwh仍逐字节哈希。Notebook代码变化继续拒绝。
+同步更新打包脚本及manifest；现场只覆盖replay_session.py和manifest.json再运行第1格，无需重录。
+未执行新版软件回归或板卡运行；只执行语法、打包和文档检查。此报错没有新增采样或发声证据。
