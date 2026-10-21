@@ -81,6 +81,7 @@ def simulate(room, source, coefficients_q20, gain_q12, bypass=False,
     prediction_saturations = 0
     residual_saturations = 0
     gain_saturations = 0
+    mic_saturations = 0
     room_len = len(room)
 
     for n in range(frames):
@@ -90,6 +91,8 @@ def simulate(room, source, coefficients_q20, gain_q12, bypass=False,
         window = played[n - down + 1:n + 1][::-1]
         mic_code = int(_round_half_away(float(np.dot(room[:down], window))))
         mic_code += int(_round_half_away(float(source[n]) * FULL_SCALE)) + int(dither_q)
+        if mic_code > MAX_CODE or mic_code < MIN_CODE:
+            mic_saturations += 1
         mic_code = max(MIN_CODE, min(MAX_CODE, mic_code))
 
         # --- 预测：只用到 n-1 及更早的已播放数据，与 RTL 的前一帧因果一致
@@ -141,7 +144,9 @@ def simulate(room, source, coefficients_q20, gain_q12, bypass=False,
     saturated_frames = int(prediction_saturations + residual_saturations + gain_saturations)
 
     # 判据：饱和已经发生，或电平在明显指数增长（>6 dB 每整段）。
-    diverged = bool(saturated_frames > 0 or slope > 6.0)
+    # 麦克风满幅必须单独计入：ADC 削顶后环路看起来"不再增长"，只看下游三处饱和
+    # 会把它误判为稳定。实测判据同样是"麦克风持续满幅"（A 的 2026-10-21 ASG 报告）。
+    diverged = bool(saturated_frames > 0 or mic_saturations > 0 or slope > 6.0)
     result = {
         "frames": int(frames),
         "bypass": bool(bypass),
@@ -153,6 +158,7 @@ def simulate(room, source, coefficients_q20, gain_q12, bypass=False,
         "prediction_saturations": int(prediction_saturations),
         "residual_saturations": int(residual_saturations),
         "gain_saturations": int(gain_saturations),
+        "mic_saturations": int(mic_saturations),
         "saturated_frames": saturated_frames,
         "diverged": diverged,
     }
