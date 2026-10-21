@@ -18,7 +18,7 @@ from sweep_session import prepare_sweep, run_sweep
 
 LOCK = threading.RLock()
 WAKE = threading.Condition(LOCK)
-STATE = dict(busy=False, task='待机，未发声', waiting=None, result=None, stopped=False)
+STATE = dict(busy=False, task='待机，未发声', waiting=None, result=None, stopped=False, error=None)
 LOG = deque(maxlen=70)
 PLAN = None
 REPLY = None
@@ -93,7 +93,8 @@ def work(action):
             STATE['task'] = '本步已结束，音频任务未在运行'
     except (Exception, KeyboardInterrupt) as exc:
         with LOCK:
-            LOG.append(type(exc).__name__+': '+str(exc))
+            STATE['error'] = type(exc).__name__+': '+str(exc)
+            LOG.append(STATE['error'])
             STATE['task'] = '已停止，请保留页面交给A处理'
     finally:
         with WAKE:
@@ -182,6 +183,8 @@ class Handler(BaseHTTPRequestHandler):
                     WAKE.notify_all()
                 elif self.path == '/action':
                     action = data.get('action')
+                    if STATE['error']:
+                        raise ValueError('本步失败，请等待A处理，无需重复点击')
                     if STATE['busy'] or action not in ('plan', 'record', 'run'):
                         raise ValueError('已有任务运行或请求无效')
                     current = snapshot()
@@ -218,6 +221,10 @@ def main():
         if PLAN.parent.parent != (HERE/'replay_results').resolve():
             raise ValueError('plan must be a local replay summary')
         json.loads(PLAN.read_text())
+    # Import only: reject the wrong runtime before exposing recording controls.
+    from pynq.overlays.base import BaseOverlay
+    import sys
+    LOG.append('PYNQ runtime ready: '+sys.executable)
     ORIGIN = 'http://192.168.2.99:'+str(args.port)
     ThreadingHTTPServer(('192.168.2.99', args.port), Handler).serve_forever()
 

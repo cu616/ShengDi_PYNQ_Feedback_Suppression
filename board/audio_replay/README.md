@@ -76,3 +76,8 @@ A已获SSH部署和静默调试授权；上传、版本核验、选档和读摘�
 已有旧包时，只需从电脑`D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\board\audio_replay\`上传新版`replay_session.py`与`manifest.json`，覆盖板卡`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/`同名文件；Upload后再次点击确认Upload。
 保留Notebook、标定数据、录音和已有结果，然后只重跑“第1格：静默选档”（首行`from pathlib import Path`）。
 这一步不发声；成功列出档位才继续第2格。若报“Notebook代码与程序包不匹配”，则需恢复配套Notebook，因为代码格内容确有差异。
+
+
+### A维护按钮服务
+
+板卡启动解释器固定为 `/usr/local/share/pynq-venv/bin/python`，不可用系统 `/usr/bin/python3`。服务启动仅导入PYNQ检查环境，不配置音频。重启前读取状态确认busy=false，并核对PID对应本目录click_panel.py；保留原会话令牌及计划。错误会显示在主区域，由A处理；录音成功后用户点击下方“2 开始本批”。

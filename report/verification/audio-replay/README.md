@@ -110,3 +110,12 @@ SSH部署15项核对通过，HTTP只读读取确认busy=false、plan_ready=true�
 内置浏览器打开尝试超时，未据此宣称界面截图验收；电脑通过HTTP读取页面与状态成功。
 未点击录音/播放，未执行本版自动化回归；本轮验证范围为语法、部署、板卡静默分析和HTTP连通。
 按钮页及源文件受manifest校验；未修改RTL、未重复综合仿真。服务器当前由A独占管理。
+
+
+## 2026-10-21 按钮页录音环境修复
+
+- 用户反馈点击录音后没有后续按钮。HTTP状态：busy=false、source_exists=false，日志重复ModuleNotFoundError: No module named 'pynq'；实际录音未开始。
+- 原服务用了/usr/bin/python3。通过SSH仅导入确认/usr/local/share/pynq-venv/bin/python可加载pynq、BaseOverlay及录音API，未实例化硬件。
+- 更新click_panel.py、click-panel.html、manifest.json；部署后15项文件哈希核对通过。错误直接显示，阻止失败后重复点击；录音完成提示点击“2 开始本批”。
+- 确认服务空闲及PID命令行匹配后重启自己的服务，使用正确解释器。保留原计划、会话链接；启动加入PYNQ导入检查。
+- 重启后HTTP：busy=false、error=null、source_exists=false、plan_ready=true；运行日志记录正确解释器路径。未触发录音、播放或传输原始PCM。实际现场操作仍待用户点击。
