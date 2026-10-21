@@ -18,7 +18,7 @@ A已获SSH部署和静默调试授权；上传、版本核验、选档和读摘�
 电脑本地完整包：`D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\build\packages\audio-replay.zip`。
 解压后进入`audio_replay`，共有15个交付文件：
 
-`audio_replay.bit`、`audio_replay.hwh`、`replay_trial.ipynb`、`manifest.json`、`README.md`、`replay_trial.py`、`replay_tools.py`、`replay_session.py`、`closed_tools.py`、`residual_tools.py`、`replay_calibration.py`、`sweep_plan.py`、`sweep_session.py`、`click_panel.py`、`click-panel.html`。
+`audio_replay.bit`、`audio_replay.hwh`、`replay_trial.ipynb`、`manifest.json`、`README.md`、`replay_trial.py`、`replay_tools.py`、`replay_session.py`、`closed_tools.py`、`residual_tools.py`、`replay_calibration.py`、`sweep_plan.py`、`sweep_session.py`、`click_panel.py`、`click-panel.html`、`start-panel.sh`。
 
 板卡Jupyter进入 **base → audio → audio_replay**；完整目录：
 `/home/xilinx/jupyter_notebooks/base/audio/audio_replay/`。
@@ -81,3 +81,5 @@ A已获SSH部署和静默调试授权；上传、版本核验、选档和读摘�
 ### A维护按钮服务
 
 板卡启动解释器固定为 `/usr/local/share/pynq-venv/bin/python`，不可用系统 `/usr/bin/python3`。服务启动仅导入PYNQ检查环境，不配置音频。重启前读取状态确认busy=false，并核对PID对应本目录click_panel.py；保留原会话令牌及计划。错误会显示在主区域，由A处理；录音成功后用户点击下方“2 开始本批”。
+
+启动服务必须用 `bash /home/xilinx/jupyter_notebooks/base/audio/audio_replay/start-panel.sh --plan <板卡计划摘要绝对路径>`，由A提供会话令牌环境变量。脚本加载板卡自带XRT和BOARD配置；只指定Python解释器仍会缺少设备注册。启动会检查设备可发现，不加载overlay。

@@ -21,3 +21,5 @@ board/audio_replay/*.json -text
 docs/log/progress.md merge=union
 
 board/audio_replay/*.html -text
+
+board/audio_replay/start-panel.sh -text

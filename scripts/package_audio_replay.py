@@ -75,7 +75,7 @@ def main():
     (DEST / "replay_trial.ipynb").write_text(json.dumps(nb, ensure_ascii=False, indent=1),
                                             encoding="utf-8", newline="\n")
     names = ["audio_replay.bit", "audio_replay.hwh", "replay_trial.py", "replay_tools.py",
-             "replay_session.py", "sweep_plan.py", "sweep_session.py", "click_panel.py", "click-panel.html", "replay_calibration.py", "closed_tools.py", "residual_tools.py", "replay_trial.ipynb", "README.md"]
+             "replay_session.py", "sweep_plan.py", "sweep_session.py", "click_panel.py", "click-panel.html", "start-panel.sh", "replay_calibration.py", "closed_tools.py", "residual_tools.py", "replay_trial.ipynb", "README.md"]
     manifest = dict(schema_version=1, overlay="audio_replay", hardware_executed=False,
                     sample_rate_hz=48828.125, source_frames_max=131072,
                     source_format="signed16 -> signed24 << 8",

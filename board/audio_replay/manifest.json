@@ -13,8 +13,9 @@
     "replay_session.py": "cda1b1aa14a37fa22e694228134e1c2ff236b762d0c19256a6812214a7e43065",
     "sweep_plan.py": "ef48bf87f1fbf55700df97ee6dd94f48caab7d6eb0831aed80966f371cfb3074",
     "sweep_session.py": "4c4caf8be1bebae3284e14ddd3be0abbc1c2f962ec2f52d239ce46602d3af70a",
-    "click_panel.py": "17f3b8a9cc98f451da58a3929ba154d9367b91eae21fc23722fca56fe042d680",
+    "click_panel.py": "fc3881d01c5b752c941b20ff1d35e0786570d434d9dd8916fefe6ab885dfe8fd",
     "click-panel.html": "fb797dc3a243c43acad484f4ef0ea8737b1b481466f97c9e5cf8a729a75b364f",
+    "start-panel.sh": "a75599e1242d2fdfb94c2777036220da6940750a0374abbba76e4c7e341b7c52",
     "replay_calibration.py": "6f6d42c73c1e801af4ac4317aa6f856a095d70ada2e1012ee23ebc675a1ce364",
     "closed_tools.py": "7643726b465cb672fefbd179354e03d184d70572039e205d94370beb43b1616e",
     "residual_tools.py": "045f6fd1cfe5bb35f46b5625bab4ce1d85f5bb27e055d977a8a8021c58aa9e72"

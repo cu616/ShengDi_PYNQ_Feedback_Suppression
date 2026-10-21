@@ -4,6 +4,10 @@
 > 其中"未上传/未验证"等字样只描述当日。**当前状态一律看 [STATE.md](../STATE.md)。**
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
+## 2026-10-21 A修复SSH服务XRT设备注册
+
+根据现场No Devices Found错误，读取板卡PYNQ源码确认设备注册依赖XILINX_XRT；加载板卡官方环境后枚举到EmbeddedDevice。加入启动脚本、启动设备检查并部署；未加载overlay或发声。[证据](../../report/verification/audio-replay/README.md)。
+
 ## 2026-10-21 A修复按钮页录音环境与失败提示
 
 用户报告录音后无后续按钮；读取状态确认多次录音均在导入pynq时失败，未生成录音。切换PYNQ虚拟环境并加入启动导入检查、页面错误直显；保留计划和原链接，仅重启已确认空闲的A服务。[证据](../../report/verification/audio-replay/README.md)。

@@ -223,6 +223,10 @@ def main():
         json.loads(PLAN.read_text())
     # Import only: reject the wrong runtime before exposing recording controls.
     from pynq.overlays.base import BaseOverlay
+    from pynq import Device
+    if not Device.devices:
+        raise RuntimeError('No PYNQ devices; use start-panel.sh to load the board XRT environment')
+    LOG.append('PYNQ device ready: '+type(Device.active_device).__name__)
     import sys
     LOG.append('PYNQ runtime ready: '+sys.executable)
     ORIGIN = 'http://192.168.2.99:'+str(args.port)

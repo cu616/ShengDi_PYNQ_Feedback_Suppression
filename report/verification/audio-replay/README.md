@@ -119,3 +119,10 @@ SSH部署15项核对通过，HTTP只读读取确认busy=false、plan_ready=true�
 - 更新click_panel.py、click-panel.html、manifest.json；部署后15项文件哈希核对通过。错误直接显示，阻止失败后重复点击；录音完成提示点击“2 开始本批”。
 - 确认服务空闲及PID命令行匹配后重启自己的服务，使用正确解释器。保留原计划、会话链接；启动加入PYNQ导入检查。
 - 重启后HTTP：busy=false、error=null、source_exists=false、plan_ready=true；运行日志记录正确解释器路径。未触发录音、播放或传输原始PCM。实际现场操作仍待用户点击。
+
+
+## 2026-10-21 SSH环境缺少XRT
+
+用户截图显示RuntimeError: No Devices Found，仍未生成录音。读取板卡pl_server/__init__.py确认只有XILINX_XRT环境存在时才注册EmbeddedDevice。系统/etc/profile.d/xrt_setup.sh设置XILINX_XRT=/usr；boardname.sh读取实际板型。加载后设备枚举结果为EmbeddedDevice / embedded_xrt0，BOARD=Pynq-Z2。本次仅枚举，未下载overlay或启动音频。
+
+新增start-panel.sh统一加载官方环境及PYNQ虚拟环境；面板启动预检设备，避免再次把环境错误留到用户点击录音后。部署核对16项文件，备份目录deploy-backup-20261021-173758。旧服务确认空闲且PID身份匹配后重启，保留会话与计划。实际录音、播放仍待用户触发。
