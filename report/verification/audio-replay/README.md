@@ -90,3 +90,23 @@ python scripts/package_audio_replay.py
 修复为Notebook按顺序的代码格source规范JSON摘要，其他程序/bit/hwh仍逐字节哈希。Notebook代码变化继续拒绝。
 同步更新打包脚本及manifest；现场只覆盖replay_session.py和manifest.json再运行第1格，无需重录。
 未执行新版软件回归或板卡运行；只执行语法、打包和文档检查。此报错没有新增采样或发声证据。
+
+
+## 2026-10-21 SSH接管与按钮页
+
+用户授权使用默认xilinx账号登录，后续代码/调试由A承担，现场希望只点按钮判断听感。
+固定SSH主机密钥后确认板卡仍装旧manifest（含Notebook整文件字节哈希），且Jupyter目录属root。
+首轮SFTP直接写入被权限拒绝；部署辅助脚本文本替换错误在执行前产生SyntaxError，没有改程序。
+修正后经sudo先板上备份，再更新程序并逐文件核对。备用目录为板卡audio_replay下的deploy-backup-*。
+密码、会话令牌及临时认证材料未提交仓库。
+
+包核验通过后执行真实标定数据静默分析；第一版3 dB网格不足两档而停止。
+按原上限以内追加向下取整的0.5 dB末档，再次分析成功，实际Q12均不越原保护上限。
+见[原始静默摘要](board-plan-2026-10-21.json)；该文件不含PCM，声音试验项仍为空。
+
+增加标准库按钮页：服务启动不加载overlay；用户确认音响断电后录音，READY/START/听感改为按钮。
+页面单工作线程与提示ID拒绝重复输入；停止后续按钮不作为实时急停。
+SSH部署15项核对通过，HTTP只读读取确认busy=false、plan_ready=true、source_exists=false、waiting=null。
+内置浏览器打开尝试超时，未据此宣称界面截图验收；电脑通过HTTP读取页面与状态成功。
+未点击录音/播放，未执行本版自动化回归；本轮验证范围为语法、部署、板卡静默分析和HTTP连通。
+按钮页及源文件受manifest校验；未修改RTL、未重复综合仿真。服务器当前由A独占管理。

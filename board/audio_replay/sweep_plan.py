@@ -79,7 +79,14 @@ def make_plan(data_dir):
     ceiling = min(0., -20*math.log10(robust_bound)-6.)
     points = []
     peak = min(10**(-30/20), .25/max(float(np.sum(np.abs(p))) for p in plants))
-    for db in range(-35, -13, 3):
+    grid = list(range(-35, -13, 3))
+    # Use a final half-dB point below the ceiling when the 3 dB grid skips it.
+    # Keep at least 1 dB separation; actual Q12 gain must still pass the bound.
+    endpoint = min(-14., math.floor(ceiling*2)/2)
+    accepted = [db for db in grid if db <= ceiling]
+    if accepted and endpoint-accepted[-1] >= 1.:
+        grid = sorted(set(accepted+[endpoint]))[:8]
+    for db in grid:
         gain, _ = trial_parameters(db, 2.4)
         actual = 20*math.log10(gain/4096)
         if actual > ceiling:

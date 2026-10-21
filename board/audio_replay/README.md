@@ -1,19 +1,30 @@
 # 逐档增益 A/B：只按这三格操作
 
+## 优先使用按钮页（2026-10-21）
+
+A已获SSH部署和静默调试授权；上传、版本核验、选档和读摘要均由A完成。用户打开A提供的现场链接即可，勿同时运行Notebook。
+页面不会自动加载overlay或播放。先关闭音响电源，勾选条件、点“准备录音”；等提示后启动手机语音并点“开始录音 · 2秒”。
+录完停止手机外放、恢复音响供电，点“开始本批”。每次按页面勾选现场条件后点“开始本项”，结束点听感。
+“停止后续项目”不能保证实时急停；持续尖叫直接断音响电源。连接掉线时停止后续操作，A负责恢复；单次仍受PL帧预算限制。
+已有source.wav则复用，用户无需重新录音。摘要由A通过SSH读回，原始PCM留板。
+
+下面的Notebook步骤仅作手动备用。
+
+
 本轮回答：手机停止外放后，同一录音、不同反馈增益下，抵消和旁路分别是否出现啸叫、失真或无声。先静默读取已有标定数据选档，不重新标定。
 
 ## 1. 上传一次
 
 电脑本地完整包：`D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\build\packages\audio-replay.zip`。
-解压后进入`audio_replay`，共有13个交付文件：
+解压后进入`audio_replay`，共有15个交付文件：
 
-`audio_replay.bit`、`audio_replay.hwh`、`replay_trial.ipynb`、`manifest.json`、`README.md`、`replay_trial.py`、`replay_tools.py`、`replay_session.py`、`closed_tools.py`、`residual_tools.py`、`replay_calibration.py`、`sweep_plan.py`、`sweep_session.py`。
+`audio_replay.bit`、`audio_replay.hwh`、`replay_trial.ipynb`、`manifest.json`、`README.md`、`replay_trial.py`、`replay_tools.py`、`replay_session.py`、`closed_tools.py`、`residual_tools.py`、`replay_calibration.py`、`sweep_plan.py`、`sweep_session.py`、`click_panel.py`、`click-panel.html`。
 
 板卡Jupyter进入 **base → audio → audio_replay**；完整目录：
 `/home/xilinx/jupyter_notebooks/base/audio/audio_replay/`。
 没有目录则在`base → audio`点击`New → Folder`，命名`audio_replay`并进入。
-点击`Upload`选择上述13个文件，再点击列表中的确认`Upload`；更新时覆盖同名程序文件。
-**保留已有source.wav、replay_results及其他目录。** 上传后文件列表应有全部13项。
+点击`Upload`选择上述15个文件，再点击列表中的确认`Upload`；更新时覆盖同名程序文件。
+**保留已有source.wav、replay_results及其他目录。** 上传后文件列表应有全部15项。
 
 仅打开这个音频Notebook：
 `/home/xilinx/jupyter_notebooks/base/audio/audio_replay/replay_trial.ipynb`。

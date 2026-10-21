@@ -4,6 +4,10 @@
 > 其中"未上传/未验证"等字样只描述当日。**当前状态一律看 [STATE.md](../STATE.md)。**
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
+## 2026-10-21 A通过SSH部署并完成静默选档
+
+获用户授权后直接SSH/SFTP调试，确认板卡旧包并备份更新，逐文件核对15项。真实数据静默选档通过，仅回传JSON，未发声。新增按钮页并核对HTTP待机状态。接口变更：[逐档v2](../contracts/audio-replay-sweep-v2.md)保留原保护上限，追加有间隔的末档并提供按钮交互；硬件不变。[证据](../../report/verification/audio-replay/README.md)。
+
 ## 2026-10-21 A修复Notebook保存导致的哈希拒绝
 
 用户返回package阶段停止摘要，无试验项、零发声。将Notebook校验从整文件改为代码格内容摘要，保留其他程序和bit/hwh字节校验，更新完整包及两文件恢复步骤。未拿到板卡Notebook，不能断言此次只改了输出；本次未上板。[修复证据](../../report/verification/audio-replay/README.md)。

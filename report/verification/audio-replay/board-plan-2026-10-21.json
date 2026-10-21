@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "replay_sweep",
+  "status": "planned",
+  "trials": [],
+  "pairs": [],
+  "sound_seconds_completed": 0.0,
+  "stage": "await_recording",
+  "setup": {
+    "schema_version": 1,
+    "fixture_id": "box_v1_20261016",
+    "calibration_match_original": true,
+    "operator_verified": true,
+    "codec_hp_volume": 40,
+    "sample_rate_hz": 48828.125,
+    "calibration_excitation": "audio_calibrate PL-generated known noise; external phone source stopped",
+    "wiring": {
+      "microphone_route": "MAX4466 -> LINE_IN",
+      "speaker_route": "PYNQ-Z2 HP+MIC -> powered speaker",
+      "channel_mapping_verified": true,
+      "max4466_supply_v": 5,
+      "max4466_gain_setting": "cantcontrol"
+    },
+    "box": {
+      "dimensions_cm": [
+        17,
+        17,
+        7
+      ],
+      "lid_state": "closed",
+      "notes": "soundproof_cotton"
+    },
+    "microphone": {
+      "position_xyz_cm": [
+        2,
+        2,
+        1
+      ],
+      "orientation": "xiangshang"
+    },
+    "speaker": {
+      "position_xyz_cm": [
+        [
+          12,
+          6,
+          3
+        ],
+        [
+          6,
+          12,
+          3
+        ]
+      ],
+      "orientation": "xiangshang",
+      "external_volume_control": "无外置音量调节按钮（现场已确认）",
+      "external_volume_control_verified": true
+    },
+    "normal_speech_source": {
+      "device": "phone",
+      "position_xyz_cm": [
+        0,
+        3.5,
+        7
+      ],
+      "orientation": "xzhoufufangxiang",
+      "playback_volume_setting": "50%",
+      "loop_or_clip_id": "girl_volome"
+    },
+    "operator_notes": "实际坐标原点为盒子的一个角不妨令1263为扬声器1"
+  },
+  "setup_sha256": "a3673cb2ea626bf2472edaf09a340897fdb5b3f50262721842c0768d9158381b",
+  "plan": {
+    "schema_version": 1,
+    "artifact_kind": "replay_gain_plan",
+    "files": {
+      "training_box_v1.npz": {
+        "sha256": "cff5d6864ef9d78a7bca7237e572b3e5c50016b27b6947c037cfe8aff199cfa3",
+        "bytes": 243308
+      },
+      "validation_box_v1.npz": {
+        "sha256": "95d774e0a17c60ef8d3e45e06c98d5a93cd7a742cbd6d012c6f15fe731ed59bb",
+        "bytes": 243272
+      },
+      "candidate_box_v1_256.json": {
+        "sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "bytes": 10337
+      }
+    },
+    "points": [
+      {
+        "gain_db": -35,
+        "gain_q12": 73,
+        "gain_db_actual": -34.98074175694637,
+        "model_response_peak_bound": 51.10045625447994
+      },
+      {
+        "gain_db": -32.5,
+        "gain_q12": 97,
+        "gain_db_actual": -32.51176427403059,
+        "model_response_peak_bound": 50.75056997962841
+      }
+    ],
+    "operating_ceiling_db": -32.397446787594546,
+    "margin_db": 6.0,
+    "frequency_envelope": 20.886820736791716,
+    "train_validation_disagreement": 1.9326191010957645,
+    "q20_validation": {
+      "validation_capture_id": "e5efdb64-a99c-4e0e-a596-3e1b3816588f",
+      "validation_source": "board",
+      "evaluated_frames": 32512,
+      "target_rms": 0.08286725497584116,
+      "residual_rms": 0.027159173699382567,
+      "prediction_reduction_db": 9.68932800317685,
+      "interpretation": "open-loop prediction only; not ASG or closed-loop stability"
+    },
+    "source_peak_limit": 0.004892324224171339,
+    "interpretation": "empirical fitted-model envelope; not certified acoustic stability or measured ASG"
+  }
+}
