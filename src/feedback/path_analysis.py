@@ -149,7 +149,7 @@ def band_slice(freqs, low_hz=20.0, high_hz=None, fs=None):
     return (freqs >= low_hz) & (freqs <= min(high, freqs[-1]))
 
 
-def dc_diagnostics(microphone, H, freqs):
+def dc_diagnostics(microphone, H, freqs, coherence=None, gate=0.5):
     """直流/低频诊断：环路里最容易先失控、也最容易被忽略的一段。
 
     - bias_dbfs：麦克风信号的直流分量。RTL 不减 bias，残差会带着它进环路。
@@ -163,11 +163,23 @@ def dc_diagnostics(microphone, H, freqs):
     dc_gain = float(mag[low].max()) if low.any() else float(mag[0])
     peak_freq = float(freqs[low][np.argmax(mag[low])]) if low.any() else float(freqs[0])
     bias = float(np.mean(mic))
+    # 低频段相干往往极低（真实箱体 50 Hz 只有 0.07），那里的 |H| 是噪声，
+    # 不能拿去报"多少 dB 起振"。相干不够就明确标未知，不给假数字。
+    usable = True
+    trust = ''
+    if coherence is not None:
+        low_coh = float(np.median(np.asarray(coherence)[low])) if low.any() else 0.0
+        if low_coh < gate:
+            usable = False
+            trust = ("20 Hz 以下相干仅 %.2f，H 估不出来，这一段的增益与起振点不予给出；"
+                     "真实系统该频段由 Codec 交流耦合阻挡" % low_coh)
     return {
         "bias_dbfs": float(20.0 * np.log10(max(abs(bias), 1e-12))),
-        "dc_gain_below_20hz": dc_gain,
-        "dc_gain_at_hz": peak_freq,
-        "dc_gain_to_howl_db": float(-20.0 * np.log10(max(dc_gain, 1e-12))),
+        "dc_gain_below_20hz": dc_gain if usable else None,
+        "dc_gain_at_hz": peak_freq if usable else None,
+        "dc_gain_to_howl_db": (float(-20.0 * np.log10(max(dc_gain, 1e-12)))
+                               if usable else None),
+        "dc_gain_note": trust or "低频相干足够，数值可用",
     }
 
 
@@ -380,6 +392,15 @@ def fit_path_emphasized(capture, taps=256, gamma=1.0, nperseg=4096, ridge=1e-6, 
     kernel = emphasis_fir(weight, nfft=2048, length=length)
     filtered_reference = np.convolve(capture.reference, kernel, mode="same")
     filtered_microphone = np.convolve(capture.microphone, kernel, mode="same")
+    # 预加重会把峰值推过满幅，触发 Capture 的削顶拒绝。两边同比例缩小，
+    # H = M/U 不变，拟合结果不变，只是数值回到可表示的范围内。
+    peak = max(float(np.max(np.abs(filtered_reference))),
+               float(np.max(np.abs(filtered_microphone))), 1e-12)
+    limit = 1.0 - 2.0 ** -23
+    if peak > limit:
+        scale = limit / peak
+        filtered_reference = filtered_reference * scale
+        filtered_microphone = filtered_microphone * scale
     shaped = Capture(filtered_reference, filtered_microphone,
                      capture.sample_rate_hz, dict(capture.metadata))
     model = fit_path(shaped, taps=taps, ridge=ridge)
@@ -449,11 +470,16 @@ def _decimate(freqs, values, band, points):
 
 
 def analyze_captures(training, validation, model, band_low=20.0, band_high=20000.0,
-                     gamma=1.0, tap_list=(128, 256, 512), curve_points=160):
+                     gamma=1.0, tap_list=(128, 256, 512), curve_points=160,
+                     coherence_gate=0.8):
     """现有模型诊断 + 抽头扫描 + 加权候选，同训练/验证划分、同评价口径。
 
     全程只读数组：不加载 overlay、不播放、不写原始录音。
     训练集只用于拟合，验证集只用于评价；加权候选的 gamma 固定，不在验证集上调。
+
+    coherence_gate 是必须的，不是可选项：相干低的地方 H 根本估不出来，
+    把那些频点算进 max|H-Ĥ| 会得出"抵消深度为负"的假结论
+    （2026-10-21 在真实箱体上就踩过：12 kHz 以上相干 0.05，把中位数拉到 0）。
     """
     if model["sample_rate_hz"] != validation.sample_rate_hz:
         raise ValueError("model and validation sample rates differ")
@@ -462,9 +488,10 @@ def analyze_captures(training, validation, model, band_low=20.0, band_high=20000
     fs = validation.sample_rate_hz
     estimate = estimate_path(validation.reference, validation.microphone, fs)
     freqs = estimate["freqs"]
-    band = band_slice(freqs, band_low, band_high, fs)
+    band = band_slice(freqs, band_low, band_high, fs) & (estimate["coherence"] >= coherence_gate)
     if not band.any():
-        raise ValueError("analysis band empty")
+        raise ValueError("no frequency bin passes the coherence gate; lower it or "
+                         "the capture has no usable band")
 
     shipped, shipped_hat, shipped_cd = score_model(estimate, model, band, fs,
                                                    validation, training)
@@ -505,6 +532,10 @@ def analyze_captures(training, validation, model, band_low=20.0, band_high=20000
         "hp_volume": validation.metadata.get("hp_volume"),
         "sample_rate_hz": fs,
         "band_hz": [float(freqs[band][0]), float(freqs[band][-1])],
+        "coherence_gate": float(coherence_gate),
+        "bins_used": int(np.count_nonzero(band)),
+        "band_note": "band_hz 是实际参与评价的频段：已按相干门控裁剪，"
+                     "门控外的频点估不出 H，其结果无意义", 
         "training_capture_id": training.metadata["capture_id"],
         "validation_capture_id": validation.metadata["capture_id"],
         "shipped_model": {
@@ -517,7 +548,8 @@ def analyze_captures(training, validation, model, band_low=20.0, band_high=20000
             "nperseg": 4096,
             "median_coherence_in_band": float(np.median(estimate["coherence"][band])),
         },
-        "dc": dc_diagnostics(validation.microphone, estimate["H"], freqs),
+        "dc": dc_diagnostics(validation.microphone, estimate["H"], freqs,
+                             estimate["coherence"]),
         "shipped": shipped,
         "tap_sweep": sweep,
         "emphasis": emphasis,
@@ -574,8 +606,14 @@ def report_lines(result):
     elif emphasis:
         out.append("加权候选失败: %s" % emphasis["error"])
     dc = result["dc"]
-    out.append("直流: bias %.2f dBFS, 20Hz以下 |H| %.3f -> %.1f dB 起振（RTL 不减 bias）"
-               % (dc["bias_dbfs"], dc["dc_gain_below_20hz"], dc["dc_gain_to_howl_db"]))
+    if dc.get("dc_gain_below_20hz") is None:
+        out.append("直流: bias %.2f dBFS；20Hz 以下 %s"
+                   % (dc["bias_dbfs"], dc.get("dc_gain_note", "不可用")))
+    else:
+        out.append("直流: bias %.2f dBFS, 20Hz以下 |H| %.3f -> %.1f dB 起振"
+                   "（RTL 不减 bias）"
+                   % (dc["bias_dbfs"], dc["dc_gain_below_20hz"],
+                      dc["dc_gain_to_howl_db"]))
     rec = result["recommendation"]
     out.append("现场建议: 起点 %.1f dB, 终点 %.1f dB, 步进 %.1f, 点位 %s"
                % (rec["gain_db_start"], rec["gain_db_stop"], rec["step_db"],
