@@ -62,4 +62,4 @@ python scripts/package_audio_replay.py
 
 恢复：关闭音响，重启Notebook内核，再执行文件核验；保留已有source.wav及结果。
 运行器正常结束/异常均尝试恢复base overlay和Codec静音；恢复失败须先处理错误，
-不能直接重跑。B/C诉求已写入[REQUESTS](../../../docs/REQUESTS.md)的R-005/R-006。
+不能直接重跑。2026-10-21同步新版[协作规范](../../../docs/WORKFLOW.md#8-线间协调人来做)后，旧诉求表已撤销；接口依据保留在契约中，给B/C的提示词交由用户微信转发。
