@@ -71,12 +71,13 @@ def prepare_source(path, coefficients, gain_q12):
 def verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first_frame=0):
     raw = np.asarray(raw, dtype=np.int64)
     q = np.asarray(coefficients, dtype=np.int64)
-    if raw.ndim != 2 or raw.shape[1] != 4 or len(raw) <= 256 or q.shape != (256,):
+    if raw.ndim != 2 or raw.shape[1] != 4 or q.ndim != 1 or q.size < 2 or \
+            len(raw) <= q.size:
         raise ValueError("invalid capture shape")
     acc = np.convolve(raw[:, 0], np.r_[np.int64(0), q])[:len(raw)]
     prediction = np.clip(rounded_shift(acc, 20), -2**23, 2**23-1)
     residual = raw[:, 1] if bypass else np.clip(raw[:, 1]-prediction, -2**23, 2**23-1)
-    skip = 256 if first_frame else 0
+    skip = q.size if first_frame else 0
     indices = np.arange(first_frame, first_frame+len(raw))
     injected = np.zeros(len(raw), dtype=np.int64)
     valid = indices < len(source_pcm16)
