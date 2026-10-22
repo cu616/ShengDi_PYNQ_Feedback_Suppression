@@ -6,9 +6,9 @@
   "source_frames_max": 131072,
   "source_format": "signed16 -> signed24 << 8",
   "hashes": {
-    "audio_replay.bit": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
-    "audio_replay.hwh": "b9d4060fd9a7a305747eae881df808a00992ec78af8a070fb1e7fc64a29676ff",
-    "replay_trial.py": "bb516aad02826297d1c44050dfa1570109b72a0e56e1570392ab8e72b917f9f4",
+    "audio_replay.bit": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+    "audio_replay.hwh": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb",
+    "replay_trial.py": "cff4473dcdbb0cfcdaf3a87f0c577786f7bebc7c4579e9f6ba0636e704c4590f",
     "replay_tools.py": "b8f7657ff7f013d73689f6fab5a270e12098a18719a0c501e1802920f8bfda9b",
     "replay_session.py": "cda1b1aa14a37fa22e694228134e1c2ff236b762d0c19256a6812214a7e43065",
     "sweep_plan.py": "ef48bf87f1fbf55700df97ee6dd94f48caab7d6eb0831aed80966f371cfb3074",
@@ -18,18 +18,20 @@
     "start-panel.sh": "a75599e1242d2fdfb94c2777036220da6940750a0374abbba76e4c7e341b7c52",
     "replay_calibration.py": "6f6d42c73c1e801af4ac4317aa6f856a095d70ada2e1012ee23ebc675a1ce364",
     "closed_tools.py": "7643726b465cb672fefbd179354e03d184d70572039e205d94370beb43b1616e",
-    "residual_tools.py": "045f6fd1cfe5bb35f46b5625bab4ce1d85f5bb27e055d977a8a8021c58aa9e72"
+    "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a"
   },
   "notebook_code_sha256": "7715d43fab972553e2e5b76f5928b5e997cccc9926e3f1d1457f4eed9ae1e3b8",
   "build_sources": {
-    "src/rtl/audio_pl_replay.v": "90960b4599ddf4d53f063fe756d44e74d9c27848910e4f97fd2ef1f9323d2911",
+    "src/rtl/audio_pl_replay.v": "d1995a5a0db38891bd0b28cf12608faefea06fdc51edf83dae59dc13bfe25a71",
     "src/rtl/feedback_fir.v": "9fc3416122ce527ddd3feef5c7232d082fc789df56480a63e3243b103608db3f",
     "src/vendor/pynq_v2_4/iis_ser.vhd": "0ca9f3da00c5c411cbabb8b32792444366178227c7a5d0005ed26665156268d8",
     "src/vendor/pynq_v2_4/iis_deser.vhd": "af72dd1856a870e63b4e8cd5c69ea2ceeedae35fb788d9029db568711e533b12",
-    "build/scripts/create_audio_replay.tcl": "026590ef77e2cf304a3f7f32537dbd7b8bed25d86a9054e25560282a26b5eeed",
+    "build/scripts/create_audio_replay.tcl": "2f5d419017b9c5fcf9ab405fa835888aa8e99e53a96d836bea8e43f534eec6b7",
     "build/scripts/audio_bringup.xdc": "8bf3462f32fe240b8da8d397468026db1ed330c43f49747c648869b7c67eaa67"
   },
-  "wns_ns": 0.413,
-  "whs_ns": 0.035,
-  "limits": "External I/O delay constraints incomplete; not board-validated."
+  "wns_ns": 0.287,
+  "whs_ns": 0.034,
+  "limits": "External I/O delay constraints incomplete; not board-validated.",
+  "taps": 512,
+  "tap_change_note": "512 taps: 3*512+3 = 1539 cycles of the 2048-frame budget. Timing met (WNS +0.287 ns, WHS +0.034 ns). The previous 256-tap bitstream is in git history (commit 65dc914 and earlier)."
 }

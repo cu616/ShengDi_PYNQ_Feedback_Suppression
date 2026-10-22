@@ -1,6 +1,6 @@
 // Bounded closed-loop path. Bypass and cancellation share gain and scheduling.
 // Register contract: docs/contracts/audio-replay-v1.md.
-module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=256, MAX_RUN_FRAMES=488281, SOURCE_FRAMES=131072)(
+module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_RUN_FRAMES=488281, SOURCE_FRAMES=131072)(
     input wire clk, resetn,
     input wire [31:0] control, capture_cmd, coefficient_cmd, frame_limit,
     input wire [31:0] source_cmd, source_length,
@@ -29,23 +29,10 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=256, MAX_R
     wire source_ok=source_length>0 && source_length<=SOURCE_FRAMES &&
                    source_loaded==source_length && source_fresh && !source_error;
     assign source_status={8'h52,4'd0,source_fresh,source_error,source_loaded};
-    wire signed [23:0] injection=(scheduled<source_length_latched) ? {source_pipe,8'b0} : 24'd0;
-    wire signed [23:0] feedback_word=u_ready ? u_hold : 24'd0;
-    wire signed [24:0] mix_sum=$signed({injection[23],injection})+
-                              $signed({feedback_word[23],feedback_word});
-    wire mix_clipped=mix_sum>25'sd8388607 || mix_sum< -25'sd8388608;
-    wire [23:0] mix_limited=mix_sum>25'sd8388607 ? 24'h7fffff :
-                            mix_sum< -25'sd8388608 ? 24'h800000 : mix_sum[23:0];
-    always @(posedge clk) begin
-        source_word<=source_memory[(!arm || !arm_d) ? 17'd0 : scheduled[16:0]];
-        source_pipe<=source_word;
-        if (!arm && source_data && !source_begin && source_loaded<SOURCE_FRAMES &&
-            source_loaded<source_length)
-            source_memory[source_loaded[16:0]]<=source_cmd[15:0];
-    end
+    reg [31:0] scheduled=0;
     (* ASYNC_REG="TRUE" *) reg [1:0] adc_sync=0;
     reg [15:0] gain_latched=0;
-    reg [31:0] limit_latched=0, scheduled=0;
+    reg [31:0] limit_latched=0;
     reg [23:0] u_hold=0;
     reg u_ready=0;
     reg signed [40:0] gain_product=0;
@@ -62,6 +49,20 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=256, MAX_R
     reg [15:0] loaded_count=0;
     reg prediction_clip_seen=0, residual_clip_seen=0;
     wire arm=control[0];
+    wire signed [23:0] injection=(scheduled<source_length_latched) ? {source_pipe,8'b0} : 24'd0;
+    wire signed [23:0] feedback_word=u_ready ? u_hold : 24'd0;
+    wire signed [24:0] mix_sum=$signed({injection[23],injection})+
+                              $signed({feedback_word[23],feedback_word});
+    wire mix_clipped=mix_sum>25'sd8388607 || mix_sum< -25'sd8388608;
+    wire [23:0] mix_limited=mix_sum>25'sd8388607 ? 24'h7fffff :
+                            mix_sum< -25'sd8388608 ? 24'h800000 : mix_sum[23:0];
+    always @(posedge clk) begin
+        source_word<=source_memory[(!arm || !arm_d) ? 17'd0 : scheduled[16:0]];
+        source_pipe<=source_word;
+        if (!arm && source_data && !source_begin && source_loaded<SOURCE_FRAMES &&
+            source_loaded<source_length)
+            source_memory[source_loaded[16:0]]<=source_cmd[15:0];
+    end
     wire config_ok=control[31:16]<=32768 && frame_limit>0 && frame_limit<=MAX_RUN_FRAMES && source_length>0 && source_length<=SOURCE_FRAMES && frame_limit>=source_length+2;
     wire [40:0] gain_magnitude=gain_product[40] ? -gain_product : gain_product;
     wire [40:0] gain_rounded_mag=(gain_magnitude+41'd2048)>>12;

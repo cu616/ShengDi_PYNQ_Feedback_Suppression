@@ -6,7 +6,10 @@ import numpy as np
 
 def load_candidate(path, fixture_id, hp_volume, sample_rate):
     model = json.loads(Path(path).read_text(encoding="utf-8"))
-    expected = dict(taps=256, lag_first=1, coefficient_format="signed24_fraction20",
+    taps = model.get("taps")
+    if taps not in (256, 512):
+        raise ValueError("candidate taps must be 256 or 512")
+    expected = dict(lag_first=1, coefficient_format="signed24_fraction20",
                     training_source="board", fixture_id=fixture_id,
                     hp_volume=hp_volume, sample_rate_hz=sample_rate)
     for key, value in expected.items():
@@ -14,8 +17,8 @@ def load_candidate(path, fixture_id, hp_volume, sample_rate):
             raise ValueError("candidate mismatch: " + key)
     q = np.asarray(model["coefficients_q20"])
     h = np.asarray(model["coefficients"], dtype=np.float64)
-    if (q.shape != (256,) or q.dtype.kind not in "iu" or
-            h.shape != (256,) or not np.isfinite(h).all() or
+    if (q.shape != (taps,) or q.dtype.kind not in "iu" or
+            h.shape != (taps,) or not np.isfinite(h).all() or
             not np.isfinite(model["bias"])):
         raise ValueError("invalid candidate coefficients/bias")
     rounded = np.sign(h) * np.floor(np.abs(h) * 2**20 + .5)
@@ -33,8 +36,8 @@ def verify_residual(raw, coefficients, bias):
     """
     raw = np.asarray(raw)
     q = np.asarray(coefficients)
-    if (raw.ndim != 2 or raw.shape[1] != 4 or len(raw) <= 256 or
-            raw.dtype.kind not in "iu" or q.shape != (256,) or q.dtype.kind not in "iu" or
+    if (raw.ndim != 2 or raw.shape[1] != 4 or len(raw) <= len(q) or
+            raw.dtype.kind not in "iu" or q.ndim != 1 or q.dtype.kind not in "iu" or
             np.any(raw < -2**23) or np.any(raw > 2**23-1) or
             np.any(q < -2**23) or np.any(q > 2**23-1) or not np.isfinite(bias)):
         raise ValueError("invalid PCM/coefficients/bias")

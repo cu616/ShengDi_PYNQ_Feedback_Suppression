@@ -4,6 +4,7 @@ create_project -force audio_replay $root/build/work/audio_replay -part xc7z020cl
 set_property board_part tul.com.tw:pynq-z2:part0:1.0 [current_project]
 add_files [list $root/src/rtl/audio_pl_replay.v $root/src/rtl/feedback_fir.v $root/src/vendor/pynq_v2_4/iis_ser.vhd $root/src/vendor/pynq_v2_4/iis_deser.vhd]
 add_files -fileset constrs_1 $root/build/scripts/audio_bringup.xdc
+update_compile_order -fileset sources_1
 create_bd_design system
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 ps7
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_external "FIXED_IO, DDR" apply_board_preset "1" Master "Disable" Slave "Disable"} [get_bd_cells ps7]

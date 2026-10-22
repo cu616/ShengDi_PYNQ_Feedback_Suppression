@@ -60,7 +60,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         raise FileNotFoundError("matching bit/hwh required")
     model, coefficients = load_candidate(model_path, fixture_id, hp_volume, RATE)
     if zero_coeff:
-        coefficients = np.zeros(256, dtype=np.int64)
+        coefficients = np.zeros(len(coefficients), dtype=np.int64)
     fd, control, raw = None, None, None
     cleanup_errors = []
 
@@ -143,7 +143,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             coeff_word = ((coeff_word ^ (1 << 24)) & 0x03000000) | (int(value) & 0xFFFFFF)
             coeff.write(0, coeff_word)
         coeff_status = coeff.read(8)
-        if ((coeff_status >> 4) & 0xFFFF) != 256 or (coeff_status & 0xE) != 0xA:
+        if ((coeff_status >> 4) & 0xFFFF) != len(coefficients) or (coeff_status & 0xE) != 0xA:
             raise RuntimeError("coefficient load rejected: %08x" % coeff_status)
         runtime = MMIO(overlay.ip_dict["audio_runtime"]["phys_addr"], 0x1000)
         clips = MMIO(overlay.ip_dict["audio_clips"]["phys_addr"], 0x1000)
