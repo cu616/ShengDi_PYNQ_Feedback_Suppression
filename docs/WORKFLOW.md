@@ -180,6 +180,21 @@ git commit -m "[B] 一句话"
 git push
 ```
 
+### 检查命令的退出码陷阱
+
+**不要用管道截断检查命令的输出。** `python -m unittest ... | tail -3` 的退出码是 `tail` 的，
+永远是 0，测试失败会被静默吞掉，后面的 `&&` 照样提交推送。要看尾部就先重定向到文件：
+
+```text
+python -m unittest discover -s sim/feedback -p "test_*.py" > /tmp/t.txt 2>&1 \
+  || { tail -20 /tmp/t.txt; exit 1; }
+```
+
+同理 `check_docs.py` 也按退出码判断，不要靠肉眼扫最后两行。
+
+另一条：`__pycache__` 与源码不同步时会报出实际不存在的错误。**结果与上一轮不一致时，
+先清缓存再跑一次**，再判断是不是真失败——但清理之后仍失败，就是真失败，不许略过。
+
 ### 常设授权（2026-10-20 由账号 R-Coralis 确认，三条线通用）
 
 - **AI 可以自动提交并推送**，不需要每次问人。前提：先 `git pull --rebase`，
