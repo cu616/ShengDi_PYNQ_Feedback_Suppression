@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "kind": "live_h_analysis",
+  "npz": "D:/Always/QianSai/h30(1).npz",
+  "prediction_source": "board",
+  "sample_rate_hz": 48828.125,
+  "frames": 16384,
+  "coherence_gate": 0.8,
+  "metadata": {
+    "fixture_id": "box_v1_20261016",
+    "hp_volume": 40,
+    "frames": 16384,
+    "mic_rms_dbfs": -17.881929555960152,
+    "mic_peak_dbfs": -6.430958871907646,
+    "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05"
+  },
+  "time_domain": {
+    "mic_peak_code": 4000755,
+    "residual_peak_code": 1075878,
+    "peak_ratio_db": -11.407578594105047,
+    "rms_ratio_db": -14.064120176902977,
+    "mic_clipped_samples": 0
+  },
+  "window_sweep": [
+    {
+      "nperseg": 1024,
+      "segments": 31,
+      "bins_used": 8,
+      "max_abs_H_db": 24.49142084655506,
+      "max_abs_H_at_hz": 429.1534423828125,
+      "max_abs_H_eff_db": 5.718435615338531,
+      "max_abs_H_eff_at_hz": 476.837158203125,
+      "asg_db": 18.772985231216527,
+      "cancel_howl_at_gain_db": -5.718435615338531,
+      "cd_worst_db": 15.295548183703158,
+      "cd_worst_at_hz": 667.572021484375,
+      "cd_nonpositive_bins": 0,
+      "cd_negative_segments": [],
+      "coherence_median": 0.8996234371190082
+    },
+    {
+      "nperseg": 2048,
+      "segments": 15,
+      "bins_used": 20,
+      "max_abs_H_db": 26.31542376748169,
+      "max_abs_H_at_hz": 381.4697265625,
+      "max_abs_H_eff_db": 11.251988757453905,
+      "max_abs_H_eff_at_hz": 381.4697265625,
+      "asg_db": 15.063435010027785,
+      "cancel_howl_at_gain_db": -11.251988757453905,
+      "cd_worst_db": 14.830836434221045,
+      "cd_worst_at_hz": 667.572021484375,
+      "cd_nonpositive_bins": 0,
+      "cd_negative_segments": [],
+      "coherence_median": 0.9202255499874277
+    },
+    {
+      "nperseg": 4096,
+      "segments": 7,
+      "bins_used": 43,
+      "max_abs_H_db": 28.010960905475635,
+      "max_abs_H_at_hz": 405.31158447265625,
+      "max_abs_H_eff_db": 18.669295032249988,
+      "max_abs_H_eff_at_hz": 298.0232238769531,
+      "asg_db": 9.341665873225647,
+      "cancel_howl_at_gain_db": -18.669295032249988,
+      "cd_worst_db": 1.0456759964983717,
+      "cd_worst_at_hz": 4994.869232177734,
+      "cd_nonpositive_bins": 0,
+      "cd_negative_segments": [],
+      "coherence_median": 0.9334209200612602
+    }
+  ],
+  "gate_sensitivity": [
+    {
+      "gate": 0.0,
+      "bins": 499,
+      "max_abs_H_eff_db": 57.01225327632055,
+      "cd_worst_db": -14.52960750092985
+    },
+    {
+      "gate": 0.5,
+      "bins": 29,
+      "max_abs_H_eff_db": 22.86205618847339,
+      "cd_worst_db": 1.2940933773465504
+    },
+    {
+      "gate": 0.7,
+      "bins": 23,
+      "max_abs_H_eff_db": 15.942507759161817,
+      "cd_worst_db": 8.391615893427247
+    },
+    {
+      "gate": 0.8,
+      "bins": 20,
+      "max_abs_H_eff_db": 11.251988757453905,
+      "cd_worst_db": 14.830836434221045
+    },
+    {
+      "gate": 0.9,
+      "bins": 12,
+      "max_abs_H_eff_db": 7.501797130011685,
+      "cd_worst_db": 15.838086853941283
+    }
+  ],
+  "subbands": [
+    {
+      "low_hz": 100,
+      "high_hz": 300,
+      "bins": 0,
+      "note": "no bin passes the coherence gate"
+    },
+    {
+      "low_hz": 300,
+      "high_hz": 600,
+      "bins": 12,
+      "max_abs_H_db": 26.31542376748169,
+      "max_abs_H_eff_db": 11.251988757453905,
+      "cd_worst_db": 15.063435010027785,
+      "coherence_median": 0.9367645416821764
+    },
+    {
+      "low_hz": 600,
+      "high_hz": 1000,
+      "bins": 3,
+      "max_abs_H_db": 18.84795655877982,
+      "max_abs_H_eff_db": 3.680626718474511,
+      "cd_worst_db": 14.830836434221045,
+      "coherence_median": 0.8804885652326854
+    },
+    {
+      "low_hz": 1000,
+      "high_hz": 3000,
+      "bins": 5,
+      "max_abs_H_db": 12.616682323815647,
+      "max_abs_H_eff_db": -5.613282067270703,
+      "cd_worst_db": 18.22996439108635,
+      "coherence_median": 0.9297037687256807
+    },
+    {
+      "low_hz": 3000,
+      "high_hz": 8000,
+      "bins": 0,
+      "note": "no bin passes the coherence gate"
+    },
+    {
+      "low_hz": 8000,
+      "high_hz": 12000,
+      "bins": 0,
+      "note": "no bin passes the coherence gate"
+    }
+  ]
+}
