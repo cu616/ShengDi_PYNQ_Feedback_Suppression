@@ -16,3 +16,9 @@
 # 所以日志正文要写具体内容，不要写"完成"这类雷同的空话——这也正好是项目要的写法。
 # 副作用：合并后两条同日条目的先后顺序不保证，所以每条都必须自带日期。
 docs/log/progress.md merge=union
+
+board/audio_replay/README.md -text
+board/audio_replay/*.ipynb -text
+board/audio_replay/*.json -text
+board/audio_replay/*.html -text
+board/audio_replay/start-panel.sh -text
