@@ -43,10 +43,12 @@
 - **256 模型在 512 位流上必须补零加载**（RTL 要求正好 512 项才置 `fresh`）。
   板上实证：`logical_taps=256 / loaded_taps=512 / coefficient_status=0x200A / bit_exact`；
   证据里同时记两个抽头数与双哈希，**补零模型不得描述为 512 训练模型**。
-- **8.4 kHz 的缺陷是相位不是幅度**：`|H| 9.14 dB` 对 `|Ĥ| 9.17 dB`（准），
-  但 `phase(H) −2.3°` 对 `phase(Ĥ) +31.2°`（差约 33°），`|H−Ĥ| 9.52 ≈ |H|`，
-  抵消惩罚 +0.29 dB（最差 +1.06）。该频段 `|H|` 最强，**决定了可用增益上限**。
-  300–3000 Hz 同一模型仍有 10–11 dB 抵消量。见 512 报告 §17。
+- **8.4 kHz 的模型是准的（A 早先结论已撤回）**：初版算 `Ĥ` 时漏了模型固有的 1 帧滞后
+  （`lag_first=1`，8285 Hz 处 61°），得出的「相位差 33°、抵消无效」是错的。
+  加上滞后后同批数据 CD：300–1000 +12.05、1000–3000 +16.18、3000–6000 +19.68、
+  **8200–8600 +29.16（最差 +20.84）**、8285 Hz +28.96 dB，与 B 的 +32.1 dB 一致。
+  现场 `cancel` 在 −6 dB 发散而 `cancel_zero` 到 0 dB 不发散，**不能再用模型相位解释**，
+  按 B 的假设查「现场 H 与标定批 H 的差异」。见 512 报告 §17.1。
 - **接口位段（给 C，已核对）**：`capture_status` bit0=done、`[16:1]`=captured（环形已写帧数，上限 16384）、
   bit17=arm&&!config_ok、bit18=fault|fir_error、bit19=prediction_clip_seen、bit20=residual_clip_seen、
   bit21=`gain_clip_count!=0`；`coefficient_status` bit0=coeff_ready、bit1=fir_ready、bit2=fir_error、
