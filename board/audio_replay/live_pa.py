@@ -34,6 +34,7 @@ CODEC_ADDRESS = 0x3B
 
 
 def live_pa(fixture_id, model_path, bypass=False, gain_db=-12.0, seconds=8.0, bursts=3,
+            zero_coeff=False,
             gap_seconds=0.25, hp_volume=40, speaker_confirmed=False,
             local_capture_confirmed=False, output_dir=None, stop_on_saturation=True,
             before_burst=None, label="live"):
@@ -58,6 +59,10 @@ def live_pa(fixture_id, model_path, bypass=False, gain_db=-12.0, seconds=8.0, bu
         raise ValueError("window too short for the source schedule")
 
     model, coefficients = load_candidate(model_path, fixture_id, hp_volume, RATE)
+    if zero_coeff:
+        # All-zero prediction: played = gain*microphone, i.e. plain public address with the
+        # same gain/limiter/schedule. Isolates the model's contribution from the hardware.
+        coefficients = np.zeros(len(coefficients), dtype=np.int64)
     bit = Path(__file__).resolve().with_name("audio_replay.bit")
     if not bit.is_file() or not bit.with_suffix(".hwh").is_file():
         raise FileNotFoundError("matching bit/hwh required")
@@ -215,7 +220,7 @@ def live_pa(fixture_id, model_path, bypass=False, gain_db=-12.0, seconds=8.0, bu
             first = completed - count
             raw = read_ring(command, samples, runtime, first, count) if count else None
 
-            entry = dict(burst=index, bypass=bypass, gain_q12=gain_q12,
+            entry = dict(burst=index, bypass=bypass, zero_coeff=zero_coeff, gain_q12=gain_q12,
                          gain_db=float(20 * np.log10(gain_q12 / 4096)) if gain_q12 else None,
                          seconds=seconds, elapsed_s=round(elapsed, 3),
                          completed_frames=completed, frames=count, first_frame=first,
