@@ -122,3 +122,24 @@ model_pairs 是基线/候选比较；保留既有 pairs 的旁路/抵消含义�
 显式 comparison_id 内 gain 不符时两行标 invalid，保留原值与失败配对；不以请求 dB 代替相等。
 缺尾段或正向对照时只用于安全/诊断记录，effect_eligible=false；不生成 MSG/ASG。
 JSON/CSV 必须标明 evidence_kind；软件合成示例不能作为完成真实现场配对的证据。
+
+### summary v3.1 兼容增补（2026-10-23，B 消费方反馈）
+
+schema_version 仍为 3，calculation_version 仍为 c-measurement-2.1.0；
+summary_revision=3.1.0 只标识以下附加遥测，不改变尾段数值判据，不生成 ASG。
+
+- 历史 audio_replay 位流 dadbbbab…ddcb05 登记为 256 抽头。4d49dfbe…635316
+  对应已退役的 audio_closed，逐行明确 retired_overlay=true、evidence_scope=pl_arithmetic_only、
+  acoustic_evidence_eligible=false，并排除声学 model_pairs；原始数据与事件不删除。
+  完整哈希和出处由代码登记及 bitstream_provenance 给出。
+- loaded_taps 保留保存数组长度/驱动明确记录，loaded_taps_basis 说明来源；
+  缺失时仅新增 derived_loaded_taps 及 derived_loaded_taps_basis，依据已批准模型的
+  原数组/补零数组 little-endian int32 哈希推导。推导不冒充硬件 loaded_count 回读，
+  不消除实际加载证据缺失，不单独使历史记录 effect_eligible。
+- JSON/CSV 直接导出 positive_control_valid（true/false/null）。eligibility_reasons
+  独立列出 tail_not_validated、safety_not_validated、positive_control_not_validated
+  或 positive_control_failed；算术、配置、证据来源不合格另列，不再只给一个合并原因。
+  假阴性的通路失败与没有有效尾段可同时保留；未知不改为 false。
+- models/manifest.json 的 models 仅注册三个原模型；derived_artifacts 不参与模型身份注册。
+  清单可附 coefficients_sha256/padded_512_sha256，C 从模型数组独立重算并校验；
+  不把补零派生物重复注册为候选，不改变模型文件字节。
