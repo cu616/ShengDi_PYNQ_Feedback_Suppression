@@ -143,3 +143,34 @@ summary_revision=3.1.0 只标识以下附加遥测，不改变尾段数值判据
 - models/manifest.json 的 models 仅注册三个原模型；derived_artifacts 不参与模型身份注册。
   清单可附 coefficients_sha256/padded_512_sha256，C 从模型数组独立重算并校验；
   不把补零派生物重复注册为候选，不改变模型文件字节。
+
+### 房间执行协议 v1（2026-10-24，A db29698 请求）
+
+measurement_policy_version=c-room-policy-1.0.0，calculation_version=c-measurement-2.2.0、
+summary_revision=3.2.0、schema_version=3。满幅判定及显式尾区间是本版分析变更，旧2.1产物保留原版本。
+仅用于当前 room_v1_20261021、hp_volume=40、
+48828.125 Hz、512 位流和固定 A 驱动；原始 NPZ、FIR 和寄存器不变。
+使用 A 本场重标定的 256/512 两份原模型，原 B 三模型注册表不覆写。模型仍为待实验候选，
+不把 A 报告中的增益差直接升级为已验收 ASG。
+
+每项闭环前用固定 PCM、峰值 -20 dBFS 的 1 kHz 定音、direct_only（反馈增益为 0）检查通路。
+初始两次合格门禁建立场次基线；后续门禁 RMS 相对该固定基线的绝对偏差 <=1.5 dB，
+且信号高于登记底噪 6 dB、相关性合格、无满幅/饱和/恢复失败才允许下一项。
+失败即结束本批，不在失败后重新定义基线，不自动重试闭环。
+下一门禁也作为前一闭环的事后检查；若失败或未执行，前一项不能进入有效效果配对。
+
+麦克风达到 signed24 满幅码时，独立记录 microphone_clipping 并禁止稳定/有效效果结论；
+不以 PL guard 是否触发代替麦克风检查，也不单凭削顶证明反馈因果。
+满幅、保护或恢复失败后结束本批，下一批须重新通过初始门禁；没有自动恢复发声。
+现有 A 驱动没有全过程麦克风削顶遥测，因此该检查覆盖保存窗口，不冒充在线 ADC 保护。
+
+闭环固定 2.1 s、数字源约 1.87 s，尾环形中同时保留一部分有源段和不少于 160 ms 的纯尾段。
+以驱动确认的实际 source_end_frame_exclusive 和固定 50 ms 过渡计算唯一尾区间，
+记录完整捕获区间及派生尾区间；数组裁剪仅在 C 派生分析中进行，不改原始 NPZ。
+全捕获的满幅事件不能因选取尾区间而隐藏。有源段电平用于排除空测，尾段落入底噪时
+明确不足，不把它当稳定或模型有效。仅记录窗口内证据，不计算 MSG/ASG。
+
+原 schema_version=3 与统计公式保留，新增 measurement_policy_version、trial_role、
+amplifier_gate、active_source_statistics、capture_window/tail_analysis_window；
+基线/候选 comparison_id 与实际增益、场次、场景及尾区间绑定。外部讲话仅作功能验收，
+与模型效果配对分开。返回 ZIP 含汇总、状态、模型清单及模型字节，不含捕获 PCM。
