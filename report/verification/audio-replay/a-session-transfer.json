@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "topic": "on-site H now vs the calibration batch the model was fitted on",
+  "recorded_at": "2026-10-23",
+  "recorded_by": "A",
+  "method": "white-noise digital injection, 3 segments now vs 6 segments at calibration; H = cross/auto spectrum, n=8192, coherence > 0.7; no external source in either",
+  "new_batch": {
+    "dir": "/home/xilinx/session_check3",
+    "segments": 3,
+    "mic_rms_dbfs": [
+      -28.8,
+      -28.7,
+      -29.1
+    ],
+    "ref_to_mic_delay": [
+      125,
+      124,
+      124
+    ]
+  },
+  "old_batch": {
+    "dir": "/home/xilinx/room_cal520",
+    "segments": 6,
+    "note": "the batch the board model was fitted from"
+  },
+  "bands": {
+    "300-1000": {
+      "old_H_db": 5.05,
+      "new_H_db": 4.71,
+      "d_db": -0.51,
+      "old_phase_deg": 38.1,
+      "new_phase_deg": 37.1,
+      "d_phase_deg": 2.1
+    },
+    "1000-3000": {
+      "old_H_db": 0.52,
+      "new_H_db": 0.57,
+      "d_db": 0.07,
+      "old_phase_deg": 34.0,
+      "new_phase_deg": 36.7,
+      "d_phase_deg": -7.6
+    },
+    "3000-6000": {
+      "old_H_db": 2.03,
+      "new_H_db": 1.61,
+      "d_db": -0.6,
+      "old_phase_deg": -7.8,
+      "new_phase_deg": 1.0,
+      "d_phase_deg": 11.8
+    },
+    "8200-8600": {
+      "old_H_db": 9.12,
+      "new_H_db": 5.01,
+      "d_db": -4.97,
+      "old_phase_deg": -2.3,
+      "new_phase_deg": 14.8,
+      "d_phase_deg": 38.9
+    },
+    "6000-12000": {
+      "old_H_db": 1.85,
+      "new_H_db": 0.99,
+      "d_db": -1.3,
+      "old_phase_deg": 7.3,
+      "new_phase_deg": 1.4,
+      "d_phase_deg": 32.1
+    }
+  },
+  "at_8380_hz": {
+    "old_H_db": 11.13,
+    "new_H_db": 5.15,
+    "d_db": -5.98,
+    "old_phase_deg": -169.9,
+    "new_phase_deg": -130.4,
+    "d_phase_deg": 39.5
+  },
+  "b_falsification_test": "B asked: if on-site mic/ref at 8.38 kHz differs from the calibration batch by less than 1 dB and 10 degrees, the session-transfer explanation is wrong. Measured: -5.98 dB and +39.5 degrees.",
+  "verdict": "session transfer CONFIRMED. The 8.4 kHz resonance measured 11.1 dB when the model was fitted and measures 5.2 dB now, so the model over-predicts that band by about 6 dB and cancellation adds energy there instead of removing it. This explains why cancel oscillates at -6 dB while the zero-coefficient arm is stable at 0 dB.",
+  "consequence": "the model has to be refitted on the current H; no coefficient change can fix a transfer function that is no longer the one being cancelled"
+}
