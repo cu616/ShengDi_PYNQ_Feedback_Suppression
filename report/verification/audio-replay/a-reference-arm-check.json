@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "topic": "reference-arm check: is 'cancel_zero stable at 0 dB' real, and how does it relate to max|H| = +11.11 dB",
+  "recorded_at": "2026-10-23",
+  "recorded_by": "A",
+  "question": "B reports a conflict: cancel_zero stable at 0 dB contradicts max|H| = +11.11 dB",
+  "answer": "conditions differ - the 'stable' record is a null measurement, not a live loop",
+  "same_conditions": {
+    "fixture_id": "room_v1_20261021 in both records",
+    "wiring": "unchanged: HP NS1 Pro on HP+MIC, MAX4466 on LINE_IN",
+    "hp_volume": 40,
+    "source": "external playback off in both; the loop was driven only by its own noise",
+    "actual_gain_q12": 4096,
+    "zero_coefficients": "confirmed: prediction_pcm reads -240 dBFS (all zero)",
+    "run_mode": "bypass=false, zero_coeff=true in both records"
+  },
+  "difference": {
+    "amplifier_state": "in the 'stable' session the arm ran immediately after a howling trial that reached full scale (that trial: reference -12.0 dBFS, guard tripped at 1066 frames). The amplifier was driven into limiting, so the next arm's microphone returned only -37.7 dBFS, the noise floor.",
+    "evidence_of_null": "in the 'stable' record reference = -37.7 dBFS and microphone = -37.7 dBFS: the PL did play gain*microphone at unity, but the signal was at the floor, so there was nothing to amplify. The claimed stability covers a window in which the loop carried no signal.",
+    "gated_rerun": "the same arm in a session that passes a -20 dBFS amplifier-state gate before every trial reads reference -1.2 dBFS and microphone -1.2 dBFS, i.e. full scale: the loop runs away."
+  },
+  "max_H_provenance": {
+    "value_db": 11.11,
+    "batch": "/home/xilinx/room_cal520, 6 segments",
+    "current_session_same_frequency_db": 5.15,
+    "delta_db": -5.98,
+    "delta_phase_deg": 39.5,
+    "consequence": "the 11.11 dB number and the 'stable at 0 dB' record come from different sessions with different H, so they were never contradicting each other"
+  },
+  "records": [
+    {
+      "file": "/home/xilinx/loop_only/cancel_g0p0_01_b0_g4096.npz",
+      "role": "the howling trial that preceded the null measurement",
+      "reference_dbfs": -12.0,
+      "microphone_dbfs": -37.5,
+      "frames": 1066,
+      "guard_tripped": true
+    },
+    {
+      "file": "/home/xilinx/loop_only/cancel_zero_g0p0_01_b0_g4096.npz",
+      "role": "the record that was called stable",
+      "reference_dbfs": -37.7,
+      "microphone_dbfs": -37.7,
+      "frames": 16384,
+      "guard_tripped": false,
+      "verdict": "null: loop closed but no signal in it"
+    },
+    {
+      "file": "/home/xilinx/gated/g_0p0_cancel_01_b0_g4096.npz",
+      "role": "gated cancel at 0 dB",
+      "reference_dbfs": -37.9,
+      "microphone_dbfs": -35.4,
+      "frames": 16384,
+      "guard_tripped": false,
+      "verdict": "live loop, cancellation holding"
+    },
+    {
+      "file": "/home/xilinx/gated/g_0p0_cancel_zero_01_b0_g4096.npz",
+      "role": "gated cancel_zero at 0 dB",
+      "reference_dbfs": -1.2,
+      "microphone_dbfs": -1.2,
+      "frames": 16384,
+      "guard_tripped": false,
+      "verdict": "live loop, at full scale"
+    }
+  ],
+  "conclusions": {
+    "reference_arm_validity": "'cancel_zero stable at 0 dB' is withdrawn: it is a null measurement taken while the amplifier was limited.",
+    "conflict_status": "resolved as 'conditions differ'; B's reading of the live-loop behaviour is correct.",
+    "performance_claim": "'the model lowers usable gain from 0 dB to -6 dB' is not used. The supported statement is: with a gated live loop, cancellation holds the output at 0 dB where the zero-coefficient arm is at full scale, so cancellation buys at least 6 dB.",
+    "required_protocol": "every trial must be preceded by an amplifier-state gate (fixed tone, loop open). Any trial at full scale invalidates the next one until the gate passes again. The guard does not count microphone clipping, so 'held' must always be read together with the microphone level."
+  }
+}
