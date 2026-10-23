@@ -22,3 +22,6 @@ board/audio_replay/*.ipynb -text
 board/audio_replay/*.json -text
 board/audio_replay/*.html -text
 board/audio_replay/start-panel.sh -text
+
+# Preserve B model-package SHA256 across checkout.
+/models/** -text

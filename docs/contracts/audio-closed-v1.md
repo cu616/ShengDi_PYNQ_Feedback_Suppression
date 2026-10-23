@@ -88,3 +88,37 @@ CSV 是逐窗轨迹，包含电平、峰位、窄带占比、增长斜率和候�
 `no_growth_detected` 不代表整次实验稳定，更不能生成实测 MSG/ASG。
 没有真实人声与实物啸叫验收前，不报告现场误报率或准确率。
 本版是离线工具，事件不触发实际静音，尚未接入板卡全过程观测或在线停止。
+
+
+## 测评软件汇总 v3（2026-10-23，B 模型比较请求）
+
+状态：实现与验收见 [批次证据](../../report/verification/audio_closed/batch-control.md)。
+生产方 C，消费方 A/B；新增派生软件字段，硬件、系数和旧 summary v2 不变。
+适用于 replay experiment 与只读历史 NPZ 汇总，schema_version=3，calculation_version=c-measurement-2.1.0。
+
+每个 trials 行直接包含 gain_q12、hp_volume、bit_sha256、coefficients_sha256、model_sha256、
+model_role、logical_taps、loaded_taps。gain/hp/bit 仅取该次 metadata，不从请求 dB 或上一项填补；
+coefficients_sha256 可从该次保存的 Q20 数组按 little-endian int32 独立计算，并注明来源。
+原模型哈希不以系数哈希冒充。256 补零加载仍是 baseline，不得标为 candidate。
+
+每行必须有 tail_rms_dbfs、tail_slope_db_per_s、tail_residual_over_mic_db 对象，
+后者含 300-1000、1000-3000、8200-8600 三项。CSV 同时有三个平坦频带列。
+无效/不足时字段保留 null、CSV 留空，tail_reasons 给出原因，不能填 0 当通过。
+实际 first/completed/frames 必须一致，源结束及外部声源关闭有证据，整个所用区间位于源结束+过渡之后，
+无缺帧/满幅且长度够，才计算尾段。计划有 1 s 尾段本身不构成实际窗口证据。
+历史补充材料是以 NPZ SHA256 绑定的独立 evidence.json，不回写原 NPZ；必须带 provenance。
+
+尾段 RMS 是 mic 去均值 RMS；斜率是 20 ms 不重叠块的去均值 RMS(dBFS) 对块中心时间的 OLS，
+至少 8 块且总长 >=160 ms，保留拟合 R² 但不叫置信度，不以斜率单独定义起振。
+三频带能量使用相同区间、去均值及 Hann 窗，RFFT 的 [lo,hi) bins，10log10(sum|E|²/sum|M|²)。
+mic 全窗低于 -55 dBFS、某带低于 -80 dBFS、零残差或零分母时相关值不输出有限伪数。
+比值是观测能量比，不无条件认证为 CD/ASG；噪声和源注入位置的解释由分析层另行核对。
+
+保护、prediction 饱和、残差/增益/mix 饱和、麦克风满幅、mute_applied、波形全零分别列出；未知为 null。
+静音动作不由波形全零或恢复成功推断。原始阳性事件与类别可并存。
+
+model_pairs 是基线/候选比较；保留既有 pairs 的旁路/抵消含义。基线/候选允许模型/系数不同，
+但实际 gain_q12、hp_volume、fixture_id、bit、sample rate、source、scene/session、模式、尾段区间必须一致且非空。
+显式 comparison_id 内 gain 不符时两行标 invalid，保留原值与失败配对；不以请求 dB 代替相等。
+缺尾段或正向对照时只用于安全/诊断记录，effect_eligible=false；不生成 MSG/ASG。
+JSON/CSV 必须标明 evidence_kind；软件合成示例不能作为完成真实现场配对的证据。
