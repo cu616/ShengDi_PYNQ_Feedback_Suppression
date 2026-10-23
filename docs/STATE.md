@@ -35,6 +35,18 @@
   `bypass=1` 即普通扩声、`bypass=0` 即带抵消扩声，两者共用增益与限幅。
 - **每次运行的时长上限 9.5 s**（PL `frame_limit ≤ 488281`）；`live_pa` 用多段拼接绕开，段间有轻微咔哒。
   真正连续运行需要 RTL 增"无限模式"并重建位流——**尚未实现**。
+- **驱动证据层已按 C 规格升级（a-replay-evidence-v2）**：计数解包为
+  `prediction=packed&0xffff / residual=packed>>16 / gain / mix` 并保存 `clip_counts_raw`；
+  正常、保护、故障、异常、恢复失败走同一条保存路径，先停声再冻结采集；
+  每次落盘写 `<name>.status.json`（`recovery_ok` / `cleanup_errors` / `save_error`）。
+  **C 的 `check_a_driver.py` 官方验收 8/8、`accepted=true`**（驱动 sha256 `2127663…`）。
+- **256 模型在 512 位流上必须补零加载**（RTL 要求正好 512 项才置 `fresh`）。
+  板上实证：`logical_taps=256 / loaded_taps=512 / coefficient_status=0x200A / bit_exact`；
+  证据里同时记两个抽头数与双哈希，**补零模型不得描述为 512 训练模型**。
+- **8.4 kHz 的缺陷是相位不是幅度**：`|H| 9.14 dB` 对 `|Ĥ| 9.17 dB`（准），
+  但 `phase(H) −2.3°` 对 `phase(Ĥ) +31.2°`（差约 33°），`|H−Ĥ| 9.52 ≈ |H|`，
+  抵消惩罚 +0.29 dB（最差 +1.06）。该频段 `|H|` 最强，**决定了可用增益上限**。
+  300–3000 Hz 同一模型仍有 10–11 dB 抵消量。见 512 报告 §17。
 - **接口位段（给 C，已核对）**：`capture_status` bit0=done、`[16:1]`=captured（环形已写帧数，上限 16384）、
   bit17=arm&&!config_ok、bit18=fault|fir_error、bit19=prediction_clip_seen、bit20=residual_clip_seen、
   bit21=`gain_clip_count!=0`；`coefficient_status` bit0=coeff_ready、bit1=fir_ready、bit2=fir_error、
