@@ -40,12 +40,12 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-23 接收 B 59ab1ee 清单与消费工具，完成 summary v3.1 的历史位流登记、退役声学排除、抽头推导及正向对照/尾段/保护原因拆分；115 项软件回归及 B 消费工具检查通过。
-**当前卡点**：真实房间 NPZ 仍在 A 端，待其静默复算回包。A 841e605 驱动已由 C 离线复验 8/8；房间 ready 包尚未完成集成，参考臂与路径增益冲突未解决前不采用历史增益差结论。
+**最后动作**：2026-10-24 接收 A db29698 的521条静默回包及参考臂说明，完成房间门禁 ready v1：每项前固定定音、1.5 dB漂移门禁、事后复核、全捕获麦克风满幅排除、确定性尾区间与外部讲话入口；124项回归及独立整包验收通过。
+**当前卡点**：软件包集成完成，待A执行本场房间固定比较并回一个结果ZIP。群聊check仅执行一次，因仓库缺tools/ai-group/group.py而停止；不阻塞测量包。没有新增现场采集或已验收ASG。
 
-- [B 消费反馈闭环证据](../report/verification/audio_closed/batch-control.md#2026-10-23-b-消费反馈summary-v31)、[静默复算操作单](../board/audio_closed/BATCH_GUIDE.md)。
-- 现行静默包 c-tail-review-3.1.0；schema=3、calculation=c-measurement-2.1.0 不变。B 新清单只注册三个原模型，两个补零产物不参与注册。
-- 旧 50 条中 22 条退役 overlay 仅留 PL 算术证据；44 条可推导系数数组长度，但实际加载回读仍缺；全部无有效尾段或真实配对，不生成 MSG/ASG。
+- [房间集成验收与回包复核](../report/verification/audio_closed/batch-control.md#2026-10-24-房间门禁-ready-v1)、[现行操作单](../board/audio_closed/BATCH_GUIDE.md#现行房间门禁实验-ready-v1)。
+- 现行 c-room-experiment-1.0.0，schema=3、summary_revision=3.2.0、calculation=c-measurement-2.2.0；采用A本场重标定256/512原模型，B历史模型注册表原样保留。
+- 旧回包为真实3.1版本，原分类保留；缺合格尾段与正向对照，不能组成有效配对。新包ready仅指软件集成通过，模型和声音效果须现场验证。
 
 ## 已验证 / 未验证（只在这里写一次）
 

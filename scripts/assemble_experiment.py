@@ -136,7 +136,7 @@ summary = summarize(source, output, here / 'models', Path(evidence) if evidence 
                    dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=code.splitlines(True))])
     (out/'tail-review.ipynb').write_text(json.dumps(nb,ensure_ascii=False,indent=2),encoding='utf8')
     shutil.copy2(ROOT/'board/audio_closed/BATCH_GUIDE.md',out/'OPERATIONS.md')
-    manifest=dict(package_version='c-tail-review-3.1.0',summary_revision=SUMMARY_REVISION,calculation_version=VERSION,
+    manifest=dict(package_version='c-tail-review-'+SUMMARY_REVISION,summary_revision=SUMMARY_REVISION,calculation_version=VERSION,
                   board_actions=False,model_registry=registry,
                   b_commit='59ab1ee55bf54d1e075647afffd14a9e0f4eff32',
                   hashes={str(p.relative_to(out)).replace('\\','/'):sha(p) for p in out.rglob('*')
@@ -149,12 +149,87 @@ summary = summarize(source, output, here / 'models', Path(evidence) if evidence 
     return manifest
 
 
+def assemble_room(out,assets):
+    """Freeze A's current-session models and exact driver; no hardware actions."""
+    from room_experiment import PLAN as ROOM_PLAN, POLICY, sources
+    from model_comparison import load_registry, qhash, SUMMARY_REVISION
+    import numpy as np
+    out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False);assets=Path(assets)
+    for name in ('room_experiment.py','evaluation.py','growth_monitor.py','model_comparison.py',
+                 'tail_metrics.py'):
+        shutil.copy2(ROOT/'board/audio_replay'/name,out/name)
+    for name in ('replay_trial.py','replay_tools.py','closed_tools.py','residual_tools.py',
+                 'audio_replay.bit','audio_replay.hwh','live_pa.py'):
+        shutil.copy2(assets/name,out/name)
+    expected={'replay_trial.py':'212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62',
+              'audio_replay.bit':'8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339',
+              'audio_replay.hwh':'3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb'}
+    for name,digest in expected.items():
+        if sha(out/name)!=digest:raise ValueError('A audited asset mismatch: '+name)
+    acceptance=check(out,out/'a-acceptance.json')
+    if not acceptance['accepted']:raise ValueError('A acceptance failed')
+    original=json.loads((assets/'scene.json').read_text(encoding='utf8'))
+    if (original.get('fixture_id')!=ROOM_PLAN['fixture_id'] or original.get('hp_volume')!=40
+        or original.get('matches_calibration') is not True or original.get('speakers',{}).get('count')!=1):
+        raise ValueError('A current room scene mismatch')
+    shutil.copy2(assets/'scene.json',out/'a-scene.json')
+    scene=dict(original);scene['prior_approved_model']=scene.pop('approved_model',None)
+    scene['integration_recorded_by']='C; current model evidence from A db29698 recalibration and gated records'
+    scene['approved_models']=[];registry=dict(schema_version=1,models=[],derived_artifacts=[])
+    model_files={}
+    for role,taps,digest in (
+        ('baseline',256,'5537483e4cc1abd6e8566a8f8bbd6ad8bf436bae14c37a920f1a6458e56db36a'),
+        ('candidate',512,'98d0956813720f4a791db0fa510e2216897f3aba2dac35083668e47678430d17')):
+        path=out/'models/room-current'/('%s_%d.json'%(role,taps));path.parent.mkdir(parents=True,exist_ok=True)
+        shutil.copy2(assets/('model_%d.json'%taps),path)
+        if sha(path)!=digest:raise ValueError('A current-session model mismatch')
+        model,q=load_candidate(path,ROOM_PLAN['fixture_id'],40,48828.125)
+        item={k:model[k] for k in ('fixture_id','hp_volume','sample_rate_hz','lag_first','taps')}
+        item.update(file=str(path.relative_to(out/'models')).replace('\\','/'),sha256=digest,role=role,
+                    coefficients_sha256=qhash(q),padded_512_sha256=qhash(np.pad(q,(0,512-len(q)))),
+                    source_commit='db296988a444cf2f72852dec66f777edb7c103f6',status=model['status'])
+        registry['models'].append(item);scene['approved_models'].append(dict(role=role,sha256=digest,logical_taps=taps))
+        model_files[role]=str(path.relative_to(out)).replace('\\','/')
+    model_files['bypass']=model_files['candidate']
+    (out/'models/manifest.json').write_text(json.dumps(registry,ensure_ascii=False,indent=2),encoding='utf8')
+    load_registry(out/'models')
+    (out/'scene.json').write_text(json.dumps(scene,ensure_ascii=False,indent=2),encoding='utf8')
+    burst,tone=sources();np.save(out/'burst.npy',burst,allow_pickle=False);np.save(out/'gate.npy',tone,allow_pickle=False)
+    source='# C current-room gated experiment entry\nfrom room_experiment import run_room\nresult = run_room()\n'
+    nb=dict(nbformat=4,nbformat_minor=5,metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
+            cells=[dict(cell_type='markdown',metadata={},source=['C 房间门禁实验。重启内核，仅运行下方唯一代码格；见 OPERATIONS.md。']),
+                   dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=source.splitlines(True))])
+    (out/'experiment.ipynb').write_text(json.dumps(nb,ensure_ascii=False,indent=2),encoding='utf8')
+    shutil.copy2(ROOT/'board/audio_closed/BATCH_GUIDE.md',out/'OPERATIONS.md')
+    manifest=dict(package_version='c-room-experiment-1.0.0',status='ready',measurement_policy_version=POLICY,
+                  calculation_version=VERSION,summary_revision=SUMMARY_REVISION,plan=ROOM_PLAN,model_files=model_files,
+                  a_commit='db296988a444cf2f72852dec66f777edb7c103f6',
+                  driver_acceptance=acceptance,hardware_executed=False,online_microphone_clip_protection=False,
+                  model_provenance='A current-session recalibration; B prior models retained separately for history',
+                  sources={name:dict(frames=len(pcm),pcm16_sha256=hashlib.sha256(pcm.tobytes()).hexdigest(),
+                               rms_dbfs=float(20*np.log10(np.std(pcm.astype(float)/32768))),
+                               peak_dbfs=float(20*np.log10(np.max(np.abs(pcm.astype(float)))/32768)))
+                           for name,pcm in [('burst',burst),('gate',tone)]},
+                  notebook_code_sha256=hashlib.sha256(json.dumps([source],ensure_ascii=False,separators=(',',':')).encode()).hexdigest(),
+                  hashes={str(p.relative_to(out)).replace('\\','/'):sha(p) for p in sorted(out.rglob('*'))
+                          if p.is_file() and p.name!='experiment.ipynb' and '__pycache__' not in p.parts})
+    (out/'experiment-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf8')
+    with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:
+        for p in sorted(out.rglob('*')):
+            if p.is_file() and '__pycache__' not in p.parts:z.write(p,p.relative_to(out))
+    return manifest
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser()
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--assets',type=Path)
     p.add_argument('--review-only',action='store_true')
+    p.add_argument('--room-ready',action='store_true')
     a=p.parse_args()
-    m=assemble_review(a.output) if a.review_only else assemble(a.output,a.assets)
+    if a.room_ready:
+        if not a.assets:p.error('--room-ready requires --assets')
+        m=assemble_room(a.output,a.assets)
+    else:m=assemble_review(a.output) if a.review_only else assemble(a.output,a.assets)
     print(json.dumps({'package':str(a.output),'status':m.get('status','silent_review'),
                       'missing':m.get('missing',[])},ensure_ascii=False))

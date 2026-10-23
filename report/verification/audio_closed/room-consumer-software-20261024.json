@@ -1,0 +1,68 @@
+{
+ "summary": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\room-release-software-case\\results\\room-941cfe371623\\summary.json",
+ "schema_version": 3,
+ "calculation_version": "c-measurement-2.2.0",
+ "evidence_kind": [
+  "software_fixture"
+ ],
+ "rows": 38,
+ "model_pairs": 8,
+ "effect_eligible_rows": 0,
+ "effect_eligible_real_pairs": 0,
+ "consumable_as_is": true,
+ "blocking_issues": [],
+ "gaps": {
+  "comparison_id 为空，无法参与配对": {
+   "rows": 22,
+   "examples": [
+    "software-01-amplifier_gate-candidate",
+    "software-02-amplifier_gate-candidate",
+    "software-03-amplifier_gate-candidate"
+   ]
+  },
+  "repeat_id 为空，无法参与配对": {
+   "rows": 22,
+   "examples": [
+    "software-01-amplifier_gate-candidate",
+    "software-02-amplifier_gate-candidate",
+    "software-03-amplifier_gate-candidate"
+   ]
+  },
+  "有模型行但没有配对": {
+   "rows": 1,
+   "examples": [
+    "None"
+   ]
+  }
+ },
+ "categories": {
+  "unknown": 22,
+  "no_instability_observed_in_window": 16
+ },
+ "row_blocking_reasons": {
+  "tail_not_validated": 22,
+  "positive_control_not_validated": 20,
+  "evidence_not_board_recording": 38
+ },
+ "model_registry_hits": 38,
+ "coef_hash_matches_raw_array": 30,
+ "coef_hash_matches_padded512": 8,
+ "field_coverage": {
+  "gain_q12": 38,
+  "hp_volume": 38,
+  "bit_sha256": 38,
+  "coefficients_sha256": 38,
+  "model_role": 38,
+  "logical_taps": 38,
+  "loaded_taps": 38,
+  "tail_valid": 38,
+  "tail_rms_dbfs": 16,
+  "tail_slope_db_per_s": 16,
+  "effect_eligible": 38,
+  "protection_triggered": 38,
+  "band_300-1000": 16,
+  "band_1000-3000": 16,
+  "band_8200-8600": 16
+ },
+ "note": "本脚本只判字段与门禁自洽性，不判抗啸叫性能，也不把软件夹具当实测。"
+}

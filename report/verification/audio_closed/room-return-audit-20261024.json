@@ -1,0 +1,35 @@
+{
+  "source_commit": "db296988a444cf2f72852dec66f777edb7c103f6",
+  "source_sha256": "ebd3e49c89c1fea9878a566c3a3e04647411bc4ab681096274ebdb127dbb5b1d",
+  "summary_revision": "3.1.0",
+  "rows": 521,
+  "categories": {
+    "invalid": 214,
+    "unknown": 297,
+    "protection": 10
+  },
+  "effect_eligible_pairs": 0,
+  "tail_valid": 0,
+  "positive_control_valid": 0,
+  "microphone_full_scale": 30,
+  "retired_arithmetic_only": 38,
+  "reasons": {
+    "retired_overlay_no_dac_output": 38,
+    "tail_not_validated": 521,
+    "positive_control_not_validated": 521,
+    "safety_not_validated": 521,
+    "configuration_or_capture_invalid": 214,
+    "comparison_identity_missing": 335,
+    "model_not_in_approved_registry": 148,
+    "arithmetic_not_validated": 118,
+    "evidence_not_board_recording": 112,
+    "actual_gain_q12_missing_or_invalid": 7,
+    "bit_sha256_missing_or_invalid": 29,
+    "coefficients_sha256_missing_or_invalid": 6,
+    "actual_coefficients_do_not_match_model": 4,
+    "bitstream_capacity_unverified": 28
+  },
+  "raw_pcm_available_to_c": false,
+  "board_actions": false,
+  "note": "Counts computed from immutable returned ZIP, not the older counts quoted in the handoff; no rerun requested."
+}

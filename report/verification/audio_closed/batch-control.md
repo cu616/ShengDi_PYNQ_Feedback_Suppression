@@ -284,3 +284,69 @@ B 报告的 manifest SHA256 为 71d13ca927b23213b491ecc0af3a405210c99550dedb11f2
 独立执行与哈希验证见 [包检查](b-followup-package-check-v3.json)。已经运行 b2ad47d 旧包的 A
 直接返回原包，C 兼容处理，不要求仅为遥测变化重复现场操作。
 本轮没有板卡动作、新采集、真实配对或实测 ASG；参考臂冲突交现场事实复核，不能先认定模型无效。
+
+## 2026-10-24 房间门禁 ready v1
+
+输入为 A db296988a444cf2f72852dec66f777edb7c103f6。
+[原统计回包](../audio-replay/a-tail-review-return-3e2e923.zip) 的 SHA256
+ebd3e49c89c1fea9878a566c3a3e04647411bc4ab681096274ebdb127dbb5b1d，原字节保留。
+[独立统计](room-return-audit-20261024.json) 确认 summary_revision=3.1.0、521行：
+214 invalid、297 unknown、10 protection；有效尾段/正向对照/配对均为0，麦克风满幅30行、退役位流38行。
+交接文字中的部分旧原因计数不用于本轮统计；不存在需要A再次重跑的版本问题。
+原PCM未随回包提供，以上是统计及字段复核，不能冒充新波形复算。
+
+[参考臂原说明](../audio-replay/a-reference-arm-check.json) 已接收：旧cancel_zero 0 dB“稳”撤回，
+音响状态与会话传递不同；满幅后限幅状态污染后续测量是新增协议的现场依据。
+A报告中的增益差不在C处升级为已验收MSG/ASG。
+
+### 现行包与模型来源
+
+发布 `build/packages/c-room-ready-v1.zip`，唯一Notebook为 experiment.ipynb，
+measurement_policy_version=c-room-policy-1.0.0、calculation_version=c-measurement-2.2.0、
+summary_revision=3.2.0、schema_version=3。A replay_trial.py 原样2127663…，配对bit/hwh原样。
+实际当前模型均取自 A report/verification/audio-replay/recal-2026-10-23/：
+256 SHA256=5537483e4cc1abd6e8566a8f8bbd6ad8bf436bae14c37a920f1a6458e56db36a；
+512 SHA256=98d0956813720f4a791db0fa510e2216897f3aba2dac35083668e47678430d17。
+本场模型在ready包自有models注册表中登记，仍为待实验候选；全局B历史三模型及其原状态不覆盖。
+包内a-scene.json保留A原场景字节，scene.json明确标出C根据A最新重标定记录生成的模型选择。
+首次基线试次由A驱动补零装满512并检查fresh；不把generic补零证据冒充本模型的新板上验收。
+
+### 三项现场教训的具体落实
+
+1. 全保存窗口扫描麦克风满幅，不依赖PL guard。任一满幅禁止稳定/效果结论，
+   保留mic事件并结束后续调用。削顶不单独认证反馈因果。
+2. 每项闭环前固定1 kHz、峰值-20 dBFS定音直放，反馈增益0；初始两次通过后固定场次基线。
+   相对基线漂移超过1.5 dB、信号落底噪、定音不成立或状态恢复失败，跳过目标并结束。
+   下一门禁同时复核前一闭环，失败/缺失时前项也排除效果配对，不只影响下一项。
+3. 满幅/保护后不自动重试；新批次必须在物理恢复后重新通过初始门禁。
+   现有A驱动没有全过程ADC满幅遥测，C只检查保存窗口，不宣称新增在线麦克风保护。
+
+数字模型比较每项2.1 s、源约1.87 s；源码冻结实际源数组及SHA256，
+根据实际source_end+2442帧选择唯一尾区间，约0.18 s；同时保留完整捕获范围及有源段电平。
+派生裁剪不改原NPZ，满幅检查使用全捕获，不因裁剪隐藏有源段满幅。
+尾段低于登记噪声底+6 dB时只标不足，不叫“稳”；有源段没信号则测量无效。
+固定-9/-6/-3/0 dB、每档两对256/512、顺序平衡；任何事件停止后续，未执行数保存。
+外部讲话有RUN末尾和独立SPEECH入口，候选抵消/旁路同增益，仅作功能听感验收。
+返回包含统计、恢复侧文件及准确模型JSON，不含捕获PCM。完整操作见
+[现行操作单](../../../board/audio_closed/BATCH_GUIDE.md#现行房间门禁实验-ready-v1)。
+
+### 验收层次与限制
+
+- [124项软件回归](room-tests-20261024.txt)：门禁失败不启动目标、1.49/1.51 dB边界、
+  满幅且guard=false、裁剪不能隐藏满幅、底噪尾段不足、事后门禁失败追溯排除、
+  单次外部讲话入口、取消/故障保存，以及既有算术与汇总回归。
+- [整包检查](room-package-check-20261024.json)：A原驱动8/8、所有冻结哈希、唯一Notebook代码格，
+  实际执行取消路径而未导入PYNQ；完整38调用软件编排通过。
+  编排软件夹具用零系数，明确software_fixture，真人声完成标志为false；ready中实际部署的是上述A非零模型。
+- [B原消费工具检查](room-consumer-software-20261024.json)：新版汇总直接消费、0阻断；
+  模型身份、配对和统计仅验证软件流程，真实有效配对0。
+
+ready表示软件集成验收完成；本轮C没有板卡动作或新采集，没有实测ASG。
+首次现场RUN/SPEECH及当前模型效果仍交A执行，不以软件回归代替。
+
+### 群聊配置的一次检查
+
+Tailscale 1.104.2 本机在线，按用户要求保存三项用户环境，并在新Python进程读取这些值。
+执行一次 tools/ai-group/group.py check；因提供的C/A/main提交均无此文件而失败，
+[完整输出](room-group-check-20261024.txt)。已停止该项，未重试check、未创建或修改群聊协议代码。
+没有在仓库或代码包保存GROUP_TOKEN。

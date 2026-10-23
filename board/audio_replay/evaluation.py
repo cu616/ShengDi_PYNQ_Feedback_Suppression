@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from growth_monitor import MonitorConfig, replay
 
-VERSION = 'c-measurement-2.1.0'
+VERSION = 'c-measurement-2.2.0'
 CONFIG = dict(window_seconds=.016, hop_seconds=.008, growth_seconds=.08,
               confirm_seconds=.016, minimum_rise_db=3.,
               minimum_slope_db_per_second=12., minimum_fit_r2=.9,
@@ -190,7 +190,7 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
 
 
 def analyze_npz(path, expected=None, positive_control_valid=False, external_source_active=False,
-                external_source_off_verified=False, metadata_evidence=None):
+                external_source_off_verified=False, metadata_evidence=None, analysis_interval=None):
     """No pickle, no writes to the source; independently check stored arithmetic."""
     path = Path(path)
     original = {}; m = {}; rate = 48828.125
@@ -205,7 +205,8 @@ def analyze_npz(path, expected=None, positive_control_valid=False, external_sour
                 allowed = {'source_end_frame_exclusive','source_schedule_verified','transition_frames',
                            'external_source_off_verified','external_source_active','positive_control_valid',
                            'scene_sha256','session_id','comparison_id','repeat_id','mute_applied',
-                           'mute_during_observation','source_schedule_provenance','positive_control_provenance'}
+                           'mute_during_observation','source_schedule_provenance','positive_control_provenance',
+                           'measurement_policy_version','trial_role','noise_floor_dbfs'}
                 facts = metadata_evidence.get('metadata',{})
                 if metadata_evidence.get('input_sha256') != sha(path) or not metadata_evidence.get('provenance'):
                     raise ValueError('unbound_metadata_evidence')
@@ -269,15 +270,31 @@ def analyze_npz(path, expected=None, positive_control_valid=False, external_sour
             if external_source_active:
                 m['source_schedule_verified'] = False
                 m['source_frames'] = None
-            out = classify(m, channels[1], rate, expected)
-            out['event_flags']['microphone_clipping']=bool(np.any((raw[:,1]==-2**23)|(raw[:,1]==2**23-1)))
+            capture_window=window_gate(m,rate,len(raw))
+            analysis_m=dict(m);analysis_raw=raw
+            if analysis_interval is not None:
+                if analysis_interval!='source_off_tail':raise ValueError('unknown_analysis_interval')
+                if m.get('source_schedule_verified') is True and type(m.get('source_end_frame_exclusive')) is int:
+                    begin=max(m['first_frame'],m['source_end_frame_exclusive']+capture_window['transition_frames'])
+                    begin=min(begin,m['completed_frames'])
+                    offset=begin-m['first_frame'];analysis_raw=raw[offset:]
+                    analysis_m.update(first_frame=begin,frames=len(analysis_raw))
+                    if 'frame_indices' in m:analysis_m['frame_indices']=m['frame_indices'][offset:]
+            out = classify(analysis_m, analysis_raw[:,1], rate, expected)
+            clipped=bool(np.any((raw[:,1]==-2**23)|(raw[:,1]==2**23-1)))
+            out['event_flags']['microphone_clipping']=clipped
+            if clipped:
+                out['category']='invalid'
+                out['reasons'].append('microphone_full_scale_in_capture')
             from tail_metrics import tail_statistics, empty_tail
-            out['tail_statistics']=(tail_statistics(raw[:,1],raw[:,3],m,rate)
+            out['tail_statistics']=(tail_statistics(analysis_raw[:,1],analysis_raw[:,3],analysis_m,rate)
                                     if out['category']!='invalid' else empty_tail('invalid_capture'))
             out.update(recorded_coefficients_sha256=recorded_qhash,recorded_taps=recorded_taps,
                        silence_in_window=not bool(np.any(raw[:,1])),
+                       capture_window=capture_window,
+                       tail_analysis_window=dict(first_frame=analysis_m['first_frame'],end_frame=m['completed_frames'],frames=len(analysis_raw)),
                        original_metadata=original,
-                       evaluation_metadata={k:v for k,v in m.items() if k!='frame_indices'},
+                       evaluation_metadata={k:v for k,v in analysis_m.items() if k!='frame_indices'},
                        supplemental_evidence=metadata_evidence)
     except (ValueError, TypeError, KeyError, OSError, zipfile.BadZipFile, EOFError) as exc:
         out=classify(m if isinstance(m,dict) else {},rate=rate)

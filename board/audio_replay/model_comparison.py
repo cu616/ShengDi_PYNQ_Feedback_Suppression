@@ -8,7 +8,7 @@ import numpy as np
 from tail_metrics import BANDS, empty_tail
 
 SUMMARY_VERSION = 3
-SUMMARY_REVISION = '3.1.0'
+SUMMARY_REVISION = '3.2.0'
 MODEL_SELECTION = {'room_v1_20261021':'room_v1/candidate_512.json',
                    'box_v1_20261016':'box_v1/baseline_256.json'}
 BIT_CAPACITIES = {'8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339':512,
@@ -74,6 +74,8 @@ def flat_trial(row, registry=None):
     out.update({k:m.get(k) for k in CONFIG_FIELDS})
     out.update({k:m.get(k) for k in ('fixture_id','sample_rate_hz','source_pcm16_sha256',
                                    'scene_sha256','session_id','comparison_id','repeat_id','bypass')})
+    out.update(trial_role=row.get('trial_role',m.get('trial_role')),
+               measurement_policy_version=m.get('measurement_policy_version'))
     out.update(tail)
     out.update(category=a.get('category','unknown'),
                calculation_version=a.get('calculation_version'),
@@ -173,6 +175,7 @@ def pair_models(rows):
     groups={};pairs=[]
     for row in rows:
         if row.get('retired_overlay') is True:continue
+        if row.get('trial_role') in ('amplifier_gate','speech'):continue
         if row.get('model_role') not in ('baseline','candidate'):continue
         group=row.get('comparison_id')
         if not group:
@@ -206,6 +209,7 @@ def pair_models(rows):
 
 
 CSV_FIELDS = ['index','capture_id','file','mode','model_role','model_file','logical_taps','loaded_taps',
+              'trial_role','measurement_policy_version',
               'loaded_taps_basis','derived_loaded_taps','derived_loaded_taps_basis',
               'bitstream_overlay','bitstream_capacity','bitstream_provenance','retired_overlay',
               'acoustic_evidence_eligible','evidence_scope','positive_control_valid','eligibility_reasons','summary_revision',

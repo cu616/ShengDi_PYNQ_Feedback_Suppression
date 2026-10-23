@@ -17,6 +17,7 @@ def empty_tail(reason):
 def tail_statistics(microphone, residual, metadata, rate):
     from evaluation import window_gate
     out = empty_tail('unvalidated_tail')
+    effective_config=dict(TAIL_CONFIG)
     try:
         mic, err = np.asarray(microphone), np.asarray(residual)
         if (mic.ndim != 1 or mic.shape != err.shape or mic.dtype.kind not in 'iu'
@@ -48,12 +49,19 @@ def tail_statistics(microphone, residual, metadata, rate):
         rms=float(np.sqrt(np.mean(x*x)))
         if not rms: raise ValueError('zero_microphone_energy')
         level=20*math.log10(rms)
-        if level<TAIL_CONFIG['minimum_mic_dbfs']: raise ValueError('tail_below_signal_floor')
+        floor=TAIL_CONFIG['minimum_mic_dbfs']
+        if 'noise_floor_dbfs' in metadata:
+            noise=float(metadata['noise_floor_dbfs'])
+            if not math.isfinite(noise):raise ValueError('invalid_noise_floor')
+            floor=max(floor,noise+6.)
+        effective_config['minimum_mic_dbfs']=floor
+        out['tail_config']=effective_config
+        if level<floor: raise ValueError('tail_below_signal_floor')
         # DC is removed independently within each block for the slope.
         frames=mic[:blocks*nblock].astype(float).reshape(blocks,nblock)/2**23
         frames-=frames.mean(axis=1,keepdims=True)
         levels=np.sqrt(np.mean(frames*frames,axis=1))
-        if np.any(levels<10**(TAIL_CONFIG['minimum_mic_dbfs']/20)):
+        if np.any(levels<10**(floor/20)):
             raise ValueError('slope_blocks_below_signal_floor')
         db=20*np.log10(levels)
         times=(np.arange(blocks)*nblock+(nblock-1)/2)/rate
@@ -81,4 +89,5 @@ def tail_statistics(microphone, residual, metadata, rate):
         if not out['tail_valid']:out['tail_reasons'].append('one_or_more_bands_unavailable')
     except (ValueError,TypeError,OverflowError) as exc:
         out=empty_tail(str(exc))
+    out['tail_config']=effective_config
     return out
