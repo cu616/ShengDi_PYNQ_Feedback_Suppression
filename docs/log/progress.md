@@ -1134,6 +1134,3 @@ models/room_v1/session_20261024/（登记在 derived_artifacts，不进注册表
 方法上修掉一处错误：第一版拿模型自己当代用真值，把标定残差整体抹掉，自洽到 -30.9 dB 的假完美。
 真值必须是标定批 H 乘掩模。另接受 A 的更正：mic/ref 等于 H 只在 reference 记录实际播放信号时成立，
 若记的是增益级输出，预测为零时 mic/ref 等于 1/g；mic/pred 等于 H/Hat 不受影响。
-
-群聊配置：仓库四个分支都没有 tools/ai-group/group.py，setx 三项已写入，Tailscale 安装被环境拦下，
-需要人工安装并登录。见 report/verification/session-correction-2026-10-24/。
