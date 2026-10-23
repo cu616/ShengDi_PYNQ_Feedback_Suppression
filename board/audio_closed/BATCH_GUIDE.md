@@ -1,12 +1,59 @@
 # C 固定实验包操作单 v2
 
-维护者 C。适用 `c-experiment-2.0.0`；先看 `experiment-manifest.json` 的 status。
+维护者 C。适用 `c-experiment-2.x`；先看 `experiment-manifest.json` 的 status。
 `offline_only` 只用于静默复核，不能用于发声。该门禁由代码强制执行，不能改字段绕过。
 
 C 分支交付位置：`build/packages/c-integration-source.zip`（完整源码）和
 `build/packages/c-experiment-v2-offline.zip`（已冻结的离线实验候选包）。
 A/B 可直接从 GitHub C 分支取得，无需用户另传本地 ZIP。
 仓库 C 集成版本的回归输出见 `report/verification/audio_closed/c-branch-integration-tests.txt`。
+
+## 本轮优先：已有房间 NPZ 的静默复算（summary v3）
+
+目的：先复用旧记录，按 B 的要求导出实际配置和同增益基线/候选；不发声、不加载位流、不写 Codec/MMIO，不需要新增采集。
+材料来自 GitHub C 分支：`build/packages/c-tail-review-v3.zip`；模型原样来自 B ffa035a 的 `models/`。
+电脑文件：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-tail-review-v3.zip`。
+
+1. A 取得 C 指定提交的 ZIP，在板卡解压到新的完整目录：
+   `/home/xilinx/jupyter_notebooks/base/audio/c-tail-review-v3`。
+   上传整个 ZIP 后，可在 Jupyter Terminal 使用一次完整解压命令：
+   `python3 -m zipfile -e /home/xilinx/jupyter_notebooks/c-tail-review-v3.zip /home/xilinx/jupyter_notebooks/base/audio/c-tail-review-v3`。
+   包内应有 tail-review.ipynb、summarize_tail_batch.py、evaluation.py、tail_metrics.py、model_comparison.py、
+   growth_monitor.py、closed_tools.py、replay_tools.py、residual_tools.py、models/、review-manifest.json、OPERATIONS.md。
+2. A 的 AI 先核对已有房间闭环 NPZ 的实际存放目录。只用本项目获准的记录，不扫描无关私人目录。
+   A 的 AI 如能从原始日志、ABI 和正向对照记录确认旧数据缺失的源结束/外部源关闭/配对身份，
+   可一次生成独立 evidence.json；以每个 NPZ 相对路径和 SHA256 绑定，含 provenance 证据来源。
+   不让用户逐条猜字段。不能确认就不补，不以“总时长=源长+1秒”代替实际捕获证据。
+   不允许补充材料覆盖 gain_q12、hp_volume、bit/系数/模型哈希或任何原始非空矛盾字段。
+3. 打开 tail-review.ipynb，重启内核，只执行从上到下第 1 个代码格。
+   标题“C 已有记录静默复算”，首行 `# C existing NPZ review: silent, read only`。
+   Shift+Enter 后应看到 SILENT_PACKAGE_OK；之后只输入现有 NPZ 根目录完整路径，
+   再输入 A 核实的 evidence.json 路径（没有则直接回车）。不用编辑代码，不需要 READY/START，不需讲话或播放。
+4. 程序一次扫描并处理全部 NPZ，保留失败项，预期输出 SILENT_REVIEW_COMPLETE 和 RETURN_ONE_FILE。
+   最终只返回：
+   `/home/xilinx/jupyter_notebooks/base/audio/c-tail-review-v3/results/review-<id>/return-results.zip`。
+   包含 summary.json 与 summary.csv；原始 NPZ 留在原目录，不修改、不装入返回 ZIP。
+5. 任一版本/模型哈希不符时停止，不绕过校验。旧数据窗不合格时正常输出空统计和原因，
+   这是安全记录而非效果通过。如果有效配对为 0，仍返回同一个 ZIP，C 再确定最小缺口；不自行开始新采集。
+
+所有行直接有 gain_q12、hp_volume、bit_sha256、coefficients_sha256 及尾段三组值；
+三组值为 tail_rms_dbfs、tail_slope_db_per_s、tail_residual_over_mic_db（含三个指定子带）。
+CSV 另有 tail_residual_over_mic_db_300_1000、_1000_3000、_8200_8600。
+保护、预测/残差/增益/mix 饱和、mic 满幅、静音动作和波形全零各自列出；未知保持空值。
+comparison_id/session_id 等身份必须有依据；不能只因为请求 dB 一样就拼一对。
+同一 comparison_id 中实际 gain_q12 不相等，两行保留原值、标 invalid，不参与比较。
+256 补零的保存系数仍识别为 baseline，不能成为 candidate；不截断任何模型。
+
+补充材料格式（由 A 的 AI 依据已有证据生成，不让用户手填）：
+顶层 captures，以相对 NPZ 路径为键；每项含 input_sha256、provenance、metadata。
+metadata 只可补 source_end_frame_exclusive、source_schedule_verified、transition_frames、
+external_source_off_verified、external_source_active、positive_control_valid、scene_sha256、session_id、
+comparison_id、repeat_id、mute_applied、mute_during_observation 和相关来源说明。
+“计划含1秒尾段”以及早停前的源播放数据，都不能授权填 source_schedule_verified=true。
+尾段数值只是该段的描述统计；源注入位置、噪声与非线性未排除时不能称为 CD，更不计算 ASG。
+
+软件示例在 `report/verification/audio_closed/b-request-software-summary-v3.json`，
+明确 evidence_kind=software_fixture、gain_q12=0；只验字段、算法和配对，不算现场完成或候选改善。
 
 ## 1. 电脑文件和版本
 

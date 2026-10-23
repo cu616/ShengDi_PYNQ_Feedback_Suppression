@@ -11,6 +11,7 @@ import uuid
 import zipfile
 import numpy as np
 from evaluation import VERSION, CONFIG, analyze_npz, sha
+from model_comparison import SUMMARY_VERSION, flat_trial, pair_models, load_registry, export_csv, BIT_CAPACITIES
 
 HERE = Path(__file__).resolve().parent
 PLAN = dict(gains_db=[-26., -24.], repeats=2, digital_seconds=1.4,
@@ -82,14 +83,14 @@ def collect(folder, state):
     state['raw_files'] = [dict(file=p.name, sha256=sha(p), board_path=str(p.resolve()))
                           for p in sorted(folder.glob('*.npz'))]
     state['return_policy'] = 'statistics only; raw NPZ stays at listed board paths'
+    state['schema_version']=SUMMARY_VERSION
+    registry_path=Path(__file__).resolve().parent/'models'
+    registry=load_registry(registry_path) if (registry_path/'manifest.json').is_file() else None
+    for row in state['trials']:
+        row.update(flat_trial(row,registry))
+    state['model_pairs']=pair_models(state['trials'])
     write_json(folder/'summary.json', state)
-    with (folder/'summary.csv').open('w', newline='', encoding='utf-8-sig') as f:
-        fields = ('index','mode','gain_db','status','category','error','file')
-        w = csv.DictWriter(f, fieldnames=fields); w.writeheader()
-        for r in state['trials']:
-            row = {k: r.get(k) for k in fields}
-            row['category'] = r.get('analysis', {}).get('category')
-            w.writerow(row)
+    export_csv(folder/'summary.csv',state['trials'])
     out = folder/'return-results.zip'
     with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
         for p in sorted(folder.iterdir()):
@@ -137,7 +138,8 @@ def run_package(base=HERE, ask=input, runner=None, validator=check_package):
                                 driver_evidence_version='a-replay-evidence-v2')
                 if coefficient_hash is not None:
                     expected['coefficients_sha256'] = coefficient_hash
-                row['analysis'] = analyze_npz(path, expected=expected, external_source_active=speech)
+                row['analysis'] = analyze_npz(path, expected=expected, external_source_active=speech,
+                                              external_source_off_verified=not speech)
                 row['status'] = 'captured'
             status_path = path.with_suffix('.status.json')
             if status_path.is_file(): row['driver_status'] = json.loads(status_path.read_text(encoding='utf8'))
@@ -166,8 +168,9 @@ def run_package(base=HERE, ask=input, runner=None, validator=check_package):
         manifest, scene = validator(base)
         model = json.loads((base/'model.json').read_text(encoding='utf8')) if (base/'model.json').exists() else {}
         q = model.get('coefficients_q20')
-        coefficient_hash = (hashlib.sha256(np.asarray(q,dtype='<i4').tobytes()).hexdigest()
-                            if q is not None else None)
+        if q is not None and len(q)==256 and manifest.get('hashes',{}).get('audio_replay.bit') in BIT_CAPACITIES:
+            q=np.pad(np.asarray(q,dtype='<i4'),(0,256))
+        coefficient_hash = (hashlib.sha256(np.asarray(q,dtype='<i4').tobytes()).hexdigest() if q is not None else None)
         state['versions'] = manifest
         state['scene'] = scene
         if runner is None:
@@ -195,7 +198,8 @@ def run_package(base=HERE, ask=input, runner=None, validator=check_package):
                 comparable = all(pair[0]['metadata'].get(k) is not None and
                                  pair[0]['metadata'].get(k)==pair[1]['metadata'].get(k) for k in keys)
                 for r in pair:
-                    r['analysis'] = analyze_npz(folder/r['file'], positive_control_valid=controls_ok)
+                    r['analysis'] = analyze_npz(folder/r['file'], positive_control_valid=controls_ok,
+                                               external_source_off_verified=True)
                 state['pairs'].append(dict(gain_db=gain, repeat=repeat+1, comparable=comparable,
                                            trials=[r['index'] for r in pair], positive_controls_valid=controls_ok,
                                            asg_db=None))

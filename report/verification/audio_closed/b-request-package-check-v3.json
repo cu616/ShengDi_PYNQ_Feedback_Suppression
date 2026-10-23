@@ -1,0 +1,10 @@
+{
+  "single_notebook_code_cell": true,
+  "shipped_notebook_executed": true,
+  "no_pynq_import": true,
+  "payload_hashes_verified": 19,
+  "software_configuration_pairs": 1,
+  "measured_eligible_pairs": 0,
+  "no_raw_pcm_in_return_zip": true,
+  "package_sha256": "fe370e3f561f0632c97a80d05b4586f00be27ba3df174cc2108aeae6102e7e47"
+}

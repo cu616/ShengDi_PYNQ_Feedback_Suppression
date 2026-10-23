@@ -6,12 +6,13 @@ frame indices. Growth is evidence in an observed window, not feedback causality.
 import hashlib
 import json
 import math
+import zipfile
 from pathlib import Path
 
 import numpy as np
 from growth_monitor import MonitorConfig, replay
 
-VERSION = 'c-measurement-2.0.0'
+VERSION = 'c-measurement-2.1.0'
 CONFIG = dict(window_seconds=.016, hop_seconds=.008, growth_seconds=.08,
               confirm_seconds=.016, minimum_rise_db=3.,
               minimum_slope_db_per_second=12., minimum_fit_r2=.9,
@@ -62,6 +63,8 @@ def window_gate(metadata, rate, frames=None):
     if planned is not None and (type(planned) is not int or planned < 0):
         raise ValueError('invalid planned source length')
     verified = m.get('source_schedule_verified') is True and actual_end is not None
+    if verified and planned is not None and actual_end != planned:
+        raise ValueError('source_end_and_loaded_length_mismatch')
     boundary = actual_end if verified else planned
     pure = bool(verified and count and first >= actual_end + transition)
     overlaps = boundary is not None and first < boundary + transition
@@ -186,14 +189,31 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
     return result
 
 
-def analyze_npz(path, expected=None, positive_control_valid=False, external_source_active=False):
+def analyze_npz(path, expected=None, positive_control_valid=False, external_source_active=False,
+                external_source_off_verified=False, metadata_evidence=None):
     """No pickle, no writes to the source; independently check stored arithmetic."""
     path = Path(path)
+    original = {}; m = {}; rate = 48828.125
+    recorded_qhash=None; recorded_taps=None
     try:
         with np.load(path, allow_pickle=False) as z:
             m = json.loads(str(z['metadata_json'].item()))
             if not isinstance(m, dict):
                 raise ValueError('metadata_must_be_object')
+            original = dict(m)
+            if metadata_evidence is not None:
+                allowed = {'source_end_frame_exclusive','source_schedule_verified','transition_frames',
+                           'external_source_off_verified','external_source_active','positive_control_valid',
+                           'scene_sha256','session_id','comparison_id','repeat_id','mute_applied',
+                           'mute_during_observation','source_schedule_provenance','positive_control_provenance'}
+                facts = metadata_evidence.get('metadata',{})
+                if metadata_evidence.get('input_sha256') != sha(path) or not metadata_evidence.get('provenance'):
+                    raise ValueError('unbound_metadata_evidence')
+                if not isinstance(facts,dict) or set(facts)-allowed:
+                    raise ValueError('evidence_cannot_override_actual_configuration')
+                if any(k in m and m[k] is not None and m[k]!=v for k,v in facts.items()):
+                    raise ValueError('evidence_conflicts_with_original_metadata')
+                m.update(facts)
             rate = float(z['sample_rate_hz'].item())
             if m.get('sample_rate_hz', rate) != rate:
                 raise ValueError('sample_rate_metadata_mismatch')
@@ -211,6 +231,15 @@ def analyze_npz(path, expected=None, positive_control_valid=False, external_sour
             if np.any(raw < -2**23) or np.any(raw >= 2**23):
                 raise ValueError('raw_pcm_out_of_range')
             raw = raw.astype(np.int64)
+            recorded_qhash=None; recorded_taps=None
+            if 'coefficients_q20' in z:
+                q=np.asarray(z['coefficients_q20'])
+                if q.ndim!=1 or q.dtype.kind not in 'iu' or np.any(q < -2**23) or np.any(q >= 2**23):
+                    raise ValueError('invalid_recorded_coefficients')
+                recorded_qhash=hashlib.sha256(q.astype('<i4').tobytes()).hexdigest()
+                recorded_taps=len(q)
+                if m.get('coefficients_sha256',recorded_qhash)!=recorded_qhash:
+                    raise ValueError('coefficient_hash_mismatch')
             if 'frame_indices' in z:
                 m['frame_indices'] = np.array(z['frame_indices']).tolist()
             if 'source_pcm16' in z and 'coefficients_q20' in z and len(raw) > len(z['coefficients_q20']):
@@ -232,13 +261,31 @@ def analyze_npz(path, expected=None, positive_control_valid=False, external_sour
                 from replay_tools import verify_replay
                 v = verify_replay(raw, z['coefficients_q20'], m['bypass'], m['gain_q12'], z['source_pcm16'], m['first_frame'])
                 m['verification'] = v
-            m['positive_control_valid'] = positive_control_valid
+            if positive_control_valid:
+                m['positive_control_valid'] = True
+            if external_source_off_verified:
+                m['external_source_off_verified']=True
+                m['external_source_off_basis']='operator_confirmation_in_frozen_plan'
             if external_source_active:
                 m['source_schedule_verified'] = False
                 m['source_frames'] = None
             out = classify(m, channels[1], rate, expected)
-            out['original_metadata'] = {k: v for k, v in m.items() if k != 'frame_indices'}
-    except (ValueError, TypeError, KeyError, OSError) as exc:
-        out = dict(calculation_version=VERSION, category='invalid', reasons=[str(exc)], event_flags={})
-    out.update(input_path=str(path), input_sha256=sha(path) if path.is_file() else None)
+            out['event_flags']['microphone_clipping']=bool(np.any((raw[:,1]==-2**23)|(raw[:,1]==2**23-1)))
+            from tail_metrics import tail_statistics, empty_tail
+            out['tail_statistics']=(tail_statistics(raw[:,1],raw[:,3],m,rate)
+                                    if out['category']!='invalid' else empty_tail('invalid_capture'))
+            out.update(recorded_coefficients_sha256=recorded_qhash,recorded_taps=recorded_taps,
+                       silence_in_window=not bool(np.any(raw[:,1])),
+                       original_metadata=original,
+                       evaluation_metadata={k:v for k,v in m.items() if k!='frame_indices'},
+                       supplemental_evidence=metadata_evidence)
+    except (ValueError, TypeError, KeyError, OSError, zipfile.BadZipFile, EOFError) as exc:
+        out=classify(m if isinstance(m,dict) else {},rate=rate)
+        out.update(category='invalid',original_metadata=original)
+        out.update(recorded_coefficients_sha256=recorded_qhash,recorded_taps=recorded_taps)
+        out['reasons'].append(str(exc))
+    try: digest=sha(path) if path.is_file() else None
+    except OSError as exc:
+        digest=None;out['category']='invalid';out['reasons'].append('input_hash_unreadable:'+str(exc))
+    out.update(input_path=str(path),input_sha256=digest)
     return out

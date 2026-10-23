@@ -182,3 +182,57 @@ Git 没有现有可加载系数文件，A 原驱动尚未满足证据协议；�
 代码、消费方验收程序、历史派生结果与完整压缩包均通过 C 分支交付，不再只给本地路径。
 源码包是 C 集成后的文件快照，内附逐文件 SHA256；离线实验包仍为已冻结的 c-experiment-2.0.0。
 仓库路径：build/packages/c-integration-source.zip、build/packages/c-experiment-v2-offline.zip。
+
+
+## 2026-10-23 B 请求：模型选择、平坦字段和尾段汇总 v3
+
+本轮输入为用户转发的 B 执行请求，不改变 A/B 所有权。已从 B ffa035a 原样接收 models/，
+三份原始 JSON 与 manifest 哈希一致、现有 load_candidate 读取通过。房间选择 candidate_512，
+箱体选择 baseline_256；房间基线仍保留作同增益比较。加载容量不足拒绝；未知 fixture 不静默回退。
+256 补零记录按实际系数识别为 baseline，不能冒充 candidate；C 不改模型或 A 的加载驱动。
+
+软件结果 schema_version=3、calculation_version=c-measurement-2.1.0，
+[接口字段和门禁](../../../docs/contracts/audio-closed-v1.md#测评软件汇总-v32026-10-23b-模型比较请求)。
+[111 项软件回归](b-request-tests-v3.txt) 通过。新增 9 项专用验收覆盖解析 −6.0206 dB 三带能量比、
+0/30 dB/s 斜率、源未结束/未知/外部源活动/短窗/满幅/底噪、模型哈希/fixture/lag/fs/容量拒绝、
+同增益配对、增益不符两行 invalid、scene 变化与重复歧义、补零身份、未知事件空值、
+输入不改、补充材料 SHA256 绑定及禁止覆盖真实增益。
+
+每个 JSON 行和 CSV 同时直接有 gain_q12、hp_volume、bit_sha256、coefficients_sha256，
+系数哈希独立按 NPZ 保存数组的 little-endian int32 计算；有声明哈希时必须相符。
+model_sha256 保留原实际文件值，model_registry_sha256 单独指向 B 原交付；
+即使 JSON 包装不同，只在实际保存系数与某个基线/候选唯一一致时识别模型，绝不冒充原文件哈希。
+
+尾段 RMS、20ms 块斜率与三个指定频带只在完整、已确认源关闭并经过过渡区的区间计算。
+外部源关闭也需记录。空白字段给出 tail_reasons；没有把请求的 1s 尾段视为实际捕获。
+比值是观测带内能量比，不自动等同 CD；B 正在核对的源注入假设不影响原始统计保存。
+每行保护/各级饱和/mic满幅/mute动作/观察期静音/波形全零各自独立，未知不是 false。
+观察结束后的正常静音与观察期间的静音分开，不能把恢复成功推断为没有保护。
+
+基线/候选的 model_pairs 与旧旁路/抵消 pairs 分开。配对不能要求系数哈希相等（两模型本就不同），
+但实际增益、音量、bit、源、fixture、scene/session、模式和尾段范围都要一致且非空。
+comparison_id 内配置冲突保留两行并标 invalid；无明确身份/重复歧义不自行挑一对。
+缺尾段或正向对照、数值事件未排除时 effect_eligible=false，只保留安全/诊断证据。
+
+### 交付的 summary 与完成边界
+
+- [软件用例 JSON](b-request-software-summary-v3.json) / [CSV](b-request-software-summary-v3.csv)：
+  一对 actual gain_q12=0 完全相等的基线/候选，所有要求列均存在、三个尾段能量比可读；
+  evidence_kind=software_fixture，effect_eligible_pairs=0。此例仅验格式与流程，不验抗啸叫性能。
+- [旧 50 条平坦汇总 JSON](b-request-historical-summary-v3.json) / [CSV](b-request-historical-summary-v3.csv)：
+  保留实际已知值，其余为空。因本地没有这批原始 NPZ，不能替 B 补出新的尾段统计或真实候选配对。
+- 独立静默包 build/packages/c-tail-review-v3.zip；唯一 Notebook 入口和电脑/板卡路径见
+  [操作单](../../../board/audio_closed/BATCH_GUIDE.md#本轮优先已有房间-npz-的静默复算summary-v3)。
+  只扫描 A 选择的项目数据目录，输出一个 return-results.zip，不发声、不加载 overlay、不写设备。
+
+B 的真实完成标志仍待 A 在板上执行该只读复算并返回统计：至少一对来自 board_recording 的
+同增益基线/候选，有有效尾段、配对身份和正向对照；C 不用软件示例冒充这个标志。
+原始文件不修改、原始 PCM 不装入回传包。若旧记录不满足门禁，返回空值及原因，
+先由 C 定位最小观测缺口，不由用户手工凑数据，也不默认安排新采集。
+
+现有现场包的模型缺件已经解决；仍待 A 修复驱动并给出 256逻辑/512物理加载证据与现场配置。
+更新集成器仅放宽到经 A 验证的等价基线加载，不自动补写模型文件；ready 门禁继续保留。
+
+
+[独立包执行检查](b-request-package-check-v3.json)：实际执行交付 Notebook 的唯一代码格，
+软件数据配置配对 1 对、实测可用配对 0 对；未导入 PYNQ，返回 ZIP 无 NPZ，字段齐全。

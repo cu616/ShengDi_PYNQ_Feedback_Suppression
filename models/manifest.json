@@ -1,0 +1,60 @@
+{
+ "schema_version": 1,
+ "note": "B 线交付给 C 的模型包；系数为 24 位补码、20 位小数的整数（coefficients_q20 原样）",
+ "sample_rate_hz": 48828.125,
+ "frame_budget_cycles": 2048,
+ "max_taps": 681,
+ "models": [
+  {
+   "file": "room_v1/baseline_256.json",
+   "sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+   "bytes": 10400,
+   "taps": 256,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "room_v1_20261021",
+   "hp_volume": 40,
+   "status": "offline_candidate_not_board_validated",
+   "ridge": 1e-06,
+   "condition_number": 1.476007727702907,
+   "q20_max_abs": 342474,
+   "l1_q20": 6275133,
+   "float_q20_maxdiff": 4.7616548407268e-07,
+   "frames_needed_3N_plus_3": 771
+  },
+  {
+   "file": "room_v1/candidate_512.json",
+   "sha256": "854fb75dbb6c6b46182ba6dc4c3fd73719d331f5f3b0555c78b71a7561de09bd",
+   "bytes": 19942,
+   "taps": 512,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "room_v1_20261021",
+   "hp_volume": 40,
+   "status": "offline_candidate_not_board_validated",
+   "ridge": 1e-06,
+   "condition_number": 1.8155756631008442,
+   "q20_max_abs": 342269,
+   "l1_q20": 8218857,
+   "float_q20_maxdiff": 4.7637890362994817e-07,
+   "frames_needed_3N_plus_3": 1539
+  },
+  {
+   "file": "box_v1/baseline_256.json",
+   "sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+   "bytes": 10337,
+   "taps": 256,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "box_v1_20261016",
+   "hp_volume": 40,
+   "status": "offline_candidate_not_board_validated",
+   "ridge": 1e-06,
+   "condition_number": 1.4995814132725311,
+   "q20_max_abs": 546430,
+   "l1_q20": 28043118,
+   "float_q20_maxdiff": 4.767391342808125e-07,
+   "frames_needed_3N_plus_3": 771
+  }
+ ]
+}
