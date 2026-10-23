@@ -55,6 +55,38 @@
    "l1_q20": 28043118,
    "float_q20_maxdiff": 4.767391342808125e-07,
    "frames_needed_3N_plus_3": 771
+  },
+  {
+   "file": "models/room_v1/baseline_256_padded512.json",
+   "sha256": "4bae553647e63efdeb4372f281c2cd47246b1071b8e8e37db45404fe319d46cf",
+   "bytes": 13876,
+   "taps": 512,
+   "logical_taps": 256,
+   "loaded_taps": 512,
+   "derived_from": "baseline_256.json",
+   "derived_from_sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+   "fixture_id": "room_v1_20261021",
+   "frames_needed_3N_plus_3": 1539,
+   "status": "derived_padding_not_a_new_model"
+  },
+  {
+   "file": "models/box_v1/baseline_256_padded512.json",
+   "sha256": "f87aa34f7731a77380b008e5040a2f44da9f062efaa90ecc2f9f1f98be1364a5",
+   "bytes": 13851,
+   "taps": 512,
+   "logical_taps": 256,
+   "loaded_taps": 512,
+   "derived_from": "baseline_256.json",
+   "derived_from_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+   "fixture_id": "box_v1_20261016",
+   "frames_needed_3N_plus_3": 1539,
+   "status": "derived_padding_not_a_new_model"
   }
- ]
+ ],
+ "padding_convention": {
+  "why": "512 位流的 RTL 只在收到恰好 TAPS 项后置 loaded；只发 256 项会被拒绝（in_ready 一直为 0）",
+  "how": "在系数尾部补零到 512 项；频响与原 256 模型逐点相同",
+  "bookkeeping": "必须同时记录 logical_taps=256、loaded_taps=512、原模型 sha256 与实际加载系数 sha256",
+  "must_not": "不能把补零产物当作新训练的 512 模型，也不能用它的名义报告 512 的收益"
+ }
 }
