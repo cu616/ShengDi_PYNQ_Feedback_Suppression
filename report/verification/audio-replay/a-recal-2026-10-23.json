@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "topic": "recalibration on the current on-site H, and the resulting loop ceiling",
+  "recorded_at": "2026-10-23",
+  "recorded_by": "A",
+  "why": "the session-transfer check showed |H| at 8.38 kHz fell from 11.13 dB to 5.15 dB (phase +39.5 deg), so the old model over-predicted that band by about 6 dB and made the loop regenerative there",
+  "calibration": {
+    "dir": "/home/xilinx/recal2",
+    "segments": 6,
+    "usable": "6/6",
+    "injection": "white noise, RMS -14 dBFS",
+    "mic_rms_dbfs": -18.1,
+    "ref_to_mic_delay": "124-125 (median 124)",
+    "fit_reduction_db": {
+      "256": 6.05,
+      "512": 6.6
+    },
+    "models_fetched": {
+      "model_256.json": "5537483e4cc1abd6e8566a8f8bbd6ad8bf436bae14c37a920f1a6458e56db36a",
+      "model_512.json": "98d0956813720f4a791db0fa510e2216897f3aba2dac35083668e47678430d17"
+    }
+  },
+  "loop_only_three_arm": {
+    "note": "external source off; the loop is driven only by its own noise",
+    "old_model": {
+      "cancel_howl_at": -6.0,
+      "cancel_stable_down_to": -9.0,
+      "cancel_zero_stable_to": 0.0,
+      "bypass_stable_to": 0.0
+    },
+    "refitted_model": {
+      "cancel": {
+        "-9": "stable -37.4 dBFS",
+        "-6": "stable -37.3",
+        "-3": "stable -35.9",
+        "0": "stable -31.3",
+        "+3": "howled",
+        "+6": "howled"
+      },
+      "cancel_zero": {
+        "-9": "stable -37.4",
+        "-6": "-23.9",
+        "-3": "rail -1.4",
+        "0": "rail -1.2",
+        "+3": "howled"
+      },
+      "bypass": {
+        "-9": "stable -37.2",
+        "-6": "-8.3",
+        "-3": "howled",
+        "0": "howled",
+        "+3": "howled"
+      }
+    }
+  },
+  "verdict": "recalibrating on the current H moved the cancel arm from howling at -6 dB to staying stable at 0 dB and only howling at +3 dB, i.e. roughly +7 dB. The no-model arms are already at the rail near 0 dB. Recalibration, not a coefficient tweak, is what raised the usable gain.",
+  "caveat": "bypass and cancel_zero should be mathematically identical (both play gain*mic) yet differ by up to 15 dB at -6 dB; that discrepancy is unexplained and must be settled before any ASG number is quoted from these arms"
+}
