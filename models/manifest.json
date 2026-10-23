@@ -101,6 +101,27 @@
    "coefficients_sha256": "8c2e591615fe3d5745380591d39191bfbc0469bf6122ac2a24d58d5204dd37e2",
    "frames_needed_3N_plus_3": 1539,
    "status": "derived_padding_not_a_new_model"
+  },
+  {
+   "file": "room_v1/session_20261024/candidate_512_session_20261024.json",
+   "sha256": "2c971a33d6659226133893947b15ff75ca5d7d9a800b73cba1498446cbf34189",
+   "bytes": 23398,
+   "taps": 512,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "room_v1_20261021",
+   "hp_volume": 40,
+   "logical_taps": 512,
+   "loaded_taps": 512,
+   "derived_from": "room_v1/candidate_512.json",
+   "derived_from_sha256": "854fb75dbb6c6b46182ba6dc4c3fd73719d331f5f3b0555c78b71a7561de09bd",
+   "coefficients_sha256": "e353c10e5ac646e281b5174fe03352ae688220720904b05adc5497db17a24dd5",
+   "frames_needed_3N_plus_3": 1539,
+   "status": "session_corrected_candidate_not_board_validated",
+   "session": "2026-10-24",
+   "predicted_threshold_db": 6.74,
+   "validity": "只对 2026-10-24 现场会话（同夹具/同音量/同注入电平）有效；换条件即失效",
+   "must_not": "C 的 select_model 不得自动选它；它不是 512 相对 256 收益的证据，只是本次会话的修正"
   }
  ],
  "padding_convention": {

@@ -1120,3 +1120,20 @@ dadbbbab 是 audio_replay 256 抽头共 22 行，需要先登记到 BIT_CAPACITI
 现在清单分成 models（可部署 3 条）与 derived_artifacts（补零件，不参与注册），三份模型文件未改动，
 新清单 SHA256 71d13ca9。工具 scripts/consume_summary_v3.py，测试 4 项。
 见 report/verification/summary-v3-consumption-2026-10-23/。
+
+## 会话修正系数与 A 的现场 H 复测（2026-10-24，B）
+
+A 复测现场 H：8.38 kHz 相对标定批 -5.98 dB、+39.5 度，远超反证门限，会话传递假设成立。
+用它把部署模型乘一个频带掩模，再用 512 实系数最小二乘逼近，得到会话专用候选
+models/room_v1/session_20261024/（登记在 derived_artifacts，不进注册表，C 不会自动选）。
+
+预测与实测对照：部署模型对现场真值的阈值算得 -7.42 dB，A 实测 -9 稳、-6 叫，落在括号内；
+修正后阈值 +6.74 dB，限制点转到 381 Hz，A 门禁版实测 >=6 dB，两边独立收敛到同一量级。
+带内修正残差预算：0.5 dB/5 度仍 +6.7，2 dB/20 度降到 +0.8，所以 6 dB 余量要求带内准到 1 dB/10 度。
+
+方法上修掉一处错误：第一版拿模型自己当代用真值，把标定残差整体抹掉，自洽到 -30.9 dB 的假完美。
+真值必须是标定批 H 乘掩模。另接受 A 的更正：mic/ref 等于 H 只在 reference 记录实际播放信号时成立，
+若记的是增益级输出，预测为零时 mic/ref 等于 1/g；mic/pred 等于 H/Hat 不受影响。
+
+群聊配置：仓库四个分支都没有 tools/ai-group/group.py，setx 三项已写入，Tailscale 安装被环境拦下，
+需要人工安装并登录。见 report/verification/session-correction-2026-10-24/。
