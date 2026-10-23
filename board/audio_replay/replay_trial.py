@@ -173,6 +173,42 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             if any(clip_counts):
                 control.write(0, 0)
                 mute_codec()
+                # Save what the ring buffer already holds BEFORE raising: a guard trip is
+                # evidence, and without the capture it cannot be judged afterwards.
+                guard_completed = runtime.read(8)
+                guard_count = min(FRAMES, guard_completed)
+                guard_first = guard_completed - guard_count
+                guard_raw = np.empty((guard_count, 4), dtype=np.int64)
+                for i in range(guard_count):
+                    address = (guard_first + i) % FRAMES
+                    command.write(0, address)
+                    command.read(0)
+                    guard_raw[i, 0] = samples.read(0) & 0xFFFFFF
+                    guard_raw[i, 1] = samples.read(8) & 0xFFFFFF
+                    command.write(0, (1 << 16) | address)
+                    command.read(0)
+                    guard_raw[i, 2] = samples.read(0) & 0xFFFFFF
+                    guard_raw[i, 3] = samples.read(8) & 0xFFFFFF
+                guard_raw[guard_raw >= 0x800000] -= 0x1000000
+                guard_mic = guard_raw[:, 1] / 2**23
+                guard_meta = dict(schema_version=1, artifact_kind="replay_trial_guard",
+                                  guard_tripped=True, fixture_id=fixture_id, bypass=bypass,
+                                  gain_q12=gain_q12, hp_volume=hp_volume, sample_rate_hz=RATE,
+                                  frames=guard_count, completed_frames=guard_completed,
+                                  first_frame=guard_first,
+                                  prediction_saturations=min(65535, clip_counts[0]),
+                                  residual_saturations=min(65535, clip_counts[1]),
+                                  gain_saturations=clip_counts[2],
+                                  mic_rms_dbfs=float(20 * np.log10(max(float(np.std(guard_mic)), 2**-23))),
+                                  interpretation="guard trip; capture kept for envelope judgement")
+                with output_path.open("xb") as stream:
+                    np.savez_compressed(stream, reference=guard_raw[:, 0] / 2**23,
+                                        microphone=guard_mic,
+                                        prediction_pcm=guard_raw[:, 2],
+                                        residual_pcm=guard_raw[:, 3],
+                                        coefficients_q20=coefficients, sample_rate_hz=RATE,
+                                        metadata_json=json.dumps(guard_meta))
+                print("GUARD_CAPTURE_SAVED", str(output_path), "FRAMES", guard_count)
                 raise RuntimeError('runtime saturation guard stopped playback; packed_prediction_residual=%d gain=%d mix=%d; no further gain authorized' % clip_counts)
             time.sleep(0.002)
             status = command.read(8)
