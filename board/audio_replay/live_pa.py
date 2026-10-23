@@ -145,27 +145,35 @@ def live_pa(fixture_id, model_path, bypass=False, gain_db=-12.0, seconds=8.0, bu
         if source.read(8) >> 24 != 0x52:
             raise RuntimeError("replay ABI mismatch")
 
-        # one silent frame so the source schedule stays valid
-        source_len.write(0, source_frames)
-        source_word = 1 << 17
-        source.write(0, source_word)
-        source.read(8)
-        source_word = ((source_word ^ (1 << 16)) & 0x30000) | 0
-        source.write(0, source_word)
-        loaded = source.read(8)
-        if (loaded & 0x3FFFF) != source_frames:
-            raise RuntimeError("source load incomplete: %08x" % loaded)
-
-        coeff_word = 1 << 25
-        coeff.write(0, coeff_word)
-        for value in coefficients:
-            if not (coeff.read(8) & 1):
-                raise RuntimeError("coefficient loader not ready")
-            coeff_word = ((coeff_word ^ (1 << 24)) & 0x03000000) | (int(value) & 0xFFFFFF)
+        def load_all():
+            """Reload source and coefficients: the RTL clears `fresh` at each arm, so a
+            second arm without a fresh load faults (status bit18) and never runs."""
+            # begin is edge triggered (bit toggling), so clear the command word first:
+            # writing the same value twice produces no edge and the loader never re-arms.
+            source.write(0, 0)
+            coeff.write(0, 0)
+            source_len.write(0, source_frames)
+            source_word = 1 << 17
+            source.write(0, source_word)
+            source.read(8)
+            word = ((source_word ^ (1 << 16)) & 0x30000) | 0
+            source.write(0, word)
+            loaded_now = source.read(8)
+            if (loaded_now & 0x3FFFF) != source_frames:
+                raise RuntimeError("source load incomplete: %08x" % loaded_now)
+            coeff_word = 1 << 25
             coeff.write(0, coeff_word)
-        coeff_status = coeff.read(8)
-        if ((coeff_status >> 4) & 0xFFFF) != len(coefficients) or (coeff_status & 0xE) != 0xA:
-            raise RuntimeError("coefficient load rejected: %08x" % coeff_status)
+            for value in coefficients:
+                if not (coeff.read(8) & 1):
+                    raise RuntimeError("coefficient loader not ready")
+                coeff_word = ((coeff_word ^ (1 << 24)) & 0x03000000) | (int(value) & 0xFFFFFF)
+                coeff.write(0, coeff_word)
+            status = coeff.read(8)
+            if ((status >> 4) & 0xFFFF) != len(coefficients) or (status & 0xE) != 0xA:
+                raise RuntimeError("coefficient load rejected: %08x" % status)
+            return status
+
+        load_all()
 
         pll_readback = set_pll("000000002801").hex()
         if pll_readback != "000000002803":
@@ -180,6 +188,7 @@ def live_pa(fixture_id, model_path, bypass=False, gain_db=-12.0, seconds=8.0, bu
         for index in range(1, bursts + 1):
             if before_burst is not None and before_burst(index) is not True:
                 break
+            load_all()
             runtime.write(0, budget)
             mute_codec()
             time.sleep(0.05)
