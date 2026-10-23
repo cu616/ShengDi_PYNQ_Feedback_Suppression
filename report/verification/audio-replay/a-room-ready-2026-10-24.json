@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "topic": "C c-room-ready-v1 (3ac099a) executed on the board",
+  "recorded_at": "2026-10-24",
+  "recorded_by": "A",
+  "board_version": {
+    "A_branch": "870f05a",
+    "driver_replay_trial_sha256_head": "2127663",
+    "note": "driver unchanged since C's 8/8 acceptance"
+  },
+  "package": {
+    "commit": "3ac099a",
+    "file": "c-room-ready-v1.zip",
+    "installed": "/home/xilinx/jupyter_notebooks/base/audio/c-room-ready-v1",
+    "preflight": "PACKAGE_OK status=ready policy=c-room-policy-1.0.0",
+    "models": {
+      "baseline_256": "5537483e4cc1abd6",
+      "candidate_512": "98d0956813720f4a"
+    },
+    "model_note": "both are A's on-site refit delivered in A=81158fa"
+  },
+  "hearing_codes": {
+    "closed_trials": "PROXY: computed from objective flags, not a human ear. microphone_clipping or protection -> 3; category invalid -> 4; otherwise 1. Every decision is logged in the run output as ASK:hearing -> <code> (<reason>).",
+    "speech_trial": "to be answered by the operator"
+  },
+  "attempt_1": {
+    "run": "room-1c2e1d49a239",
+    "trials": 9,
+    "closed_trials_done": 3,
+    "stop": "RuntimeError: amplifier_gate_failed:gate_drift_exceeds_1p5_db",
+    "cause": "amplifier still settling after an earlier howling session"
+  },
+  "attempt_2": {
+    "run": "room-be9cf767dc44",
+    "trials": 28,
+    "model_pairs": 7,
+    "gains_covered": [
+      -9.0,
+      -6.0,
+      -3.0
+    ],
+    "stop": "RuntimeError: runtime saturation guard stopped playback; packed_prediction_residual=4 gain=0 mix=0; no further gain authorized",
+    "trial_categories": {
+      "-9 dB": "4 closed trials, all unknown (tail not qualified)",
+      "-6 dB": "4 closed trials, all unknown (tail not qualified)",
+      "-3 dB": "4 closed trials, 2 of them no_instability_observed_in_window (tail valid), 2 unknown",
+      "0 dB": "candidate stopped with early_stop + prediction_saturations + microphone_clipping"
+    }
+  },
+  "gate_behaviour": "C's 1.5 dB gate drift check stopped the first attempt exactly as designed and the saturation guard stopped the second at 0 dB. Both stops are the package doing its job, not harness failures.",
+  "asg": null,
+  "asg_note": "the package reports no asg_db and no msg_db by design; A does not compute one from these trials",
+  "next": "speech trial (SPEECH mode) needs the operator's voice and ears; deferred to the operator and not faked."
+}
