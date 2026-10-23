@@ -20,56 +20,37 @@
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**：2026-10-23 按新分工交付 ①板端版本/模型/现场配置核对表（给 C 的集成输入）
-②**实时扩声入口** `live_pa.py` + `live_pa.ipynb`（一次装 overlay，连续多段跑，话筒→音响）。
-**当前卡点**：实时扩声只做了**连通性自检**（不发人声，`completed_frames=146484`、无 fault、捕获已存），
-**"外部讲话经麦克风清楚扩声"这条验收还没做**；C 的完整实验包未到。
+**最后动作**：2026-10-24 在**门禁版协议**下完成"A 现场重拟合 vs B 会话掩模系数"对照。
+**当前卡点**：外部讲话经麦克风清楚扩声这条验收仍未做；C 的完整实验包未到；
+模型在 8.35 kHz 与约 400 Hz 两个频段都可能先限幅，需要按 npz 重拟合才谈得上工作点。
 
 - **现行操作方式：A 直接经 SSH 操作板卡**（装载位流、跑批、取数全部由 A 执行）。
-  现场人员只做物理动作：摆夹具/接线、**循环播放一段录音**作为声源、守着音响电源；
-  **不需要手工改 Notebook 代码格**。`live_pa.ipynb` 仅作为 A 连不上板卡时的备用入口。
-  声源用循环录音比"现场说话"可复现，且 A 可以自由决定何时开跑。
-- 唯一操板者；板卡经 SSH 操作，原始 PCM 不出板。**当前接线：0.5 m 房间夹具**（惠普 NS1 Pro 接 `HP+MIC`、备用 MAX4466 接 `LINE_IN`）。
-- **实时扩声通路已经存在，不需要新位流**：`audio_replay` 抵消模式下
-  `played[n] = gain(residual[n-2])`、`residual = mic − Ĥ·played`，注入只占 1 帧；
-  `bypass=1` 即普通扩声、`bypass=0` 即带抵消扩声，两者共用增益与限幅。
-- **每次运行的时长上限 9.5 s**（PL `frame_limit ≤ 488281`）；`live_pa` 用多段拼接绕开，段间有轻微咔哒。
-  真正连续运行需要 RTL 增"无限模式"并重建位流——**尚未实现**。
-- **驱动证据层已按 C 规格升级（a-replay-evidence-v2）**：计数解包为
-  `prediction=packed&0xffff / residual=packed>>16 / gain / mix` 并保存 `clip_counts_raw`；
-  正常、保护、故障、异常、恢复失败走同一条保存路径，先停声再冻结采集；
-  每次落盘写 `<name>.status.json`（`recovery_ok` / `cleanup_errors` / `save_error`）。
-  **C 的 `check_a_driver.py` 官方验收 8/8、`accepted=true`**（驱动 sha256 `2127663…`）。
-- **256 模型在 512 位流上必须补零加载**（RTL 要求正好 512 项才置 `fresh`）。
-  板上实证：`logical_taps=256 / loaded_taps=512 / coefficient_status=0x200A / bit_exact`；
-  证据里同时记两个抽头数与双哈希，**补零模型不得描述为 512 训练模型**。
-- **8.4 kHz 的模型是准的（A 早先结论已撤回）**：初版算 `Ĥ` 时漏了模型固有的 1 帧滞后
-  （`lag_first=1`，8285 Hz 处 61°），得出的「相位差 33°、抵消无效」是错的。
-  加上滞后后同批数据 CD：300–1000 +12.05、1000–3000 +16.18、3000–6000 +19.68、
-  **8200–8600 +29.16（最差 +20.84）**、8285 Hz +28.96 dB，与 B 的 +32.1 dB 一致。
-  现场 `cancel` 在 −6 dB 发散而 `cancel_zero` 到 0 dB 不发散，**不能再用模型相位解释**，
-  按 B 的假设查「现场 H 与标定批 H 的差异」。见 512 报告 §17.1。
-- **接口位段（给 C，已核对）**：`capture_status` bit0=done、`[16:1]`=captured（环形已写帧数，上限 16384）、
-  bit17=arm&&!config_ok、bit18=fault|fir_error、bit19=prediction_clip_seen、bit20=residual_clip_seen、
-  bit21=`gain_clip_count!=0`；`coefficient_status` bit0=coeff_ready、bit1=fir_ready、bit2=fir_error、
-  bit3=fresh、`[19:4]`=loaded_count。
-  **`0x00008001` = done + captured(16384)，不是削顶**；`0x00020000` = 配置被拒。
-- **保护计数不是"起振"**：饱和计数反映输出电平。同一增益（512 cancel −4 dB）在 −26 dBFS 激励下稳定、
-  −14 dBFS 下触发，已据此把历史"阈值"降级（见 [512 报告](../report/verification/audio-replay/2026-10-22-512-taps.md) §14）。
-- 夹具/麦克风要求：麦克风 VCC 与 `LINE_IN` 都出过松脱，表现为麦克风 −100 dBFS；
-  每次现场先跑直放正向对照（房间 −10 dBFS 人声 → 麦克风约 −20 dBFS）再采信。
-- 历史性能数字（箱体 ASG、房间 CD 等）只在"关键数字"一节，**本轮未重测，不作为工作点依据**；
-  测量口径争议交 C 复算、B 查模型。
-- **会话传递已证实（2026-10-23）**：同方法复测现场 H，8.38 kHz 从标定批
-  `11.13 dB / −169.9°` 变为 `5.15 dB / −130.4°`（Δ **−5.98 dB / +39.5°**），
-  超过 B 的反证门限（<1 dB、<10°）。模型仍按 11 dB 预测，该段**过预测约 6 dB**。
-- **重标定解决（2026-10-23）**：按现场 H 重采 6 段（mic −18.1、延迟 124/125、6/6 可用），
-  拟合 256 = 6.05 dB、512 = 6.60 dB。之后**门禁版三臂**（每次试次前 −20 dBFS 定音测音响状态）：
-  −6 dB 时 `cancel` 稳（mic −37.0）而 `cancel_zero` 已顶满幅（−2.7）；
-  0 dB 时 `bypass` 发散、`cancel` 稳（−35.4）、`cancel_zero` 满幅（−1.17）。
-  **抵消带来 ≥6 dB 可用增益**；此前"cancel 在 −6 dB 发散"源于标定批失配。
-- **两条口径**：保护不统计麦克风削顶，"held + 满幅"是发散不是稳定；任何满幅试次后必须重过门禁。
-- 下一步：把门禁协议交 C 集成为固定判据；−3 dB 那行需新场次补测才能给精确 ASG。
+  现场人员只做物理动作：摆夹具/接线、循环播放录音作为声源、守着音响电源。
+- 唯一操板者；**当前接线：0.5 m 房间夹具**（惠普 NS1 Pro 接 `HP+MIC`、备用 MAX4466 接 `LINE_IN`、hp_volume 40）。
+- **实时扩声通路已存在，不需要新位流**：`played[n] = gain(residual[n-2])`、`residual = mic − Ĥ·played`；
+  `bypass=1` 普通扩声、`bypass=0` 带抵消，共用增益与限幅。单次上限 9.5 s（`frame_limit ≤ 488281`），
+  多段拼接绕开；真正的无限连续模式**尚未实现**。
+- **驱动证据层 = a-replay-evidence-v2**：计数解包 `prediction=packed&0xffff / residual=packed>>16 / gain / mix`，
+  唯一保存路径 + `<name>.status.json` 边车；C 的 `check_a_driver.py` **官方验收 8/8 accepted**
+  （驱动 sha256 `2127663…`，此后驱动未改）。
+- **256 模型在 512 位流上必须补零加载**（RTL 要求正好 512 项才置 `fresh`），
+  实证 `coefficient_status=0x200A`、`bit_exact`；补零模型不得描述为 512 训练模型。
+- **接口位段**：`capture_status` bit0=done、`[16:1]`=captured、bit17=arm&&!config_ok、
+  bit18=fault|fir_error、bit19=prediction_clip_seen、bit20=residual_clip_seen、bit21=`gain_clip_count!=0`；
+  `coefficient_status` bit0=coeff_ready、bit1=fir_ready、bit2=fir_error、bit3=fresh、`[19:4]`=loaded_count。
+  `0x00008001`=done+captured(16384) 不是削顶；`0x00020000`=配置被拒。
+- **保护计数反映输出电平，不是起振判据**；且**不统计麦克风削顶**——"guard 未触发 + 麦克风满幅"是发散。
+- **会话传递已证实**：8.38 kHz 现场 H 比标定批低 `−5.98 dB`、相位 `+39.5°`（B 的反证门限是 <1 dB/<10°）。
+- **A 现场重拟合 vs B 掩模系数（同一门禁场次）**：
+  A 重拟合 −9 dB 稳（−37.2）、−3/0 dB 啸叫（8.35 kHz）；B 掩模 −9 dB 就啸叫（主频 405 Hz，顶满幅），
+  −6/−3 dB 啸叫（8.36/8.35 kHz）。**在 8.35 kHz 与约 400 Hz 之间换限制点，取决于用哪份系数。**
+- **门禁协议（必须）**：每次试次前放固定 −20 dBFS 定音、环路打开测麦克风；静置 8 s 后取连续 3 次落在
+  1.2 dB 内的中位数为基线，偏离 >1.5 dB 跳过；任何满幅试次后必须重过门禁。
+- **两个坑**：①纯音不能测 `ref→mic` 延迟（1 kHz 每 48.8 样本重复，会报 70/118 这类假值），
+  只认白噪声的 **124/125**；②`|H|` 列是"逐点 dB 取中位"、Δ 列是"逐点 dB 差取中位"，
+  两者不相等（8200–8600：9.12→5.01 而 Δ=−4.97），交付必须注明是哪一种。
+- 夹具警告：麦克风 VCC 与 `LINE_IN` 都出过松脱（麦克风 −100 dBFS）；每次现场先跑直放正向对照。
+- 下一步：把 3 段 npz 交 B 重拟合（已打包）；C 的 ready 包到达后按唯一入口执行。
 
 ### B 数据与算法
 
