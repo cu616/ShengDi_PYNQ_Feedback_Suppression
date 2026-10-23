@@ -4,7 +4,7 @@
 > 每次会话结束**原地覆盖**本文件中自己负责的那一段，不要新建副本、不要在别处复述。
 > 其他文档若与本文件冲突，以本文件为准。
 
-最后更新：2026-10-23 23:40，B 线（补零等价的书面确认；8.4 kHz 裕度诊断；A 段的三臂参考臂问题）
+最后更新：2026-10-23 23:50，B 线（补零等价确认；8.4 kHz 裕度诊断；C 的汇总 v3 消费核对与历史缺口）
 
 ## 一句话
 
@@ -53,16 +53,20 @@
 
 ### B 数据与算法
 
-**最后动作**：2026-10-23 补零等价给出书面确认（`scripts/verify_padding_equivalence.py`，
+**最后动作**：2026-10-23 23:40 补零等价给出书面确认（`scripts/verify_padding_equivalence.py`，
 Q20+24 位饱和逐样本 0/4096 不符，前补零反例 15701/16384 不符）；对 A 报的 8.4 kHz 啸叫做离线诊断：
 模型在该频段**没有反相**（CD +21.5…+39.4 dB、相位差 <5°），缺口是会话传递（`+6.6 dB` 预测阈值 vs `−6 dB` 实测）。
+23:50 核对 C 的 `b2ad47d` 汇总 v3：**可直接消费**（软件夹具 2/2 命中注册表、补零身份在数据侧证实），
+并用 `scripts/consume_summary_v3.py` 定位历史 50 条的真实缺口。
 **当前卡点**：要一次"会话级"的 `mic/ref`（闭环任一档，同一源电平）才能重拟合；
 另需 A 给出 `cancel_zero` 的阈值，否则三臂对照的参考臂无效。
 
 - 证据：[peak-margin-2026-10-23](../report/verification/peak-margin-2026-10-23/README.md)（8.4 kHz 裕度与三臂协议）、
+  [summary-v3-consumption-2026-10-23](../report/verification/summary-v3-consumption-2026-10-23/README.md)（v3 消费核对与历史缺口）、
   [model-package-2026-10-23](../report/verification/model-package-2026-10-23/README.md)（注入方程、加载约定、尾段判据）；
   包说明 [models/README.md](../models/README.md)（含 SHA256 与拍数）。
-- 工具：`scripts/verify_padding_equivalence.py`（补零等价的四点判据 + 反例）、
+- 工具：`scripts/consume_summary_v3.py`（v3 字段/门禁/模型身份/配对复核，4 项测试）、
+  `scripts/verify_padding_equivalence.py`（补零等价的四点判据 + 反例）、
   `scripts/diagnose_peak_margin.py`（H/Hat 误差、两种阈值、亚采样与幅度的灵敏度预算）、
   `scripts/check_causal_alignment.py`（因果约定，5 项回归测试）、
   `scripts/score_time_domain.py`（部署 Q20 系数、逐段、共同窗口、跨场次）、
@@ -143,6 +147,10 @@ Q20+24 位饱和逐样本 0/4096 不符，前补零反例 15701/16384 不符）�
 | model_512 在 8.29 kHz 的 CD | **+32.1 dB**，相位差 +0.4° | 该峰不是"反相点"，也不是限制频点 |
 | 峰值裕度灵敏度（8380 Hz） | 错位 0.2/0.3/0.5 拍 → 阈值 +1.1/−1.9/−5.8 dB；过预测 2.6/4.5 dB → −1.8/−7.4 dB | 1 拍在 8380 Hz 是 61.8°；`|H|` 峰 3.59 倍，容差本来就只剩 11 dB |
 | 全零模型（cancel_zero）阈值 | **−11.11 dB** @8380 Hz | 0 dB 时环路增益 3.6 倍，必然啸叫；"0 dB 稳"= 回路没合上或假阴性 |
+| C 汇总 v3 可消费性 | **可直接消费**（`b2ad47d`） | 软件夹具 2/2 命中注册表，1 行命中原数组、1 行命中补零数组；尾段空值与门禁自洽 |
+| 历史 50 条的缺口 | 44 行 `bitstream_capacity_unverified` + `loaded_taps` 缺 + `comparison_identity` 缺；6 行无任何配置 | 44 行全是 `box_v1/baseline_256`（logical 256，系数哈希 44/44 命中原数组） |
+| 历史批的位流归属 | `4d49dfbe…` = `audio_closed`（DAC 无输出，22 行不能当声学证据）；`dadbbbab…` = `audio_replay` 256 抽头（22 行） | `BIT_CAPACITIES` 目前只有 512 位流，故 `dadbbbab` 那 22 行永远判容量未验证 |
+| 历史批尾段/保护字段 | `tail_rms`/斜率/三频带 **0/50**；`protection_triggered` **0/50** | 历史批不可能产出 effect pair，C 的判断成立 |
 
 ## 板卡占用
 
@@ -166,7 +174,10 @@ Q20+24 位饱和逐样本 0/4096 不符，前补零反例 15701/16384 不符）�
    126 → `..._shift+1.json`；125 → 两个都别用。
 4. A：给每个闭环捕获的实际起止帧与源结束帧（或直接跑 `scripts/check_tail_window.py`），
    判 PASS 的窗口才能用于阈值与 CD。
-5. C：确认接收 `models/` 三个 JSON（SHA256 见 `models/manifest.json`），
+5. C：确认接收 `models/` 三个 JSON（SHA256 见 `models/manifest.json`，新清单 SHA256 `71d13ca9…`），
    按夹具选模型；512 必须配 512 位流，记录 gain_q12 / hp_volume / 位流 sha256。
    补零放行的依据是 `scripts/verify_padding_equivalence.py` 的四点判据，不是"试了没问题"。
-6. B：拿到现场 H 后重拟合并给阈值预测；若 512 的起振点比 256 高出不到 1.5 dB，候选被否定。
+6. C：v3 汇总的三条最小补充——`BIT_CAPACITIES` 补 `dadbbbab…`（256 抽头）、
+   `loaded_taps` 缺失时按系数哈希反推、逐行导出 `positive_control_valid`
+   （现在分不清"尾段不合格"与"通路没接通"，见 summary-v3-consumption 报告 §4）。
+7. B：拿到现场 H 后重拟合并给阈值预测；若 512 的起振点比 256 高出不到 1.5 dB，候选被否定。

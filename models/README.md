@@ -23,6 +23,14 @@
 在 [`manifest.json`](manifest.json)。取文件用 `git pull` 后直接读本目录，
 不要用聊天里贴的路径——各电脑路径不相通。
 
+**清单结构（2026-10-23 23:30 起）**：`manifest.models` 只放**可部署的 3 个模型**，
+就是 C 的 `load_registry` 的输入；上表里两件 `*_padded512.json` 属派生件，放在
+`manifest.derived_artifacts`，**不参与注册**。原因：补零产物的 `coefficients_sha256`
+与原模型的 `padded_512_sha256` 相同，两条记录同时存在会让"按系数反查模型"出现歧义，
+整行被判 `model_not_in_approved_registry`。三份模型文件本身未改动。
+每条记录新增 `coefficients_sha256`（原数组）与 `padded_512_sha256`（尾部补零到 512 后）两列，
+口径与 C 的 `qhash()` 相同（`<i4` little-endian）。
+
 ## 2. 系数语义与兼容条件
 
 | 项 | 值 | 说明 |
