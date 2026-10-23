@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "suite": "c-a-driver-acceptance-v2",
+  "hardware_access": false,
+  "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+  "accepted": true,
+  "cases": [
+    {
+      "name": "guard_distinct_counts",
+      "passed": true
+    },
+    {
+      "name": "bypass_prediction_only",
+      "passed": true
+    },
+    {
+      "name": "terminal_counts",
+      "passed": true
+    },
+    {
+      "name": "completed_zero_counts",
+      "passed": true
+    },
+    {
+      "name": "protocol_fault",
+      "passed": true
+    },
+    {
+      "name": "operator_cancel",
+      "passed": true
+    },
+    {
+      "name": "restore_failure",
+      "passed": true
+    },
+    {
+      "name": "capture_write_failure",
+      "passed": true
+    }
+  ]
+}
