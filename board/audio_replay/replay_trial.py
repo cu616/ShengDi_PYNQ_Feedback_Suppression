@@ -19,6 +19,18 @@ from closed_tools import trial_parameters
 from replay_tools import verify_replay
 
 FRAMES = 16384
+# Tap count of the shipped audio_replay.bit. A model with fewer coefficients is loaded
+# zero-padded up to this count (see load path); the evidence records both numbers so a
+# padded 256-tap model is never reported as a trained 512-tap model.
+HARDWARE_TAPS = 512
+
+
+def decode_counts(packed_word, gain_word, mix_word):
+    """Unpack the clip words. packed = {residual[31:16], prediction[15:0]}."""
+    packed = int(packed_word) & 0xFFFFFFFF
+    return [packed & 0xFFFF, (packed >> 16) & 0xFFFF,
+            int(gain_word) & 0xFFFFFFFF, int(mix_word) & 0xFFFFFFFF]
+
 # 阅读主线：参数检查→静音/配置→限时闭环→静音读RAM→恢复→本地保存。
 # RATE来自自定义100MHz/2048分频，不是官方录音常见的48000 Hz。
 RATE = 48828.125
@@ -59,10 +71,23 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
     if not bit.is_file() or not bit.with_suffix(".hwh").is_file():
         raise FileNotFoundError("matching bit/hwh required")
     model, coefficients = load_candidate(model_path, fixture_id, hp_volume, RATE)
+    logical_taps = int(len(coefficients))
+    if len(coefficients) < HARDWARE_TAPS:
+        # The 512-tap RTL only sets `fresh` after exactly HARDWARE_TAPS coefficients, so a
+        # 256-tap model must be zero-padded. Zero taps change nothing mathematically; the
+        # evidence keeps logical_taps/loaded_taps so the padding stays visible.
+        coefficients = np.concatenate(
+            [coefficients, np.zeros(HARDWARE_TAPS - len(coefficients), dtype=np.int64)])
     if zero_coeff:
         coefficients = np.zeros(len(coefficients), dtype=np.int64)
     fd, control, raw = None, None, None
-    cleanup_errors = []
+    cleanup_errors, salvage_errors = [], []
+    armed, stop_reason, error, save_error = False, None, None, None
+    completed, count, first, elapsed = 0, 0, 0, 0.0
+    status, clip_word, gain_word, mix_word = 0, 0, 0, 0
+    counts = [0, 0, 0, 0]
+    source_loaded_ok = False
+    coeff_status_word = 0
 
     def write_reg(addr, data):
         # Codec用两字节大端I2C寄存器地址；与PL的MMIO控制是两条不同通路。
@@ -95,6 +120,22 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             raise RuntimeError("Codec PLL lock timeout")
         write_reg(0x4000, [0x0F])
         return value
+
+    def read_ring(first_index, frame_count):
+        """Read the capture ring chronologically; returns int64 [frames, 4]."""
+        out = np.empty((frame_count, 4), dtype=np.int64)
+        for i in range(frame_count):
+            address = (first_index + i) % FRAMES
+            command.write(0, address)
+            command.read(0)
+            out[i, 0] = samples.read(0) & 0xFFFFFF
+            out[i, 1] = samples.read(8) & 0xFFFFFF
+            command.write(0, (1 << 16) | address)
+            command.read(0)
+            out[i, 2] = samples.read(0) & 0xFFFFFF
+            out[i, 3] = samples.read(8) & 0xFFFFFF
+        out[out >= 0x800000] -= 0x1000000
+        return out
 
     def cleanup_step(name, action):
         try:
@@ -132,6 +173,8 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         loaded = source.read(8)
         if (loaded & 0x3ffff) != len(source_pcm16) or loaded & (1 << 18) or not loaded & (1 << 19):
             raise RuntimeError("source load incomplete: %08x" % loaded)
+        # Verified from the ABI readback, not from the requested duration.
+        source_loaded_ok = True
         coeff = MMIO(overlay.ip_dict["audio_coefficients"]["phys_addr"], 0x1000)
         coeff.write(0, 0)
         coeff.write(4, 0)
@@ -143,6 +186,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             coeff_word = ((coeff_word ^ (1 << 24)) & 0x03000000) | (int(value) & 0xFFFFFF)
             coeff.write(0, coeff_word)
         coeff_status = coeff.read(8)
+        coeff_status_word = int(coeff_status)
         if ((coeff_status >> 4) & 0xFFFF) != len(coefficients) or (coeff_status & 0xE) != 0xA:
             raise RuntimeError("coefficient load rejected: %08x" % coeff_status)
         runtime = MMIO(overlay.ip_dict["audio_runtime"]["phys_addr"], 0x1000)
@@ -165,77 +209,54 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             write_reg(addr, [value])
         start = time.monotonic()
         control.write(0, 1 | (int(bypass) << 1) | (gain_q12 << 16))
+        armed = True
         deadline = start + budget / RATE + 2
         status = command.read(8)
         # Stop on config/protocol fault. Saturation is counted, NEVER called ASG.
         while not (status & (1 | (3 << 17))) and time.monotonic() < deadline:
-            clip_counts = (clips.read(0), clips.read(8), source_len.read(8))
-            if any(clip_counts):
-                control.write(0, 0)
-                mute_codec()
-                # Save what the ring buffer already holds BEFORE raising: a guard trip is
-                # evidence, and without the capture it cannot be judged afterwards.
-                guard_completed = runtime.read(8)
-                guard_count = min(FRAMES, guard_completed)
-                guard_first = guard_completed - guard_count
-                guard_raw = np.empty((guard_count, 4), dtype=np.int64)
-                for i in range(guard_count):
-                    address = (guard_first + i) % FRAMES
-                    command.write(0, address)
-                    command.read(0)
-                    guard_raw[i, 0] = samples.read(0) & 0xFFFFFF
-                    guard_raw[i, 1] = samples.read(8) & 0xFFFFFF
-                    command.write(0, (1 << 16) | address)
-                    command.read(0)
-                    guard_raw[i, 2] = samples.read(0) & 0xFFFFFF
-                    guard_raw[i, 3] = samples.read(8) & 0xFFFFFF
-                guard_raw[guard_raw >= 0x800000] -= 0x1000000
-                guard_mic = guard_raw[:, 1] / 2**23
-                guard_meta = dict(schema_version=1, artifact_kind="replay_trial_guard",
-                                  guard_tripped=True, fixture_id=fixture_id, bypass=bypass,
-                                  gain_q12=gain_q12, hp_volume=hp_volume, sample_rate_hz=RATE,
-                                  frames=guard_count, completed_frames=guard_completed,
-                                  first_frame=guard_first,
-                                  prediction_saturations=min(65535, clip_counts[0]),
-                                  residual_saturations=min(65535, clip_counts[1]),
-                                  gain_saturations=clip_counts[2],
-                                  mic_rms_dbfs=float(20 * np.log10(max(float(np.std(guard_mic)), 2**-23))),
-                                  interpretation="guard trip; capture kept for envelope judgement")
-                with output_path.open("xb") as stream:
-                    np.savez_compressed(stream, reference=guard_raw[:, 0] / 2**23,
-                                        microphone=guard_mic,
-                                        prediction_pcm=guard_raw[:, 2],
-                                        residual_pcm=guard_raw[:, 3],
-                                        coefficients_q20=coefficients, sample_rate_hz=RATE,
-                                        metadata_json=json.dumps(guard_meta))
-                print("GUARD_CAPTURE_SAVED", str(output_path), "FRAMES", guard_count)
-                raise RuntimeError('runtime saturation guard stopped playback; packed_prediction_residual=%d gain=%d mix=%d; no further gain authorized' % clip_counts)
+            if any((clips.read(0), clips.read(8), source_len.read(8))):
+                stop_reason = "guard"
+                break
             time.sleep(0.002)
             status = command.read(8)
-        mute_codec()
+        # Stop the sound first, then freeze the capture and read every counter AFTER the run.
         control.write(0, 0)
+        mute_codec()
         elapsed = time.monotonic() - start
+        status = command.read(8)
         completed = runtime.read(8)
-        clip_word, gain_clips = clips.read(0), clips.read(8)
-        mix_clips = source_len.read(8)
-        if not (status & 1) or status & (3 << 17) or completed != budget:
-            raise RuntimeError("closed trial incomplete/fault: status=%08x completed=%d budget=%d" %
-                               (status, completed, budget))
+        clip_word, gain_word, mix_word = clips.read(0), clips.read(8), source_len.read(8)
+        counts = decode_counts(clip_word, gain_word, mix_word)
+        if stop_reason is None:
+            if status & (3 << 17):
+                stop_reason = "fault"
+            elif not status & 1 or completed != budget:
+                stop_reason = "incomplete"
         count = min(FRAMES, completed)
         first = completed - count
-        raw = np.empty((count, 4), dtype=np.int64)
-        # Ring buffer is read chronologically AFTER mute; only last 16384 frames persist.
-        for i in range(count):
-            address = (first + i) % FRAMES
-            command.write(0, address)
-            command.read(0)
-            raw[i, 0] = samples.read(0) & 0xFFFFFF
-            raw[i, 1] = samples.read(8) & 0xFFFFFF
-            command.write(0, (1 << 16) | address)
-            command.read(0)
-            raw[i, 2] = samples.read(0) & 0xFFFFFF
-            raw[i, 3] = samples.read(8) & 0xFFFFFF
-        raw[raw >= 0x800000] -= 0x1000000
+        raw = read_ring(first, count)
+    except BaseException as exc:
+        # Any failure after arming must still yield evidence: stop sound, freeze, read back.
+        error = exc
+        if armed and control is not None:
+            for attempt in (lambda: control.write(0, 0), mute_codec):
+                try:
+                    attempt()
+                except Exception:
+                    pass
+            try:
+                if stop_reason is None:
+                    stop_reason = "exception"
+                status = command.read(8)
+                completed = runtime.read(8)
+                clip_word, gain_word, mix_word = clips.read(0), clips.read(8), source_len.read(8)
+                counts = decode_counts(clip_word, gain_word, mix_word)
+                count = min(FRAMES, completed)
+                first = completed - count
+                if raw is None:
+                    raw = read_ring(first, count)
+            except Exception as salvage_error:
+                salvage_errors.append(str(salvage_error))
     finally:
         # 正常完成和异常均走恢复；任一步失败会记录，其他恢复步骤仍尝试执行。
         # Attempt every recovery step even if a preceding I2C/MMIO operation fails.
@@ -263,40 +284,108 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             print("RESTORE_ERRORS", cleanup_errors)
         else:
             print("STOCK_BASE_RESTORED_AND_CODEC_MUTED")
-    if cleanup_errors:
-        # 恢复失败不保存成功数据；原始采集异常也会在finally后继续向外抛出。
+
+    # ---- one evidence path, used by every outcome (C: a-replay-evidence-v2) ----
+    recovery_ok = not cleanup_errors
+    metadata = None
+    if armed:
+        count = min(FRAMES, max(int(completed or 0), 0))
+        first = max(int(completed or 0) - count, 0)
+        mic = (raw[:, 1] / 2**23) if raw is not None and len(raw) else np.zeros(0)
+        checks = {}
+        if stop_reason is None and raw is not None and len(raw) > len(coefficients):
+            try:
+                checks = verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first)
+            except Exception as exc:
+                checks = {"verification_skipped": str(exc)}
+        metadata = dict(
+            schema_version=1, artifact_kind="replay_trial", capture_id=str(uuid.uuid4()),
+            driver_evidence_version="a-replay-evidence-v2", source="board",
+            forward_path_open=direct_only, fixture_id=fixture_id, bypass=bypass,
+            zero_coeff=zero_coeff, gain_q12=gain_q12,
+            gain_db_actual=(float(20 * np.log10(gain_q12 / 4096)) if gain_q12 else None),
+            hp_volume=hp_volume, sample_rate_hz=RATE, pll_readback=pll_readback,
+            frames=count, completed_frames=int(completed or 0), first_frame=first,
+            capture_status=status,
+            sound_seconds_nominal=budget / RATE, completion_poll_seconds=elapsed,
+            prediction_saturations=counts[0], residual_saturations=counts[1],
+            gain_saturations=counts[2], mix_saturations=counts[3],
+            clip_counts_raw=[int(clip_word), int(gain_word), int(mix_word)],
+            early_stop=bool(stop_reason is not None),
+            stop_reason=(stop_reason or "completed"),
+            source_frames=int(len(source_pcm16)),
+            source_end_frame_exclusive=int(source_pcm16.shape[0]),
+            source_schedule_verified=bool(source_loaded_ok),
+            source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
+            bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest(),
+            model_sha256=hashlib.sha256(Path(model_path).read_bytes()).hexdigest(),
+            coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
+            logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
+            coefficient_status=int(coeff_status_word),
+            zero_padded=bool(len(coefficients) > int(logical_taps)),
+            verification=checks,
+            interpretation="bounded closed loop; NOT measured MSG/ASG")
+        if len(mic):
+            metadata["mic_rms_dbfs"] = float(20 * np.log10(max(float(np.std(mic)), 2**-23)))
+            metadata["mic_peak_dbfs"] = float(20 * np.log10(max(float(np.max(np.abs(mic))), 2**-23)))
+            metadata["mic_full_scale_samples"] = int(np.count_nonzero(
+                (raw[:, 1] <= -2**23) | (raw[:, 1] >= 2**23 - 1)))
+        try:
+            with output_path.open("xb") as stream:
+                np.savez_compressed(stream,
+                                    reference=(raw[:, 0] / 2**23) if raw is not None else np.zeros(0),
+                                    microphone=mic,
+                                    prediction_pcm=(raw[:, 2] if raw is not None else np.zeros(0)),
+                                    residual_pcm=(raw[:, 3] if raw is not None else np.zeros(0)),
+                                    coefficients_q20=coefficients,
+                                    source_pcm16=source_pcm16,
+                                    sample_rate_hz=RATE,
+                                    metadata_json=json.dumps(metadata))
+            print("LOCAL_CAPTURE_SAVED", str(output_path), "FRAMES", count)
+            if "mic_rms_dbfs" in metadata:
+                print({k: metadata[k] for k in ("mic_rms_dbfs", "mic_peak_dbfs",
+                                                "mic_full_scale_samples")})
+            print("CLOSED_VERIFICATION", checks)
+            print("STOP_REASON", metadata["stop_reason"], "early_stop", metadata["early_stop"])
+            print("NO_DATA_UPLOADED")
+        except Exception as exc:
+            save_error = str(exc)
+            print("CAPTURE_SAVE_FAILED", save_error)
+
+    status_path = output_path.with_suffix(".status.json")
+    status_payload = dict(
+        schema_version=1, driver_evidence_version="a-replay-evidence-v2",
+        capture=str(output_path), fixture_id=fixture_id,
+        recovery_ok=bool(recovery_ok), cleanup_errors=list(cleanup_errors),
+        salvage_errors=list(salvage_errors), save_error=save_error,
+        stop_reason=(stop_reason or "completed"),
+        error=(str(error) if error is not None else None),
+        armed=bool(armed),
+        completed_frames=int(completed or 0), frames=int(count or 0), first_frame=int(first or 0),
+        source_end_frame_exclusive=int(source_pcm16.shape[0]),
+        source_schedule_verified=bool(source_loaded_ok),
+        clip_counts_raw=[int(clip_word), int(gain_word), int(mix_word)],
+        prediction_saturations=int(counts[0]), residual_saturations=int(counts[1]),
+        gain_saturations=int(counts[2]), mix_saturations=int(counts[3]),
+        logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
+        coefficient_status=int(coeff_status_word), bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest())
+    try:
+        status_path.write_text(json.dumps(status_payload, indent=2, ensure_ascii=False),
+                               encoding="utf-8")
+        print("STATUS_SAVED", str(status_path))
+    except Exception as exc:
+        print("STATUS_SAVE_FAILED", str(exc))
+
+    if save_error is not None:
+        raise RuntimeError("capture save failed: " + save_error)
+    if stop_reason == "guard":
+        raise RuntimeError('runtime saturation guard stopped playback; packed_prediction_residual=%d '
+                           'gain=%d mix=%d; no further gain authorized'
+                           % (int(clip_word), int(gain_word), int(mix_word)))
+    if error is not None:
+        raise error
+    if not recovery_ok:
         raise RuntimeError("restoration failed; do not run another audio test")
-    checks = verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first)
-    metadata = dict(schema_version=1, artifact_kind="replay_trial", capture_id=str(uuid.uuid4()),
-                    source="board", forward_path_open=direct_only, fixture_id=fixture_id,
-                    bypass=bypass, zero_coeff=zero_coeff, gain_q12=gain_q12,
-                    gain_db_actual=(float(20*np.log10(gain_q12/4096)) if gain_q12 else None), hp_volume=hp_volume,
-                    sample_rate_hz=RATE, pll_readback=pll_readback, frames=count,
-                    completed_frames=completed, first_frame=first, capture_status=status,
-                    sound_seconds_nominal=budget/RATE, completion_poll_seconds=elapsed,
-                    prediction_saturations=min(65535, clip_word & 65535),
-                    residual_saturations=min(65535, clip_word >> 16), gain_saturations=gain_clips,
-                    mix_saturations=mix_clips, source_frames=len(source_pcm16),
-                    source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
-                    bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest(),
-                    model_sha256=hashlib.sha256(Path(model_path).read_bytes()).hexdigest(),
-                    coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
-                    verification=checks, interpretation="bounded closed loop; NOT measured MSG/ASG")
-    mic = raw[:, 1] / 2**23
-    # PCM/2^23转为满幅单位。std对应去直流RMS，下面的峰值则包含直流分量。
-    metadata["mic_rms_dbfs"] = float(20 * np.log10(max(float(np.std(mic)), 2**-23)))
-    metadata["mic_peak_dbfs"] = float(20 * np.log10(max(float(np.max(np.abs(mic))), 2**-23)))
-    metadata["mic_full_scale_samples"] = int(np.count_nonzero((raw[:, 1] <= -2**23) | (raw[:, 1] >= 2**23-1)))
-    # Exclusive creation prevents overwriting a previous calibration capture.
-    with output_path.open("xb") as stream:
-        np.savez_compressed(stream, reference=raw[:, 0] / 2**23,
-                            microphone=raw[:, 1] / 2**23, prediction_pcm=raw[:, 2],
-                            residual_pcm=raw[:, 3], coefficients_q20=coefficients, sample_rate_hz=RATE,
-                            metadata_json=json.dumps(metadata))
-    print("LOCAL_CAPTURE_SAVED", str(output_path), "FRAMES", count)
-    print({k: metadata[k] for k in ("mic_rms_dbfs", "mic_peak_dbfs", "mic_full_scale_samples")})
-    print("CLOSED_VERIFICATION", checks)
-    print("NO_DATA_UPLOADED")
     return metadata
 
 
