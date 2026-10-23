@@ -1,0 +1,4755 @@
+{
+  "calculation_version": "c-measurement-2.0.0",
+  "input_sha256": {
+    "home_xilinx_b_levels_summary.json": "2f9bd71c1cc79615670df87bb8145800b018d4f9caf9c8962be296ba03d403ff",
+    "home_xilinx_bcheck_ladder_summary.json": "45b7e725bf9b5cecb5140987529f6d5449cec423d61e3660921bfe4bc74e68e8",
+    "home_xilinx_bcheck_loud_summary.json": "94e73c456bbccd2ac6cf48f8d63c3bc8d53963b941ab6fcf7058c46cf9bd23ae",
+    "home_xilinx_bcheck_path_summary.json": "14e5941305a88ec04e06c54f7ebd6cd2df373ab336ecdc1e7522bef07b32d738",
+    "home_xilinx_bcheck_rest_summary.json": "d6d12e10775a8346450f898c8834da768d31a622b36e9833a884556a973d0597",
+    "home_xilinx_ccheck_results_bypass_ladder.json": "89f7bd0726764f07c8eda993c8be94f2dc4aff89ec8134d1f5a7d90af103d320",
+    "home_xilinx_ccheck_results_ladder.json": "dabeb3933dcd6c2238c8783994718eaa2c600630238a70f84fc2bdf018402f1a",
+    "home_xilinx_fine_bypass_summary.json": "7bf8f1f99132b667229330330a48444f83edf537b60e344e4df538a614936efb",
+    "home_xilinx_fine_cancel_summary.json": "60cc25b3b57845f779abbe6fe1bca659f5f8299ce1efd89c342b01505d4c5af1",
+    "home_xilinx_replay_out_check_summary.json": "0171426d06419a31839d1016726e6e69bb6516f31c9d91827cd9ce9fc96d5ce6",
+    "home_xilinx_voice_bypass_summary.json": "fcb27f67f196f629ca78018365c72881a0f56e3f127cae5239d98b37e423e795",
+    "home_xilinx_voice_cancel_summary.json": "c72ad54211c2b5b7731b7616373ab6c6411fc8d74a07fee075dbca3a77ca41b8"
+  },
+  "rows": [
+    {
+      "source_file": "home_xilinx_b_levels_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "cancel",
+      "gain_db": -32.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "ca91ae8f-f18a-4b4b-b2fa-523ae3c942f6",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 103,
+        "gain_db_actual": -31.990454465252043,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.051293443000759,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -35.21880080238037,
+        "mic_peak_dbfs": -20.697306862831173,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_b_levels_summary.json",
+      "row": 1,
+      "index": 2,
+      "mode": "bypass",
+      "gain_db": -32.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "1f8b716b-1ef0-4339-a7f2-697ef2b0629f",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 103,
+        "gain_db_actual": -31.990454465252043,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0518806429972756,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -34.3376625791119,
+        "mic_peak_dbfs": -18.769931591916727,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_bcheck_ladder_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "cancel",
+      "gain_db": -24.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "5d530a38-3da3-48dc-8a01-e12723f92385",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 258,
+        "gain_db_actual": -24.014804840090882,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0510392959986348,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -30.005927604597872,
+        "mic_peak_dbfs": -16.212313438706516,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_bcheck_ladder_summary.json",
+      "row": 1,
+      "index": 2,
+      "mode": "bypass",
+      "gain_db": -24.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "5f9d952c-9758-4615-a33f-043fb1a4c11f",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 258,
+        "gain_db_actual": -24.014804840090882,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.053039462000015,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -10.67498882302695,
+        "mic_peak_dbfs": -5.232391060402244,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_bcheck_ladder_summary.json",
+      "row": 2,
+      "index": 3,
+      "mode": "cancel",
+      "gain_db": -18.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "922fceec-077f-4af7-ba58-eb30147909ae",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 516,
+        "gain_db_actual": -17.99420492681126,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.052727952999703,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -33.7869691710833,
+        "mic_peak_dbfs": -21.593591557491955,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_bcheck_ladder_summary.json",
+      "row": 3,
+      "index": 4,
+      "mode": "bypass",
+      "gain_db": -18.0,
+      "original_status": "stopped",
+      "original_error": "RuntimeError: sustained saturation stopped playback; prediction,residual,gain+mix=(128, 0, 0) deltas=(57, 0, 0)",
+      "original_metadata": null,
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "protection",
+        "reasons": [
+          "actual_frame_extent_not_available"
+        ],
+        "event_flags": {
+          "protection": true,
+          "early_stop": null,
+          "execution_error": true,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_bcheck_loud_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "direct",
+      "gain_db": 0.0,
+      "original_status": "stopped",
+      "original_error": "RuntimeError: sustained saturation stopped playback; prediction,residual,gain+mix=(0, 71, 0) deltas=(0, 71, 0)",
+      "original_metadata": null,
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "protection",
+        "reasons": [
+          "actual_frame_extent_not_available"
+        ],
+        "event_flags": {
+          "protection": true,
+          "early_stop": null,
+          "execution_error": true,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_bcheck_path_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "direct",
+      "gain_db": 0.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "dd89fd3c-249d-4038-91f5-efd81f3d3493",
+        "source": "board",
+        "forward_path_open": true,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 0,
+        "gain_db_actual": null,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0514132649987005,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -31.759105766384618,
+        "mic_peak_dbfs": -16.658045351707514,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_bcheck_rest_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "bypass",
+      "gain_db": -21.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "c689bd1b-8dfa-4865-8af5-b60cb8e615de",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 365,
+        "gain_db_actual": -21.001341670225994,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0511821629988845,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -9.928373693306863,
+        "mic_peak_dbfs": -3.8223912652177368,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_bcheck_rest_summary.json",
+      "row": 1,
+      "index": 2,
+      "mode": "cancel",
+      "gain_db": -12.0,
+      "original_status": "stopped",
+      "original_error": "RuntimeError: sustained saturation stopped playback; prediction,residual,gain+mix=(377, 28, 0) deltas=(72, 14, 0)",
+      "original_metadata": null,
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "protection",
+        "reasons": [
+          "actual_frame_extent_not_available"
+        ],
+        "event_flags": {
+          "protection": true,
+          "early_stop": null,
+          "execution_error": true,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_bypass_ladder.json",
+      "row": 0,
+      "index": 1,
+      "mode": "bypass",
+      "gain_db": -21.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "729195aa-af72-4729-a35f-f395d84a5875",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 365,
+        "gain_db_actual": -21.001341670225994,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5015099290030776,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.55017992143621,
+        "mic_peak_dbfs": -50.76024287505713,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_bypass_ladder.json",
+      "row": 1,
+      "index": 2,
+      "mode": "bypass",
+      "gain_db": -18.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "db98296b-86a2-45c4-82f0-4dfb42266317",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 516,
+        "gain_db_actual": -17.99420492681126,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5019365070038475,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.37029250117187,
+        "mic_peak_dbfs": -51.19066088298074,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_bypass_ladder.json",
+      "row": 2,
+      "index": 3,
+      "mode": "bypass",
+      "gain_db": -15.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "23e2e574-2639-4bcb-9f3a-9a7e236a9a2f",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 728,
+        "gain_db_actual": -15.004571373094745,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5028580079961102,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.87168860136715,
+        "mic_peak_dbfs": -53.13459003347744,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_bypass_ladder.json",
+      "row": 3,
+      "index": 4,
+      "mode": "bypass",
+      "gain_db": -12.5,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "9143551c-8bca-4d2d-a5bc-a33cc638bc23",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 971,
+        "gain_db_actual": -12.502814361195389,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.50160333099484,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.71768469320689,
+        "mic_peak_dbfs": -52.36720062167919,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_bypass_ladder.json",
+      "row": 4,
+      "index": 5,
+      "mode": "bypass",
+      "gain_db": -9.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "0d96408a-d14a-48a2-85c0-3bc53143465b",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 1453,
+        "gain_db_actual": -9.001886673395056,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5026050050000777,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.80179901599936,
+        "mic_peak_dbfs": -53.742548968364154,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 0,
+      "index": 1,
+      "mode": "cancel",
+      "gain_db": -42.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "8c0af82b-bd37-4d25-9919-92374bc7c4f3",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 33,
+        "gain_db_actual": -41.87692016179774,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.502534679006203,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.45845935047461,
+        "mic_peak_dbfs": -51.57103034322933,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 1,
+      "index": 2,
+      "mode": "bypass",
+      "gain_db": -42.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "38d0bb8a-f09e-47f8-ad9c-c945d4e98f9e",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 33,
+        "gain_db_actual": -41.87692016179774,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.501471251998737,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.8301517417826,
+        "mic_peak_dbfs": -53.60757904483491,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 2,
+      "index": 3,
+      "mode": "cancel",
+      "gain_db": -39.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "c9cafb34-9802-4955-b495-df885fe3c728",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 46,
+        "gain_db_actual": -38.99204232572401,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5010884029979934,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.71361462702609,
+        "mic_peak_dbfs": -52.56509515836839,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 3,
+      "index": 4,
+      "mode": "bypass",
+      "gain_db": -39.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "a3c2ae96-6670-4865-a7c9-e2a7f8efc457",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 46,
+        "gain_db_actual": -38.99204232572401,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5018281869997736,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.59568968204745,
+        "mic_peak_dbfs": -49.56015746837777,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 4,
+      "index": 5,
+      "mode": "cancel",
+      "gain_db": -36.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "bb1007ff-57de-4b68-a915-dc369fec0b10",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 65,
+        "gain_db_actual": -35.98893182649838,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.501346746998024,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.65038692981273,
+        "mic_peak_dbfs": -53.69482003919612,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 5,
+      "index": 6,
+      "mode": "bypass",
+      "gain_db": -36.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "7d334fe3-b6ca-42d6-821f-8332d1eac886",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 65,
+        "gain_db_actual": -35.98893182649838,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5029998859972693,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.70488547979491,
+        "mic_peak_dbfs": -51.61666283940085,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 6,
+      "index": 7,
+      "mode": "cancel",
+      "gain_db": -33.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "65a75de7-1af7-4fe6-9ee2-65ec29d51427",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 92,
+        "gain_db_actual": -32.97144241244438,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.501143467001384,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.03266663665732,
+        "mic_peak_dbfs": -50.581612823360445,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 7,
+      "index": 8,
+      "mode": "bypass",
+      "gain_db": -33.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "260c1555-3907-4808-a1e0-7bec2665409b",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 92,
+        "gain_db_actual": -32.97144241244438,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.501409472999512,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -64.39744761626238,
+        "mic_peak_dbfs": -50.50562213314804,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 8,
+      "index": 9,
+      "mode": "cancel",
+      "gain_db": -30.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "17d33629-678a-46c3-8f8a-f726508a0313",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 130,
+        "gain_db_actual": -29.968331913218755,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5011428329962655,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.79130645072493,
+        "mic_peak_dbfs": -51.608383992415334,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 9,
+      "index": 10,
+      "mode": "bypass",
+      "gain_db": -30.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "41f9ce1d-8a36-4db5-9895-58f7505f7d9c",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 130,
+        "gain_db_actual": -29.968331913218755,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.502087084998493,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.7299411987971,
+        "mic_peak_dbfs": -51.443669546850465,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 10,
+      "index": 11,
+      "mode": "cancel",
+      "gain_db": -27.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "78b8590a-b281-41f5-8d03-28477a5bc570",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 183,
+        "gain_db_actual": -26.9981771647469,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5008957870013546,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.89250519902004,
+        "mic_peak_dbfs": -53.17885783836082,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 11,
+      "index": 12,
+      "mode": "bypass",
+      "gain_db": -27.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "8fa34ef4-715e-4624-843d-870dd2d08696",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 183,
+        "gain_db_actual": -26.9981771647469,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5015946549974615,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -64.89998353150976,
+        "mic_peak_dbfs": -50.85438614910448,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 12,
+      "index": 13,
+      "mode": "cancel",
+      "gain_db": -24.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "616b2bdb-746a-43b1-ad17-008197bf8133",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 258,
+        "gain_db_actual": -24.014804840090882,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.502376329000981,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -64.49213155255761,
+        "mic_peak_dbfs": -52.66731711442921,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 13,
+      "index": 14,
+      "mode": "bypass",
+      "gain_db": -24.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "29c7c974-5c4e-4e21-b6ae-53299177f9a7",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 258,
+        "gain_db_actual": -24.014804840090882,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5020875350019196,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.79328456452834,
+        "mic_peak_dbfs": -53.03510812907605,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 14,
+      "index": 15,
+      "mode": "cancel",
+      "gain_db": -21.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "16c3dbff-7ff1-49be-9635-2ac4755006c5",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 365,
+        "gain_db_actual": -21.001341670225994,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5026744209972094,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.73034798571629,
+        "mic_peak_dbfs": -52.30806023284926,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 15,
+      "index": 16,
+      "mode": "bypass",
+      "gain_db": -21.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "e6f55642-cf3d-467c-bb42-3abb860a6b61",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 365,
+        "gain_db_actual": -21.001341670225994,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5013663839999936,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.78079037280611,
+        "mic_peak_dbfs": -52.28374970609728,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_ccheck_results_ladder.json",
+      "row": 16,
+      "index": 17,
+      "mode": "cancel",
+      "gain_db": -18.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "closed_trial",
+        "capture_id": "ec06545c-17b8-40e4-b8df-04fccf05c127",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 516,
+        "gain_db_actual": -17.99420492681126,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 1605633,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.5014013690015418,
+        "prediction_saturations": 65535,
+        "residual_saturations": 31010,
+        "gain_saturations": 0,
+        "bit_sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "evaluated_frames": 16128,
+          "history_excluded_frames": 256,
+          "output_schedule_frames": 2,
+          "interpretation": "arithmetic only; NOT MSG/ASG"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -65.8075798617132,
+        "mic_peak_dbfs": -52.51465048922917,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": true,
+          "residual_saturations": true,
+          "gain_saturations": false,
+          "mix_saturations": null,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 65535,
+          "residual_saturations": 31010,
+          "gain_saturations": 0,
+          "mix_saturations": null
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": null,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": null,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_fine_bypass_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "bypass",
+      "gain_db": -21.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "c5e2c799-effb-490c-8a9a-7435b53cfb8e",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 365,
+        "gain_db_actual": -21.001341670225994,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0516806800005725,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -9.807928356691356,
+        "mic_peak_dbfs": -3.6483607956406954,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_fine_bypass_summary.json",
+      "row": 1,
+      "index": 2,
+      "mode": "bypass",
+      "gain_db": -19.5,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "b9ee6267-9852-4347-a765-30c154d7db55",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 434,
+        "gain_db_actual": -19.497404369105272,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 557057,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.050857818001532,
+        "prediction_saturations": 183,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -9.223614022952713,
+        "mic_peak_dbfs": -3.314024422128401,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": true,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 183,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_fine_bypass_summary.json",
+      "row": 2,
+      "index": 3,
+      "mode": "bypass",
+      "gain_db": -18.0,
+      "original_status": "stopped",
+      "original_error": "RuntimeError: sustained saturation stopped playback; prediction,residual,gain+mix=(112, 0, 0) deltas=(54, 0, 0)",
+      "original_metadata": null,
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "protection",
+        "reasons": [
+          "actual_frame_extent_not_available"
+        ],
+        "event_flags": {
+          "protection": true,
+          "early_stop": null,
+          "execution_error": true,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_fine_cancel_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "cancel",
+      "gain_db": -18.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "bb238e7b-a99a-465b-932f-1f613fd1b375",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 516,
+        "gain_db_actual": -17.99420492681126,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0511295600008452,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -32.82941862256653,
+        "mic_peak_dbfs": -19.35931199159247,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_fine_cancel_summary.json",
+      "row": 1,
+      "index": 2,
+      "mode": "cancel",
+      "gain_db": -16.5,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "46769b6b-bf4f-4245-8f2d-847c60082ace",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 613,
+        "gain_db_actual": -16.497989468987186,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0513363540012506,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -32.28264076140373,
+        "mic_peak_dbfs": -20.130191537281746,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_fine_cancel_summary.json",
+      "row": 2,
+      "index": 3,
+      "mode": "cancel",
+      "gain_db": -15.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "4c4369da-3002-4faf-8827-cc26b760525c",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 728,
+        "gain_db_actual": -15.004571373094745,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.052867829996103,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -14.297836259535915,
+        "mic_peak_dbfs": -7.356575890907089,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_fine_cancel_summary.json",
+      "row": 3,
+      "index": 4,
+      "mode": "cancel",
+      "gain_db": -13.5,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "619e7237-d40e-44fa-99a4-3a355c7d7316",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 866,
+        "gain_db_actual": -13.496841119008554,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 557057,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0517583779947017,
+        "prediction_saturations": 4687,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "8263d92af5bf3743f30418182c0130e43110de0a587a4d9a2081980ae858523b",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -9.751593665605956,
+        "mic_peak_dbfs": -1.0354387945871882e-06,
+        "mic_full_scale_samples": 116
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": true,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": true
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 4687,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_fine_cancel_summary.json",
+      "row": 4,
+      "index": 5,
+      "mode": "cancel",
+      "gain_db": -12.0,
+      "original_status": "stopped",
+      "original_error": "RuntimeError: sustained saturation stopped playback; prediction,residual,gain+mix=(154, 0, 0) deltas=(55, 0, 0)",
+      "original_metadata": null,
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "protection",
+        "reasons": [
+          "actual_frame_extent_not_available"
+        ],
+        "event_flags": {
+          "protection": true,
+          "early_stop": null,
+          "execution_error": true,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_replay_out_check_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "bypass",
+      "gain_db": -26.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "4f2f33fe-edcd-4776-a33a-d58f55cd07e7",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 205,
+        "gain_db_actual": -26.0121217382404,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.501932728999236,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 4,
+        "source_pcm16_sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -35.25547396593526,
+        "mic_peak_dbfs": -23.593073142962425,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_end_unverified"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 105686,
+          "end_frame": 122070,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 4,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_end_unverified",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.1342180715982633,
+          "waveform_missing_intervals": [
+            [
+              0,
+              105686
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_bypass_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "bypass",
+      "gain_db": -27.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "4b99ad11-ebf8-42e2-9448-26c11c7df8da",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 183,
+        "gain_db_actual": -26.9981771647469,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.052825892002147,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "cd2111aecd652ed22a418c71f5a5c701c28c583f958cb647a18a91689aa3f5d9",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -25.759861505484004,
+        "mic_peak_dbfs": -9.987326952221697,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_bypass_summary.json",
+      "row": 1,
+      "index": 2,
+      "mode": "bypass",
+      "gain_db": -24.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "e2de4a52-4996-4f09-990f-03655b24f6e3",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 258,
+        "gain_db_actual": -24.014804840090882,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0530432340019615,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "cd2111aecd652ed22a418c71f5a5c701c28c583f958cb647a18a91689aa3f5d9",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -25.625276696563624,
+        "mic_peak_dbfs": -12.360245750797114,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_bypass_summary.json",
+      "row": 2,
+      "index": 3,
+      "mode": "bypass",
+      "gain_db": -21.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "708a4945-15e3-4987-8af9-96fd2078ae46",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 365,
+        "gain_db_actual": -21.001341670225994,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0519078119978076,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "cd2111aecd652ed22a418c71f5a5c701c28c583f958cb647a18a91689aa3f5d9",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -25.095246259043336,
+        "mic_peak_dbfs": -12.122383684020361,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_bypass_summary.json",
+      "row": 3,
+      "index": 4,
+      "mode": "bypass",
+      "gain_db": -19.5,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "13149f5c-d3a1-43d5-a244-718e4136897f",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 434,
+        "gain_db_actual": -19.497404369105272,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0525469500062172,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "cd2111aecd652ed22a418c71f5a5c701c28c583f958cb647a18a91689aa3f5d9",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -24.43066454148965,
+        "mic_peak_dbfs": -11.341916288911627,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_bypass_summary.json",
+      "row": 4,
+      "index": 5,
+      "mode": "bypass",
+      "gain_db": -18.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "e1f005d2-84e2-4a52-ac24-4aaeb7783469",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 516,
+        "gain_db_actual": -17.99420492681126,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0517158250004286,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "cd2111aecd652ed22a418c71f5a5c701c28c583f958cb647a18a91689aa3f5d9",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -20.182091295976036,
+        "mic_peak_dbfs": -5.74183779249366,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_cancel_summary.json",
+      "row": 0,
+      "index": 1,
+      "mode": "cancel",
+      "gain_db": -27.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "5a5e852e-2482-414c-adf8-314bbadf1f4e",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 183,
+        "gain_db_actual": -26.9981771647469,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0517269390038564,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "cd2111aecd652ed22a418c71f5a5c701c28c583f958cb647a18a91689aa3f5d9",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -28.40433929697397,
+        "mic_peak_dbfs": -15.52622076455587,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_cancel_summary.json",
+      "row": 1,
+      "index": 2,
+      "mode": "cancel",
+      "gain_db": -24.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "d32ae25a-3807-4c14-a822-963548228e10",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 258,
+        "gain_db_actual": -24.014804840090882,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.0511648840038106,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "cd2111aecd652ed22a418c71f5a5c701c28c583f958cb647a18a91689aa3f5d9",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -30.351934524898088,
+        "mic_peak_dbfs": -16.009986939423662,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_cancel_summary.json",
+      "row": 2,
+      "index": 3,
+      "mode": "cancel",
+      "gain_db": -21.0,
+      "original_status": "complete",
+      "original_error": null,
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "6ac41288-6883-4684-8ff5-021aaff2279c",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 365,
+        "gain_db_actual": -21.001341670225994,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 100097,
+        "first_frame": 83713,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.04998656,
+        "completion_poll_seconds": 2.050936630999786,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 97656,
+        "source_pcm16_sha256": "cd2111aecd652ed22a418c71f5a5c701c28c583f958cb647a18a91689aa3f5d9",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -30.81230236763527,
+        "mic_peak_dbfs": -16.677291867230352,
+        "mic_full_scale_samples": 0
+      },
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "unknown",
+        "reasons": [
+          "source_or_transition_overlap"
+        ],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 83713,
+          "end_frame": 100097,
+          "frames": 16384,
+          "source_end_frame_exclusive": null,
+          "source_schedule_verified": false,
+          "planned_source_frames": 97656,
+          "transition_frames": 2442,
+          "pure_tail": false,
+          "reason": "source_or_transition_overlap",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.16368122920766856,
+          "waveform_missing_intervals": [
+            [
+              0,
+              83713
+            ]
+          ],
+          "counter_coverage": "unknown"
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    },
+    {
+      "source_file": "home_xilinx_voice_cancel_summary.json",
+      "row": 3,
+      "index": 4,
+      "mode": "cancel",
+      "gain_db": -18.0,
+      "original_status": "stopped",
+      "original_error": "RuntimeError: sustained saturation stopped playback; prediction,residual,gain+mix=(104, 26, 0) deltas=(55, 26, 0)",
+      "original_metadata": null,
+      "derived": {
+        "calculation_version": "c-measurement-2.0.0",
+        "category": "protection",
+        "reasons": [
+          "actual_frame_extent_not_available"
+        ],
+        "event_flags": {
+          "protection": true,
+          "early_stop": null,
+          "execution_error": true,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": null,
+          "residual_saturations": null,
+          "gain_saturations": null,
+          "mix_saturations": null
+        }
+      },
+      "raw_pcm_available": false,
+      "decision": "No waveform-based instability or MSG/ASG can be reconstructed from summary alone"
+    }
+  ],
+  "totals": {
+    "trials": 50,
+    "categories": {
+      "unknown": 44,
+      "protection": 6
+    }
+  },
+  "policy": "original files unchanged; no threshold inferred from protection or missing PCM"
+}

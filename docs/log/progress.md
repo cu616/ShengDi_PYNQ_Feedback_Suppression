@@ -5,6 +5,29 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-23 C 补齐仓库分支交付
+
+首轮只给本地 ZIP，用户指出不符合开发规程。随后先 pull --rebase 同步 C，
+将本轮工具及包集成到 C，保留既有 C 测评、R-002 字段和历史记录。
+[C 分支 102 项回归](../../report/verification/audio_closed/c-branch-integration-tests.txt) 全部通过；
+[发布前文档检查](../../report/verification/audio_closed/c-branch-docs-check.txt) 为 0 错误、0 警告。
+交付包含 [完整源码 ZIP](../../build/packages/c-integration-source.zip)、
+[固定离线包](../../build/packages/c-experiment-v2-offline.zip) 及 [操作单](../../board/audio_closed/BATCH_GUIDE.md)。
+接口文档仅逐字引入 A 已发布的 audio-replay v1/sweep v1，未更改生产语义；规则文件单独提交。
+离线包继续保留缺件门禁，不因仓库发布将其改为可发声 ready 包。
+
+
+## 2026-10-23 C 修正尾段判据并交付离线固定实验包
+
+以 main 03f3063 为基线，集成 A 59aa10e 的只读板端资产；复核 50 条历史汇总，
+定位 21 条源仍在播放的捕获及早停当尾段问题。用模拟原始寄存器复现保护计数错位，
+提供 A 驱动消费方八项验收，未跨线改驱动。实现五类结论与独立事件、只读 NPZ 复算、
+统一批次入口、固定包门禁、异常汇总与恢复。82 项软件回归通过。
+[证据与边界](../../report/verification/audio_closed/batch-control.md#2026-10-23-c-测量复核-v2)。
+初次包明确 offline_only，缺 A 修复驱动及已有兼容模型；未上板、未改算法或寄存器语义。
+
+
+
 ## 2026-10-20 C 线完成离线增长判据与文件回放
 
 实现独立于板卡驱动的窄带增长检测，提供首次报警位置、满幅保护线索、缺帧与历史不足分类；

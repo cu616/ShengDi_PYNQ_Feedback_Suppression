@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "suite": "c-a-driver-acceptance-v2",
+  "hardware_access": false,
+  "driver_sha256": "ea5222fed61c54e5adb240e3b17e8dd7f44542793194025461a7094d0f0c6c2f",
+  "accepted": false,
+  "cases": [
+    {
+      "name": "guard_distinct_counts",
+      "passed": false,
+      "reason": "AssertionError: count unpacking/alias error",
+      "raw_register_words": [
+        196610,
+        5,
+        7
+      ],
+      "observed_metadata_counts": {
+        "prediction_saturations": 65535,
+        "residual_saturations": 5,
+        "gain_saturations": 7,
+        "mix_saturations": null
+      }
+    },
+    {
+      "name": "bypass_prediction_only",
+      "passed": false,
+      "reason": "AssertionError: count unpacking/alias error",
+      "raw_register_words": [
+        2,
+        0,
+        0
+      ],
+      "observed_metadata_counts": {
+        "prediction_saturations": 2,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": null
+      }
+    },
+    {
+      "name": "terminal_counts",
+      "passed": false,
+      "reason": "AssertionError: raw counters missing or wrong",
+      "raw_register_words": [
+        196610,
+        5,
+        7
+      ],
+      "observed_metadata_counts": {
+        "prediction_saturations": 2,
+        "residual_saturations": 3,
+        "gain_saturations": 5,
+        "mix_saturations": 7
+      }
+    },
+    {
+      "name": "completed_zero_counts",
+      "passed": false,
+      "reason": "AssertionError: raw counters missing or wrong",
+      "raw_register_words": [
+        0,
+        0,
+        0
+      ],
+      "observed_metadata_counts": {
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0
+      }
+    },
+    {
+      "name": "protocol_fault",
+      "passed": false,
+      "reason": "AssertionError: post-start failure lost capture",
+      "raw_register_words": [
+        0,
+        0,
+        0
+      ],
+      "observed_metadata_counts": null
+    },
+    {
+      "name": "operator_cancel",
+      "passed": true
+    },
+    {
+      "name": "restore_failure",
+      "passed": false,
+      "reason": "AssertionError: post-start failure lost capture",
+      "raw_register_words": [
+        0,
+        0,
+        0
+      ],
+      "observed_metadata_counts": null
+    },
+    {
+      "name": "capture_write_failure",
+      "passed": false,
+      "reason": "AssertionError: save failure needs finalized status sidecar",
+      "raw_register_words": [
+        0,
+        0,
+        0
+      ],
+      "observed_metadata_counts": null
+    }
+  ]
+}
