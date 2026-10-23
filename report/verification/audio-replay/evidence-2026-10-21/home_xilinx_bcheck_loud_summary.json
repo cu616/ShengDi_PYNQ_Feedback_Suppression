@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "b_check",
+  "stage": "direct",
+  "source": {
+    "wav_sha256": "d32b6ef3af1a5da15e2dc383534cca1f27cfb9fc8ac168a431f0f3ee6bfbdb0a",
+    "pcm16_sha256": "b80ccc62e2cbb473d352eb1f31e392bf67e79b070fe87c5cc3d2fadfbc27b9ed",
+    "raw_peak_dbfs": -51.56744612702849,
+    "raw_rms_dbfs": -68.8133852490358,
+    "injected_peak_dbfs": -5.99994884152935,
+    "frames": 97656,
+    "rate_hz": 48828.125,
+    "interpretation": "explicit level, not model-bound"
+  },
+  "source_path": "/home/xilinx/bcheck_pkg/source.wav",
+  "peak_dbfs": -6.0,
+  "model_path": "/home/xilinx/jupyter_notebooks/base/audio/audio_calibrate/candidate_box_v1_256.json",
+  "fixture_id": "box_v1_20261016",
+  "hp_volume": 40,
+  "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+  "trials": [
+    {
+      "index": 1,
+      "mode": "direct",
+      "gain_db_requested": 0.0,
+      "seconds": 2.05,
+      "status": "stopped",
+      "error": "RuntimeError: sustained saturation stopped playback; prediction,residual,gain+mix=(0, 71, 0) deltas=(0, 71, 0)",
+      "wall_seconds": 28.199
+    }
+  ],
+  "stop_reason": "unexpected stop in direct at +0.0 dB",
+  "interpretation": "explicit-gain paired trials; NOT measured MSG/ASG"
+}

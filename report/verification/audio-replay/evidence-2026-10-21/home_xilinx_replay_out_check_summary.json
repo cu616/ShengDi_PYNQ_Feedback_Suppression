@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "b_check",
+  "stage": "out_check",
+  "source": {
+    "injected_peak_dbfs": -120.0,
+    "frames": 4,
+    "interpretation": "silent source; phone is the excitation"
+  },
+  "source_path": "/home/xilinx/bcheck_pkg/source.wav",
+  "peak_dbfs": -20.0,
+  "model_path": "/home/xilinx/jupyter_notebooks/base/audio/audio_calibrate/candidate_box_v1_256.json",
+  "fixture_id": "box_v1_20261016",
+  "hp_volume": 40,
+  "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+  "trials": [
+    {
+      "index": 1,
+      "mode": "bypass",
+      "gain_db_requested": -26.0,
+      "seconds": 2.5,
+      "status": "complete",
+      "metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "4f2f33fe-edcd-4776-a33a-d58f55cd07e7",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "box_v1_20261016",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 205,
+        "gain_db_actual": -26.0121217382404,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.501932728999236,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "source_frames": 4,
+        "source_pcm16_sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "bit_sha256": "dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05",
+        "model_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+        "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 256,
+          "evaluated_frames": 16128,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -35.25547396593526,
+        "mic_peak_dbfs": -23.593073142962425,
+        "mic_full_scale_samples": 0
+      },
+      "wall_seconds": 32.019
+    }
+  ],
+  "stop_reason": "all planned trials completed",
+  "interpretation": "explicit-gain paired trials; NOT measured MSG/ASG"
+}
