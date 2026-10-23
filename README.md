@@ -17,7 +17,7 @@ ShengDi_PYNQ_Feedback_Suppression 是基于 PYNQ-Z2 的声反馈抑制项目：
 
 | 你是 | 入口 |
 |---|---|
-| 接手本仓库的 AI | [AGENTS.md](AGENTS.md) → [docs/STATE.md](docs/STATE.md) → [docs/lines/](docs/lines/) |
+| 接手本仓库的 AI | [AGENTS.md](AGENTS.md) → [docs/STATE.md](docs/STATE.md) → 用户本次转发消息 → [docs/lines/](docs/lines/) |
 | 第一次看这个项目的人 | [docs/INDEX.md](docs/INDEX.md)（按"我要做什么"导航） |
 | 想知道文档怎么组织、为什么这样组织 | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
 | 找旧路径找不到文件 | [docs/archive/MIGRATION-2026-10-20.md](docs/archive/MIGRATION-2026-10-20.md) |
@@ -60,7 +60,7 @@ python -m unittest discover -s sim/feedback -p "test_*.py" -v
 # 用已有标定数据做逐频点分析与稳定增益估算（不需要板卡在线）
 python scripts/analyze_path.py --data-dir <含两个 npz 与候选 json 的目录> --output <结果.json>
 
-# 30 秒对齐：三条线到哪了、有没有等着我做的事（拉完代码先跑这个）
+# 30 秒对齐：三条线已记录的进度；协作任务另看用户转发消息
 python scripts/brief.py          # 可加 --line a|b|c 只看自己那条线
 
 # 文档守门：断链、孤儿、现状复述、契约状态头
