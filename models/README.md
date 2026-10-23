@@ -12,11 +12,24 @@
 |---|---:|---:|---|---|
 | `room_v1/baseline_256.json` | 256 | 771 | `aea6dc0645be6677` | 房间夹具基线 |
 | `room_v1/candidate_512.json` | 512 | 1539 | `854fb75dbb6c6b46` | 房间夹具候选（B 推荐） |
+| `room_v1/baseline_256_padded512.json` | 256→512 | 1539 | `4bae553647e63efd` | 房间基线装进 512 位流用（补零） |
 | `box_v1/baseline_256.json` | 256 | 771 | `4f0422c333a45438` | 箱体夹具基线（512 在箱体无收益，不提供候选） |
+| `box_v1/baseline_256_padded512.json` | 256→512 | 1539 | `f87aa34f7731a773` | 箱体基线装进 512 位流用（补零） |
+
+**本轮按 C 的夹具安排：A 当前是关盖箱体，先用 `box_v1/`；`room_v1/` 作为独立房间场景
+候选保留，不混用夹具、阈值或增益范围。**
 
 完整字段（字节数、`q20_max_abs`、`l1_q20`、量化差异、fixture、hp_volume、status）
 在 [`manifest.json`](manifest.json)。取文件用 `git pull` 后直接读本目录，
 不要用聊天里贴的路径——各电脑路径不相通。
+
+**清单结构（2026-10-23 23:30 起）**：`manifest.models` 只放**可部署的 3 个模型**，
+就是 C 的 `load_registry` 的输入；上表里两件 `*_padded512.json` 属派生件，放在
+`manifest.derived_artifacts`，**不参与注册**。原因：补零产物的 `coefficients_sha256`
+与原模型的 `padded_512_sha256` 相同，两条记录同时存在会让"按系数反查模型"出现歧义，
+整行被判 `model_not_in_approved_registry`。三份模型文件本身未改动。
+每条记录新增 `coefficients_sha256`（原数组）与 `padded_512_sha256`（尾部补零到 512 后）两列，
+口径与 C 的 `qhash()` 相同（`<i4` little-endian）。
 
 ## 2. 系数语义与兼容条件
 
@@ -27,10 +40,25 @@
 | 抽头容量 | ≤ 681 | `3N+3 ≤ 2048` 拍/帧；512 → 1539，680 → 2043（只剩 5 拍，不建议） |
 | 采样率 | 48828.125 Hz | 与 `audio_replay` 一致 |
 | 加载失败 | 必须报错并静音 | 半套系数不能继续跑（契约要求检查 `protocol_error`） |
-| 抽头不足时 | **不得补零冒充** | 512 位流可以装 256 系数，但反过来不行；位流必须 ≥ 模型抽头数 |
+| 加载项数 | **必须恰好等于位流的 TAPS** | `feedback_fir.v` 只在 `load_index==TAPS-1` 时置 `loaded`；512 位流只发 256 项会让 `in_ready` 永远为 0 |
+| 256 模型装 512 位流 | **只能补零**，且分开记账 | 见下面「补零约定」；不能用它的名义报告 512 的收益 |
 
 `status` 字段现为 `offline_candidate_not_board_validated`。
 **只有 A 在板上做完成对对照，才能改成已验证**；批处理脚本不得把它当作已验证模型。
+
+## 2.1 补零约定（256 模型 → 512 位流）
+
+数学上尾部补零不改变频响（实测 `max|ΔH| = 0.000e+00`），但**协议上必须发满 512 项**。
+本目录已直接提供补零产物，避免各方各自实现造成口径分歧：
+
+- `*_padded512.json`：`taps=512`、`loaded_taps=512`、`logical_taps=256`、
+  `derived_from_sha256` 指回原模型、`status=derived_padding_not_a_new_model`。
+- 记录要求：日志里同时写"原模型 SHA256"和"实际加载系数 SHA256"，并注明 `logical_taps`。
+- **禁止**：把补零产物当成新训练的 512 模型；用它去论证 512 相对 256 的收益。
+  512 的收益只能用 `room_v1/candidate_512.json`（在 6 段上重新拟合）来论证。
+
+底层加载实现与验证归 A；C 按 A 确认后的约定集成。若 A 选择用 256 位流，则直接加载
+`baseline_256.json`，不需要补零产物。
 
 ## 3. 数据依据
 

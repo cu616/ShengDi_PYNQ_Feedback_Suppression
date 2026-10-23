@@ -4,6 +4,7 @@
  "sample_rate_hz": 48828.125,
  "frame_budget_cycles": 2048,
  "max_taps": 681,
+ "registry_rule": "models 就是 C 的 load_registry 输入：只放可部署模型，每个 item 的 file 相对本目录。derived_artifacts 里的补零产物不参与注册，避免同一个系数数组命中两条记录。",
  "models": [
   {
    "file": "room_v1/baseline_256.json",
@@ -14,7 +15,10 @@
    "sample_rate_hz": 48828.125,
    "fixture_id": "room_v1_20261021",
    "hp_volume": 40,
+   "role": "baseline",
    "status": "offline_candidate_not_board_validated",
+   "coefficients_sha256": "6932cf414dd4cd13dbc633e77acc36b49a51f8ca25a0b1c5ca04899eb351d9cf",
+   "padded_512_sha256": "12c723ad4010ba09c9aea3692c451a192b61284652daf98c4664cc1f904058bf",
    "ridge": 1e-06,
    "condition_number": 1.476007727702907,
    "q20_max_abs": 342474,
@@ -31,7 +35,10 @@
    "sample_rate_hz": 48828.125,
    "fixture_id": "room_v1_20261021",
    "hp_volume": 40,
+   "role": "candidate",
    "status": "offline_candidate_not_board_validated",
+   "coefficients_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
+   "padded_512_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
    "ridge": 1e-06,
    "condition_number": 1.8155756631008442,
    "q20_max_abs": 342269,
@@ -48,7 +55,10 @@
    "sample_rate_hz": 48828.125,
    "fixture_id": "box_v1_20261016",
    "hp_volume": 40,
+   "role": "baseline",
    "status": "offline_candidate_not_board_validated",
+   "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+   "padded_512_sha256": "8c2e591615fe3d5745380591d39191bfbc0469bf6122ac2a24d58d5204dd37e2",
    "ridge": 1e-06,
    "condition_number": 1.4995814132725311,
    "q20_max_abs": 546430,
@@ -56,5 +66,48 @@
    "float_q20_maxdiff": 4.767391342808125e-07,
    "frames_needed_3N_plus_3": 771
   }
- ]
+ ],
+ "derived_artifacts": [
+  {
+   "file": "room_v1/baseline_256_padded512.json",
+   "sha256": "4bae553647e63efdeb4372f281c2cd47246b1071b8e8e37db45404fe319d46cf",
+   "bytes": 13876,
+   "taps": 512,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "room_v1_20261021",
+   "hp_volume": 40,
+   "logical_taps": 256,
+   "loaded_taps": 512,
+   "derived_from": "room_v1/baseline_256.json",
+   "derived_from_sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+   "coefficients_sha256": "12c723ad4010ba09c9aea3692c451a192b61284652daf98c4664cc1f904058bf",
+   "frames_needed_3N_plus_3": 1539,
+   "status": "derived_padding_not_a_new_model"
+  },
+  {
+   "file": "box_v1/baseline_256_padded512.json",
+   "sha256": "f87aa34f7731a77380b008e5040a2f44da9f062efaa90ecc2f9f1f98be1364a5",
+   "bytes": 13851,
+   "taps": 512,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "box_v1_20261016",
+   "hp_volume": 40,
+   "logical_taps": 256,
+   "loaded_taps": 512,
+   "derived_from": "box_v1/baseline_256.json",
+   "derived_from_sha256": "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414",
+   "coefficients_sha256": "8c2e591615fe3d5745380591d39191bfbc0469bf6122ac2a24d58d5204dd37e2",
+   "frames_needed_3N_plus_3": 1539,
+   "status": "derived_padding_not_a_new_model"
+  }
+ ],
+ "padding_convention": {
+  "why": "512 位流的 RTL 只在收到恰好 TAPS 项后置 loaded；只发 256 项会被拒绝（in_ready 一直为 0）",
+  "how": "在系数尾部补零到 512 项；频响与原 256 模型逐点相同",
+  "bookkeeping": "必须同时记录 logical_taps=256、loaded_taps=512、原模型 sha256 与实际加载系数 sha256",
+  "must_not": "不能把补零产物当作新训练的 512 模型，也不能用它的名义报告 512 的收益",
+  "verify": "scripts/verify_padding_equivalence.py；等价性靠 Q20 逐样本相同 + 头部补零反例来证明"
+ }
 }

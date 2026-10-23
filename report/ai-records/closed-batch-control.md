@@ -86,3 +86,13 @@ C 接收 B ffa035a，不重做模型，不操板；把软件示例与实际板�
 原始 NPZ 不在本地，因此生成只读板上分析包交 A 一次执行，不编造真实配对或尾段数值。
 接口新增 v3 按本轮明确请求实施，规则文件单独提交；代码和包按规程提交推送 C。
 证据见 [B 请求验收](../verification/audio_closed/batch-control.md#2026-10-23-b-请求模型选择平坦字段和尾段汇总-v3)。
+
+## 2026-10-23 B 消费反馈落实
+
+用户转发 B 的 schema v3 消费成功与 50 条历史缺口（本段为摘要，完整原文在本聊天）：
+要求补旧 replay 容量登记、系数哈希派生抽头、导出正向对照及拆分无效原因，接收新的 models/derived_artifacts 清单。
+C 保留实际 loaded_taps 缺失，仅增加带来源的 derived_loaded_taps，避免数组哈希冒充硬件回读；
+退役 audio_closed 明确只作 PL 算术证据。115 项回归及原 B 消费程序检查通过，未操板、未改 A/B 语义。
+GitHub 直连不稳定，使用现有系统代理和 Git 自带 OpenSSL 成功同步，未关闭证书校验或修改持久网络配置。
+发现 B 清单 SHA256 的 CRLF/LF 差异，核实两种字节后冻结 B 通知中的 CRLF 版本，原模型不改。
+证据见 [消费反馈验收](../verification/audio_closed/batch-control.md#2026-10-23-b-消费反馈summary-v31)。

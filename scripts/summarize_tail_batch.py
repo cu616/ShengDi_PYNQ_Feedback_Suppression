@@ -11,7 +11,7 @@ CODE=ROOT/'board/audio_replay'
 if (Path(__file__).resolve().parent/'evaluation.py').is_file():CODE=Path(__file__).resolve().parent
 sys.path.insert(0,str(CODE))
 from evaluation import analyze_npz, VERSION
-from model_comparison import load_registry, flat_trial, pair_models, export_csv, SUMMARY_VERSION, MODEL_SELECTION
+from model_comparison import load_registry, flat_trial, pair_models, export_csv, SUMMARY_VERSION, SUMMARY_REVISION, MODEL_SELECTION
 
 
 def summarize(input_root, output, registry_folder, evidence_path=None):
@@ -32,7 +32,7 @@ def summarize(input_root, output, registry_folder, evidence_path=None):
         row['analysis']=analysis
         rows.append(row)
     pairs=pair_models(rows)
-    state=dict(schema_version=SUMMARY_VERSION,calculation_version=VERSION,
+    state=dict(schema_version=SUMMARY_VERSION,summary_revision=SUMMARY_REVISION,calculation_version=VERSION,
                artifact_kind='offline_existing_capture_summary',status='completed',
                board_actions=False,source_root=str(source),trials=rows,model_pairs=pairs,
                input_files=len(files),configuration_matched_pairs=sum(p['configuration_matches'] for p in pairs),

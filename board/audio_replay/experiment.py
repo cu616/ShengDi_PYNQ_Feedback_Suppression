@@ -11,7 +11,7 @@ import uuid
 import zipfile
 import numpy as np
 from evaluation import VERSION, CONFIG, analyze_npz, sha
-from model_comparison import SUMMARY_VERSION, flat_trial, pair_models, load_registry, export_csv, BIT_CAPACITIES
+from model_comparison import SUMMARY_VERSION, SUMMARY_REVISION, flat_trial, pair_models, load_registry, export_csv, BIT_CAPACITIES
 
 HERE = Path(__file__).resolve().parent
 PLAN = dict(gains_db=[-26., -24.], repeats=2, digital_seconds=1.4,
@@ -84,6 +84,7 @@ def collect(folder, state):
                           for p in sorted(folder.glob('*.npz'))]
     state['return_policy'] = 'statistics only; raw NPZ stays at listed board paths'
     state['schema_version']=SUMMARY_VERSION
+    state['summary_revision']=SUMMARY_REVISION
     registry_path=Path(__file__).resolve().parent/'models'
     registry=load_registry(registry_path) if (registry_path/'manifest.json').is_file() else None
     for row in state['trials']:

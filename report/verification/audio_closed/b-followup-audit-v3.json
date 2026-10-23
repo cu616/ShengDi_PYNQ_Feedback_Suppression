@@ -1,0 +1,36 @@
+{
+  "b_commit": "59ab1ee55bf54d1e075647afffd14a9e0f4eff32",
+  "registered_models": 3,
+  "derived_artifacts": 2,
+  "manifest_git_lf_sha256": "5aac3957ab20a184a0c8ea0526f6cb603dea5244d2b8d9e747dec9c65af07c6d",
+  "manifest_frozen_crlf_sha256": "71d13ca927b23213b491ecc0af3a405210c99550dedb11f2878ddd6905573fcc",
+  "historical_rows": 50,
+  "categories": {
+    "invalid": 50
+  },
+  "retired_arithmetic_only": 22,
+  "derived_loaded_taps": {
+    "256": 44,
+    "None": 6
+  },
+  "declared_loaded_taps": 0,
+  "reasons": {
+    "actual_loaded_taps_missing": 44,
+    "tail_not_validated": 50,
+    "positive_control_not_validated": 50,
+    "safety_not_validated": 50,
+    "configuration_or_capture_invalid": 50,
+    "comparison_identity_missing": 22,
+    "actual_gain_q12_missing_or_invalid": 6,
+    "actual_hp_volume_missing_or_invalid": 6,
+    "bit_sha256_missing_or_invalid": 6,
+    "coefficients_sha256_missing_or_invalid": 6,
+    "model_not_in_approved_registry": 6,
+    "arithmetic_not_validated": 6,
+    "evidence_not_board_recording": 6,
+    "retired_overlay_no_dac_output": 22
+  },
+  "effect_eligible_real_pairs": 0,
+  "raw_pcm_available": false,
+  "hardware_access": false
+}

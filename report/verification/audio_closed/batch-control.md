@@ -236,3 +236,51 @@ B 的真实完成标志仍待 A 在板上执行该只读复算并返回统计：
 
 [独立包执行检查](b-request-package-check-v3.json)：实际执行交付 Notebook 的唯一代码格，
 软件数据配置配对 1 对、实测可用配对 0 对；未导入 PYNQ，返回 ZIP 无 NPZ，字段齐全。
+
+## 2026-10-23 B 消费反馈：summary v3.1
+
+按用户转发的 B 59ab1ee 消费复核落实兼容增补，不改 A 驱动或 B 算法，
+不改变 schema_version=3 / calculation_version=c-measurement-2.1.0 的数值口径。
+summary_revision=3.1.0 公开本次遥测变化。
+
+历史位流的出处为 [A 现场报告](../audio-replay/2026-10-21-asg-field.md) §4.1 与完整哈希记录：
+dadbbbab…ddcb05 登记 256 taps；4d49dfbe…635316 明确为退役 audio_closed，
+逐行 evidence_scope=pl_arithmetic_only、retired_overlay=true、acoustic_evidence_eligible=false，
+不进入声学 model_pairs。BIT_CAPACITIES 不把退役位流列为可部署回放版本。
+
+loaded_taps 不用推测填补。derived_loaded_taps 按原模型/补零数组 little-endian int32 哈希派生，
+并保留 metadata 或 saved array 的来源；它表示匹配的数组长度，不是硬件 loaded_count 回读。
+对历史 44 条得到 256，另 6 条仍未知；原 loaded_taps 全部保留空值。
+有实际保存数组或驱动明确记录时，loaded_taps_basis 单列其来源。
+
+positive_control_valid 逐行导出 true/false/null。eligibility_reasons 独立区分 tail_not_validated、
+safety_not_validated、positive_control_not_validated/positive_control_failed、算术/配置/来源问题，
+即使配置无效也保留这些同时存在的缺口。波形全零、正常结束或恢复成功不代替通路正向对照。
+
+### 模型清单与哈希核对
+
+B 59ab1ee 的 models 仅有三个可部署原模型，derived_artifacts 为两份补零文件，注册数量仍为 3。
+C 独立重算每项 coefficients_sha256/padded_512_sha256，与 B 新列一致；两份派生物也核对文件哈希。
+B 报告的 manifest SHA256 为 71d13ca927b23213b491ecc0af3a405210c99550dedb11f2878ddd6905573fcc，
+对应 Windows CRLF；其 Git LF blob 为 5aac3957ab20a184a0c8ea0526f6cb603dea5244d2b8d9e747dec9c65af07c6d。
+两者仅行尾不同。C 冻结前者，并使用已有 models/** -text 保留字节；补零文件也冻结清单声明的 CRLF 版本。
+三个原模型文件不变。没有把旧 ce9aa371… 清单冒充新清单。
+
+### 验收与派生结果
+
+- [115 项回归](b-followup-tests-v3.txt)：新增用例覆盖旧位流登记、哈希派生不覆写原始记录、
+  退役 overlay 即使带正向对照也不能入声学配对、正向对照失败/未知与其他原因独立、
+  derived_artifacts 不注册及清单系数哈希错误拒绝。
+- [历史派生审计](b-followup-audit-v3.json)：50 条仍 invalid、22 条标明仅 PL 算术、
+  44 条推导数组长度 256；实际 loaded_taps、尾段和保护信息没有凭空补出，实测配对仍为 0。
+- [历史新 JSON](b-followup-historical-summary-v3.json) / [CSV](b-followup-historical-summary-v3.csv)
+  从既有不可变复核记录再次展开，输入摘要哈希保留，不是原始波形复算；旧交付文件未覆盖。
+- [软件新 JSON](b-followup-software-summary-v3.json) / [CSV](b-followup-software-summary-v3.csv)
+  仍显式 software_fixture、gain=0，仅验 schema 和流程，不当成板卡效果。
+- 原样执行 B 59ab1ee 的 consume_summary_v3.py；[软件消费结果](b-followup-consumer-software-v3.json)
+  和 [历史消费结果](b-followup-consumer-history-v3.json) 均 consumable_as_is=true、blocking_issues=[]。
+
+静默包重建为 c-tail-review-3.1.0，操作仍是一个 Notebook 代码格、返回一个结果 ZIP；
+独立执行与哈希验证见 [包检查](b-followup-package-check-v3.json)。已经运行 b2ad47d 旧包的 A
+直接返回原包，C 兼容处理，不要求仅为遥测变化重复现场操作。
+本轮没有板卡动作、新采集、真实配对或实测 ASG；参考臂冲突交现场事实复核，不能先认定模型无效。

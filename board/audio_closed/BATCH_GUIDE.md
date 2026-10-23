@@ -10,9 +10,14 @@ A/B 可直接从 GitHub C 分支取得，无需用户另传本地 ZIP。
 
 ## 本轮优先：已有房间 NPZ 的静默复算（summary v3）
 
+包版本为 c-tail-review-3.1.0，summary_revision=3.1.0；schema_version=3 与数值判据不变。
+新增正向对照 true/false/null、独立的尾段/保护/通路原因、历史位流登记及抽头推导来源。
+退役 audio_closed 记录仅保留 PL 算术证据，不进入声学配对；推导抽头数不冒充硬件回读。
+若已经用 b2ad47d 的 3.0 包执行过，直接返回原结果，C 负责兼容复核，无需仅为这些字段再跑一遍。
+
 目的：先复用旧记录，按 B 的要求导出实际配置和同增益基线/候选；不发声、不加载位流、不写 Codec/MMIO，不需要新增采集。
-材料来自 GitHub C 分支：`build/packages/c-tail-review-v3.zip`；模型原样来自 B ffa035a 的 `models/`。
-电脑文件：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-tail-review-v3.zip`。
+材料来自 GitHub C 分支：`build/packages/c-tail-review-v3.zip`；三个原模型来自 B ffa035a，
+模型清单及补零派生物同步 B 59ab1ee。包内只注册三个原模型，不把派生物重复当候选。
 
 1. A 取得 C 指定提交的 ZIP，在板卡解压到新的完整目录：
    `/home/xilinx/jupyter_notebooks/base/audio/c-tail-review-v3`。
@@ -40,6 +45,7 @@ A/B 可直接从 GitHub C 分支取得，无需用户另传本地 ZIP。
 三组值为 tail_rms_dbfs、tail_slope_db_per_s、tail_residual_over_mic_db（含三个指定子带）。
 CSV 另有 tail_residual_over_mic_db_300_1000、_1000_3000、_8200_8600。
 保护、预测/残差/增益/mix 饱和、mic 满幅、静音动作和波形全零各自列出；未知保持空值。
+positive_control_valid 单列导出，失败、未知与尾段不足分别列原因；不能把通路无效判断为模型无效。
 comparison_id/session_id 等身份必须有依据；不能只因为请求 dB 一样就拼一对。
 同一 comparison_id 中实际 gain_q12 不相等，两行保留原值、标 invalid，不参与比较。
 256 补零的保存系数仍识别为 baseline，不能成为 candidate；不截断任何模型。

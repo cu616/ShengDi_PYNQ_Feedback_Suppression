@@ -5,6 +5,16 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-23 C 落实 B 消费反馈与历史证据区分
+
+接收 B 59ab1ee 的新清单，注册三个原模型，两个补零产物分开存放；模型整数与原文件哈希不变。
+登记旧 256 replay 位流、显式排除退役 audio_closed 的声学配对；增加抽头推导来源、
+positive_control_valid 与分开的尾段/保护/通路原因。接口兼容增补 summary_revision=3.1.0，
+schema_version=3 和数值判据不变，[字段说明](../contracts/audio-closed-v1.md#summary-v31-兼容增补2026-10-23b-消费方反馈)。
+115 项软件回归通过；B 原消费工具检查软件/历史新汇总均可直接消费、0 阻断。
+重建静默复算包，保持旧结果不改，未新增采集或实测 ASG。
+[复核及包验证](../../report/verification/audio_closed/batch-control.md#2026-10-23-b-消费反馈summary-v31)。
+
 ## 2026-10-23 C 落实 B 的模型与尾段汇总请求
 
 从 B ffa035a 接收三份模型，完成哈希和纯软件加载核对。新增 summary v3 直接配置字段、

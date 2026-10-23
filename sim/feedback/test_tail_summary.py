@@ -14,7 +14,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'board/audio_replay'));sys.path.insert(0,str(ROOT/'scripts'))
 from evaluation import analyze_npz
 from tail_metrics import tail_statistics
-from model_comparison import load_registry,flat_trial,pair_models,validate_model,select_model
+from model_comparison import load_registry,flat_trial,pair_models,validate_model,select_model,RETIRED_BITS
 from summarize_tail_batch import summarize
 
 RATE=48828.125; BIT='8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339'
@@ -121,7 +121,8 @@ class TailSummaryTests(unittest.TestCase):
             self.assertEqual(before,{p.name:p.read_bytes() for p in source.glob('*.npz')})
             with (Path(d)/'derived/summary.csv').open(encoding='utf-8-sig',newline='') as f:csv_rows=list(csv.DictReader(f))
             for key in ('gain_q12','hp_volume','bit_sha256','coefficients_sha256','tail_rms_dbfs',
-                        'tail_slope_db_per_s','tail_residual_over_mic_db_8200_8600','mute_applied'):
+                        'tail_slope_db_per_s','tail_residual_over_mic_db_8200_8600','mute_applied',
+                        'positive_control_valid','eligibility_reasons','derived_loaded_taps'):
                 self.assertTrue(all(r[key]!='' for r in csv_rows),key)
             rows[1]['gain_q12']=1
             pair=pair_models(rows)[0]
@@ -172,6 +173,75 @@ class TailSummaryTests(unittest.TestCase):
             self.assertEqual(len(state['trials']),3)
             bad=next(r for r in state['trials'] if r['file']=='corrupt.npz')
             self.assertEqual(bad['category'],'invalid');self.assertIsNone(bad['tail_slope_db_per_s'])
+
+    def test_legacy_capacity_and_hash_inference_preserve_unknown_load(self):
+        registry=load_registry(ROOT/'models')
+        digest,model=next((k,v) for k,v in registry.items() if v['file']=='box_v1/baseline_256.json')
+        m=meta();m.update(fixture_id='box_v1_20261016',model_sha256=digest,
+                         coefficients_sha256=model['coefficients_sha256'],
+                         bit_sha256='dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05')
+        a=dict(original_metadata=m,category='invalid')
+        before=json.dumps(a,sort_keys=True)
+        row=flat_trial({'analysis':a},registry)
+        self.assertEqual(row['bitstream_capacity'],256)
+        self.assertNotIn('bitstream_capacity_unverified',row['comparison_reasons'])
+        self.assertIsNone(row['loaded_taps'])
+        self.assertEqual(row['derived_loaded_taps'],256)
+        self.assertIn('metadata',row['derived_loaded_taps_basis'])
+        self.assertFalse(row['effect_eligible'])
+        self.assertEqual(json.dumps(a,sort_keys=True),before)
+        m.update(bit_sha256=BIT,coefficients_sha256=model['padded_512_sha256'])
+        self.assertEqual(flat_trial({'analysis':a},registry)['derived_loaded_taps'],512)
+        m['coefficients_sha256']='f'*64
+        self.assertIsNone(flat_trial({'analysis':a},registry)['derived_loaded_taps'])
+
+    def test_retired_overlay_never_enters_acoustic_pairs(self):
+        with self.work() as d:
+            make_example(d);registry=load_registry(ROOT/'models');rows=[]
+            for role in ('baseline','candidate'):
+                a=analyze_npz(Path(d)/(role+'.npz'))
+                a['evaluation_metadata'].update(bit_sha256=next(iter(RETIRED_BITS)),evidence_kind='board_recording')
+                row=flat_trial({'analysis':a},registry);rows.append(row)
+                self.assertEqual(row['evidence_scope'],'pl_arithmetic_only')
+                self.assertFalse(row['acoustic_evidence_eligible'])
+                self.assertIn('retired_overlay_no_dac_output',row['comparison_reasons'])
+                self.assertFalse(row['effect_eligible'])
+            self.assertEqual(pair_models(rows),[])
+
+    def test_positive_control_is_independent_of_tail_and_safety(self):
+        with self.work() as d:
+            make_example(d);a=analyze_npz(Path(d)/'baseline.npz')
+            m=a['evaluation_metadata'];m['evidence_kind']='board_recording'
+            good=flat_trial({'analysis':a},load_registry(ROOT/'models'))
+            self.assertTrue(good['effect_eligible'])
+            m['positive_control_valid']=False
+            failed=flat_trial({'analysis':a})
+            self.assertFalse(failed['positive_control_valid'])
+            self.assertEqual(failed['eligibility_reasons'],['positive_control_failed'])
+            del m['positive_control_valid']
+            unknown=flat_trial({'analysis':a})
+            self.assertIsNone(unknown['positive_control_valid'])
+            self.assertEqual(unknown['eligibility_reasons'],['positive_control_not_validated'])
+            m['guard_tripped']=True;a['tail_statistics']['tail_valid']=False
+            blocked=flat_trial({'analysis':a})
+            self.assertIn('tail_not_validated',blocked['eligibility_reasons'])
+            self.assertIn('safety_not_validated',blocked['eligibility_reasons'])
+            self.assertIn('positive_control_not_validated',blocked['eligibility_reasons'])
+
+    def test_derived_artifacts_do_not_register_and_claimed_hashes_are_checked(self):
+        with self.work() as d:
+            import shutil
+            folder=Path(d)/'models';shutil.copytree(ROOT/'models',folder)
+            manifest=json.loads((folder/'manifest.json').read_text(encoding='utf8'))
+            registry=load_registry(folder)
+            for item in manifest['models']:
+                item.update({k:registry[item['sha256']][k] for k in ('coefficients_sha256','padded_512_sha256')})
+            manifest['derived_artifacts']=[{'file':'missing-padded.json','sha256':'0'*64}]
+            (folder/'manifest.json').write_text(json.dumps(manifest))
+            self.assertEqual(load_registry(folder),registry)
+            manifest['models'][0]['coefficients_sha256']='0'*64
+            (folder/'manifest.json').write_text(json.dumps(manifest))
+            with self.assertRaises(ValueError):load_registry(folder)
 
 
 if __name__=='__main__':unittest.main()

@@ -112,7 +112,7 @@ def assemble_review(out):
     shutil.copytree(ROOT/'models',out/'models')
     shutil.copytree(ROOT/'report/verification/model-package-2026-10-23',
                     out/'report/verification/model-package-2026-10-23')
-    from model_comparison import load_registry
+    from model_comparison import load_registry, SUMMARY_REVISION
     registry=load_registry(out/'models')
     code='''# C existing NPZ review: silent, read only
 from pathlib import Path
@@ -136,9 +136,9 @@ summary = summarize(source, output, here / 'models', Path(evidence) if evidence 
                    dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=code.splitlines(True))])
     (out/'tail-review.ipynb').write_text(json.dumps(nb,ensure_ascii=False,indent=2),encoding='utf8')
     shutil.copy2(ROOT/'board/audio_closed/BATCH_GUIDE.md',out/'OPERATIONS.md')
-    manifest=dict(package_version='c-tail-review-3.0.0',calculation_version=VERSION,
+    manifest=dict(package_version='c-tail-review-3.1.0',summary_revision=SUMMARY_REVISION,calculation_version=VERSION,
                   board_actions=False,model_registry=registry,
-                  b_commit='ffa035a7d6b5b1ed598ac109ab7717ec12436e9d',
+                  b_commit='59ab1ee55bf54d1e075647afffd14a9e0f4eff32',
                   hashes={str(p.relative_to(out)).replace('\\','/'):sha(p) for p in out.rglob('*')
                           if p.is_file() and p.name!='tail-review.ipynb'},
                   notebook_code_sha256=hashlib.sha256(json.dumps([code],ensure_ascii=False,separators=(',',':')).encode()).hexdigest())
