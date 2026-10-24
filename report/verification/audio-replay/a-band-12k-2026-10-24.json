@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "topic": "band table extended to 12 kHz, fractional delay, and what the 9131 Hz peak is",
+  "recorded_at": "2026-10-24",
+  "recorded_by": "A",
+  "data": "16 segments in /home/xilinx/lowband2, digital injection -12 dBFS, direct mode, mic median -16.2 dBFS, model_512_strong.json",
+  "band_table": {
+    "300-1000": {
+      "max_H_db": 6.43,
+      "max_E_db": -5.42,
+      "worst_hz": 435,
+      "coherence": 0.93
+    },
+    "1000-2000": {
+      "max_H_db": 5.27,
+      "max_E_db": -8.62,
+      "worst_hz": 1585,
+      "coherence": 0.96
+    },
+    "2000-3400": {
+      "max_H_db": 2.77,
+      "max_E_db": -12.38,
+      "worst_hz": 3231,
+      "coherence": 0.95
+    },
+    "3400-6000": {
+      "max_H_db": 5.28,
+      "max_E_db": -6.77,
+      "worst_hz": 3910,
+      "coherence": 0.91
+    },
+    "6000-8200": {
+      "max_H_db": 6.14,
+      "max_E_db": -11.86,
+      "worst_hz": 6634,
+      "coherence": 0.84
+    },
+    "8200-8600": {
+      "max_H_db": 6.82,
+      "max_E_db": -11.8,
+      "worst_hz": 8315,
+      "coherence": 0.81
+    },
+    "8600-10250": {
+      "max_H_db": 4.62,
+      "max_E_db": -11.42,
+      "worst_hz": 8762,
+      "coherence": 0.82
+    },
+    "10250-12000": {
+      "note": "no bin with coherence above 0.8"
+    }
+  },
+  "b_diagnostic_on_these_segments": {
+    "script": "scripts/diagnose_peak_margin.py from origin/B",
+    "segments": 16,
+    "mean_coherence": 0.886,
+    "necessary_threshold_db": 7.01,
+    "necessary_at_hz": 441,
+    "phase_consistent_threshold_db": 9.53,
+    "phase_consistent_at_hz": 460,
+    "sub_sample_sensitivity": {
+      "0.2 sample": {
+        "threshold_db": 5.8,
+        "at_hz": 3910
+      },
+      "0.5 sample": {
+        "threshold_db": 2.45,
+        "at_hz": 3910
+      },
+      "1.0 sample": {
+        "threshold_db": -3.56,
+        "at_hz": 8142
+      }
+    }
+  },
+  "fractional_delay": {
+    "phase_slope_fit_samples": {
+      "300-1000": 135.05,
+      "1000-3400": 123.92,
+      "3400-6000": 126.2,
+      "6000-12000": 111.31
+    },
+    "phase_fit_residual_rms_deg": {
+      "300-1000": 37.8,
+      "1000-3400": 32.6,
+      "3400-6000": 24.1,
+      "6000-12000": 108.3
+    },
+    "cross_correlation_delay": 125,
+    "conclusion": "the phase is not a single delay: multipath makes the apparent delay band-dependent. A single integer alignment cannot fix the high band, which is why the canceller has to be a fitted FIR rather than a delay plus gain."
+  },
+  "the_9131_hz_question": {
+    "residual_at_9131_db": -17.39,
+    "coherence_at_9131": 0.75,
+    "verdict": "at 9131 Hz the residual is -17.4 dB, so the loop cannot regenerate there. The peaks at 9125 Hz appear also in trials that held, and the open-loop calibration shows a 8744 Hz peak with Q about 293, so that feature is the speaker/room resonance being excited, not a loop oscillation.",
+    "real_limiting_band": "435-441 Hz, where the residual is -5.42 dB and the phase-consistent threshold is +7.01/+9.53 dB"
+  },
+  "consistency_check": "observed board behaviour: 0 dB held 2/2, +3 dB held 1/2. The phase-consistent prediction is +9.53 dB and the 0.2-sample-misaligned prediction is +5.80 dB, so the measured threshold sits between them; the gap is consistent with sub-sample alignment plus the fixture's 4.7 dB repeatability."
+}
