@@ -323,9 +323,11 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
 
     if raw is not None:
         scale = float(2 ** 23)
+        # Same channel mapping as the C-accepted replay_trial: page0-left = played (reference),
+        # page0-right = microphone. Swapping these two was the live_run bug found on 2026-10-25.
         np.savez_compressed(
             out,
-            microphone=raw[:, 0] / scale, reference=raw[:, 1] / scale,
+            microphone=raw[:, 1] / scale, reference=raw[:, 0] / scale,
             prediction_pcm=raw[:, 2].astype(np.int64), residual_pcm=raw[:, 3].astype(np.int64),
             metadata_json=np.array(json.dumps(state, ensure_ascii=False)))
         state['capture'] = str(out)
