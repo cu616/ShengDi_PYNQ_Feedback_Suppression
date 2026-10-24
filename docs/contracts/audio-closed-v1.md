@@ -174,3 +174,31 @@ summary_revision=3.2.0、schema_version=3。满幅判定及显式尾区间是本
 amplifier_gate、active_source_statistics、capture_window/tail_analysis_window；
 基线/候选 comparison_id 与实际增益、场次、场景及尾区间绑定。外部讲话仅作功能验收，
 与模型效果配对分开。返回 ZIP 含汇总、状态、模型清单及模型字节，不含捕获 PCM。
+
+### 房间执行协议 v1.1（2026-10-24，A 08965d2 反馈）
+
+measurement_policy_version=c-room-policy-1.1.0，calculation_version=c-measurement-2.2.1、
+summary_revision=3.2.1，schema_version=3。v1 原包与原回包冻结，以下仅用于新工具或显式派生复核。
+
+- 运行门禁与固定初始基线的偏差限放宽为 5 dB；定音、底噪+6 dB、满幅和故障要求保留。
+  导出同窗 mic_over_ref_db，以及整批麦克风、reference、mic/ref 的极差与总体标准差（ddof=0）。
+  这些是描述统计，不作为传递函数误差界，不据此缩放或修补任何模型。
+- 效果配对另查两行各自前/后四次合格门禁的 mic/ref 极差 <=1.5 dB；不合格则
+  path_comparison_control.valid=false、effect_eligible=false，但不因此停止全部运行。
+  1 kHz 检查只排除已观察到的通路变化，不能认证全频段传递函数相同。
+  闭环内 mic/ref 含回授相关性，不能用它代替开环 H 或给效果数值作简单归一化。
+- 即使尾段信号不足，也保留实际派生尾区间的 first/end/frames；无效统计值仍为 null。
+  A evidence-v2 的 stop_reason=guard 是保护阳性；completed、非早停、done且无配置故障、
+  最终三个原始计数字均为零时可导出保护阴性，并附 protection_triggered_basis。
+  其他缺失证据不填 false。
+- 房间汇总 model_pairs 仅含两端均有真实 capture_id 的完整组；未完成组及原因为
+  incomplete_model_pairs，comparison_group_count 为两者总数。失败原始行全部保留。
+  人工听感为 H1；仅数值代理为 P1，另列 hearing_evidence_kind，P1 不通过外部讲话验收。
+- −20log10(max|H−Ĥ|) 记为 predicted_gain_bound_db：在稳定线性路径、同一归一化/音量、
+  覆盖全部实际环路频率并有可信误差约束时，严格小增益条件是实际 gain_db 小于该界。
+  分频带/有限频点估计仅作设计预测，不命名为实测可稳增益，不填 msg_db/asg_db。
+  +6 dB 仅记为 proposed_design_target_db，尚未替代人声与重复现场验收。
+  现有 9131 Hz、DC及频带空隙不得由 300–3400/8200–8600 Hz 四段结果外推。
+
+本次只更正 C 派生软件，未改变 A 驱动、硬件、B 算法或原始证据。新模型须收到原文件、
+逐文件哈希及独立验证后再冻结发声包，不因放宽运行门禁就重复旧 RUN。
