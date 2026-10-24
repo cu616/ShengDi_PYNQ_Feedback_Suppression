@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "topic": "does more memory buy low-band cancellation? decimation design study",
+  "recorded_at": "2026-10-24",
+  "recorded_by": "A",
+  "data": "20 sideways segments (/home/xilinx/pos_side + pos_side16), 14 train / 6 held-out, -12 dBFS digital injection, direct mode",
+  "sweep": [
+    {
+      "decimation": 8,
+      "taps": 384,
+      "fs2_hz": 6103.5,
+      "memory_ms": 62.9,
+      "max_E_db": -12.83,
+      "threshold_db": 12.83
+    },
+    {
+      "decimation": 8,
+      "taps": 768,
+      "fs2_hz": 6103.5,
+      "memory_ms": 125.8,
+      "max_E_db": -12.27,
+      "threshold_db": 12.27
+    },
+    {
+      "decimation": 8,
+      "taps": 1536,
+      "fs2_hz": 6103.5,
+      "memory_ms": 251.7,
+      "max_E_db": -12.53,
+      "threshold_db": 12.53
+    },
+    {
+      "decimation": 8,
+      "taps": 3072,
+      "fs2_hz": 6103.5,
+      "memory_ms": 503.3,
+      "max_E_db": -7.49,
+      "threshold_db": 7.49
+    },
+    {
+      "decimation": 16,
+      "taps": 384,
+      "fs2_hz": 3051.8,
+      "memory_ms": 125.8,
+      "max_E_db": -8.44,
+      "threshold_db": 8.44
+    },
+    {
+      "decimation": 16,
+      "taps": 768,
+      "fs2_hz": 3051.8,
+      "memory_ms": 251.7,
+      "max_E_db": -7.09,
+      "threshold_db": 7.09
+    },
+    {
+      "decimation": 16,
+      "taps": 1536,
+      "fs2_hz": 3051.8,
+      "memory_ms": 503.3,
+      "max_E_db": -6.94,
+      "threshold_db": 6.94
+    }
+  ],
+  "band_detail_dec8_384": {
+    "300-400": {
+      "max_H_db": 2.92,
+      "max_E_db": -12.82,
+      "at_hz": 358,
+      "coherence": 0.89
+    },
+    "400-1000": {
+      "max_H_db": 4.78,
+      "max_E_db": -12.86,
+      "at_hz": 453,
+      "coherence": 0.87
+    },
+    "1000-2000": {
+      "max_H_db": -0.79,
+      "max_E_db": -14.46,
+      "at_hz": 1836,
+      "coherence": 0.89
+    },
+    "2000-2600": {
+      "max_H_db": -1.25,
+      "max_E_db": -17.36,
+      "at_hz": 2259,
+      "coherence": 0.91
+    }
+  },
+  "reference_full_rate_512": {
+    "necessary_db": 8.63,
+    "phase_consistent_db": 10.38
+  },
+  "verdict": "memory is NOT the limit. Residual in 300-1000 Hz sticks at about -12.8 dB from 63 ms up to 250 ms of memory and gets worse beyond that (over-fitting the measurement noise). The floor is set by coherence (0.87-0.89 at 358-453 Hz), not by taps, so B's 8x decimation option cannot reach the -18..-20 dB needed for a +15..+20 dB usable gain.",
+  "ceiling_estimate": "with this fixture and architecture the usable gain ceiling is about +11 to +13 dB: the low band saturates near -12.8 dB and the >2.6 kHz band is limited near +11 dB by the full-rate stage",
+  "what_would_actually_work": "raise coherence or reduce the coupling the microphone sees: a close-talk (headset or lapel) microphone puts the talker about 20 dB above the room at the microphone and drops the speaker-to-microphone coupling at the same time. That is the standard way real PA systems avoid feedback and it needs no RTL change."
+}
