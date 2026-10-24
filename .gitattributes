@@ -28,3 +28,4 @@ board/audio_replay/start-panel.sh -text
 
 # The room review is a byte-frozen evidence bundle, including original models.
 /report/verification/audio_closed/room-review-20261024/** -text
+/report/verification/audio_closed/lowband-audit-20261025/** -text
