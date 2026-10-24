@@ -41,7 +41,7 @@ def resp(h):
     return np.fft.rfft(pad) * np.exp(-1j * w)
 
 
-H, coh = estimate_H(sorted(glob.glob('D:/Always/QianSai/manifest/seg_*.npz')))
+H, coh = estimate_H(sorted(glob.glob('D:/Always/QianSai/_inbox/2026-10-23_room6/manifest/seg_*.npz')))
 f = np.arange(len(H)) * FS / NFFT
 mag = np.abs(H)
 

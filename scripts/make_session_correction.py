@@ -126,7 +126,7 @@ def main() -> int:
     ap.add_argument("--model", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--taps", type=int, default=512)
-    ap.add_argument("--calib-dir", default="D:/Always/QianSai/manifest",
+    ap.add_argument("--calib-dir", default="D:/Always/QianSai/_inbox/2026-10-23_room6/manifest",
                     help="标定批 6 段所在目录，用来构造现场真值 H×C")
     args = ap.parse_args()
 

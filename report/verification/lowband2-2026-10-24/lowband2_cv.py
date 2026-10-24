@@ -12,7 +12,7 @@ import numpy as np
 FS = 48828.125
 NFFT = 4096
 F = np.arange(NFFT // 2 + 1) * FS / NFFT
-DIR = 'D:/Always/QianSai/for_b_lowband'
+DIR = 'D:/Always/QianSai/_inbox/2026-10-24_lowband2/for_b_lowband'
 
 BANDS = ((300, 1000), (1000, 2000), (2000, 3400), (3400, 6000),
          (6000, 8200), (8200, 8600), (8600, 10250))

@@ -8,7 +8,7 @@ import os
 
 import numpy as np
 
-SEG_GLOB = 'D:/Always/QianSai/manifest/seg_*.npz'
+SEG_GLOB = 'D:/Always/QianSai/_inbox/2026-10-23_room6/manifest/seg_*.npz'
 FS_NOM = 48828.125
 NFFT = 4096
 FMIN = 300.0
@@ -95,9 +95,9 @@ def main():
     print('宽带 |H|（按参考能量加权）= %+.2f dB' % (10 * np.log10(wm)))
 
     models = {
-        'model_256': 'D:/Always/QianSai/manifest/model_256.json',
-        'model_256_pad512': 'D:/Always/QianSai/manifest/model_256_pad.json',
-        'model_512': 'D:/Always/QianSai/manifest/model_512.json',
+        'model_256': 'D:/Always/QianSai/_inbox/2026-10-23_room6/manifest/model_256.json',
+        'model_256_pad512': 'D:/Always/QianSai/_inbox/2026-10-23_room6/manifest/model_256_pad.json',
+        'model_512': 'D:/Always/QianSai/_inbox/2026-10-23_room6/manifest/model_512.json',
         'cand_room_256_final': 'D:/Always/QianSai/candidate_room_v1_256_final(1)/candidate_room_v1_256_final.json',
         'repo_cand_512': 'models/room_v1/candidate_512.json',
     }

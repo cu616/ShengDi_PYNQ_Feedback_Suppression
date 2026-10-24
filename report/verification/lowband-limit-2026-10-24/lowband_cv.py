@@ -45,7 +45,7 @@ def resp(h):
     return np.fft.rfft(pad) * np.exp(-1j * w)
 
 
-files = sorted(glob.glob('D:/Always/QianSai/manifest/seg_*.npz'))
+files = sorted(glob.glob('D:/Always/QianSai/_inbox/2026-10-23_room6/manifest/seg_*.npz'))
 Htr, ctr = estimate_H(files[:3])
 Hte, cte = estimate_H(files[3:])
 band = (F >= 300) & (F <= 1000)

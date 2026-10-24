@@ -42,7 +42,7 @@ def design(target, taps, w):
     return np.linalg.solve(G, M.T @ b)
 
 
-files = sorted(glob.glob('D:/Always/QianSai/manifest/seg_*.npz'))
+files = sorted(glob.glob('D:/Always/QianSai/_inbox/2026-10-23_room6/manifest/seg_*.npz'))
 H, coh = estimate_H(files)
 gate = (coh >= 0.8) & (F >= 300) & (F <= 10250)
 
