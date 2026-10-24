@@ -273,13 +273,18 @@ def assemble_sprint(out, assets, model_path):
         hardware_executed=False,online_growth_detection=False,continuous_60s=False,
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),
-        hashes={str(p.relative_to(out)).replace('\\','/'):sha(p) for p in sorted(out.rglob('*')) if p.is_file()})
+        hashes={str(p.relative_to(out)).replace('\\','/'):sha(p) for p in sorted(out.rglob('*'))
+                if p.is_file() and '__pycache__' not in p.parts})
     (out/'sprint-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf8')
     from sprint_experiment import check_package
     check_package(out)
     with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as archive:
         for p in sorted(out.rglob('*')):
             if p.is_file() and '__pycache__' not in p.parts:archive.write(p,p.relative_to(out))
+    with zipfile.ZipFile(out.with_suffix('.zip')) as archive:
+        for name,digest in manifest['hashes'].items():
+            if hashlib.sha256(archive.read(name)).hexdigest()!=digest:
+                raise ValueError('archive payload hash mismatch: '+name)
     return manifest
 
 
