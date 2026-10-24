@@ -135,3 +135,18 @@ B消费程序发现未完成组空ID，改为另列incomplete_model_pairs且保�
 用PDF技能抽取并视觉核对比赛指南PDF22–23页；本机Anaconda缺PDF库，改用内置依赖Python，未安装或联网改环境。
 近讲建议基于指南和厂商资料，不保证20dB，不替队长批准采购/换夹具，也不把物理收益算成FIR ASG。
 135项回归通过。证据见[lowband复核](../verification/audio_closed/batch-control.md#2026-10-25-lowband2-原包复核)。
+
+
+## 2026-10-25 本轮冲刺执行记录（摘要，非逐字对话导出）
+
+用户要求C负责测评/独立复算/完整包，不操板或改A底层/B算法；最新GitHub交付替代旧D盘路径。
+固定A=bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6，先fetch并读取STATE/计划/独立复核/C任务卡。
+按10/26集中包、10/27晚功能冻结、10/28独立复现推进。历史748帧保护不能当起振阈值，
+16384尾帧不能代表全程；要求五类、全程观测请求、B反例、基线包先交、单一入口、一次回包。
+
+执行：SSH受限/主机验证失败后用同仓HTTPS只读获取并拉取C；未改变origin或绕过主机验证。
+本机默认Python无NumPy，隔离安装到仓库tmp/sprint-python，不修改系统环境或板卡。
+拒绝把live_pa拼段当60秒；保留未测项，给A具体字段/API/故障验收要求。
+未改B原脚本；从固定blob提取函数执行反例并独立核对Q20。新增项目专用编排和必要测试，
+原始音频留在tmp或板端，报告与回包只存哈希/统计。采用固定原门禁，不通过放宽阈值跑完批次。
+完整证据与交接位于report/verification/audio_closed/batch-control.md相应RC0节及BATCH_GUIDE。

@@ -1,0 +1,48 @@
+{
+  "stage": "source-freeze-preview; final clean-commit archive check will replace this record",
+  "notebook_code_cells": 1,
+  "notebook_first_line": "# C sprint RC0: fixed baseline, single entry",
+  "notebook_cancel_executed": true,
+  "pynq_imported": false,
+  "software_complete_trials": 13,
+  "software_fir_pairs": [
+    {
+      "comparison_id": "sprint-31cb71f96878-fir-1",
+      "repeat_id": 1,
+      "off_capture_id": "software-07-fir-off",
+      "on_capture_id": "software-09-fir-on",
+      "gain_q12": 4096,
+      "configuration_matches": true,
+      "window_comparison_valid": true,
+      "reasons": [],
+      "on_minus_off_tail_rms_db": 0.0,
+      "coverage_scope": "saved windows only",
+      "measured_msg_db": null,
+      "measured_asg_db": null,
+      "repeat": 1
+    },
+    {
+      "comparison_id": "sprint-31cb71f96878-fir-2",
+      "repeat_id": 2,
+      "off_capture_id": "software-13-fir-off",
+      "on_capture_id": "software-11-fir-on",
+      "gain_q12": 4096,
+      "configuration_matches": true,
+      "window_comparison_valid": true,
+      "reasons": [],
+      "on_minus_off_tail_rms_db": 0.0,
+      "coverage_scope": "saved windows only",
+      "measured_msg_db": null,
+      "measured_asg_db": null,
+      "repeat": 2
+    }
+  ],
+  "continuous_60s": {
+    "status": "not_tested",
+    "reason": "frozen A driver has 10 s ceiling and tail-only PCM; no stitched-window substitute",
+    "owner": "A",
+    "request": "OPERATIONS.md: A minimal observation and continuous-run request"
+  },
+  "real_voice_hardware_executed": false,
+  "independent_board_reproduction": "not_tested"
+}

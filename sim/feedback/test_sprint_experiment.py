@@ -1,0 +1,148 @@
+"""Project sprint decisions, analytic levels, and real driver mock orchestration."""
+import contextlib
+import copy
+import io
+import json
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+import wave
+from unittest.mock import patch
+import zipfile
+
+import numpy as np
+
+ROOT=Path(__file__).resolve().parents[2]
+sys.path.insert(0,str(ROOT/'board/audio_replay'))
+import sprint_experiment as sprint
+from evaluation import classify, sha
+from model_comparison import qhash
+from test_room_experiment import Runner as RoomRunner, setup, BIT
+from test_evaluation import metadata, tone, FS
+
+
+class Runner(RoomRunner):
+    """Three stationary tones 14 dB above the old room fixture's level.
+
+    This clears the independently frozen -37.8+6 dB floor; gain remains unity.
+    """
+    def __call__(self,path,fixture,model,source,**kw):
+        result=super().__call__(path,fixture,model,source,**kw)
+        if not kw['direct_only'] and not self.clip and not self.calls[-1].get('boosted'):
+            with np.load(path,allow_pickle=False) as capture:
+                data={k:np.array(capture[k]) for k in capture.files}
+            mic=data['microphone']*5
+            if np.max(abs(mic))<1:
+                first=result['first_frame'];idx=np.arange(len(mic))+first
+                injection=np.zeros(len(mic));mask=idx<len(source)
+                injection[mask]=source[idx[mask]].astype(float)/32768
+                data['reference']=(data['reference']-injection)*5+injection
+                data['microphone']=mic;data['residual_pcm']=np.rint(mic*2**23).astype(np.int64)
+                np.savez_compressed(path,**data)
+        return result
+
+
+class SprintTests(unittest.TestCase):
+    def work(self):
+        (ROOT/'tmp').mkdir(exist_ok=True)
+        return tempfile.TemporaryDirectory(dir=ROOT/'tmp')
+
+    def test_interrupt_recovery_failure_and_early_stop_cannot_pass_a_stable_tail(self):
+        for change in ({'error':'link lost'},{'recovery_ok':False},{'early_stop':True}):
+            m=metadata();m.update(change)
+            out=classify(m,tone(),FS)
+            self.assertEqual(out['category'],'unknown')
+            m['guard_tripped']=True
+            self.assertEqual(classify(m,tone(),FS)['category'],'protection')
+            self.assertEqual(classify(m,tone(60),FS)['category'],'observed_instability')
+
+    def test_single_speech_peak_and_clipping_are_not_growth(self):
+        x=tone();x[1000]=2**23-1
+        out=classify(metadata(),x,FS)
+        self.assertFalse(out['event_flags']['instability_growth'])
+        self.assertNotEqual(out['category'],'observed_instability')
+
+    def test_pair_only_bypass_may_change(self):
+        a={k:'same' for k in sprint.PAIR_FIELDS}
+        a.update(bypass=True,category='no_instability_observed_in_window',protection=False,
+                 recovery_ok=True,gate_mic_over_ref_db=-10.,tail_valid=True)
+        b=dict(a,bypass=False)
+        self.assertTrue(sprint.pair_check(a,b)['window_comparison_valid'])
+        for field in sprint.PAIR_FIELDS:
+            bad=dict(b);bad[field]='changed'
+            self.assertFalse(sprint.pair_check(a,bad)['configuration_matches'],field)
+        self.assertFalse(sprint.pair_check(a,dict(b,gate_mic_over_ref_db=-8.4))['window_comparison_valid'])
+        self.assertFalse(sprint.pair_check(a,dict(b,protection=True))['window_comparison_valid'])
+
+    def execute(self,base,runner,ready=True):
+        setup(base)
+        # A's mock emits all-zero coefficients; no borrowed golden detector.
+        (base/'model.json').write_bytes((base/'models/candidate_512.json').read_bytes())
+        (base/'eq.json').write_text('{"type":"identity"}')
+        manifest=dict(source_commits={'C':'test'},coefficients_sha256=qhash(np.zeros(512,dtype=int)),
+                      hashes={'audio_replay.bit':BIT,'model.json':sha(base/'model.json')})
+        def answer(prompt):
+            if 'READY' in prompt:return 'READY' if ready else 'CANCEL'
+            if 'SAME_SCENE' in prompt:return 'SAME_SCENE'
+            if 'SOURCE_OFF' in prompt:return 'SOURCE_OFF'
+            if '一次填写' in prompt:return 'fixed test layout; software fixture only'
+            if 'START' in prompt:return 'START'
+            if 'CLEAR' in prompt:return 'CLEAR'
+            return ''
+        with contextlib.redirect_stdout(io.StringIO()):
+            return sprint.run_sprint(base,answer,runner,lambda _:manifest)
+
+    def test_complete_bounded_schedule_preserves_unmeasured_60s_and_private_audio(self):
+        with self.work() as d:
+            base=Path(d);runner=Runner();state=self.execute(base,runner)
+            self.assertEqual(state['status'],'completed_with_unmeasured_requirements',state.get('stop_reason'))
+            self.assertEqual(len(runner.calls),13)
+            self.assertEqual(len(state['fir_pairs']),2)
+            self.assertTrue(all(p['window_comparison_valid'] for p in state['fir_pairs']))
+            self.assertEqual(state['checks']['continuous_60s']['status'],'not_tested')
+            self.assertEqual(state['checks']['listener']['status'],'not_tested')
+            self.assertIsNone(state['asg_db'])
+            with zipfile.ZipFile(next(base.rglob('return-results.zip'))) as archive:
+                self.assertFalse(any(n.endswith(('.npz','.wav')) for n in archive.namelist()))
+                self.assertIn('return-manifest.json',archive.namelist())
+
+    def test_clipping_stops_all_later_trials_and_cancel_does_not_call_driver(self):
+        with self.work() as d:
+            runner=Runner(clip_first_closed=True);state=self.execute(Path(d),runner)
+            self.assertEqual(state['status'],'stopped')
+            self.assertEqual(len(runner.calls),2)
+            self.assertFalse(state['fir_pairs'])
+        with self.work() as d:
+            runner=Runner();state=self.execute(Path(d),runner,False)
+            self.assertFalse(runner.calls)
+            self.assertEqual(state['status'],'stopped')
+
+    def test_execution_and_missing_sidecar_stop_with_return_package(self):
+        for kind in ('communication','save','recovery','keyboard'):
+            with self.work() as d:
+                def failing(*args,**kwargs):
+                    if kind=='keyboard':raise KeyboardInterrupt()
+                    raise RuntimeError(kind+' failure')
+                state=self.execute(Path(d),failing)
+                self.assertEqual(state['status'],'stopped')
+                self.assertEqual(len(state['trials']),1)
+                self.assertEqual(state['checks']['stop_recovery']['status'],'failed')
+                self.assertTrue(list(Path(d).rglob('return-results.zip')))
+
+    def test_listener_analytic_gain_and_agc_refusal(self):
+        with self.work() as d:
+            p=Path(d);t=np.arange(8000)/8000
+            for mode,amplitude in [('off',1000),('on',2000)]:
+                for kind in ('speech','noise'):
+                    x=np.rint(amplitude*np.sin(2*np.pi*1000*t)).astype('<i2') if kind=='speech' else np.zeros(8000,dtype='<i2')
+                    with wave.open(str(p/(mode+'-'+kind+'.wav')),'wb') as stream:
+                        stream.setnchannels(1);stream.setsampwidth(2);stream.setframerate(8000);stream.writeframes(x.tobytes())
+            result=sprint.listener_metrics(p,'FIXED_SOURCE_FIXED_GAIN_NO_AGC')
+            self.assertEqual(result['status'],'passed')
+            self.assertAlmostEqual(result['relative_speech_change_db'],20*np.log10(2),places=2)
+            self.assertIsNone(result['absolute_spl'])
+            self.assertEqual(sprint.listener_metrics(p,'AGC')['status'],'not_tested')
+
+
+if __name__=='__main__':unittest.main()

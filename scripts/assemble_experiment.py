@@ -8,6 +8,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 import zipfile
 
@@ -220,16 +221,83 @@ def assemble_room(out,assets):
     return manifest
 
 
+def assemble_sprint(out, assets, model_path):
+    """RC0 with the strong historical baseline and byte-identical A drivers.
+
+    A future candidate is integrated by rebuilding the complete package with a
+    reviewed model_path, never by patching files on a running board.
+    """
+    from sprint_experiment import POLICY, PLAN as SPRINT_PLAN
+    from model_comparison import qhash
+    out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False);assets=Path(assets)
+    for name in ('sprint_experiment.py','evaluation.py','growth_monitor.py','tail_metrics.py',
+                 'model_comparison.py','room_experiment.py'):
+        shutil.copy2(ROOT/'board/audio_replay'/name,out/name)
+    for name in ('replay_trial.py','replay_tools.py','closed_tools.py','residual_tools.py',
+                 'audio_replay.bit','audio_replay.hwh'):
+        shutil.copy2(assets/name,out/name)
+    expected={'audio_replay.bit':'8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339',
+              'audio_replay.hwh':'3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb'}
+    for name,digest in expected.items():
+        if sha(out/name)!=digest:raise ValueError('RC0 bit/hwh mismatch: '+name)
+    acceptance=check(out,out/'a-driver-acceptance.json')
+    if not acceptance['accepted']:raise ValueError('A driver software acceptance failed')
+    model,q=load_candidate(model_path,SPRINT_PLAN['fixture_id'],40,48828.125)
+    if len(q)!=512:raise ValueError('RC0 requires a 512-tap model')
+    shutil.copy2(model_path,out/'model.json')
+    (out/'models').mkdir()
+    shutil.copy2(model_path,out/'models/baseline_512.json')
+    registry_entry={k:model[k] for k in ('fixture_id','hp_volume','sample_rate_hz','lag_first','taps')}
+    registry_entry.update(file='baseline_512.json',sha256=sha(out/'model.json'))
+    (out/'models/manifest.json').write_text(json.dumps({'models':[registry_entry]},indent=2),encoding='utf8')
+    shutil.copy2(assets/'scene.json',out/'a-historical-scene.json')
+    (out/'eq.json').write_text(json.dumps({'type':'identity','contribution':'not_tested'}),encoding='utf8')
+    guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
+    marker='## 2026-10-25 集中实验 RC0'
+    (out/'OPERATIONS.md').write_text(guide[guide.index(marker):],encoding='utf8')
+    source='# C sprint RC0: fixed baseline, single entry\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
+    notebook=dict(nbformat=4,nbformat_minor=5,
+        metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
+        cells=[dict(cell_type='markdown',metadata={},source=['只运行从上往下第1个代码格；先读 OPERATIONS.md。']),
+               dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=source.splitlines(True))])
+    (out/'sprint.ipynb').write_text(json.dumps(notebook,ensure_ascii=False,indent=2),encoding='utf8')
+    evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
+    for name in ('audit.json','tests.txt'):
+        if (evidence/name).exists():
+            (out/'offline-evidence').mkdir(exist_ok=True);shutil.copy2(evidence/name,out/'offline-evidence'/name)
+    manifest=dict(policy=POLICY,calculation_version=VERSION,detector_config=CONFIG,plan=SPRINT_PLAN,
+        package_status='bounded_baseline_ready_continuous_not_implemented',
+        source_commits={'A':'bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6',
+                        'C':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip()},
+        coefficients_sha256=qhash(q),driver_software_acceptance=acceptance,
+        hardware_executed=False,online_growth_detection=False,continuous_60s=False,
+        source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
+            'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),
+        hashes={str(p.relative_to(out)).replace('\\','/'):sha(p) for p in sorted(out.rglob('*')) if p.is_file()})
+    (out/'sprint-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf8')
+    from sprint_experiment import check_package
+    check_package(out)
+    with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as archive:
+        for p in sorted(out.rglob('*')):
+            if p.is_file() and '__pycache__' not in p.parts:archive.write(p,p.relative_to(out))
+    return manifest
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser()
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--assets',type=Path)
     p.add_argument('--review-only',action='store_true')
     p.add_argument('--room-ready',action='store_true')
+    p.add_argument('--sprint-ready',action='store_true')
+    p.add_argument('--model',type=Path)
     a=p.parse_args()
-    if a.room_ready:
+    if a.sprint_ready:
+        if not a.assets or not a.model:p.error('--sprint-ready requires --assets and --model')
+        m=assemble_sprint(a.output,a.assets,a.model)
+    elif a.room_ready:
         if not a.assets:p.error('--room-ready requires --assets')
         m=assemble_room(a.output,a.assets)
     else:m=assemble_review(a.output) if a.review_only else assemble(a.output,a.assets)
-    print(json.dumps({'package':str(a.output),'status':m.get('status','silent_review'),
+    print(json.dumps({'package':str(a.output),'status':m.get('status',m.get('package_status','silent_review')),
                       'missing':m.get('missing',[])},ensure_ascii=False))

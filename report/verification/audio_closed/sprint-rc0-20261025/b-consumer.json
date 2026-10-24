@@ -1,0 +1,71 @@
+{
+ "summary": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\sprint-final-software\\results\\sprint-31cb71f96878\\summary-v3.json",
+ "schema_version": 3,
+ "calculation_version": "c-measurement-2.3.0",
+ "evidence_kind": [
+  "software_fixture"
+ ],
+ "rows": 13,
+ "model_pairs": 0,
+ "effect_eligible_rows": 0,
+ "effect_eligible_real_pairs": 0,
+ "consumable_as_is": true,
+ "blocking_issues": [],
+ "gaps": {
+  "comparison_id 为空，无法参与配对": {
+   "rows": 9,
+   "examples": [
+    "software-01-path-gate",
+    "software-02-real-voice",
+    "software-03-listener-off"
+   ]
+  },
+  "repeat_id 为空，无法参与配对": {
+   "rows": 9,
+   "examples": [
+    "software-01-path-gate",
+    "software-02-real-voice",
+    "software-03-listener-off"
+   ]
+  },
+  "有模型行但没有配对": {
+   "rows": 3,
+   "examples": [
+    "None",
+    "sprint-31cb71f96878-fir-1",
+    "sprint-31cb71f96878-fir-2"
+   ]
+  }
+ },
+ "categories": {
+  "unknown": 9,
+  "no_instability_observed_in_window": 4
+ },
+ "row_blocking_reasons": {
+  "tail_not_validated": 9,
+  "positive_control_not_validated": 7,
+  "safety_not_validated": 13,
+  "evidence_not_board_recording": 13
+ },
+ "model_registry_hits": 13,
+ "coef_hash_matches_raw_array": 13,
+ "coef_hash_matches_padded512": 0,
+ "field_coverage": {
+  "gain_q12": 13,
+  "hp_volume": 13,
+  "bit_sha256": 13,
+  "coefficients_sha256": 13,
+  "model_role": 13,
+  "logical_taps": 13,
+  "loaded_taps": 13,
+  "tail_valid": 13,
+  "tail_rms_dbfs": 4,
+  "tail_slope_db_per_s": 4,
+  "effect_eligible": 13,
+  "protection_triggered": 13,
+  "band_300-1000": 4,
+  "band_1000-3000": 4,
+  "band_8200-8600": 4
+ },
+ "note": "本脚本只判字段与门禁自洽性，不判抗啸叫性能，也不把软件夹具当实测。"
+}

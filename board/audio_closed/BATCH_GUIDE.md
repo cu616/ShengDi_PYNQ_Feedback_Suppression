@@ -217,3 +217,97 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 `python3 -c "from pathlib import Path; import json,experiment; [experiment.collect(p.parent,json.loads(p.read_text())) for p in Path('results').glob('run-*/summary.json')]"`。
 它仅整理已有汇总，不操作板卡。驱动已落盘但尚未进入汇总的 NPZ 会在 raw_files 中列出，供 C 后续静默分析。
 返回结果后由 C 核对/复算再交 B，不要求 A 临时判断斜率或计算指标。
+
+## 2026-10-25 集中实验 RC0
+
+维护者 C；本节就是包内 OPERATIONS.md。仅适用 `c-sprint-rc0-1.0.0`，不要执行上方历史包。
+决策：先用已有 strong 基线回答真实拾音/听众效果是否成立、同配置 FIR 开关是否有观察窗证据。
+自变量分别为系统开关和 FIR bypass，均衡固定 identity；不测新增益阶梯，不自动越过保护。
+截止按队长固定提交 bb56ef1 的计划：10/26 集中实验与质检、10/27 20:00 功能冻结、10/28 独立复现和封包。
+
+### 唯一入口与固定身份
+
+- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc0.zip`。
+- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0/`。用新目录，保留现役基线供恢复。
+- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0/sprint.ipynb`。
+  重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0: fixed baseline, single entry`，
+  下一行为 `from sprint_experiment import run_sprint`。全包只有一个代码格，不以 In[n] 定位。
+- 使用 A=bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6 的原驱动/bit/hwh，
+  strong 模型 c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a；
+  Q20 c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160。
+  完整文件与源码身份以 `sprint-manifest.json` 为准。版本/文件/系数不符则停止。
+- 参数已冻结：48828.125 Hz、512 taps、lag_first=1、Codec40、Q12=4096（0 dB）、EQ identity。
+  0 dB 仅来自同场历史短运行，不是保证安全或正常扩声的认证；不执行 +3 dB 重试。
+  模型/现场几何不符就停止交 B，不自行把同一模型挪到新场景。
+
+### 编号现场操作单
+
+1. **准备与静默核验**：A 核实单人占板，把 ZIP 全量解压到上述新目录；运行唯一代码格。
+   预期 `PACKAGE_OK; 60s_CONTINUOUS_NOT_AVAILABLE`。此时尚未导入板卡驱动、尚未发声。
+   缺文件/哈希错误直接生成停止结果。Python 依赖仅标准库、NumPy、板端既有 PYNQ；不现场安装新库。
+2. **一次冻结场景**：固定麦克风、音响、前放和 Codec，与 strong 标定一致；音箱可立即断电，不戴耳机。
+   在提示内输入 READY、SAME_SCENE，并一次写清声源到麦距离、设备位置、听众/测量位置、固定源及音量、
+   测量增益/AGC 状态。外部声源先停播。不能核实就取消，不能用沉默代表同意。
+3. **先真实人声**：路径门禁后，程序完成配置并静音才提示 START。现场此时靠近现有麦克风讲话；
+   不移动麦克风或音响。8 秒限时结束后填 CLEAR / DISTORTED / NO_AMPLIFICATION / HOWL / UNKNOWN。
+   CLEAR 只表示 A 的现场人声/听感记录；不自动证明全程无失稳。没有真实拾音不填 CLEAR。
+4. **固定听众开/关比较**：同一段固定录制人声由同一外部设备、同音量在固定源位置播放，经 MAX4466 拾音。
+   关/开各 8 秒，听众与录音设备位置和测量增益不变，AGC 关闭。系统关使用前向开路且数字源全零。
+   可选测量 WAV 固定保存到本轮打印的 `.../results/sprint-<id>/listener/` 下，文件名依次为
+   `off-speech.wav`、`off-noise.wav`、`on-speech.wav`、`on-noise.wav`；单声道未压缩 PCM16、
+   同采样率、人声两份同长度、各至少 1 秒，无削顶；噪声段在对应系统状态/测量增益下采集。
+   可在每个 8 秒状态内录前 6 秒固定人声、后 2 秒停源背景，再分别导出；不要把两种系统状态混在同一测量文件。
+   手工录制设备需提前就绪，在提示输入前拷入这四个固定文件即可，不需拼代码。
+   不具备固定测量条件直接回车，标未测；音色/噪声/失真由听感字段分别保留，不用总 RMS 冒充语音改善。
+   程序扣除背景功率并要求人声相对背景至少 6 dB，条件不足不算语音增益。未校准不输出绝对 SPL。
+5. **FIR 对照**：关闭外部源，保持位置和模拟配置；固定数字 burst，FIR 开/关两组配对，顺序 OFF/ON、ON/OFF。
+   每项 2.5 秒，前置同一门禁。配对实际 Q12/bit/模型/Q20/源/EQ/场景一致，只有 bypass 改变。
+   沿用运行漂移 5 dB、配对 mic/ref 漂移 1.5 dB，不放宽它们来跑完整批。
+   有效结果限保存的源后窗口；全程无饱和不推出全程无失稳。未测到有效边界不生成 MSG/ASG。
+6. **连续运行与 EQ**：原驱动最多 10 秒，live_pa 也有窗口停顿。RC0 自动把连续 60 秒列为未测，
+   不调用 live_pa 拼段、不修改限时。EQ identity，贡献未测；有 B 候选后由 C 核对配置并重发完整包，
+   FIR 对照须在同一 EQ 下，EQ 收益另作开/关对照。
+7. **停止与恢复**：输入非 START 取消；听到持续尖叫、严重失真或异常发热立即切断音响电源并中断代码。
+   程序在保护、削顶、执行/落盘/恢复失败、无效配置或 FIR 观测不足时结束本轮，保留所有已执行项。
+   原 A 驱动负责静音、恢复 stock base/PLL，状态文件确认 recovery_ok。恢复未知/失败时保持音箱断电，
+   不发下一项；由 A 按已核实基线处理，不把恢复 stock overlay 当重新标定或效果通过。
+   STOP/通信中断/落盘失败的软件分支通过不等于紧急静音实物已验收。
+8. **一次回包**：最终屏幕 `RETURN_PACKAGE` 给出唯一结果 ZIP：
+   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0/results/sprint-<id>/return-results.zip`。
+   包含所有已执行/失败记录、原始 NPZ 哈希、本地路径、汇总 CSV、覆盖和恢复结果；人声 NPZ/WAV 留板，
+   B 可直接读 `summary-v3.json` / `summary-v3.csv`（原 schema3）；FIR 开关配对在 `fir_switch_pairs`，
+   不冒充不同模型的 baseline/candidate 配对。包中 `models/manifest.json` 绑定当前 strong 基线。
+   不自动上传。A 只返回此 ZIP。若内核被强杀或断电，用同一代码格的恢复说明：在该目录 Terminal 执行
+   `python3 -c "from pathlib import Path; import json; from sprint_experiment import collect; [collect(p.parent,json.loads(p.read_text())) for p in Path('results').glob('sprint-*/summary.json')]"`。
+   此命令只读既有汇总并封包，不连接硬件；未进汇总的文件需保留并交 C 静默质检，不重播。
+
+完整基线顺利执行共 13 项：6 次门禁、3 次真实/听众项、4 次 FIR；发声/观察约 40.12 秒，
+外加配置、人工 START、听感填写和可选测量文件转存时间。听众噪声录音可延长现场时间。
+任何停止都会缩短批次，不要求为了凑齐项目继续。每项在静音配置完成后才要求讲话/启动外部源。
+
+### A minimal observation and continuous-run request
+
+以下是交 A 的**待实现能力与验收要求**，不是已批准/已部署寄存器契约；C 不修改底层。
+基线文件为 A=bb56ef1 的 `board/audio_replay/replay_trial.py`、`live_pa.py`、`closed_tools.py` 和对应 RTL。
+最小建议：由 A 提供 `run_continuous(output_dir, fixture_id, model_path, bypass, gain_q12, hp_volume,
+seconds=60, before_start=..., stop_request=...)` 或说明实际等价入口；配置与静音完成后再调用 before_start。
+
+| 必需证据 | 字段/行为要求 | 可控验收 |
+|---|---|---|
+| 连续主路 | run_id、帧域/epoch、实际首末帧、开始/停止单调时刻、overlay 加载/重装次数、静音/断音区间、停止原因 | 单次实际覆盖至少 60 秒；期间无重新 arm/加载/Codec 静音拼段；正常停止与现场中断都可静音 |
+| 全程事件 | event_sequence、event_kind、frame 或轮询上下界、原始状态/clip words、保护类型、计数覆盖首末帧、饱和计数标志 | 在首/中/末注入保护/计数变化，全部留证；轮询只能定位区间时不填假精确首发帧 |
+| 缺失与覆盖 | 每块 first_frame/end_frame_exclusive、sequence、dropped_frames/blocks、unknown intervals、计数与 PCM 分别覆盖 | 缺块/回卷/重复/乱序/通信中断被识别，不把缺失填零；中间缺失仍保留有效局部证据 |
+| 失稳观测 | 优先保存完整单声道 microphone signed24-in-int32（60秒约12MB），末尾四路继续供算术核对；或提供经C验收的连续FFT特征及参数/覆盖 | 不阻塞音频；丢日志计数；稳定纯音、尖峰、削顶不自动叫啸；增长发生在中段仍可离线检出 |
+| 配置绑定 | source/code/bit/hwh/model/loaded_Q20/EQ 哈希、实际 g/Codec/bypass/源调度、场景/会话、采样率 | 同配置配对，故意改一个字段必须拒绝；FIR/EQ贡献可分别归因 |
+| 失败留证 | 中断/保护先静音冻结，尽力保存；NPZ失败也有独立状态 sidecar，recovery_ok/cleanup_errors/save_error | 正常、取消、保护、执行异常、通讯异常、落盘失败、恢复失败全部可回包；恢复失败不继续 |
+
+若全 PCM 暂不可用，A 可先交连续主路与全程事件；C 将波形未覆盖区间保持 unknown。
+延长 watchdog 或改 ABI 由 A 提最小兼容变更表与回退，按现行流程审批，不由 C 绕过。
+
+### C 收包与冻结
+
+10/26 C 对 ZIP/身份/实际配置/覆盖/保护/恢复和配对进行质检，一次给出有效性与 RC1 必修项。
+10/27 20:00 固定功能、入口与评价口径。10/28 由另一位队友（具备现场操板资格时由 A 安排）
+冷启动按本操作单复现，保存执行人/时间/环境/原包哈希/结果 ZIP；不把 C 自测算独立复现。
+发布包冻结源码提交、源码归档、bit/hwh、模型、Q20、配置/EQ/源、依赖版本、构建和实测证据及逐文件哈希。
+通过、未通过、未测分别列出；人声、60秒与停止恢复仍有必修项时，整体不得写“验收通过”。

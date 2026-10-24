@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from growth_monitor import MonitorConfig, replay
 
-VERSION = 'c-measurement-2.2.1'
+VERSION = 'c-measurement-2.3.0'
 CONFIG = dict(window_seconds=.016, hop_seconds=.008, growth_seconds=.08,
               confirm_seconds=.016, minimum_rise_db=3.,
               minimum_slope_db_per_second=12., minimum_fit_r2=.9,
@@ -28,7 +28,7 @@ def sha(path):
 
 
 def unpack_counts(words):
-    """ABI: {residual[15:0], prediction[15:0]}, gain32, mix32.
+    """ABI: {residual[31:16], prediction[15:0]}, gain32, mix32.
 
     65535 is a saturated lower bound for the first two counters, not exact.
     Do not feed the old guard metadata aliases into this function.
@@ -186,6 +186,15 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
                 result['category'] = 'no_instability_observed_in_window'
         if flags['protection'] and not flags['instability_growth']:
             result['category'] = 'protection'
+        # A completed-looking tail cannot erase an interrupted run or failed
+        # recovery. Retain valid local growth/protection evidence on those axes.
+        for flag, reason in (('execution_error', 'execution_interrupted'),
+                             ('recovery_failed', 'recovery_failed'),
+                             ('early_stop', 'early_stop_without_complete_run')):
+            if flags[flag]:
+                result['reasons'].append(reason)
+                if result['category'] == 'no_instability_observed_in_window':
+                    result['category'] = 'unknown'
     except (ValueError, TypeError, KeyError, OverflowError) as exc:
         result['category'] = 'invalid'
         result['reasons'].append(str(exc))
@@ -199,7 +208,7 @@ def analyze_npz(path, expected=None, positive_control_valid=False, external_sour
     original = {}; m = {}; rate = 48828.125
     recorded_qhash=None; recorded_taps=None
     try:
-        with np.load(path, allow_pickle=False) as z:
+        with path.open('rb') as stream, np.load(stream, allow_pickle=False) as z:
             m = json.loads(str(z['metadata_json'].item()))
             if not isinstance(m, dict):
                 raise ValueError('metadata_must_be_object')
