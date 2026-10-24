@@ -4,7 +4,7 @@
 > 每次会话结束**原地覆盖**本文件中自己负责的那一段，不要新建副本、不要在别处复述。
 > 其他文档若与本文件冲突，以本文件为准。
 
-最后更新：2026-10-24 00:55，B 线（会话修正系数：预测 −7.42 → 实测括号 (−9,−6)，修正后 +6.74 dB）
+最后更新：2026-10-24 12:40，B 线（低频 −15 dB 不可达的量化；分带表缺 8.6–10.2k；抽取二级方案）
 
 ## 一句话
 
@@ -53,37 +53,32 @@
 
 ### B 数据与算法
 
-**最后动作**：2026-10-24 00:50 用 A 的现场 H 复测数据（8.38 kHz 幅度 −5.98 dB、相位 +39.5°）
-做会话修正：部署模型对现场真值的阈值算得 **−7.42 dB**，与 A 实测"−9 稳、−6 叫"一致；
-修正系数预测 **+6.74 dB**（限制点 381 Hz），与 A 门禁版实测 ≥6 dB 收敛。
-交付 `models/room_v1/session_20261024/`（会话专用，不进注册表）。
-`cancel_zero` 空测的更正接受：参考臂无效的判断成立，物理结论以门禁版为准。
-23:50 核对 C 的 `b2ad47d` 汇总 v3：**可直接消费**（软件夹具 2/2 命中注册表、补零身份在数据侧证实）。
-**当前卡点**：会话修正只靠 5 个频带掩模近似；要换成真拟合，需要现场整段 npz（ref/mic/pred）。
+**最后动作**：2026-10-24 12:40 量化否定“300–1000 Hz 压到 −15 dB”（512 抽头交叉验证只有 −5.2 dB），改提 8× 抽取二级；发现 A 分带表缺 8600–10250，而起振主频三次是 9131 Hz。
+**当前卡点**：需要 A 的 `lowband2` 16 段 npz（相干 0.93），才能给出交叉验证过的低频残差与二级抽取系数。
 
-- 证据：[session-correction-2026-10-24](../report/verification/session-correction-2026-10-24/README.md)（会话修正与预测对照）、
+- 本轮数字：512 抽头 in-sample −9.4 dB、交叉验证 −5.2 dB；680 训练 −13.4/测试 −5.1；同批两半 H 自身差 −4.1 dB。
+  381–435 Hz 模态 Q≈4.5、τ≈3.3 ms，512 抽头只覆盖 3.2τ，压 20 dB 需 ~1600 抽头，而 681 在器件上已放不下（BRAM 80 %）。
+- 00:50 会话修正：部署模型对现场真值阈值 −7.42 dB，与 A 实测“−9 稳、−6 叫”一致；修正系数 +6.74 dB
+  （限制点 381 Hz），与 A 门禁版 ≥6 dB 收敛。交付 `models/room_v1/session_20261024/`（会话专用，不进注册表）。
+- `cancel_zero` 空测的更正接受：参考臂无效的判断成立，物理结论以门禁版为准。
+- 23:50 核对 C 的 `b2ad47d` 汇总 v3：**可直接消费**（软件夹具 2/2 命中注册表、补零身份在数据侧证实）。
+
+- 证据：[lowband-limit-2026-10-24](../report/verification/lowband-limit-2026-10-24/README.md)（−15 dB 不可达的量化、抽取二级方案）、
+  [session-correction-2026-10-24](../report/verification/session-correction-2026-10-24/README.md)（会话修正与预测对照）、
   [peak-margin-2026-10-23](../report/verification/peak-margin-2026-10-23/README.md)（8.4 kHz 裕度与三臂协议）、
   [summary-v3-consumption-2026-10-23](../report/verification/summary-v3-consumption-2026-10-23/README.md)（v3 消费核对与历史缺口）、
   [model-package-2026-10-23](../report/verification/model-package-2026-10-23/README.md)（注入方程、加载约定、尾段判据）；
   包说明 [models/README.md](../models/README.md)（含 SHA256 与拍数）。
-- 工具：`scripts/make_session_correction.py`（按频带偏差生成会话修正系数 + 不确定预算）、
+- 工具：`scripts/diagnose_peak_margin.py`（H/Hat 误差、必要与相位一致阈值、灵敏度预算）、
+  `scripts/make_session_correction.py`（按频带偏差生成会话修正系数 + 不确定预算）、
   `scripts/consume_summary_v3.py`（v3 字段/门禁/模型身份/配对复核，4 项测试）、
   `scripts/verify_padding_equivalence.py`（补零等价的四点判据 + 反例）、
-  `scripts/diagnose_peak_margin.py`（H/Hat 误差、两种阈值、亚采样与幅度的灵敏度预算）、
   `scripts/check_causal_alignment.py`（因果约定，5 项回归测试）、
   `scripts/score_time_domain.py`（部署 Q20 系数、逐段、共同窗口、跨场次）、
   `scripts/closed_loop_metric_check.py`（闭环 vs 尾段两个指标）。
 - **恒等式（口径已修正）**：`mic/ref = H` 只在 `reference` 记录的是**实际播放信号 u** 时成立；
   若 ref 记的是增益级输出（`g·residual`），Ĥ=0 时 `mic/ref = 1/g`，与 H 无关。
   `mic/pred = H/Ĥ` 与 g、与 ref 取点都无关，仍然可用。
-- **结论按夹具分**：房间用 512（候选成立），箱体 256 已够（512 只 +0.38 dB，且 BRAM 已 80 %）。
-  本轮按 C 的安排先用箱体基线。
-- **注入位置决定指标含义**（补正）：A 的实现是数字注入 `u=sat(source+g·residual)`，
-  此时 `residual/mic = (H−Ĥ)/H`，**就是 −CD**；只有声源加在麦克风端时该比值才不含模型信息。
-  可控用例（合成路径+单音仿真）与闭式解差 <0.01 dB。
-- **加载**：`feedback_fir.v` 只在 `load_index==TAPS-1` 置 `loaded`，512 位流必须发满 512 项。
-  已提供 `*_padded512.json`（`logical_taps=256`、`loaded_taps=512`、频响逐点相同）。
-- **尾段判定**：`scripts/check_tail_window.py`，六项判据；现有两份捕获都判 FAIL。
 
 ### C 测评与工具
 
@@ -153,6 +148,10 @@
 | 部署模型对现场真值的阈值 | **−7.42 dB**（max\|E\| +7.42 dB @8368 Hz） | 模型推算；A 实测"−9 稳、−6 叫"，预测落在括号内 |
 | 会话修正系数（`session_20261024`） | **+6.74 dB**，限制点 **381 Hz**（不是 8.4 kHz） | 实现误差 −30.9 dB；A 门禁版实测 ≥6 dB，两边独立收敛 |
 | 会话修正的余量预算 | 带内残差 0.5 dB/5° → +6.7；1 dB/10° → +6.5；2 dB/20° → +0.8；3 dB/30° → −2.8 | 决定 0 dB 能否留出 ≥6 dB 余量 |
+| 部署模型分频段残差（标定批） | 300–1000 **−6.64 dB @381 Hz**；1000–2000 −11.93；2000–3400 −12.29；3400–6000 −6.79；6000–8200 −16.87；8200–8600 −12.77；**8600–10250 −13.48** | 相干门控 0.8；A 的分带表缺 8600–10250，而板上起振主频是 9131 Hz |
+| 512 抽头在 300–1000 的可达残差 | in-sample −9.44 dB；**交叉验证 −5.15 dB**（训练 3 段/测试 3 段） | 同一批两半 H 自身差 −4.08 dB（相干 0.5 时的估计噪声）；加抽头对独立集无益 |
+| 抽头—残差斜率 | 256 −0.2 / 512 −9.4 / 680 −13.4 / 2048 −14.8 dB | in-sample 上界；−20 dB 需 ~3000 抽头，而 681 在本器件已放不下（512 时 BRAM 80 %） |
+| 381–435 Hz 模态 | −3 dB 宽 95 Hz，Q≈4.5，τ≈3.3 ms | 512 抽头只覆盖 3.2τ；压 20 dB 需 ~10τ ≈ 1600 抽头 |
 | C 汇总 v3 可消费性 | **可直接消费**（`b2ad47d`） | 软件夹具 2/2 命中注册表，1 行命中原数组、1 行命中补零数组；尾段空值与门禁自洽 |
 | 历史 50 条的缺口 | 44 行 `bitstream_capacity_unverified` + `loaded_taps` 缺 + `comparison_identity` 缺；6 行无任何配置 | 44 行全是 `box_v1/baseline_256`（logical 256，系数哈希 44/44 命中原数组） |
 | 历史批的位流归属 | `4d49dfbe…` = `audio_closed`（DAC 无输出，22 行不能当声学证据）；`dadbbbab…` = `audio_replay` 256 抽头（22 行） | `BIT_CAPACITIES` 目前只有 512 位流，故 `dadbbbab` 那 22 行永远判容量未验证 |
@@ -171,20 +170,20 @@
 
 **B 线待办（按优先级）**
 
-1. A：**门禁协议复测 `session_20261024` 这一版**（512 位流、同音量、先 −20 dBFS 定音），
-   测 0 dB 与 +3 dB 两档。判读：0 dB 稳且 +3 dB 稳 → 余量 ≥3 dB；0 dB 就叫 → 看主频
-   （8.2–8.6k = 带内修正不准；300–1k = 低频短板）。
-2. A：给一段现场 ref / pred / mic 的 npz（−14 dBFS 注入那批即可）。
-   只要 ref 记的是实际播放信号，`mic/ref` 就是现场 H；`mic/pred = H/Ĥ` 与 g 无关。
-   拿到就把"频带掩模"换成真拟合，预期把限制点从 381 Hz 也推走。
-3. A：报 `ref→mic` 延迟（互相关峰）。**本轮是 125/124/124，钉住它**：1 拍错位在 8.4 kHz 是 62°，
+1. A：**分带表补到 12000 Hz**（现在缺 8600–10250，而板上起振主频三次是 9131 Hz），
+   并报一次"相位一致"阈值（`scripts/diagnose_peak_margin.py` 一条命令）。这决定下一版该修哪一段。
+2. A：给 `/home/xilinx/lowband2` 的 16 段 npz（相干 0.93）。有了它才能：频带加权重拟合的
+   **交叉验证**残差、以及二级抽取 FIR 的系数。没有它我不交"−15 dB 的 512 系数"。
+3. A：现场 ref / pred / mic 的 npz（−14 dBFS 注入那批）仍需要：`mic/pred` 可以逐点查模型误差。
+   注意 ref 若记的是增益级输出，Ĥ=0 时 `mic/ref = 1/g`，不能当 H。
+4. A：报 `ref→mic` 延迟（互相关峰）。**本轮是 125/124/124，钉住它**：1 拍错位在 8.4 kHz 是 62°，
    足以让上面任何预测失效。124 → 用 `models/diagnostics/room_512_shift/model_512_shift-1.json`。
-4. A：给每个闭环捕获的实际起止帧与源结束帧（或直接跑 `scripts/check_tail_window.py`），
+5. A：给每个闭环捕获的实际起止帧与源结束帧（或直接跑 `scripts/check_tail_window.py`），
    判 PASS 的窗口才能用于阈值与 CD。
-5. C：确认接收 `models/` 三个 JSON（SHA256 见 `models/manifest.json`，新清单 SHA256 `71d13ca9…`），
+6. C：确认接收 `models/` 三个 JSON（SHA256 见 `models/manifest.json`，新清单 SHA256 `95cdec7b…`），
    按夹具选模型；512 必须配 512 位流，记录 gain_q12 / hp_volume / 位流 sha256。
    补零放行的依据是 `scripts/verify_padding_equivalence.py` 的四点判据，不是"试了没问题"。
-6. C：v3 汇总的三条最小补充——`BIT_CAPACITIES` 补 `dadbbbab…`（256 抽头）、
+7. C：v3 汇总的三条最小补充——`BIT_CAPACITIES` 补 `dadbbbab…`（256 抽头）、
    `loaded_taps` 缺失时按系数哈希反推、逐行导出 `positive_control_valid`
    （现在分不清"尾段不合格"与"通路没接通"，见 summary-v3-consumption 报告 §4）。
-7. B：拿到现场 H 后重拟合并给阈值预测；若 512 的起振点比 256 高出不到 1.5 dB，候选被否定。
+8. B：拿到现场 H 后重拟合并给阈值预测；若 512 的起振点比 256 高出不到 1.5 dB，候选被否定。
