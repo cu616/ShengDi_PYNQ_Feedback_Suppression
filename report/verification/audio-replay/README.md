@@ -133,3 +133,7 @@ SSH部署15项核对通过，HTTP只读读取确认busy=false、plan_ready=true�
 用户截图报RuntimeError: There is no current event loop in thread 'Thread-278 (work)'。板卡pynq/uio.py第74行在构造UIO控制器时调用asyncio.get_event_loop().add_reader；旧面板每次新建后台线程且未设置事件循环。
 
 面板改为max_workers=1的持久执行器，线程初始化时创建并设置事件循环，录音、批次和清理复用同一线程，避免UIO对象跨任务失去所属循环。启动预检向实际工作线程提交get_event_loop，异常保留完整栈。16项部署文件核对通过，备份deploy-backup-20261021-174532；重启前确认busy=false及PID命令行身份。未触发录音、播放；此次设备与事件循环预检不代表完整音频初始化已通过。
+
+## 2026-10-25 只读独立复核证据
+
+[复核数据](independent-review-2026-10-25.json) 保存包哈希核验、相位穿越反例、闭环元数据和频域重算方法/输出。计算在前一轮只读复核执行，本轮归档；没有新增板卡试验。解释见 [复核答复](../../analysis/2026-10-24-situation-and-limits.md#独立复核答复2026-10-25)，发布数字以 [STATE](../../../docs/STATE.md) 为准。

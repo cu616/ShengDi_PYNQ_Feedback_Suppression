@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "independent_review",
+  "recorded_at": "2026-10-25",
+  "review_scope": "read-only local code and data review; no board operation or implementation change",
+  "source_worktree_commit": "05dfd8fbbf6490946a37dc64a618ccfdc18089d2",
+  "source_package": "report/verification/audio-replay/lowband2-return.zip (branch A); extract to any local directory and verify manifest.json",
+  "verification_level": [
+    "static_source_review",
+    "software_counterexample",
+    "offline_numeric_recalculation"
+  ],
+  "executed_previous_turn": true,
+  "hash_check": {
+    "files": 27,
+    "mismatches": [],
+    "missing": []
+  },
+  "phase_counterexample": {
+    "function": "phase_consistent_threshold",
+    "source": "scripts/diagnose_peak_margin.py on B history; inspected function included below to avoid dependence on an untracked worktree",
+    "frequencies_hz": [
+      400,
+      410
+    ],
+    "phase_deg": [
+      179,
+      -179
+    ],
+    "magnitude": [
+      0.5,
+      0.5
+    ],
+    "gate": [
+      true,
+      true
+    ],
+    "returned_threshold_db": 6.020599913279624,
+    "returned_frequency_hz": 405,
+    "expected": "No positive-real crossing in this interval; negative-real wrap must not count.",
+    "inspected_function": "def phase_consistent_threshold(E, loop_phase, freqs, gate, fmin=FMIN_HZ):\n    sel = gate & (freqs >= fmin)\n    e = E[sel]\n    f = freqs[sel]\n    pu = np.unwrap(loop_phase[sel])\n    n = np.round(pu / (2 * np.pi))\n    x = pu - n * 2 * np.pi\n    best, best_f = 0.0, float(\"nan\")\n    for k in range(len(x) - 1):\n        if x[k] == 0.0:\n            cand, cf = e[k], f[k]\n        elif x[k] * x[k + 1] < 0:\n            t = x[k] / (x[k] - x[k + 1])\n            cand = e[k] + t * (e[k + 1] - e[k])\n            cf = f[k] + t * (f[k + 1] - f[k])\n        else:\n            continue\n        if cand > best:\n            best, best_f = cand, cf\n    if best <= 0:\n        return float(\"inf\"), float(\"nan\")\n    return 20 * np.log10(1.0 / best), best_f",
+    "captured_B_ref": "a171245aa1fffb02780217dca22789a2ce601d20 (locally recorded origin/B at review handoff; not a claim of latest B)"
+  },
+  "spectral_method": {
+    "data": "16 lowband2/seg_*.npz",
+    "fs": 48828.125,
+    "window": "np.hanning(nfft)",
+    "hop": "nfft//2",
+    "per_segment": true,
+    "include_last_full_window": true,
+    "H": "sum(conj(U)*M)/sum(abs(U)**2)",
+    "coherence": "abs(Sum)**2/(Suu*Smm)",
+    "gate": "frequency>=300 Hz and magnitude_squared_coherence>=0.8",
+    "Hhat": "rfft(coefficients_q20/2**20,nfft)*exp(-j*omega)",
+    "loop": "(H-Hhat)*exp(-2j*omega)",
+    "crossing_method": "Only adjacent original frequency bins with both gate=true; interpolate complex loop at Im=0 and require Re>0.",
+    "limitations": "Coarse estimated crossings; missing frequencies and spectral-estimator uncertainty remain. Not full Nyquist certification or measured MSG."
+  },
+  "recalculation": [
+    {
+      "nfft": 4096,
+      "gated_small_gain_bound_db": 7.009,
+      "at_hz": 441.07,
+      "coherence": 0.874,
+      "positive_real_estimate_db": 9.864900762562147,
+      "positive_real_at_hz": 882.2781161693441,
+      "old_phase_using_float_coefficients_db": 9.53308129254186,
+      "old_phase_at_hz": 459.7168870649034
+    },
+    {
+      "nfft": 8192,
+      "gated_small_gain_bound_db": 4.747,
+      "at_hz": 441.07,
+      "coherence": 0.929,
+      "positive_real_estimate_db": 7.945200807412624,
+      "positive_real_at_hz": 881.9340290626964,
+      "old_phase_using_float_coefficients_db": 7.476852298395949,
+      "old_phase_at_hz": 332.7407551009605
+    }
+  ],
+  "raw_closed_loop": [
+    {
+      "file": "strong_g0p0_r1_01_b0_g4096.npz",
+      "completed_frames": 146484,
+      "frames": 16384,
+      "first_frame": 130100,
+      "guard_tripped": false,
+      "mic_rms_dbfs": -27.03
+    },
+    {
+      "file": "strong_g0p0_r2_01_b0_g4096.npz",
+      "completed_frames": 146484,
+      "frames": 16384,
+      "first_frame": 130100,
+      "guard_tripped": false,
+      "mic_rms_dbfs": -28.63
+    },
+    {
+      "file": "strong_g3p0_r1_01_b0_g5786.npz",
+      "completed_frames": 146484,
+      "frames": 16384,
+      "first_frame": 130100,
+      "guard_tripped": false,
+      "mic_rms_dbfs": -15.55
+    },
+    {
+      "file": "strong_g3p0_r2_01_b0_g5786.npz",
+      "completed_frames": 748,
+      "frames": 748,
+      "first_frame": 0,
+      "guard_tripped": true,
+      "mic_rms_dbfs": -14.85,
+      "mic_peak_dbfs": -1.71,
+      "reference_peak_dbfs": 0
+    }
+  ],
+  "coherence_calculation": {
+    "formula": "-10*log10(1-C)",
+    "C": [
+      0.87,
+      0.89,
+      0.95
+    ],
+    "relative_output_power_reduction_db": [
+      8.861,
+      9.586,
+      13.01
+    ],
+    "not": "absolute transfer error or acoustic stable gain"
+  },
+  "boundary_review": {
+    "segments": 20,
+    "original_samples_per_segment": 16384,
+    "decimation": 8,
+    "samples_after_decimation": 2048,
+    "longest_taps": 3072,
+    "issue": "np.concatenate before regression/spectral windows permits artificial cross-capture history; long model deterioration cannot uniquely prove a physical floor."
+  },
+  "not_executed": [
+    "full memory-sweep refitting",
+    "Vivado",
+    "board trials",
+    "production code fixes"
+  ]
+}
