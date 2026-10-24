@@ -1,5 +1,19 @@
 {
-  "stage": "working-tree preview; final clean source archive verification follows",
+  "artifact": "build/packages/c-sprint-rc0-r1.zip",
+  "sha256": "c5c96916fe1b2dafb67a6b5ddc13f48ec632d0cd41786516ea39acb44982c019",
+  "size_bytes": 297470,
+  "policy": "c-sprint-rc0-1.0.1",
+  "source_commits": {
+    "A": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+    "B": "d033d0047542d5e50654a0333777c48ec08dce21",
+    "C": "1601350fc974d83fe17a7aa9dd1c9bec90b2111e"
+  },
+  "source_tree_clean": true,
+  "payload_hashes_verified": 24,
+  "c_source_blob_matches": 6,
+  "a_exact_blob_matches": 6,
+  "b_model_blob_match": true,
+  "model_identical_to_previous_rc0": true,
   "default_model": {
     "name": "calibrated_20261024",
     "source_file": "models/room_v1/calibrated_20261024.json",
@@ -7,51 +21,16 @@
     "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
     "validity": "same verified calibration scene only; no cross-session fallback"
   },
-  "default_registry_selection_verified": true,
-  "actual_notebook_cancel_executed": true,
+  "actual_archive_default_selection_verified": true,
+  "notebook_code_cells": 1,
+  "notebook_first_line": "# C sprint RC0: fixed baseline, single entry",
+  "actual_packaged_notebook_cancel_executed": true,
   "board_imports": false,
-  "tests": 143,
-  "driver_acceptance": {
-    "schema_version": 1,
-    "suite": "c-a-driver-acceptance-v2",
-    "hardware_access": false,
-    "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
-    "accepted": true,
-    "cases": [
-      {
-        "name": "guard_distinct_counts",
-        "passed": true
-      },
-      {
-        "name": "bypass_prediction_only",
-        "passed": true
-      },
-      {
-        "name": "terminal_counts",
-        "passed": true
-      },
-      {
-        "name": "completed_zero_counts",
-        "passed": true
-      },
-      {
-        "name": "protocol_fault",
-        "passed": true
-      },
-      {
-        "name": "operator_cancel",
-        "passed": true
-      },
-      {
-        "name": "restore_failure",
-        "passed": true
-      },
-      {
-        "name": "capture_write_failure",
-        "passed": true
-      }
-    ]
-  },
+  "automatic_bypass": false,
+  "driver_acceptance_passed": true,
+  "driver_acceptance_cases": 8,
+  "software_tests": 143,
   "hardware_test": "not_tested",
-  "continuous_60s": "not_tested"
+  "continuous_60s": "not_tested",
+  "independent_board_reproduction": "not_tested"
 }
