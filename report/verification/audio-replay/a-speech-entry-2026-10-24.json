@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "topic": "real usage entry attempt: external speech -> microphone -> system -> speaker",
+  "recorded_at": "2026-10-24",
+  "recorded_by": "A",
+  "result": "blocked by a microphone hardware fault; no speech amplification could be observed",
+  "attempts": [
+    {
+      "gain_db": -15.0,
+      "seconds": 9.0,
+      "mode": "bypass",
+      "guard_tripped": false,
+      "mic_rms_dbfs": -35.6,
+      "mic_peak_dbfs": -23.1,
+      "ref_peak_dbfs": -38.1,
+      "envelope_dbfs": [
+        -35.6,
+        -34.7,
+        -36.4,
+        -35.9
+      ],
+      "note": "ref = mic - 15 dB confirms the system did play the microphone signal"
+    },
+    {
+      "gain_db": -9.0,
+      "seconds": 9.0,
+      "mode": "bypass",
+      "guard_tripped": false,
+      "mic_rms_dbfs": -37.0,
+      "mic_peak_dbfs": -23.1,
+      "ref_peak_dbfs": -32.1,
+      "envelope_dbfs": [
+        -37.3,
+        -36.7,
+        -36.6,
+        -37.2
+      ],
+      "note": "operator reported pure white noise plus faint howling: the loop was amplifying its own noise floor because no voice reached the microphone"
+    }
+  ],
+  "microphone_check": {
+    "command": "direct capture, gain 0, loop open, 1-frame silent source, 8 s",
+    "operator_action": "spoke loudly within about 10-20 cm of the microphone for 8 s",
+    "mic_rms_dbfs": -37.7,
+    "mic_peak_dbfs": -25.3,
+    "envelope_dbfs": [
+      -38.1,
+      -36.9,
+      -37.5,
+      -37.7,
+      -38.0,
+      -37.5,
+      -37.7,
+      -38.5
+    ],
+    "floor_dbfs": -37.8,
+    "verdict": "MIC_DEAD: the microphone level did not move while the operator spoke"
+  },
+  "timeline": "the microphone worked at 2026-10-24 during the recalibration (mic -18.1 dBFS) and during the gate-drift test (-29 to -34 dBFS for the tones). It failed afterwards, around the 0 dB candidate saturation event.",
+  "explains": [
+    "C's c-room-ready-v1 speech runs stopped at gate_tone_not_observed: the gate tone could not be seen by a microphone that was no longer working",
+    "both speech attempts heard only amplified noise and a faint howl, never the operator's voice"
+  ],
+  "next": "operator reseats VCC / GND / LINE_IN or swaps the MAX4466 module, then the same 8 s microphone check decides whether it is serviceable",
+  "consequence_for_results": "no conclusion about speech amplification can be drawn from this round; the earlier closed-loop trials that the package accepted are unaffected because they used digital injection"
+}
