@@ -4,7 +4,7 @@
 > 每次会话结束**原地覆盖**本文件中自己负责的那一段，不要新建副本、不要在别处复述。
 > 其他文档若与本文件冲突，以本文件为准。
 
-最后更新：2026-10-24 23:55，B 线（两级抽取仿真只 +1.0 dB；天花板是识别相干，不是滤波器结构）
+最后更新：2026-10-25 02:20，B 线（判据三处修正；基线同场 +2.8…+6.6 dB、跨场 −1…−5 dB；两项筛选否定）
 
 ## 一句话
 
@@ -53,32 +53,32 @@
 
 ### B 数据与算法
 
-**最后动作**：2026-10-24 23:50 按真实延时预算仿真 a（8× 抽取 + 384 抽头）：**只 +1.0 dB**，且残差与 u 在低频的相干只有 0.023——已经没有可线性解释的部分。结论：不给 a 的参数去开工。
-**当前卡点**：天花板是识别相干（mic−u 在 300–1000 只有 0.77–0.90），不是滤波器结构；等 A 决定是否先做相干审计（提高注入/增加平均/降环境噪声）。
+**最后动作**：2026-10-25 按独立复核修正三处（相位穿越只认正实轴、分段回归、相干不换算成绝对地板），重算基线：同场拟合 +2.8…+6.6 dB、跨场套用 −1…−5 dB；两项筛选（加权系数、前向 biquad）都否定，交否定结果。
+**当前卡点**：需 C 决定 `room_v1_20261021` 的默认系数是否换成同场标定的 `calibrated_20261024`；缺第三场（话筒修复后、同夹具）数据，多场次系数无法验证。
 
-- 复现 A 的 b 结果：侧放 `max|H|=+4.19@429`、宽带 −5.34 dB、必要 +8.63@358、相位一致 +10.38@337。
-  机制：限制点从 441 移到 358，而 358 的 CD 只有 +8.16（441 是 +12.32），相对误差恶化了 4.2 dB，
-  把峰值降的 1.92 dB 全吃掉——b 不成立这个判断是对的。
-- 两级仿真：300–1000 +1.0 dB，其余频段 0；二级 256/384/512 抽头结果完全相同。
-  延时预算：原型 65 抽头、两级固定延时 64 样本 < 声学 125 样本才可行（193 抽头原型不可行）。
-- 抽头数不稳健：前10/后6 = 512 +4.19 / 680 +7.98；前6/后10 = +1.79/+1.68；奇偶 = +4.38/+4.00。
-  限制点在 441 Hz 与 8.3–8.4 kHz 之间随划分跳变，说明"唯一瓶颈 441"是划分的产物。
-- 数据归档：A 发来的包统一放在 `D:/Always/QianSai/_inbox/<日期_批次>/`，清单见 `_inbox/MANIFEST.md`。
+- 判据已修正：`positive_real_crossing`（相邻 bin、Re>0、±180° 折返不算穿越），
+  与独立复核四个数逐个吻合（4096：7.01/9.87；8192：4.75/7.95）。**换窗长判据值差 2–4 dB**，
+  所以 <2 dB 的差异不写结论。
+- 基线（部署 Q20，`L=(H−Ĥ)e^{−jω2}`，Ĥ 含 lag_first=1）：同场留出 4096 +4.56/+10.71、8192 +2.77/+6.60；
+  部署 candidate_512 在新场次 4096 −0.39/+0.09、8192 −1.05/−0.65；反向迁移 8192 −5.33/−3.94。
+- 筛选 a 否定：ridge 1e-9…1e-3 无收益（+2.68→−1.22）；低频加权零和；多场次无独立数据可验。
+- 筛选 b 否定：3 个陷波（435/880/3900）只 +3.5 dB，且 3.9 kHz 缺口 488 Hz 宽、要改前向通路与参考取点。
+- 撤回上一轮"两级抽取 +1.0 dB"：那是跨段拼接历史的产物，不可信；该路线本轮不启动。
+- 数据归档：`lowband2-return.zip` 解包在 `D:/Always/QianSai/_inbox/2026-10-25_lowband2_return/`，
+  27 个文件哈希已核。
 
-- 证据：[twostage-2026-10-24](../report/verification/twostage-2026-10-24/README.md)（两级仿真与抽头数/划分稳健性、a 的参数附录）、
-  [lowband2-2026-10-24](../report/verification/lowband2-2026-10-24/README.md)（分带、加权重拟合、陷波、位置扫描协议）、
-  [lowband-limit-2026-10-24](../report/verification/lowband-limit-2026-10-24/README.md)（−15 dB 不可达的量化）、
-  [session-correction-2026-10-24](../report/verification/session-correction-2026-10-24/README.md)（会话修正与预测对照）、
-  [peak-margin-2026-10-23](../report/verification/peak-margin-2026-10-23/README.md)（8.4 kHz 裕度与三臂协议）。
-- 工具：`scripts/diagnose_peak_margin.py`（H/Hat 误差、必要与相位一致阈值、灵敏度预算）、
-  `scripts/make_session_correction.py`（按频带偏差生成会话修正系数 + 不确定预算）、
-  `scripts/consume_summary_v3.py`（v3 字段/门禁/模型身份/配对复核，4 项测试）、
-  `scripts/verify_padding_equivalence.py`（补零等价的四点判据 + 反例）、
-  `scripts/check_causal_alignment.py`（因果约定，5 项回归测试）、
-  `scripts/score_time_domain.py`（部署 Q20 系数、逐段、共同窗口、跨场次）。
-- **恒等式（口径已修正）**：`mic/ref = H` 只在 `reference` 记录的是**实际播放信号 u** 时成立；
-  若 ref 记的是增益级输出（`g·residual`），Ĥ=0 时 `mic/ref = 1/g`，与 H 无关。
-  `mic/pred = H/Ĥ` 与 g、与 ref 取点都无关，仍然可用。
+- 证据：[b-screening-2026-10-25](../report/verification/b-screening-2026-10-25/README.md)（三项修正、基线重算、两项筛选）、
+  [handoff-to-c.md](../report/verification/b-screening-2026-10-25/handoff-to-c.md)（可直接转发给 C 的交接）、
+  [twostage-2026-10-24](../report/verification/twostage-2026-10-24/README.md)（两级仿真，**结论已撤回**）、
+  [lowband2-2026-10-24](../report/verification/lowband2-2026-10-24/README.md)（分带与陷波）、
+  [peak-margin-2026-10-23](../report/verification/peak-margin-2026-10-23/README.md)（8.4 kHz 裕度）。
+- 工具：`scripts/diagnose_peak_margin.py`（相位判据已修正，含 `--nfft`/`--coherence`）、
+  `scripts/eval_forward_eq.py`（前向 EQ 的裕度与语音代价）、
+  `scripts/consume_summary_v3.py`（v3 字段/门禁/模型身份复核）、
+  `scripts/verify_padding_equivalence.py`（补零等价四点判据）、
+  `scripts/make_session_correction.py`（会话修正系数）、
+  `scripts/check_causal_alignment.py`（因果约定回归）。
+- 测试：`sim/feedback/test_phase_crossing.py`（4 项，含复核反例）。
 
 ### C 测评与工具
 

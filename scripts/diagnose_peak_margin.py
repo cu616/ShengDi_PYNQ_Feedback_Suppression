@@ -77,28 +77,40 @@ def necessary_threshold(E, freqs, gate):
     return -20 * np.log10(E[k]), float(freqs[k]), 20 * np.log10(E[k])
 
 
-def phase_consistent_threshold(E, loop_phase, freqs, gate, fmin=FMIN_HZ):
-    sel = gate & (freqs >= fmin)
-    e = E[sel]
-    f = freqs[sel]
-    pu = np.unwrap(loop_phase[sel])
-    n = np.round(pu / (2 * np.pi))
-    x = pu - n * 2 * np.pi
+def positive_real_crossing(loop, freqs, gate, fmin=FMIN_HZ):
+    """正反馈环路的正实轴穿越点（Nyquist 判据的近似），只接受真实穿越。
+
+    三条硬约束：
+      1. **相邻 bin**：只有原始频率网格上一一相邻、且两端都过门控的 bin 才允许插值，
+         不跨低相干缺口去连两个不相邻频点。
+      2. **正实轴**：在虚部过零处插值复数环路，必须 Re>0。相位 ±180° 折返对应 Re<0，
+         不是穿越，绝不能计入（旧实现按折回后的相位变号判，会把 179°→−179° 误判为穿越）。
+      3. **小增益与穿越分开报**：max|L|<1 是稳定的充分条件，1/max|L| 是下界；
+         正实轴穿越给出的是另一套估计，两者不可互相替代。
+
+    返回 (阈值 dB, 频率 Hz)；阈值为该点允许的最大线性增益 1/Re。
+    """
+    idx = np.where(gate & (freqs >= fmin))[0]
     best, best_f = 0.0, float("nan")
-    for k in range(len(x) - 1):
-        if x[k] == 0.0:
-            cand, cf = e[k], f[k]
-        elif x[k] * x[k + 1] < 0:
-            t = x[k] / (x[k] - x[k + 1])
-            cand = e[k] + t * (e[k + 1] - e[k])
-            cf = f[k] + t * (f[k + 1] - f[k])
+    for a, b in zip(idx[:-1], idx[1:]):
+        if b != a + 1:            # 中间有未过门控的频点，不插值
+            continue
+        ya, yb = loop[a].imag, loop[b].imag
+        if ya == 0.0 and loop[a].real > 0:
+            cand, cf = float(loop[a].real), float(freqs[a])
+        elif ya * yb < 0:
+            t = ya / (ya - yb)
+            z = loop[a] + t * (loop[b] - loop[a])
+            if z.real <= 0:       # ±180° 折返，不是穿越
+                continue
+            cand, cf = float(z.real), float(freqs[a] + t * (freqs[b] - freqs[a]))
         else:
             continue
         if cand > best:
             best, best_f = cand, cf
     if best <= 0:
         return float("inf"), float("nan")
-    return 20 * np.log10(1.0 / best), best_f
+    return -20 * np.log10(best), best_f
 
 
 def shift_coefficients(coefficients, delay_samples):
@@ -125,13 +137,16 @@ def main():
     ap.add_argument("--emit-dir", default=None)
     ap.add_argument("--delay-frames", type=int, default=2)
     ap.add_argument("--top", type=int, default=8)
+    ap.add_argument("--nfft", type=int, default=4096,
+                    help="Welch 窗长；结论随窗长变化，必须与引用口径一致")
+    ap.add_argument("--coherence", type=float, default=0.8)
     args = ap.parse_args()
 
     paths = sorted(glob.glob(str(Path(args.data_dir) / "seg_*.npz")))
     if not paths:
         raise SystemExit("no seg_*.npz in %s" % args.data_dir)
-    freqs, H, coh, S_uu, nperseg, fs = estimate_H(paths)
-    gate = (coh >= 0.8) & (freqs >= FMIN_HZ)
+    freqs, H, coh, S_uu, nperseg, fs = estimate_H(paths, nperseg=args.nfft)
+    gate = (coh >= args.coherence) & (freqs >= FMIN_HZ)
     mag = np.abs(H)
     kpk = int(np.argmax(np.where(gate, mag, 0)))
     print("段数 %d，fs %.3f Hz，bin 宽 %.1f Hz，相干>=0.8 且 f>=300Hz 的 bin %d/%d，平均相干 %.3f"
@@ -152,12 +167,17 @@ def main():
     H_hat = model_response(coef, nfft)
     E = np.abs(H - H_hat)
     thr_n, f_n, emax = necessary_threshold(E, freqs, gate)
-    loop_phase = np.angle(H - H_hat) - 2 * np.pi * args.delay_frames * freqs / fs
-    thr_p, f_p = phase_consistent_threshold(E, loop_phase, freqs, gate)
-
-    print("\n[阈值] 必要判据 max|H-H_hat| = %+.2f dB @ %.0f Hz -> 阈值 %+.2f dB"
-          % (emax, f_n, thr_n))
-    print("       相位一致判据（含 %d 拍闭环延迟）-> 阈值 %+.2f dB @ %.0f Hz"
+    # 环路 L = (H - Hhat) * e^{-jω·2}：Hhat 已含 lag_first=1，这里只加调度延迟
+    loop = (H - H_hat) * np.exp(-1j * 2 * np.pi * args.delay_frames * freqs / fs)
+    thr_p, f_p = positive_real_crossing(loop, freqs, gate)
+    covered = gate.sum()
+    print("\n[覆盖率] 过门控 bin %d / %d（%.1f%%），未覆盖频段按未知处理，不外推"
+          % (covered, len(freqs), 100.0 * covered / len(freqs)))
+    print("[阈值] 小增益充分条件 max|L| = %+.2f dB @ %.0f Hz -> 1/max|L| = %+.2f dB（保守下界）"
+          % (20 * np.log10(np.abs(loop[gate]).max()),
+             freqs[gate][np.argmax(np.abs(loop[gate]))],
+             -20 * np.log10(np.abs(loop[gate]).max())))
+    print("       正实轴穿越（含 %d 拍调度延迟）-> 估计 %+.2f dB @ %.0f Hz"
           % (args.delay_frames, thr_p, f_p))
 
     order = np.argsort(np.where(gate, E, 0))[::-1][: args.top]

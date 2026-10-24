@@ -23,3 +23,5 @@ docs/log/progress.md merge=union
 board/audio_replay/*.html -text
 
 board/audio_replay/start-panel.sh -text
+# 模型文件的 SHA256 要跨机一致，禁止行尾转换
+models/** -text
