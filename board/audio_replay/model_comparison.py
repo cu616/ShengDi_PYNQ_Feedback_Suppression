@@ -9,7 +9,7 @@ from tail_metrics import BANDS, empty_tail
 
 SUMMARY_VERSION = 3
 SUMMARY_REVISION = '3.2.1'
-MODEL_SELECTION = {'room_v1_20261021':'room_v1/candidate_512.json',
+MODEL_SELECTION = {'room_v1_20261021':'room_v1/calibrated_20261024.json',
                    'box_v1_20261016':'box_v1/baseline_256.json'}
 BIT_CAPACITIES = {'8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339':512,
                   'dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05':256}
@@ -79,7 +79,9 @@ def validate_model(path, fixture_id, bit_capacity):
 def select_model(registry,fixture_id):
     path=MODEL_SELECTION.get(fixture_id)
     if path is None:raise ValueError('unregistered fixture; no silent model fallback')
-    return next(digest for digest,item in registry.items() if item['file']==path)
+    matches=[digest for digest,item in registry.items() if item['file']==path]
+    if len(matches)!=1:raise ValueError('selected calibration missing or ambiguous; no old-session fallback')
+    return matches[0]
 
 
 def flat_trial(row, registry=None):

@@ -17,7 +17,11 @@ from evaluation import VERSION, CONFIG, analyze_npz, sha
 from model_comparison import protection_evidence, qhash, flat_trial, export_csv
 from room_experiment import gate_metrics, sources, write_json
 
-POLICY = 'c-sprint-rc0-1.0.0'
+POLICY = 'c-sprint-rc0-1.0.1'
+DEFAULT_MODEL = dict(name='calibrated_20261024',source_file='models/room_v1/calibrated_20261024.json',
+    file_sha256='c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a',
+    coefficients_sha256='c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160',
+    validity='same verified calibration scene only; no cross-session fallback')
 RATE = 48828.125
 PLAN = dict(gain_db=0., gain_q12=4096, hp_volume=40, sample_rate_hz=RATE,
             fixture_id='room_v1_20261021', speech_seconds=8., pair_seconds=2.5,
@@ -34,7 +38,8 @@ def check_package(base):
     base = Path(base).resolve()
     manifest = json.loads((base/'sprint-manifest.json').read_text(encoding='utf8'))
     if (manifest['policy'] != POLICY or manifest['plan'] != PLAN or
-            manifest['calculation_version'] != VERSION or manifest['detector_config'] != CONFIG):
+            manifest['calculation_version'] != VERSION or manifest['detector_config'] != CONFIG or
+            manifest.get('default_model') != DEFAULT_MODEL):
         raise ValueError('frozen policy mismatch')
     for name, digest in manifest['hashes'].items():
         path = (base/name).resolve()
@@ -44,6 +49,9 @@ def check_package(base):
     model, q = load_candidate(base/'model.json', PLAN['fixture_id'], PLAN['hp_volume'], RATE)
     if len(q) != 512 or qhash(q) != manifest['coefficients_sha256']:
         raise ValueError('deployed Q20 mismatch')
+    if (sha(base/'model.json')!=DEFAULT_MODEL['file_sha256'] or
+            qhash(q)!=DEFAULT_MODEL['coefficients_sha256']):
+        raise ValueError('default calibrated model mismatch; no candidate_512 fallback')
     return manifest
 
 
@@ -181,7 +189,9 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
     try:
         manifest = validator(base)
         state['package_source'] = manifest['source_commits'];state['package_hashes'] = manifest['hashes']
-        state['model_registry']={manifest['hashes']['model.json']:dict(file='baseline_512.json',
+        state['default_model'] = DEFAULT_MODEL
+        state['failure_action'] = dict(action='mute_and_stop',automatic_bypass=False,old_session_fallback=False)
+        state['model_registry']={manifest['hashes']['model.json']:dict(file='room_v1/calibrated_20261024.json',
             fixture_id=PLAN['fixture_id'],logical_taps=512,role='baseline',
             coefficients_sha256=manifest['coefficients_sha256'],padded_512_sha256=manifest['coefficients_sha256'])}
         state['checks']['package'] = dict(status='passed', level='local_hash_and_compatibility')
@@ -189,7 +199,7 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             reason='frozen A driver has 10 s ceiling and tail-only PCM; no stitched-window substitute',
             owner='A', request='OPERATIONS.md: A minimal observation and continuous-run request')
         state['eq_contribution'] = dict(status='not_tested', reason='identity EQ baseline; no B candidate supplied')
-        print('PACKAGE_OK; 60s_CONTINUOUS_NOT_AVAILABLE; fixed gain 0 dB, no escalation')
+        print('PACKAGE_OK; DEFAULT_MODEL=calibrated_20261024 (strong); 60s_CONTINUOUS_NOT_AVAILABLE; fixed gain 0 dB, no escalation')
         if ask('确认现场值守、可立即切断音响电源、不戴耳机、允许本地保存音频；输入 READY：').strip()!='READY':
             raise RuntimeError('operator_cancel')
         if ask('确认麦克风/音响/前放与 strong 标定一致，Codec40；输入 SAME_SCENE，变化则停止交B重标定：').strip()!='SAME_SCENE':

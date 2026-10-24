@@ -220,16 +220,21 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ## 2026-10-25 集中实验 RC0
 
-维护者 C；本节就是包内 OPERATIONS.md。仅适用 `c-sprint-rc0-1.0.0`，不要执行上方历史包。
+维护者 C；本节就是包内 OPERATIONS.md。仅适用 `c-sprint-rc0-1.0.1`，不要执行上方历史包。
+**默认系数＝calibrated_20261024（A 原名 strong）**。B=d033d00 与原包逐字节相同；RC0实际系数没有变化。
+根目录和包内 select_model 均选择这套已登记基线；旧 candidate_512 只留历史分析，不作缺失时的后备。
+标定/定音/门禁/源关闭核验失败：静音、停批、保留证据，不自动切到原增益旁路，不装另一场旧系数。
+旁路是另一个闭环状态；需要A核实独立工作点并显式START，不能当默认恢复动作。
+
 决策：先用已有 strong 基线回答真实拾音/听众效果是否成立、同配置 FIR 开关是否有观察窗证据。
 自变量分别为系统开关和 FIR bypass，均衡固定 identity；不测新增益阶梯，不自动越过保护。
 截止按队长固定提交 bb56ef1 的计划：10/26 集中实验与质检、10/27 20:00 功能冻结、10/28 独立复现和封包。
 
 ### 唯一入口与固定身份
 
-- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc0.zip`。
-- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0/`。用新目录，保留现役基线供恢复。
-- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0/sprint.ipynb`。
+- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc0-r1.zip`。
+- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0-r1/`。用新目录，保留现役基线供恢复。
+- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0-r1/sprint.ipynb`。
   重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0: fixed baseline, single entry`，
   下一行为 `from sprint_experiment import run_sprint`。全包只有一个代码格，不以 In[n] 定位。
 - 使用 A=bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6 的原驱动/bit/hwh，
@@ -273,7 +278,7 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
    不发下一项；由 A 按已核实基线处理，不把恢复 stock overlay 当重新标定或效果通过。
    STOP/通信中断/落盘失败的软件分支通过不等于紧急静音实物已验收。
 8. **一次回包**：最终屏幕 `RETURN_PACKAGE` 给出唯一结果 ZIP：
-   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0/results/sprint-<id>/return-results.zip`。
+   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0-r1/results/sprint-<id>/return-results.zip`。
    包含所有已执行/失败记录、原始 NPZ 哈希、本地路径、汇总 CSV、覆盖和恢复结果；人声 NPZ/WAV 留板，
    B 可直接读 `summary-v3.json` / `summary-v3.csv`（原 schema3）；FIR 开关配对在 `fir_switch_pairs`，
    不冒充不同模型的 baseline/candidate 配对。包中 `models/manifest.json` 绑定当前 strong 基线。
@@ -303,6 +308,14 @@ seconds=60, before_start=..., stop_request=...)` 或说明实际等价入口；�
 
 若全 PCM 暂不可用，A 可先交连续主路与全程事件；C 将波形未覆盖区间保持 unknown。
 延长 watchdog 或改 ABI 由 A 提最小兼容变更表与回退，按现行流程审批，不由 C 绕过。
+
+### B=d033d00 的测量口径
+
+接受正实轴相邻bin/不跨缺口的修复与本轮无候选决定；未覆盖频段保持未知。
+4096/8192 的全16段结果含训练段；留出6段另报，不把小增益充分条件与相位穿越估计拼成可用增益区间。
+未取得同条件有效实测边界，不对外报告+3 dB、+5 dB或+2.8～+6.6 dB的实测性能。
+窗长敏感性是本套离线筛选的限制，不能据此给所有成对实测设通用±2 dB精度或最小改善门槛。
+候选EQ未交付，EQ仍为identity，不集成参考取点变化。
 
 ### C 收包与冻结
 

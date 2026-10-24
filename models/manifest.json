@@ -65,6 +65,35 @@
    "l1_q20": 28043118,
    "float_q20_maxdiff": 4.767391342808125e-07,
    "frames_needed_3N_plus_3": 771
+  },
+  {
+   "file": "room_v1/calibrated_20261024.json",
+   "sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+   "bytes": 19962,
+   "taps": 512,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "room_v1_20261021",
+   "hp_volume": 40,
+   "logical_taps": 512,
+   "loaded_taps": 512,
+   "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+   "derived_from": "A lowband2/model_512_strong.json (lowband2-return.zip, commit bb56ef1)",
+   "status": "C_selected_frozen_scene_baseline_not_cross_session_approved",
+   "fitted_on": "lowband2 seg_0..9, validated seg_10..15, ridge 1e-9, injection -12 dBFS",
+   "offline_holdout": {
+    "nfft_4096": {
+     "small_gain_bound_db": 4.56,
+     "pos_real_db": 10.71
+    },
+    "nfft_8192": {
+     "small_gain_bound_db": 2.77,
+     "pos_real_db": 6.6
+    }
+   },
+   "selection_note": "C accepted B=d033d00 selection: calibrated_20261024 is the frozen-scene default; no old-session fallback or cross-session approval.",
+   "role": "baseline",
+   "selection_source_commit": "d033d0047542d5e50654a0333777c48ec08dce21"
   }
  ],
  "derived_artifacts": [

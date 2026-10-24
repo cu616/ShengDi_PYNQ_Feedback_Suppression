@@ -27,7 +27,7 @@ def b_functions(commit):
     source = blob(commit,'scripts/diagnose_peak_margin.py')
     tree = ast.parse(source)
     nodes = [n for n in tree.body if isinstance(n,ast.FunctionDef) and
-             n.name in ('phase_consistent_threshold','model_response','welch_cross')]
+             n.name in ('phase_consistent_threshold','positive_real_crossing','model_response','welch_cross')]
     scope = {'np':np,'FMIN_HZ':300.}
     exec(compile(ast.Module(body=nodes,type_ignores=[]),'B exact AST functions','exec'),scope)
     return scope,digest(source)
@@ -44,10 +44,14 @@ def audit(a_commit,b_commit,out):
     cases=[]
     for name,phases,gate in [('negative-real-wrap',[179.,-179.],[True,True]),
                               ('low-coherence-hole',[10.,0.,-10.],[True,False,True]),
-                              ('positive-real-control',[10.,-10.],[True,True])]:
+                              ('positive-real-control',[10.,-10.],[True,True]),
+                              ('last-bin-on-positive-real-axis',[10.,0.],[True,True])]:
         f=400.+10*np.arange(len(phases));mag=np.ones(len(f))*.5
-        threshold,frequency=funcs['phase_consistent_threshold'](mag,np.deg2rad(phases),f,np.array(gate))
-        expected=name=='positive-real-control'; finite=bool(np.isfinite(threshold))
+        if 'positive_real_crossing' in funcs:
+            threshold,frequency=funcs['positive_real_crossing'](mag*np.exp(1j*np.deg2rad(phases)),f,np.array(gate))
+        else:
+            threshold,frequency=funcs['phase_consistent_threshold'](mag,np.deg2rad(phases),f,np.array(gate))
+        expected=name in ('positive-real-control','last-bin-on-positive-real-axis'); finite=bool(np.isfinite(threshold))
         cases.append(dict(case=name,frequencies_hz=f.tolist(),phase_deg=phases,gate=gate,
             expected_crossing=expected,returned_crossing=finite,check_passed=finite==expected,
             returned_db=float(threshold) if finite else None,
@@ -79,6 +83,30 @@ def audit(a_commit,b_commit,out):
         for nfft in (4096,8192):
             estimate=spectral_estimate([records[n] for n in names],q,nfft)
             estimate.update(split=split,input_paths=names)
+            if 'positive_real_crossing' in funcs:
+                suu=np.zeros(nfft//2+1);smm=suu.copy();cross=np.zeros_like(suu,dtype=complex)
+                for name in names:
+                    arrays,_=records[name]
+                    a,b,c=funcs['welch_cross'](arrays['reference'],arrays['microphone'],nfft)
+                    suu+=a;smm+=b;cross+=c
+                h=np.divide(cross,suu,out=np.zeros_like(cross),where=suu>0)
+                coh=np.divide(abs(cross)**2,suu*smm,out=np.zeros_like(suu),where=suu*smm>0)
+                freq=np.fft.rfftfreq(nfft,1/48828.125);omega=2*np.pi*freq/48828.125
+                gate=(freq>=300)&(coh>=.8)&(suu>0)
+                loop=(h-funcs['model_response'](q,nfft))*np.exp(-2j*omega)
+                threshold,frequency=funcs['positive_real_crossing'](loop,freq,gate)
+                estimate['b_fixed_function']=dict(estimated_db=float(threshold),frequency_hz=float(frequency),
+                    difference_from_c_estimate_db=float(threshold-estimate['phase_crossing_estimate']['estimated_db']))
+                estimate['gate_coverage']=dict(selected_bins=int(gate.sum()),total_bins=len(gate),fraction=float(gate.mean()))
+            estimates.append(estimate)
+    old_model=json.loads(blob(b_commit,'models/room_v1/candidate_512.json'))
+    old_q=np.asarray(old_model['coefficients_q20'],float)/2**20
+    for label,coefficients in [('all16_old_candidate_cross_session',old_q),
+                                ('all16_no_cancellation',np.zeros_like(old_q))]:
+        for nfft in (4096,8192):
+            names=['lowband2/seg_%d.npz'%i for i in range(16)]
+            estimate=spectral_estimate([records[n] for n in names],coefficients,nfft)
+            estimate.update(split=label,input_paths=names)
             estimates.append(estimate)
     memory_source=blobs['scripts/memory_sweep.py']
     result=dict(a_commit=a_commit,b_commit=b_commit,calculation_version=VERSION,
@@ -110,7 +138,7 @@ def audit(a_commit,b_commit,out):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--a-commit',default='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6')
-    p.add_argument('--b-commit',default='67e5b098747444e7aa934c256463aaef04c5a5ed')
+    p.add_argument('--b-commit',default='d033d0047542d5e50654a0333777c48ec08dce21')
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     result=audit(a.a_commit,a.b_commit,a.output)
     print(json.dumps({k:result[k] for k in ('a_commit','b_commit','npz_count','b_counterexamples','deployment')},ensure_ascii=False))

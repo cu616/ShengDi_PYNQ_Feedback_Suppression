@@ -227,7 +227,7 @@ def assemble_sprint(out, assets, model_path):
     A future candidate is integrated by rebuilding the complete package with a
     reviewed model_path, never by patching files on a running board.
     """
-    from sprint_experiment import POLICY, PLAN as SPRINT_PLAN
+    from sprint_experiment import POLICY, PLAN as SPRINT_PLAN, DEFAULT_MODEL
     from model_comparison import qhash
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False);assets=Path(assets)
     for name in ('sprint_experiment.py','evaluation.py','growth_monitor.py','tail_metrics.py',
@@ -244,11 +244,13 @@ def assemble_sprint(out, assets, model_path):
     if not acceptance['accepted']:raise ValueError('A driver software acceptance failed')
     model,q=load_candidate(model_path,SPRINT_PLAN['fixture_id'],40,48828.125)
     if len(q)!=512:raise ValueError('RC0 requires a 512-tap model')
+    if sha(model_path)!=DEFAULT_MODEL['file_sha256'] or qhash(q)!=DEFAULT_MODEL['coefficients_sha256']:
+        raise ValueError('RC0 default must be calibrated_20261024; review and re-freeze before selecting another model')
     shutil.copy2(model_path,out/'model.json')
-    (out/'models').mkdir()
-    shutil.copy2(model_path,out/'models/baseline_512.json')
+    (out/'models/room_v1').mkdir(parents=True)
+    shutil.copy2(model_path,out/'models/room_v1/calibrated_20261024.json')
     registry_entry={k:model[k] for k in ('fixture_id','hp_volume','sample_rate_hz','lag_first','taps')}
-    registry_entry.update(file='baseline_512.json',sha256=sha(out/'model.json'))
+    registry_entry.update(file='room_v1/calibrated_20261024.json',sha256=sha(out/'model.json'))
     (out/'models/manifest.json').write_text(json.dumps({'models':[registry_entry]},indent=2),encoding='utf8')
     shutil.copy2(assets/'scene.json',out/'a-historical-scene.json')
     (out/'eq.json').write_text(json.dumps({'type':'identity','contribution':'not_tested'}),encoding='utf8')
@@ -262,12 +264,14 @@ def assemble_sprint(out, assets, model_path):
                dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=source.splitlines(True))])
     (out/'sprint.ipynb').write_text(json.dumps(notebook,ensure_ascii=False,indent=2),encoding='utf8')
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
-    for name in ('audit.json','tests.txt'):
+    for name in ('audit.json','tests.txt','tests-r1.txt','b-handoff-review.json'):
         if (evidence/name).exists():
             (out/'offline-evidence').mkdir(exist_ok=True);shutil.copy2(evidence/name,out/'offline-evidence'/name)
     manifest=dict(policy=POLICY,calculation_version=VERSION,detector_config=CONFIG,plan=SPRINT_PLAN,
+        default_model=DEFAULT_MODEL,
         package_status='bounded_baseline_ready_continuous_not_implemented',
         source_commits={'A':'bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6',
+                        'B':'d033d0047542d5e50654a0333777c48ec08dce21',
                         'C':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip()},
         coefficients_sha256=qhash(q),driver_software_acceptance=acceptance,
         hardware_executed=False,online_growth_detection=False,continuous_60s=False,

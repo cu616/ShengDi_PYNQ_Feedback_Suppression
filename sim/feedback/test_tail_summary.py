@@ -91,8 +91,12 @@ class TailSummaryTests(unittest.TestCase):
         self.assertFalse(tail_statistics(signal(),zero,meta(),RATE)['tail_valid'])
 
     def test_registry_hashes_and_rejection_conditions(self):
-        registry=load_registry(ROOT/'models');self.assertEqual(len(registry),3)
-        self.assertEqual(registry[select_model(registry,'room_v1_20261021')]['role'],'candidate')
+        registry=load_registry(ROOT/'models');self.assertEqual(len(registry),4)
+        selected=select_model(registry,'room_v1_20261021')
+        self.assertEqual(selected,'c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a')
+        self.assertEqual(registry[selected]['role'],'baseline')
+        with self.assertRaisesRegex(ValueError,'no old-session fallback'):
+            select_model({k:v for k,v in registry.items() if k!=selected},'room_v1_20261021')
         self.assertEqual(registry[select_model(registry,'box_v1_20261016')]['logical_taps'],256)
         with self.assertRaises(ValueError):select_model(registry,'unregistered')
         path=ROOT/'models/room_v1/candidate_512.json'

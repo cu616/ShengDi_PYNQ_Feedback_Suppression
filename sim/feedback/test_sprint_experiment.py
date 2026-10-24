@@ -75,6 +75,20 @@ class SprintTests(unittest.TestCase):
         self.assertFalse(sprint.pair_check(a,dict(b,gate_mic_over_ref_db=-8.4))['window_comparison_valid'])
         self.assertFalse(sprint.pair_check(a,dict(b,protection=True))['window_comparison_valid'])
 
+    def test_default_is_same_calibration_and_failure_does_not_start_a_bypass_trial(self):
+        path=ROOT/'models/room_v1/calibrated_20261024.json'
+        self.assertEqual(sha(path),sprint.DEFAULT_MODEL['file_sha256'])
+        data=json.loads(path.read_text(encoding='utf8'))
+        self.assertEqual(qhash(data['coefficients_q20']),sprint.DEFAULT_MODEL['coefficients_sha256'])
+        with self.work() as d:
+            runner=Runner(drift_gate=3);state=self.execute(Path(d),runner)
+            self.assertEqual(state['status'],'stopped')
+            self.assertIn('path_gate_failed',state['stop_reason'])
+            # gate, voice, listener-off, failed second gate; no listener-on or FIR.
+            self.assertEqual(len(runner.calls),4)
+            self.assertFalse(any(c['bypass'] for c in runner.calls))
+            self.assertFalse(state['failure_action']['automatic_bypass'])
+
     def execute(self,base,runner,ready=True):
         setup(base)
         # A's mock emits all-zero coefficients; no borrowed golden detector.
