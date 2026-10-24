@@ -201,7 +201,7 @@ def assemble_room(out,assets):
                    dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=source.splitlines(True))])
     (out/'experiment.ipynb').write_text(json.dumps(nb,ensure_ascii=False,indent=2),encoding='utf8')
     shutil.copy2(ROOT/'board/audio_closed/BATCH_GUIDE.md',out/'OPERATIONS.md')
-    manifest=dict(package_version='c-room-experiment-1.0.0',status='ready',measurement_policy_version=POLICY,
+    manifest=dict(package_version='c-room-experiment-1.1.0',status='ready',measurement_policy_version=POLICY,
                   calculation_version=VERSION,summary_revision=SUMMARY_REVISION,plan=ROOM_PLAN,model_files=model_files,
                   a_commit='db296988a444cf2f72852dec66f777edb7c103f6',
                   driver_acceptance=acceptance,hardware_executed=False,online_microphone_clip_protection=False,

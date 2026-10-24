@@ -16,6 +16,8 @@
 |---|---|---|---|---|---|---|
 | R-001 | B → A | 把 `training_box_v1.npz`、`validation_box_v1.npz`、`candidate_box_v1_256.json` 从板卡 `base/audio/audio_calibrate/` 拷到电脑任意目录并发给 B（约 1 MB，不含人声）。或按 `board/audio_calibrate/path_analysis_box_v1.py` 在板上跑一次，回传 `path_analysis_v1.json` | B 线全部真实数据分析：真实共振峰、CD 最差频点、128/256/512 的 ASG 对照、现场增益点位 | 三个文件能被 `calibration.load_capture` 读入且哈希记录在案；或回传的 JSON 含 `shipped` 与 `tap_sweep` | 2026-10-20 | open |
 | R-003 | B → A | 真实数据到手后，按 B 给的增益点位做**成对**记录：同一 `hp_volume`、同一夹具、同一时长，只切 bypass | 无 ASG 实测；无法判断抵消是否真的提高了稳定增益 | 每档给出旁路/抵消两项，含 `gain_q12`、听感类别、是否起振；至少覆盖 B 给的"对照点" | 2026-10-20 | open |
+| R-004 | C → A | 只打包已有lowband2的16段原标定NPZ、model_512_strong.json、原拟合/频谱脚本及参数、0/+3 dB四项原闭环记录、六次定音与修线后scene/底噪已有证据；manifest逐文件相对路径/SHA256/provenance，含实际gain_q12、音量、bit/hwh/模型及Q20哈希、frame/source边界、训练/验证归属；不能确认填null。ZIP推A分支report/verification/audio-replay/lowband2-return.zip，不新增采集 | 全频段预测独立复核、+3 dB失败一致性检查及强模型ready包冻结 | ZIP可读，16段与模型原字节可核验，缺字段有原因；不以手写频带摘要代替原数据 | 2026-10-24 | open |
+| R-005 | C → B | 收到R-004后复核实际Q20模型的全频段残余路径及独立验证，包含DC、435/457 Hz、8.4/9.131 kHz与频带空隙；分开标预测小增益界/实测单档事件，核查+3 dB失败低于+5.42 dB预测的原因；若仍达不到设计目标提出300–1000 Hz改进模型 | 下一有效工作点和模型选择，避免把有限频带预测当可稳增益 | 输出有模型/输入哈希、训练验证划分、频率网格、归一化、量化/时延约定、逐段残余与不确定性；+6 dB目标结论或明确缺证，不改写实测ASG | 2026-10-24 | open |
 
 ## 已完成
 

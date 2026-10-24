@@ -25,3 +25,6 @@ board/audio_replay/start-panel.sh -text
 
 # Preserve B model-package SHA256 across checkout.
 /models/** -text
+
+# The room review is a byte-frozen evidence bundle, including original models.
+/report/verification/audio_closed/room-review-20261024/** -text

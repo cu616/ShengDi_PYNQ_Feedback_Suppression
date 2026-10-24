@@ -10,12 +10,13 @@ from evaluation import VERSION, analyze_npz, sha
 from model_comparison import flat_trial, pair_models, export_csv, load_registry, SUMMARY_REVISION
 
 RATE = 48828.125
-POLICY = 'c-room-policy-1.0.0'
+POLICY = 'c-room-policy-1.1.0'
 PLAN = dict(fixture_id='room_v1_20261021', hp_volume=40,
             gains_db=[-9., -6., -3., 0.], repeats=2,
             seconds=2.1, source_seconds=1.87, source_rms_dbfs=-24.,
             gate_hz=1000., gate_peak_dbfs=-20., gate_seconds=1.02,
-            gate_source_seconds=1., gate_drift_db=1.5, gate_noise_margin_db=6.,
+            gate_source_seconds=1., gate_drift_db=5., gate_noise_margin_db=6.,
+            comparison_gate_drift_db=1.5,
             transition_frames=2442, speech_seconds=3., speech_gain_db=-9.,
             purpose='current-session 256/512 same-gain comparison; no measured MSG/ASG',
             online_microphone_clip_protection=False)
@@ -87,12 +88,45 @@ def gate_metrics(path,noise_floor_dbfs,baseline_dbfs=None):
     drift=None if baseline_dbfs is None else level-baseline_dbfs
     result.update(rms_dbfs=level,tonal_fraction=tonal_fraction,drift_db=drift,
                   reference_rms_dbfs=float(20*np.log10(max(np.std(y),1e-12))))
+    result['mic_over_ref_db']=level-result['reference_rms_dbfs']
+    result['operational_drift_limit_db']=PLAN['gate_drift_db']
     if level<float(noise_floor_dbfs)+PLAN['gate_noise_margin_db']:result['reasons'].append('gate_at_noise_floor')
     if level>-3:result['reasons'].append('gate_level_too_high')
     if tonal_fraction<.8:result['reasons'].append('gate_tone_not_observed')
     if np.any((mic==-2**23)|(mic==2**23-1)):result['reasons'].append('gate_microphone_full_scale')
-    if drift is not None and abs(drift)>PLAN['gate_drift_db']:result['reasons'].append('gate_drift_exceeds_1p5_db')
+    if drift is not None and abs(drift)>PLAN['gate_drift_db']:result['reasons'].append('gate_drift_exceeds_5_db')
     result['passed']=not result['reasons'];return result
+
+
+def gate_repeatability(gates):
+    """Descriptive dB statistics; neither an error bar nor a path correction."""
+    result={'count':len(gates),'std_convention':'population; ddof=0'}
+    for key in ('rms_dbfs','reference_rms_dbfs','mic_over_ref_db'):
+        values=[g[key] for g in gates if isinstance(g.get(key),(int,float)) and np.isfinite(g[key])]
+        result[key]=dict(count=len(values),range_db=float(np.ptp(values)) if values else None,
+                        std_db=float(np.std(values)) if values else None)
+    return result
+
+
+def comparison_controls(rows,limit_db=1.5):
+    """A permissive operation gate does not certify a matched acoustic path."""
+    groups={}
+    for row in rows:
+        if row.get('trial_role')!='closed_model':continue
+        m=row.get('analysis',{}).get('evaluation_metadata',{})
+        groups.setdefault(m.get('comparison_id'),[]).append(row)
+    for group,items in groups.items():
+        gates=[r.get(key) or {} for r in items for key in ('amplifier_gate','post_gate')]
+        values=[g.get('mic_over_ref_db') for g in gates]
+        complete=(group is not None and len(items)==2 and len(gates)==4
+                  and all(g.get('passed') is True for g in gates)
+                  and all(isinstance(v,(int,float)) and np.isfinite(v) for v in values))
+        spread=float(np.ptp(values)) if complete else None
+        control=dict(valid=bool(complete and spread<=limit_db),mic_over_ref_range_db=spread,
+                     limit_db=limit_db,scope='1 kHz gate only; does not certify broadband path identity',
+                     reasons=[] if complete and spread<=limit_db else
+                     ['comparison_gate_range_exceeds_limit'] if complete else ['comparison_gate_evidence_incomplete'])
+        for row in items:row['path_comparison_control']=dict(control)
 
 
 def active_statistics(path,noise_floor_dbfs):
@@ -106,8 +140,19 @@ def active_statistics(path,noise_floor_dbfs):
                 valid=bool(len(x)>=2048 and level>=noise_floor_dbfs+6.))
 
 
+def room_model_pairs(state):
+    pairs=pair_models(state['trials'])
+    # B's v3 consumer requires two real capture IDs for a model_pairs entry.
+    # Incomplete groups and their failure reasons are still returned separately.
+    state['model_pairs']=[p for p in pairs if p['baseline_capture_id'] is not None and p['candidate_capture_id'] is not None]
+    state['incomplete_model_pairs']=[p for p in pairs if p not in state['model_pairs']]
+    state['comparison_group_count']=len(pairs)
+
+
 def collect_room(base,folder,state):
     registry=load_registry(base/'models') if (base/'models/manifest.json').is_file() else None
+    comparison_controls(state['trials'],PLAN['comparison_gate_drift_db'])
+    state['gate_repeatability']=gate_repeatability([r.get('amplifier_gate') or {} for r in state['trials'] if r['trial_role']=='amplifier_gate'])
     for row in state['trials']:
         if row['trial_role']=='closed_model' and row.get('post_gate',{}).get('passed') is not True:
             a=row.get('analysis')
@@ -115,7 +160,7 @@ def collect_room(base,folder,state):
                 a['category']='invalid';a['reasons'].append('post_trial_gate_not_confirmed')
                 a.get('evaluation_metadata',{})['positive_control_valid']=False
         row.update(flat_trial(row,registry))
-    state['model_pairs']=pair_models(state['trials'])
+    room_model_pairs(state)
     state['schema_version']=3;state['calculation_version']=VERSION;state['summary_revision']=SUMMARY_REVISION
     state['raw_files']=[dict(file=p.name,sha256=sha(p),board_path=str(p.resolve())) for p in sorted(folder.glob('*.npz'))]
     write_json(folder/'summary.json',state);export_csv(folder/'summary.csv',state['trials'])
@@ -197,9 +242,11 @@ def run_room(base=None,ask=input,runner=None,validator=check_room_package):
             if not a.get('tail_statistics',{}).get('tail_valid'):
                 a['category']='unknown';a['reasons'].append('tail_not_qualified; no stability claim')
         if not direct:
-            answer=ask('已恢复静音：1清楚/可接受，0无声，2失真，3尖叫，4未静，q停止：').strip()
-            row['hearing_code']=answer;save()
-            if answer!='1':
+            answer=ask('已恢复静音：H1人工回听清楚/可接受，P1仅数值代理；0无声，2失真，3尖叫，4未静，q停止：').strip().upper()
+            row['hearing_code']=answer
+            row['hearing_evidence_kind']='operator_report' if answer=='H1' else 'software_proxy' if answer=='P1' else 'operator_event'
+            save()
+            if answer not in ('H1','P1') or (speech and answer!='H1'):
                 a['category']='invalid';a['reasons'].append('operator_hearing:'+answer)
                 raise RuntimeError('operator_hearing:'+answer)
         if role=='closed_model':last_closed=row
@@ -222,7 +269,7 @@ def run_room(base=None,ask=input,runner=None,validator=check_room_package):
         save();manifest,scene=validator(base);state.update(versions=manifest,scene=scene)
         burst=np.load(base/'burst.npy',allow_pickle=False);tone=np.load(base/'gate.npy',allow_pickle=False)
         if burst.dtype!=np.dtype('<i2') or tone.dtype!=np.dtype('<i2'):raise ValueError('frozen source dtype mismatch')
-        print('房间0.5 m、音响1只、Codec40；手机静音。每项门禁直放1.02秒；闭环最长2.1秒，需START。')
+        print('房间0.5 m、音响1只、Codec40；手机静音。每项门禁直放1.02秒，运行漂移限5 dB，配对另验1.5 dB；闭环最长2.1秒，需START。')
         print('有人值守并可立即断音响电源。麦克风满幅检查覆盖保存窗口；没有全程ADC在线保护。')
         action=ask('确认现场已恢复正常、允许本地保存：RUN固定模型比较；SPEECH仅外部讲话；其他退出：').strip().upper()
         state['requested_action']=action

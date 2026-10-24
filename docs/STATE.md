@@ -40,12 +40,12 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-24 接收 A db29698 的521条静默回包及参考臂说明，完成房间门禁 ready v1：每项前固定定音、1.5 dB漂移门禁、事后复核、全捕获麦克风满幅排除、确定性尾区间与外部讲话入口；124项回归及独立整包验收通过。
-**当前卡点**：软件包集成完成，待A执行本场房间固定比较并回一个结果ZIP。群聊check仅执行一次，因仓库缺tools/ai-group/group.py而停止；不阻塞测量包。没有新增现场采集或已验收ASG。
+**最后动作**：2026-10-24 取得A=08965d2，静默复核两份ready回包并修正C的保护ABI读取、无效尾段几何及未完成配对导出。运行门禁源码改为5 dB，效果配对另查前后四次mic/ref极差1.5 dB；B原消费程序两份结果均0阻断。
+**当前卡点**：第二份7个身份中6组完整、有效效果配对0，0 dB候选预测饱和及mic满幅停止；人声验收未通过。等待A只打包已有lowband2原数据/强模型与关联记录（R-004），再由B复核全频段界（R-005）；不重复旧RUN、不新增现场采集。
 
-- [房间集成验收与回包复核](../report/verification/audio_closed/batch-control.md#2026-10-24-房间门禁-ready-v1)、[现行操作单](../board/audio_closed/BATCH_GUIDE.md#现行房间门禁实验-ready-v1)。
-- 现行 c-room-experiment-1.0.0，schema=3、summary_revision=3.2.0、calculation=c-measurement-2.2.0；采用A本场重标定256/512原模型，B历史模型注册表原样保留。
-- 旧回包为真实3.1版本，原分类保留；缺合格尾段与正向对照，不能组成有效配对。新包ready仅指软件集成通过，模型和声音效果须现场验证。
+- [回包复核与软件证据](../report/verification/audio_closed/batch-control.md#2026-10-24-ready-回包复核与门禁-v11)、[执行安排](../board/audio_closed/BATCH_GUIDE.md#2026-10-24-回包后的执行安排)。
+- 新策略c-room-policy-1.1.0，schema=3、summary_revision=3.2.1、calculation=c-measurement-2.2.1；原发声包v1冻结。本轮仅发布离线复核结果及源码，未发布强模型发声包。
+- 分频带预测与实测增益分开，+6 dB为提议设计目标，MSG/ASG仍无验收值。群聊check已因缺原脚本停止，未重试。
 
 ## 已验证 / 未验证（只在这里写一次）
 

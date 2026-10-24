@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from growth_monitor import MonitorConfig, replay
 
-VERSION = 'c-measurement-2.2.0'
+VERSION = 'c-measurement-2.2.1'
 CONFIG = dict(window_seconds=.016, hop_seconds=.008, growth_seconds=.08,
               confirm_seconds=.016, minimum_rise_db=3.,
               minimum_slope_db_per_second=12., minimum_fit_r2=.9,
@@ -92,6 +92,8 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
                   event_flags={}, instability_evidence=[], msg_db=None, asg_db=None,
                   scope='captured window only; no whole-trial stability claim')
     flags = result['event_flags']
+    from model_comparison import protection_evidence
+    protection,protection_basis=protection_evidence(m)
     flags.update(protection=m.get('guard_tripped') is True or m.get('protection_triggered') is True,
                  early_stop=m.get('early_stop'), execution_error=bool(m.get('error')),
                  recovery_failed=m.get('recovery_ok') is False, instability_growth=False)
@@ -106,7 +108,8 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
             raise ValueError('invalid count')
         result['counts'] = counts
         flags.update({k: None if v is None else v > 0 for k, v in counts.items()})
-        flags['protection'] = m.get('guard_tripped') is True or m.get('protection_triggered') is True
+        flags['protection'] = protection
+        result['protection_triggered_basis']=protection_basis
         flags['early_stop'] = m.get('early_stop')
         flags['execution_error'] = bool(m.get('error'))
         flags['recovery_failed'] = m.get('recovery_ok') is False

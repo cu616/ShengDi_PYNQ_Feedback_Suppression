@@ -1,0 +1,8 @@
+{
+  "source_a_commit": "08965d25ae57a3cb794f3db6987aafa0f1461ab9",
+  "b_consumer_commit": "59ab1ee55bf54d1e075647afffd14a9e0f4eff32",
+  "b_consumer_source_sha256": "4b576500599e4bfe4b4299d9d960bdd1ff8561a10835bd6b41fbe0705b72ad83",
+  "a_replay_trial_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+  "board_access": false,
+  "new_field_acquisitions": 0
+}

@@ -77,7 +77,7 @@ class RoomTests(unittest.TestCase):
         return tempfile.TemporaryDirectory(dir=ROOT/'tmp')
     def execute(self,base,runner,action='RUN'):
         manifest,scene=setup(base)
-        def answer(prompt):return action if 'RUN固定' in prompt else 'START' if 'START' in prompt else '1'
+        def answer(prompt):return action if 'RUN固定' in prompt else 'START' if 'START' in prompt else 'H1'
         with contextlib.redirect_stdout(io.StringIO()):
             return room.run_room(base,ask=answer,runner=runner,validator=lambda _: (manifest,scene))
 
@@ -115,7 +115,7 @@ class RoomTests(unittest.TestCase):
         with self.work() as d:
             runner=Runner(drift_gate=3);state=self.execute(Path(d),runner)
             self.assertEqual(state['status'],'stopped')
-            self.assertIn('gate_drift_exceeds_1p5_db',state['stop_reason'])
+            self.assertIn('gate_drift_exceeds_5_db',state['stop_reason'])
             self.assertTrue(all(c['direct'] for c in runner.calls))
             self.assertEqual(len(runner.calls),3)
 
@@ -140,14 +140,14 @@ class RoomTests(unittest.TestCase):
             gate=room.gate_metrics(path,-60.)
             self.assertFalse(gate['passed']);self.assertIn('gate_tone_not_observed',gate['reasons'])
 
-    def test_gate_1p5_db_boundary_is_applied_to_fixed_baseline(self):
+    def test_gate_5_db_boundary_is_applied_to_fixed_baseline(self):
         with self.work() as d:
             base=Path(d);manifest,scene=setup(base);path=base/'gate.npz';source=np.load(base/'gate.npy')
             Runner()(path,scene['fixture_id'],base/manifest['model_files']['candidate'],source,
                      direct_only=True,bypass=True,gain_db=0.,seconds=1.02,before_start=lambda:True)
             baseline=room.gate_metrics(path,-60.)['rms_dbfs']
             with np.load(path) as z:original={k:np.array(z[k]) for k in z.files}
-            for delta,passed in [(1.49,True),(1.51,False),(-1.51,False)]:
+            for delta,passed in [(4.99,True),(5.01,False),(-5.01,False)]:
                 data=dict(original);data['microphone']=original['microphone']*10**(delta/20)
                 np.savez(path,**data)
                 result=room.gate_metrics(path,-60.,baseline)
@@ -183,6 +183,16 @@ class RoomTests(unittest.TestCase):
             self.assertFalse(state['model_pairs'])
             self.assertFalse(state['normal_mic_amplification_demonstrated'])
             self.assertTrue(state['functional_hearing_accepted'])
+
+    def test_proxy_hearing_cannot_pass_speech_acceptance(self):
+        with self.work() as d:
+            base=Path(d);manifest,scene=setup(base);runner=Runner()
+            def answer(prompt):return 'SPEECH' if 'RUN固定' in prompt else 'START' if 'START' in prompt else 'P1'
+            with contextlib.redirect_stdout(io.StringIO()):
+                state=room.run_room(base,ask=answer,runner=runner,validator=lambda _: (manifest,scene))
+            self.assertEqual(state['status'],'stopped')
+            self.assertFalse(state['normal_mic_amplification_demonstrated'])
+            self.assertEqual(state['trials'][-1]['hearing_evidence_kind'],'software_proxy')
 
 
 if __name__=='__main__':unittest.main()

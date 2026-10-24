@@ -1,0 +1,73 @@
+{
+ "summary": "report\\verification\\audio_closed\\room-review-20261024\\run-2\\summary.json",
+ "schema_version": 3,
+ "calculation_version": "c-measurement-2.2.1",
+ "evidence_kind": [
+  "board_recording"
+ ],
+ "rows": 28,
+ "model_pairs": 6,
+ "effect_eligible_rows": 2,
+ "effect_eligible_real_pairs": 0,
+ "consumable_as_is": true,
+ "blocking_issues": [],
+ "gaps": {
+  "comparison_id 为空，无法参与配对": {
+   "rows": 15,
+   "examples": [
+    "08fc9a02-29f4-428a-8a13-b04af60afd8d",
+    "2261507d-9929-4b28-bbf6-5d09bc1109c9",
+    "23f60253-c925-4933-a850-eb28e90c626e"
+   ]
+  },
+  "repeat_id 为空，无法参与配对": {
+   "rows": 15,
+   "examples": [
+    "08fc9a02-29f4-428a-8a13-b04af60afd8d",
+    "2261507d-9929-4b28-bbf6-5d09bc1109c9",
+    "23f60253-c925-4933-a850-eb28e90c626e"
+   ]
+  },
+  "有模型行但没有配对": {
+   "rows": 2,
+   "examples": [
+    "None",
+    "room-be9cf767dc44-q4096-r1"
+   ]
+  }
+ },
+ "categories": {
+  "unknown": 25,
+  "no_instability_observed_in_window": 2,
+  "invalid": 1
+ },
+ "row_blocking_reasons": {
+  "tail_not_validated": 26,
+  "positive_control_not_validated": 15,
+  "path_comparison_control_failed": 3,
+  "positive_control_failed": 1,
+  "safety_not_validated": 1,
+  "configuration_or_capture_invalid": 1
+ },
+ "model_registry_hits": 28,
+ "coef_hash_matches_raw_array": 22,
+ "coef_hash_matches_padded512": 6,
+ "field_coverage": {
+  "gain_q12": 28,
+  "hp_volume": 28,
+  "bit_sha256": 28,
+  "coefficients_sha256": 28,
+  "model_role": 28,
+  "logical_taps": 28,
+  "loaded_taps": 28,
+  "tail_valid": 28,
+  "tail_rms_dbfs": 2,
+  "tail_slope_db_per_s": 2,
+  "effect_eligible": 28,
+  "protection_triggered": 28,
+  "band_300-1000": 2,
+  "band_1000-3000": 2,
+  "band_8200-8600": 2
+ },
+ "note": "本脚本只判字段与门禁自洽性，不判抗啸叫性能，也不把软件夹具当实测。"
+}

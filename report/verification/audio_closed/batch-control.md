@@ -1,5 +1,53 @@
 # 批次流程验证
 
+## 2026-10-24 ready 回包复核与门禁 v1.1
+
+任务来自用户转发A=08965d2；C读取该提交的两份原ZIP、重复性、低频及现场说明。
+原ZIP和JSON原字节保存在 [复核输入](room-review-20261024/inputs/)，逐文件哈希见
+[audit.json](room-review-20261024/audit.json)，来源提交、驱动及B消费脚本哈希见
+[review-source.json](room-review-20261024/review-source.json)。C未操板、未新增采集，原NPZ仍在A板上；
+这是保存汇总与metadata的派生复核，**没有独立重算原波形**。
+
+两份回包分别9项/3项闭环、28项/13项闭环；第二份7个比较身份中6组完整、1组在0 dB候选保护后未完成。
+修正后分别1组/6组配置匹配，但有效效果配对仍均为0：候选尾段低于信号门槛。
+第二份两条-3 dB基线尾段有统计值，仅可保留各自窗口内观测；不能以单边有尾段认证候选改善。
+第二份末项预测计数4、mic满幅1码并早停；不把削顶单独命名为反馈因果。
+A现场说明明确闭环听感码由数值代理填写，派生汇总附该说明文件SHA256，不能作人耳验收。
+分别见 [run-1](room-review-20261024/run-1/summary.json)、[run-2](room-review-20261024/run-2/summary.json)。
+
+本轮纠正三处C工具问题：
+
+- 无效尾段仍有实际几何区间，旧工具仅随有效统计导出区间，造成假配置不符；保留区间但不补统计。
+- A evidence-v2用stop_reason和终点status/raw计数保存保护结果，旧读取只找guard_tripped，误报安全未知。
+  现在按明确ABI读取并保存依据，旧无版本/异常/不全证据仍为null。
+- B消费程序要求model_pairs两端capture_id存在，未完成组应另存incomplete_model_pairs；没有丢掉失败行。
+
+实现 [房间协议v1.1](../../../docs/contracts/audio-closed-v1.md#房间执行协议-v112026-10-24a-08965d2-反馈)：
+运行门禁5 dB，效果配对另验前后四次1 kHz mic/ref极差1.5 dB；记录实测极差、总体标准差及来源。
+两份RUN的mic极差为1.810/1.989 dB，reference极差均为0，因此归一化并不能消除这次漂移。
+独立六定音列表重算极差4.710、总体标准差1.590 dB。该列表缺每次reference与原NPZ，不能独立验证其比值。
+若机械沿用旧scene底噪-37.8 dBFS，六次中三次也低于底噪+6 dB；放宽漂移限并不自动解决信噪不足。
+请求A按已有证据登记修线后的场景/底噪，未知留空；没有为通过而降低通路信号门槛。
+
+A的分频带−max|H−Ĥ|原数字仅记predicted_gain_bound_db，+6 dB为提议设计目标。
+小增益充分条件要求可信稳定线性路径的全部环路频率满足严格环路增益<1；
+参见 [MIT小增益定理](https://ocw.mit.edu/courses/6-241j-dynamic-systems-and-control-spring-2011/056c92694b953cb4645e4a4c20a363a8_MIT6_241JS11_lec17.pdf)。
+四个频带未覆盖DC、3.4–8.2 kHz、8.6 kHz以上等；现场记录中还有9131 Hz峰位。
+因此全频段界、MSG/ASG仍为空；+3 dB出现失败并不验证+5.42 dB充分界，需查模型/频率覆盖/路径变化/非线性。
+“需要+20 dB、缺口15 dB”也缺正常扩声需求与原测量支撑，C未将其注册为验收事实。
+C不修改B模型或算法，接下来唯一数据动作见 [R-004/R-005](../../../docs/REQUESTS.md)。
+
+验证记录：131项[软件回归](room-revision-tests-20261024.txt)通过，新增真实ABI、几何、5 dB运行/1.5 dB比较分离、
+不完整配对和代理听感用例。B原59ab1ee消费程序对两份派生结果均0阻断、实测有效配对0，
+见 [B消费1](room-review-20261024/run-1/b-consumer.json)、[B消费2](room-review-20261024/run-2/b-consumer.json)。
+初次B消费发现空capture_id阻断后修正导出，未通过改B消费者或删除失败记录规避。
+新源码用旧A资产完成冻结哈希、驱动8/8、唯一Notebook格和取消不导入pynq的集成检查，
+仅作软件验收，见 [整包检查](room-revision-package-check-20261024.json)。
+[文档检查](room-revision-docs-20261024.txt)为0错误、0警告。
+
+交付 `build/packages/c-room-review-v2.zip` 为上述离线结果与原输入，不是发声包。
+原ready v1冻结不改，不要求重跑。新策略源码在C分支与完整源码ZIP中；强模型及独立验证材料到齐后再冻结下一发声包。
+
 本次实际运行Python unittest discover，共38项通过，输出见batch-software-tests.txt。新增覆盖整批8项与4对汇总、未确认不启动、准备阶段取消、尖叫反馈停止、饱和/算术错误停止、KeyboardInterrupt保留进度、配置不一致停止。模拟驱动额外检查before_start执行时Codec仍静音、PL未arm；取消仍走恢复。
 
 首轮测试因Windows沙箱临时目录不可写报6个测试环境错误，改用仓库tmp后通过。没有据此改动设备逻辑。更新清单时同时修正package_audio_closed.py误将audio_pl_residual.v列作闭环顶层源码的记录错误，改为audio_pl_closed.v；未修改或重建bitstream。bit哈希仍为4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316。

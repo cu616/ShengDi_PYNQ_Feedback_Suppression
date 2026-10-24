@@ -8,7 +8,7 @@ import numpy as np
 from tail_metrics import BANDS, empty_tail
 
 SUMMARY_VERSION = 3
-SUMMARY_REVISION = '3.2.0'
+SUMMARY_REVISION = '3.2.1'
 MODEL_SELECTION = {'room_v1_20261021':'room_v1/candidate_512.json',
                    'box_v1_20261016':'box_v1/baseline_256.json'}
 BIT_CAPACITIES = {'8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339':512,
@@ -22,6 +22,24 @@ PAIR_FIELDS = ('gain_q12','hp_volume','bit_sha256','fixture_id','sample_rate_hz'
                'source_pcm16_sha256','scene_sha256','session_id','bypass',
                'tail_first_frame','tail_end_frame')
 HASH = re.compile(r'^[0-9a-f]{64}$')
+
+
+def protection_evidence(metadata):
+    """Read A's explicit outcome; absence in unversioned captures stays unknown."""
+    values=[metadata.get('guard_tripped'),metadata.get('protection_triggered')]
+    if any(v is True for v in values):return True,'explicit_guard_field'
+    if any(v is False for v in values):return False,'explicit_guard_field'
+    if metadata.get('driver_evidence_version')=='a-replay-evidence-v2':
+        reason=metadata.get('stop_reason')
+        if reason=='guard':return True,'a-replay-evidence-v2:stop_reason=guard'
+        words=metadata.get('clip_counts_raw')
+        if (reason=='completed' and metadata.get('early_stop') is False
+                and type(metadata.get('capture_status')) is int
+                and metadata['capture_status']&1 and not metadata['capture_status']&(3<<17)
+                and isinstance(words,list) and len(words)==3
+                and all(type(w) is int and w==0 for w in words)):
+            return False,'a-replay-evidence-v2:completed_done_final_zero_counts'
+    return None,None
 
 
 def qhash(q):
@@ -76,7 +94,19 @@ def flat_trial(row, registry=None):
                                    'scene_sha256','session_id','comparison_id','repeat_id','bypass')})
     out.update(trial_role=row.get('trial_role',m.get('trial_role')),
                measurement_policy_version=m.get('measurement_policy_version'))
+    control=row.get('path_comparison_control',{})
+    g=row.get('amplifier_gate') or {}
+    out.update(path_comparison_control_valid=control.get('valid'),
+               path_comparison_mic_over_ref_range_db=control.get('mic_over_ref_range_db'),
+               gate_mic_over_ref_db=g.get('mic_over_ref_db'),gate_mic_rms_dbfs=g.get('rms_dbfs'),
+               gate_reference_rms_dbfs=g.get('reference_rms_dbfs'))
     out.update(tail)
+    # Geometry exists even when a tail is too quiet for meaningful statistics.
+    window=a.get('tail_analysis_window')
+    if window and all(type(window.get(k)) is int for k in ('first_frame','end_frame','frames')):
+        if window['frames']>0 and window['end_frame']-window['first_frame']==window['frames']:
+            out.update(tail_first_frame=window['first_frame'],tail_end_frame=window['end_frame'],
+                       tail_frames=window['frames'])
     out.update(category=a.get('category','unknown'),
                calculation_version=a.get('calculation_version'),
                evidence_kind=m.get('evidence_kind','board_recording' if m.get('source')=='board' else 'unverified_capture'),
@@ -100,9 +130,9 @@ def flat_trial(row, registry=None):
                retired_overlay=retired if known else None,
                acoustic_evidence_eligible=False if retired else True if known else None,
                evidence_scope='pl_arithmetic_only' if retired else 'capture_window')
-    protection_values=[m.get('guard_tripped'),m.get('protection_triggered')]
-    protection=True if any(v is True for v in protection_values) else False if any(v is False for v in protection_values) else None
+    protection,protection_basis=protection_evidence(m)
     out.update(protection_triggered=protection,
+               protection_triggered_basis=protection_basis,
                positive_control_valid=m.get('positive_control_valid') if type(m.get('positive_control_valid')) is bool else None,
                prediction_saturation=flags.get('prediction_saturations'),
                residual_saturation=flags.get('residual_saturations'),
@@ -161,6 +191,7 @@ def flat_trial(row, registry=None):
     if m.get('verification',{}).get('bit_exact') is not True:reasons.append('arithmetic_not_validated')
     if out['evidence_kind']!='board_recording':reasons.append('evidence_not_board_recording')
     if out['category']=='invalid':reasons.append('configuration_or_capture_invalid')
+    if row.get('path_comparison_control',{}).get('valid') is False:reasons.append('path_comparison_control_failed')
     if retired:reasons.append('retired_overlay_no_dac_output')
     out['eligibility_reasons']=reasons
     out['effect_eligible']=not reasons
@@ -189,6 +220,8 @@ def pair_models(rows):
         pair=dict(comparison_id=group,configuration_matches=False,effect_eligible=False,
                   baseline_capture_id=None,candidate_capture_id=None,reasons=[],asg_db=None)
         if len(base)!=1 or len(candidate)!=1:
+            pair['baseline_capture_id']=base[0]['capture_id'] if len(base)==1 else None
+            pair['candidate_capture_id']=candidate[0]['capture_id'] if len(candidate)==1 else None
             pair['reasons'].append('missing_or_ambiguous_baseline_candidate');pairs.append(pair);continue
         a,b=base[0],candidate[0]
         pair.update(baseline_capture_id=a['capture_id'],candidate_capture_id=b['capture_id'])
@@ -209,7 +242,9 @@ def pair_models(rows):
 
 
 CSV_FIELDS = ['index','capture_id','file','mode','model_role','model_file','logical_taps','loaded_taps',
-              'trial_role','measurement_policy_version',
+              'trial_role','measurement_policy_version','path_comparison_control_valid',
+              'path_comparison_mic_over_ref_range_db','gate_mic_over_ref_db',
+              'gate_mic_rms_dbfs','gate_reference_rms_dbfs',
               'loaded_taps_basis','derived_loaded_taps','derived_loaded_taps_basis',
               'bitstream_overlay','bitstream_capacity','bitstream_provenance','retired_overlay',
               'acoustic_evidence_eligible','evidence_scope','positive_control_valid','eligibility_reasons','summary_revision',
@@ -218,7 +253,7 @@ CSV_FIELDS = ['index','capture_id','file','mode','model_role','model_file','logi
               'tail_valid','tail_rms_dbfs','tail_slope_db_per_s','tail_residual_over_mic_db',
               *[f'tail_residual_over_mic_db_{a}_{b}' for a,b in BANDS],
               'tail_first_frame','tail_end_frame','tail_frames','tail_reasons','comparison_reasons',
-              'protection_triggered','prediction_saturation','residual_saturation','gain_saturation',
+              'protection_triggered','protection_triggered_basis','prediction_saturation','residual_saturation','gain_saturation',
               'mix_saturation','microphone_clipping','mute_applied','mute_during_observation','silence_in_window',
               'source_input_sha256','calculation_version','error']
 
