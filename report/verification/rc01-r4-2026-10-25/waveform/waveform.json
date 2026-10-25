@@ -52,6 +52,7 @@
  "trials": {
   "07-fir-off.npz": {
    "taps": 512,
+   "lag_first": 1,
    "frames": 16384,
    "history_excluded_frames": 512,
    "reference_is_exact_pcm": true,
@@ -84,6 +85,7 @@
   },
   "09-fir-on.npz": {
    "taps": 512,
+   "lag_first": 1,
    "frames": 16384,
    "history_excluded_frames": 512,
    "reference_is_exact_pcm": true,
@@ -116,6 +118,7 @@
   },
   "11-fir-on.npz": {
    "taps": 512,
+   "lag_first": 1,
    "frames": 16384,
    "history_excluded_frames": 512,
    "reference_is_exact_pcm": true,
@@ -148,6 +151,7 @@
   },
   "13-fir-off.npz": {
    "taps": 512,
+   "lag_first": 1,
    "frames": 16384,
    "history_excluded_frames": 512,
    "reference_is_exact_pcm": true,
@@ -181,6 +185,7 @@
  },
  "tail_60s": {
   "taps": 512,
+  "lag_first": 1,
   "frames": 16384,
   "history_excluded_frames": 512,
   "reference_is_exact_pcm": true,
@@ -214,6 +219,30 @@
    "repeat": 2,
    "off_file": "13-fir-off.npz",
    "on_file": "11-fir-on.npz",
+   "total_db": -0.24414526545724868,
+   "bands_db": {
+    "300-1000": 0.05061928088436218,
+    "1000-3000": -0.44456215189118353,
+    "8200-8600": 0.2530895972567535
+   }
+  }
+ ],
+ "pairs_bound_by_capture": [
+  {
+   "repeat": 1,
+   "off": "07-fir-off.npz",
+   "on": "09-fir-on.npz",
+   "total_db": -0.1710526780488273,
+   "bands_db": {
+    "300-1000": -0.7560427318885061,
+    "1000-3000": -0.11959674527546582,
+    "8200-8600": 0.37947540363266796
+   }
+  },
+  {
+   "repeat": 2,
+   "off": "13-fir-off.npz",
+   "on": "11-fir-on.npz",
    "total_db": -0.24414526545724868,
    "bands_db": {
     "300-1000": 0.05061928088436218,

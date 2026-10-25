@@ -74,12 +74,15 @@ def build_trial(band, frames=4096, taps=64, bypass=False, seed=3, q=None):
                 prediction_saturations=0, residual_saturations=0,
                 gain_saturations=0, mix_saturations=0,
                 coefficients_sha256=hashlib.sha256(
-                    q.astype("<i4").tobytes()).hexdigest())
-    return dict(reference=played / SCALE, microphone=mic / SCALE,
-                prediction_pcm=pred, residual_pcm=res, coefficients_q20=q,
+                    q.astype("<i4").tobytes()).hexdigest(),
+                logical_taps=int(len(q)), loaded_taps=int(len(q)))
+    cap = dict(reference=played / SCALE, microphone=mic / SCALE,
+               prediction_pcm=pred, residual_pcm=res, coefficients_q20=q,
                 source_pcm16=pcm16,
                 sample_rate_hz=np.float64(RATE),
-                metadata_json=json.dumps(meta)), q, meta
+               metadata_json=json.dumps(meta))
+    cap["_capture_id"] = meta["capture_id"]     # 只在测试内部用，写盘前剔除
+    return cap, q, meta
 
 
 class ArithmeticBranchTest(unittest.TestCase):
@@ -164,7 +167,8 @@ TAIL_NAME = "15-continuous-60s.npz"
 
 
 def write_npz(path, cap):
-    np.savez(path, **cap)
+    """写盘时去掉测试内部用的 `_` 前缀键（npz 里不该出现它们）。"""
+    np.savez(path, **{k: v for k, v in cap.items() if not k.startswith("_")})
 
 
 def build_pack(root, frames=11000):
@@ -218,7 +222,11 @@ def build_pack(root, frames=11000):
                                                 (2, TRIAL_NAMES[3], TRIAL_NAMES[2])):
         off, on = responses[off_name], responses[on_name]
         pairs.append({
-            "repeat": repeat, "on_minus_off_response_rms_db": on["rms_dbfs"] - off["rms_dbfs"],
+            "repeat": repeat, "repeat_id": repeat,
+            "off_capture_id": caps[off_name]["_capture_id"],
+            "on_capture_id": caps[on_name]["_capture_id"],
+            "gain_q12": 817,
+            "on_minus_off_response_rms_db": on["rms_dbfs"] - off["rms_dbfs"],
             "on_minus_off_band_response_db": {k: on["bands_dbfs"][k] - off["bands_dbfs"][k]
                                               for k in on["bands_dbfs"]},
             "configuration_matches": True, "window_comparison_valid": True})
@@ -327,6 +335,47 @@ class CliVerdictTest(unittest.TestCase):
         proc = run_cli(pack, model, summary, review, out)
         self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
         self.assertIn("summary_mismatch", proc.stdout)
+
+    def test_used_file_unlisted_is_rejected(self):
+        """D3/D2：文件仍在磁盘上、也被读取，只是从清单删掉——必须挡下（不能被"未核验"绕过）。"""
+        pack, model, summary, review, out = self.fresh("d3used")
+        man = json.loads((pack / "manifest.json").read_text(encoding="utf-8"))
+        del man["files"]["09-fir-on.npz"]
+        (pack / "manifest.json").write_text(json.dumps(man), encoding="utf-8")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("unverified_file", proc.stdout)
+
+    def test_model_lag_first_drift_is_rejected(self):
+        """D4：只改 lag_first（Q20 不变）也必须挡下——因果约定是模型身份的一部分。"""
+        pack, model, summary, review, out = self.fresh("d4lag")
+        data = json.loads(Path(model).read_text(encoding="utf-8"))
+        data["lag_first"] = 2
+        Path(model).write_text(json.dumps(data), encoding="utf-8")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("model_convention", proc.stdout)
+
+    def test_summary_capture_identity_is_rejected(self):
+        """D4：汇总的 off_capture_id 换成别的 id，数值与 valid 标记不动也必须挡下。"""
+        pack, model, summary, review, out = self.fresh("d4cap")
+        data = json.loads(Path(summary).read_text(encoding="utf-8"))
+        data["fir_switch_pairs"][0]["off_capture_id"] = "different-capture-not-the-original"
+        Path(summary).write_text(json.dumps(data), encoding="utf-8")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("pair_identity", proc.stdout)
+
+    def test_summary_arm_swap_is_rejected(self):
+        """把某一组的 off/on 对调：数值会变，但更早的身份检查就该报臂别不符。"""
+        pack, model, summary, review, out = self.fresh("d4arm")
+        data = json.loads(Path(summary).read_text(encoding="utf-8"))
+        row = data["fir_switch_pairs"][0]
+        row["off_capture_id"], row["on_capture_id"] = row["on_capture_id"], row["off_capture_id"]
+        Path(summary).write_text(json.dumps(data), encoding="utf-8")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("pair_identity", proc.stdout)
 
     def test_missing_explicit_summary_is_rejected(self):
         """D3：显式指定一个不存在的汇总，不能"跳过"就算过。"""

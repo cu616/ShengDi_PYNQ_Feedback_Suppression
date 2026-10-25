@@ -85,16 +85,37 @@ def as_text(value):
     return str(inner()) if callable(inner) else str(value)
 
 
+def verify_used_file(path, declared):
+    """每个**被实际读取**的文件都必须先核验：在清单里登记、且哈希与字节数一致。
+
+    只遍历 manifest 的条目会漏掉"文件在磁盘上但被从清单删掉"的情形——
+    那种文件根本没有被核验过，却仍然参与算术，等于绕过完整性门。
+    """
+    name = Path(path).name
+    entry = declared.get(name)
+    if not entry:
+        return False, "不在 manifest 内（未经哈希核验）"
+    raw = Path(path).read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    if digest != entry.get("sha256"):
+        return False, "哈希与清单不符"
+    if len(raw) != entry.get("bytes"):
+        return False, "字节数与清单不符"
+    return True, "ok"
+
+
 def load_trial(path):
     d = np.load(path)
     return {k: d[k] for k in d.files}
 
 
-def arithmetic(cap, model_q20=None, with_output=True, bypass=None):
+def arithmetic(cap, model_q20=None, with_output=True, bypass=None, lag_first=1):
     """逐样本重算 prediction / residual / output，返回失配计数与剔除帧数。
 
     `bypass` 必须由调用方从 metadata 传入——npz 数组里没有这个字段，
     用 `cap.get("bypass")` 会恒为 None，把 bypass 臂当成 FIR-on 臂算。
+    `lag_first` 同样来自模型（不写死 1）：模型声明的因果约定就是算术的一部分，
+    写死会让"模型改了 lag_first"这种情况仍然"算得过"。
     """
     ref = np.asarray(cap["reference"], dtype=np.float64)
     played = np.rint(ref * SCALE).astype(np.int64)
@@ -108,12 +129,14 @@ def arithmetic(cap, model_q20=None, with_output=True, bypass=None):
     if n <= len(q):
         return {"status": "capture_shorter_than_taps"}
 
-    acc = np.convolve(played, np.r_[np.int64(0), q])[:n]
+    kernel = np.r_[np.zeros(int(lag_first), dtype=np.int64), q]
+    acc = np.convolve(played, kernel)[:n]
     pred = np.clip(rounded_shift(acc, 20), -SCALE, SCALE - 1)
-    skip = len(q)
+    skip = len(q) + int(lag_first) - 1          # lag_first=1 时等于 len(q)，与旧口径一致
     residual = mic if bypass else np.clip(mic - pred, -SCALE, SCALE - 1)
 
-    out = {"taps": int(len(q)), "frames": int(n), "history_excluded_frames": int(skip),
+    out = {"taps": int(len(q)), "lag_first": int(lag_first),
+           "frames": int(n), "history_excluded_frames": int(skip),
            "reference_is_exact_pcm": bool(resid_exact),
            "prediction_mismatches": int(np.count_nonzero(pred[skip:] != pred_rec[skip:])),
            "prediction_evaluated_frames": int(n - skip),
@@ -225,24 +248,45 @@ def main() -> int:
         bad = [r["file"] for r in pkg_rows if r["status"] != "ok"]
         fail("package_integrity", "文件哈希/字节数不符或缺失：%s" % bad)
 
+    declared = {}
+    try:
+        declared = json.loads((pack / "manifest.json").read_text(encoding="utf-8")).get("files") or {}
+    except Exception:
+        declared = {}
+
     model = json.loads(Path(args.model).read_text(encoding="utf-8"))
     q20 = np.asarray(model["coefficients_q20"], dtype=np.int64)
     q_sha = hashlib.sha256(q20.astype("<i4").tobytes()).hexdigest()
+    # 部署身份 = 实际系数 + 抽头数 + 因果约定。只比 Q20 会让"改了 lag_first"这种模型蒙过去。
+    lag_first = int(model.get("lag_first", 1))
+    model_taps = int(model.get("taps", len(q20)))
+    if model_taps != len(q20):
+        fail("model_identity", "模型声明 taps=%d，但 coefficients_q20 有 %d 项"
+             % (model_taps, len(q20)))
+    if lag_first != 1:
+        fail("model_convention", "模型声明 lag_first=%d，部署位流的约定是 1：因果语义已变，"
+                                 "算术不能沿用旧约定" % lag_first)
 
     trials = ["07-fir-off.npz", "09-fir-on.npz", "11-fir-on.npz", "13-fir-off.npz"]
     say("\n[2] 整数算术（4 个 replay 试次）")
     say("  模型 %s  q20=%s  taps=%d  lag_first=%d"
-        % (Path(args.model).name, q_sha[:16], len(q20), model["lag_first"]))
+        % (Path(args.model).name, q_sha[:16], len(q20), lag_first))
     results = {}
     for name in trials:
         p = pack / name
         if not p.exists():
             say("  %-18s 缺文件" % name)
+            fail("missing_file", "%s 不存在" % name)
+            continue
+        verified, why = verify_used_file(p, declared)
+        say("  %-18s 文件核验 %s" % (name, "通过" if verified else "**未通过**（%s）" % why))
+        if not verified:
+            fail("unverified_file", "%s：%s" % (name, why))
             continue
         try:
             cap = load_trial(p)
             meta = json.loads(as_text(cap["metadata_json"]))
-            r = arithmetic(cap, bypass=bool(meta["bypass"]))
+            r = arithmetic(cap, bypass=bool(meta["bypass"]), lag_first=lag_first)
         except Exception as exc:                      # 结构损坏也要是"不合格"，不是崩溃
             fail("trial_unreadable", "%s：%s" % (name, exc))
             continue
@@ -263,6 +307,10 @@ def main() -> int:
         r["model_bound"] = bool(bound)
         if not bound:
             fail("model_binding", "%s 记录的 coefficients_sha256 与给定模型不符" % name)
+        loaded = meta.get("loaded_taps")
+        if isinstance(loaded, int) and loaded != len(q20):
+            fail("model_identity", "%s 记录 loaded_taps=%d，模型有 %d 项"
+                 % (name, loaded, len(q20)))
         if not r["bit_exact"]:
             fail("arithmetic", "%s：prediction %d / residual %d / output %s 帧失配"
                  % (name, r["prediction_mismatches"], r["residual_mismatches"],
@@ -271,11 +319,17 @@ def main() -> int:
     tail_name = "15-continuous-60s.npz"
     say("\n[3] 60 s 尾环（%s）" % tail_name)
     tail_path = pack / tail_name
+    tail_verified = False
     if tail_path.exists():
+        tail_verified, tail_why = verify_used_file(tail_path, declared)
+        say("  文件核验 %s" % ("通过" if tail_verified else "**未通过**（%s）" % tail_why))
+        if not tail_verified:
+            fail("unverified_file", "%s：%s" % (tail_name, tail_why))
+    if tail_path.exists() and tail_verified:
         cap = load_trial(tail_path)
         meta = json.loads(as_text(cap["metadata_json"]))
         r = arithmetic(cap, model_q20=q20, with_output=False,
-                       bypass=bool(meta["bypass"]))
+                       bypass=bool(meta["bypass"]), lag_first=lag_first)
         r.update(file=tail_name, capture_id=meta.get("label"), bypass=bool(meta["bypass"]),
                  coefficients_sha256=meta.get("coefficients_sha256"))
         tail = r
@@ -294,13 +348,19 @@ def main() -> int:
         r["model_bound"] = bool(bound)
         if not bound:
             fail("model_binding", "%s 记录的 coefficients_sha256 与给定模型不符" % tail_name)
+        loaded = meta.get("loaded_taps")
+        if isinstance(loaded, int) and loaded != len(q20):
+            fail("model_identity", "%s 记录 loaded_taps=%d，模型有 %d 项"
+                 % (tail_name, loaded, len(q20)))
         if r["prediction_mismatches"] or r["residual_mismatches"]:
             fail("arithmetic", "%s：prediction %d / residual %d 帧失配"
                  % (tail_name, r["prediction_mismatches"], r["residual_mismatches"]))
     else:
         tail = None
-        say("  缺文件")
-        fail("missing_file", "%s 不存在" % tail_name)
+        if not tail_path.exists():
+            say("  缺文件")
+            fail("missing_file", "%s 不存在" % tail_name)
+        # 存在但未核验时已记 unverified_file，不再重复报缺文件
 
     roles = {"fir_off": 0, "fir_on": 0, "continuous": 1 if tail is not None else 0}
     for r in results.values():
@@ -339,6 +399,7 @@ def main() -> int:
                row["bands_db"]["1000-3000"], row["bands_db"]["8200-8600"]))
 
     reference = None
+    result_pairs_bound = []
     if args.summary_v3:
         sp = Path(args.summary_v3)
         if not sp.exists():
@@ -353,35 +414,74 @@ def main() -> int:
                 say("\n[6] summary-v3 解析失败：%s" % exc)
                 fail("summary_unreadable", "--summary-v3 无法解析：%s" % exc)
         if reference is not None:
-            say("\n[6] 与 C 的 summary-v3 对照")
+            say("\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）")
             if not reference:
                 fail("summary_empty", "--summary-v3 里没有 fir_switch_pairs")
-            if len(computed) != len(reference):
-                fail("pair_count", "配对组数不一致：本侧 %d、汇总 %d"
-                     % (len(computed), len(reference)))
-            worst = 0.0
-            for got, want in zip(computed, reference):
-                d_total = abs(got["total_db"] - want["on_minus_off_response_rms_db"])
-                say("  repeat %d 总：本侧 %+0.6f / 汇总 %+0.6f（差 %.2e）"
-                    % (got["repeat"], got["total_db"], want["on_minus_off_response_rms_db"], d_total))
+            by_cap = {r.get("capture_id"): (nm, r) for nm, r in results.items()}
+            used, bound_rows, worst = [], [], 0.0
+            for row in reference:
+                rid = row.get("repeat_id", row.get("repeat"))
+                off_id, on_id = row.get("off_capture_id"), row.get("on_capture_id")
+                off, on = by_cap.get(off_id), by_cap.get(on_id)
+                if not off or not on:
+                    fail("pair_identity",
+                         "repeat %s：汇总里的 capture id 在本包找不到（off=%r on=%r）"
+                         % (rid, off_id, on_id))
+                    continue
+                off_name, off_r = off
+                on_name, on_r = on
+                used += [off_id, on_id]
+                if not (off_r["bypass"] is True and on_r["bypass"] is False):
+                    fail("pair_identity", "repeat %s：臂别不符（off %s bypass=%s / on %s bypass=%s）"
+                         % (rid, off_name, off_r["bypass"], on_name, on_r["bypass"]))
+                if row.get("gain_q12") is not None and (
+                        int(row["gain_q12"]) != int(off_r["gain_q12"])
+                        or int(row["gain_q12"]) != int(on_r["gain_q12"])):
+                    fail("pair_identity", "repeat %s：汇总 gain_q12=%s 与实际 %s/%s 不符"
+                         % (rid, row.get("gain_q12"), off_r["gain_q12"], on_r["gain_q12"]))
+                w_off = (off_r["response"]["first_frame"], off_r["response"]["end_frame"],
+                         off_r["response"]["frames"])
+                w_on = (on_r["response"]["first_frame"], on_r["response"]["end_frame"],
+                        on_r["response"]["frames"])
+                if w_off != w_on:
+                    fail("pair_window", "repeat %s：两臂响应窗不同 %s vs %s" % (rid, w_off, w_on))
+                else:
+                    say("  repeat %s 身份：off %s / on %s，窗 %d–%d（%d 帧），臂别与 gain 已独立核对"
+                        % (rid, off_name, on_name, w_off[0], w_off[1], w_off[2]))
+                # 数值必须由**这两个实际捕获**算出来，而不是拿汇总的标记当依据
+                total = on_r["response"]["rms_dbfs"] - off_r["response"]["rms_dbfs"]
+                bands = {k: on_r["response"]["bands_dbfs"][k] - off_r["response"]["bands_dbfs"][k]
+                         for k in on_r["response"]["bands_dbfs"]}
+                d_total = abs(total - row.get("on_minus_off_response_rms_db", float("nan")))
                 worst = max(worst, d_total)
-                say("           配对身份：off %s / on %s，%s"
-                    % (str(want.get("off_capture_id"))[:8], str(want.get("on_capture_id"))[:8],
-                       "逐帧区间一致" if want.get("window_comparison_valid") else "**区间不一致**"))
-                for key, value in (want.get("on_minus_off_band_response_db") or {}).items():
-                    d = abs(got["bands_db"][key] - value)
+                say("  repeat %s 总：本侧 %+0.6f / 汇总 %+0.6f（差 %.2e）"
+                    % (rid, total, row.get("on_minus_off_response_rms_db"), d_total))
+                for key, value in (row.get("on_minus_off_band_response_db") or {}).items():
+                    if key not in bands:
+                        fail("summary_mismatch", "repeat %s：汇总里的频带 %s 本侧没有" % (rid, key))
+                        continue
+                    d = abs(bands[key] - value)
                     worst = max(worst, d)
                     say("           %-10s 本侧 %+0.6f / 汇总 %+0.6f（差 %.2e）"
-                        % (key, got["bands_db"][key], value, d))
+                        % (key, bands[key], value, d))
+                bound_rows.append({"repeat": rid, "off": off_name, "on": on_name,
+                                   "total_db": float(total), "bands_db": bands})
+                # 复制过来的有效标记只作一致性检查，不作为身份依据
+                if not (row.get("window_comparison_valid") is True
+                        and row.get("configuration_matches") is True):
+                    fail("pair_not_valid", "repeat %s 的配对在汇总里未被判定有效（window/config）" % rid)
+            if len(used) != len(set(used)):
+                fail("pair_identity", "同一试次被用在多组配对里：%s" % used)
+            if set(used) != set(by_cap):
+                fail("pair_identity", "配对未覆盖全部四个试次：汇总用到 %d 个，本侧 %d 个"
+                     % (len(set(used)), len(by_cap)))
             say("  最大差 %.3e dB（容差 %.0e；超了就是两套数字对不上）" % (worst, TOL_DB))
             if worst > TOL_DB:
                 fail("summary_mismatch", "与 summary-v3 的配对差 %.3e dB 超过容差 %.0e"
                      % (worst, TOL_DB))
-            for got, want in zip(computed, reference):
-                if not (want.get("window_comparison_valid") is True
-                        and want.get("configuration_matches") is True):
-                    fail("pair_not_valid",
-                         "repeat %s 的配对在汇总里未被判定有效（window/config）" % got["repeat"])
+            result_pairs_bound = bound_rows
+        else:
+            result_pairs_bound = []
 
     if args.c_review and not Path(args.c_review).exists():
         say("\n[7] 复核 JSON 不存在：%s" % args.c_review)
@@ -433,6 +533,7 @@ def main() -> int:
                          "lag_first": int(model["lag_first"])},
                "trials": results, "tail_60s": tail,
                "pairs_computed": computed,
+               "pairs_bound_by_capture": result_pairs_bound,
                "pairs_reference": reference,
                "c_review_compared": bool(args.c_review and Path(args.c_review).exists()),
                "method": ("played=reference·2^23；prediction=clip(round_shift(Σq[k]·played[n−1−k],20))；"

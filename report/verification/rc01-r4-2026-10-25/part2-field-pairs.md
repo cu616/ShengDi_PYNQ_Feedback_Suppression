@@ -152,10 +152,15 @@
 
 | 门 | 代码 | 挡的是什么 |
 |---|---|---|
-| 文件齐全 | `package_integrity` / `package_incomplete` / `missing_file` | 哈希或字节数不符；角色件数不是 2 个 FIR-off + 2 个 FIR-on + 1 个 60 s |
-| 模型绑定 | `model_binding` | 每次试次记录的 `coefficients_sha256` 必须等于给定模型的 Q20 哈希 |
+| 文件齐全 | `package_integrity` / `package_incomplete` / `missing_file` | 清单内条目的哈希或字节数不符；角色件数不是 2 FIR-off + 2 FIR-on + 1×60 s |
+| **每个被使用的文件** | `unverified_file` | 只遍历清单条目不够：文件在磁盘上、被实际读取、却被从清单删掉时，它从未被核验过。现在**每个被读取的文件都必须登记在清单里且哈希/字节一致**（4 试次 + 60 s 共 5 个） |
+| 模型身份 | `model_identity` / `model_binding` | `taps` 必须等于 `coefficients_q20` 的项数；`loaded_taps` 必须等于同一项数；试次记录的 `coefficients_sha256` 必须等于该 Q20 哈希 |
+| **因果约定** | `model_convention` | `lag_first` 必须是 1（部署位流的约定）。**算术改用模型声明的 `lag_first`，不再写死 1**——写死会让"只改 lag_first（Q20 不变）"这种情况仍然算得过 |
 | 算术 | `arithmetic` | 4 试次 prediction/residual/output 与 60 s 的 prediction/residual 必须 0 失配 |
-| 显式对照 | `summary_missing` / `summary_mismatch` / `pair_count` / `c_review_*` | 显式给了 `--summary-v3`/`--c-review` 就必须存在、可解析、且差值 ≤ **1e−3 dB** |
+| 显式对照 | `summary_missing` / `summary_mismatch` / `pair_count` / `pair_identity` / `pair_window` / `c_review_*` | 必须存在、可解析、差值 ≤ **1e−3 dB**；且**按 capture 身份绑定**：汇总里的 `off/on_capture_id` 必须能对上本包的实际捕获、臂别（off=bypass、on=非 bypass）、`gain_q12`、以及两臂响应窗逐帧相同；四个试次各被用一次 |
+
+关于最后一条：`configuration_matches` / `window_comparison_valid` 只作**一致性检查**（必须为 true，否则不一致），
+**不作为身份依据**——身份由 capture id、臂别、gain、帧窗独立核对，数值也由这两个实际捕获重算，而不是照抄汇总。
 
 不合格时会打印"判定：**不合格**（N 项）"并逐条列代码，`waveform.json` 里 `ok=false` + `failures`——
 **这份产物不能当合格测量结果**。容差 1e−3 dB 的依据：同口径下本侧与汇总/复核只差浮点末位（实测 ≤7.1e−15）。
