@@ -26,7 +26,7 @@ C 的 RC0 因包参数（捕获窗 0 帧）未过，等 RC0.1。
   上板验证：9.5 s 跑满 463867/463867 帧、status `0x8001`、四类计数全 0、时间线 469 点；停止响应 0.773 s。
 - **60 秒只差一个比较常数**：RTL 参数 `MAX_RUN_FRAMES=488281`（10.0 s），而 `frame_count`/`limit_latched`
   本来就是 32 位。放宽到 `3000000` 的兼容变更表与回退方案见
-  [提案](../contracts/proposal-continuous-run.md)，**等队长确认后构建部署**；未批准前 >10 s 会被 PL 拒绝（bit17）。
+  [提案](contracts/proposal-continuous-run.md)，**等队长确认后构建部署**；未批准前 >10 s 会被 PL 拒绝（bit17）。
 - **`live_run` 通道标签 bug 已修**（2026-10-25）：原先把 `microphone`/`reference` 存反，
   导致若干"增益符号反了"的异常读数；改为与 `replay_trial` 一致后，
   −12/−6/0 dB 三点 `ref/mic` 与 `replay_trial` 误差 ≤0.004 dB。**该 bug 只影响新驱动，不影响已回包数据。**
@@ -42,7 +42,7 @@ C 的 RC0 因包参数（捕获窗 0 帧）未过，等 RC0.1。
   回包在 `report/verification/audio-replay/c-sprint-rc0-return.zip`。**不是硬件问题。**
 - **发布检查新增"发送方自检"（2026-10-25）**：发送方先用包内软件夹具空跑、附机器可读 `preflight.json`；
   A 只读 `all_ok`，false/缺失/版本不符即回 `PREFLIGHT_FAIL` 不上板；缺陷分 D1–D4，同类三次上报队长。
-  见 [冻结计划](../ref/development-plan.md)。
+  见 [冻结计划](ref/development-plan.md)。
 - 沿用口径：保护/削顶不能直接判啸叫；`hp_volume=40` 是驱动工程上限不是芯片上限；
   负数字增益也可能产生声学放大；**离线阈值不是实物上限**。本截止不新增 AFC/多速率。
 - 下一步：等 RC0.1（带 preflight）与运行上限批准；批准当天出 60 秒连续运行结果。
