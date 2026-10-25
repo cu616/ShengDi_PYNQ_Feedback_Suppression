@@ -41,7 +41,7 @@
 ### C 测评与工具
 
 **最后动作**：2026-10-25从固定源码be3200e建立独立干净检出，CPython3.14 -I -S分别运行cold-start/listener-pipeline均退出0、生成PACKAGE_COMPLETE；两个ZIP在独立解压目录再用包内检查器通过。冻结Q20/bit/hwh和三点映射一致，合成+3dB误差约−0.000161dB，三类坏输入全部failed；164项软件回归通过。R-010/R-011关闭，旧真人ZIP保持。
-**当前卡点**：R-009等A修复run_human_r1.sh超时/取消仍START的D4并核实旧保护事件，本轮不排现场。R-007继续既有发布文字与波形判读，无新增B任务；冷启动是离线软件复现，另一队友现场复现仍未测，旧默认与无新候选决定不变。
+**当前卡点**：结束前收A=47367f9真人包，原件显示只执行2项即NO_AMPLIFICATION停批，real_voice=failed、listener=not_tested，不能称五项跑通。R-009的D4脚本未改及旧保护原因待核实，不续跑现场。B=05657e5已交修订与波形复核，R-007转C待独立验收，不重复派B；冷启动不替代另一队友现场复现，默认与无新候选决定不变。
 
 - [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
 - [r4五原件独立波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)：A=63f6a69的r4-review-return.zip共2082636字节、SHA256=e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48；5/5与原清单一致。四FIR源内功率和两次差分吻合，五份环形尾部预测/残差/输出算术零失配；60秒原时间线与状态一致，声学覆盖边界不变。
@@ -57,6 +57,7 @@
 - [冷启动完整包](../build/packages/c-cold-start-r1.zip)：389560字节，SHA256=aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/cold-start.json)资产字段非空，原冻结包用a_assets，新生成器兼容assets同值别名。
 - [听众管线完整包](../build/packages/c-listener-pipeline-r1.zip)：49280字节，SHA256=e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/listener-pipeline.json)扣背景后的语音变化2.999839dB，原snr_db总录音/背景口径差2.978339dB，均距+3dB小于0.5dB；全为合成WAV，不算真人。
 - [正式退出码与独立解压复核](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-check.json)、[原工具回执](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-console.json)。每个交付只回答一个问题，首行来自其真实检查器最后一行；非0不作交付，缺陷附D1–D4和具体命令。接收方无需提供文件，后续现场四份固定增益录音仍由A外部录制。
+- [最新真人回包接收](../report/verification/audio_closed/sprint-rc0-20261025/a-47367f9-human-receipt.json)：成员及冻结human-r1身份通过、门禁通过、无保护、清理通过；人耳报告无可辨扩声是明确失败，不能因安静或包运行而转为通过。没上传人声PCM，听众定量未测。
 - C未操板或改A/B实现。10/26质检，10/27 20:00冻结，10/28另一队友复现并冻结源码/bit/hwh/模型/配置/哈希；v2外部I/O签核仍不完整。
 
 ## 已验证 / 未验证（只在这里写一次）

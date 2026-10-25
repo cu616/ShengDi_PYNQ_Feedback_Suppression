@@ -1,0 +1,88 @@
+{
+  "a_commit": "47367f96e5be05f69d65fafac4ba7733249c960e",
+  "return_sha256": "b05e432ba7bc8663863434d1725d08a66aecc7a6f37ddae11c8a2a18da74326a",
+  "member_hashes_passed": true,
+  "package_identity_passed": true,
+  "run": "sprint-c1a123070727",
+  "policy": "c-sprint-rc01-1.0.5",
+  "status": "stopped",
+  "checks": {
+    "package": {
+      "status": "passed",
+      "level": "local_hash_and_compatibility"
+    },
+    "real_voice": {
+      "status": "failed",
+      "basis": "human_live_and_listening",
+      "reason": "human_hearing_stop",
+      "hearing_code": "NO_AMPLIFICATION",
+      "scope": "reported human outcome, not measured onset threshold"
+    },
+    "fir_comparison": {
+      "status": "not_tested"
+    },
+    "listener": {
+      "status": "not_tested"
+    },
+    "continuous_60s": {
+      "status": "not_tested",
+      "reason": "not scheduled in human session; r4 evidence reviewed separately",
+      "scope": "register timeline plus tail PCM; engineering only"
+    },
+    "stop_recovery": {
+      "status": "passed",
+      "unverified_trials": [],
+      "scope": "A driver sidecar reports per-trial cleanup; emergency/abnormal recovery still requires A acceptance"
+    },
+    "independent_reproduction": {
+      "status": "not_tested"
+    },
+    "path_gate": {
+      "status": "passed",
+      "source_on_frames": 14920,
+      "scope": "source-on tone path check; acoustic stability category is separate"
+    }
+  },
+  "trials": [
+    {
+      "id": 1,
+      "role": "path-gate",
+      "category": "unknown",
+      "protection": false,
+      "recovery_ok": true,
+      "hearing_code": null,
+      "hearing_reported_code": null,
+      "hearing_basis": null,
+      "stop_reasons": [],
+      "path_gate": {
+        "passed": true,
+        "baseline_dbfs": null,
+        "capture_sha256": "ff5104ec97c2ecea4f8f844ded37fb6adb8a0db41bb59ab4f1930d55455ebf8f",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [],
+        "rms_dbfs": -24.13311498786843,
+        "tonal_fraction": 0.9544956859219526,
+        "drift_db": null,
+        "reference_rms_dbfs": -23.011081979678153,
+        "mic_over_ref_db": -1.1220330081902787,
+        "operational_drift_limit_db": 5.0
+      }
+    },
+    {
+      "id": 2,
+      "role": "real-voice",
+      "category": "unknown",
+      "protection": false,
+      "recovery_ok": true,
+      "hearing_code": "NO_AMPLIFICATION",
+      "hearing_reported_code": "NO_AMPLIFICATION",
+      "hearing_basis": "human_live_and_listening",
+      "stop_reasons": [],
+      "path_gate": null
+    }
+  ],
+  "human_listener_report": null,
+  "raw_pcm_review": false,
+  "hardware_access": false
+}

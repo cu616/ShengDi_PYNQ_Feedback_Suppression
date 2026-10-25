@@ -18,8 +18,8 @@
 | R-003 | B → A | 真实数据到手后，按 B 给的增益点位做**成对**记录：同一 `hp_volume`、同一夹具、同一时长，只切 bypass | 无 ASG 实测；无法判断抵消是否真的提高了稳定增益 | 每档给出旁路/抵消两项，含 `gain_q12`、听感类别、是否起振；至少覆盖 B 给的"对照点" | 2026-10-20 | open |
 | R-006 | C → A | 只补回已经存在的侧放20段NPZ、model_512_side.json、memory_sweep实际使用的有序文件名单及14训练/6验证身份、过滤/边界/参数和原结果；逐文件哈希/provenance，推A分支一个side-memory-return.zip。已有仓库位置可直接给提交与路径，缺项注明原因，不重采、不重新执行扫描 | 独立核对-12.83扫描及+11～+13 dB上限说法；原lowband2包只有直立16段 | 原侧放20段与模型可读，实际扫描输入/划分可复现；不以手写表格代替原材料 | 2026-10-25 | open |
 
-| R-007 | C → B | 3657242原CLI/机器标签/未变数值及Part二实际值接受；清理revision-1 §1/§2及原函数docstring/main中N1旧残句，把Part二“房间变化/低频电平依赖/已稳定”改成证据限定表述；A=63f6a69五原件已齐，补波形侧独立判读；A新增真人保护单列，不定因 | 发布口径与结果归因 | [最新验收与定位](../report/verification/audio_closed/sprint-rc0-20261025/b-3657242-review.json)、[C波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)；清除现行矛盾，采样余量不宣称全频稳定，定音漂移不作因果证明；N2/N3和两次原值已接受，不重议默认或候选 | 2026-10-25 | open |
-| R-009 | C → A | 9be9fa0新run_human_r1.sh仍忽略GO等待的None/CANCEL并返回START，先修超时/取消为非START并交静默控制；旧第二次−14dB保护的原件留板，补实际设备/前放/布局、讲话相对START时序和听感，缺项写未记录。本轮真人不排期，问题核实后再按[冻结五项包](../build/packages/c-sprint-rc01-human-r1.zip)及[操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)执行 | D4超时/取消控制未通过，保护原因未明，真人与听众验收不完整 | [新入口实际反例](../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)：超时/取消不得arm；保留真实人工确认记录和既有保护处置回执，不重播或降门禁掩盖故障。后续真人回一个return-results.zip与固定A提交；定量需四份外部固定增益无AGC录音 | 2026-10-25 | open |
+| R-007 | C → B | 05657e5已交N1残句/归因修订与五原件波形复核，C已取得固定对象，待独立验收；本轮不重复派B，也不重议默认或候选 | 发布口径与结果归因 | 验收05657e5原代码/报告与[C独立波形结果](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)；原3657242机器标签/数值及两次原值接受保持，进一步状态由C复核后更新 | 2026-10-25 | open |
+| R-009 | C → A | 47367f9回包已收且身份通过，只有2项，真人NO_AMPLIFICATION明确failed，听众未测，停止重跑；run_human_r1.sh仍忽略None/CANCEL并START，先修D4及核实旧保护/实际工作点事实，缺项写未记录。回执按原JSON纠正“五项跑通”说法 | D4未通过、可辨扩声失败，真人/听众验收未完成 | [最新回包](../report/verification/audio_closed/sprint-rc0-20261025/a-47367f9-human-receipt.json)、[入口反例](../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)；超时/取消不得arm，保留负面结果，不以降增益/改门禁或自动旁路掩盖；现场后续方案另行确定 | 2026-10-25 | open |
 
 ## 已完成
 
