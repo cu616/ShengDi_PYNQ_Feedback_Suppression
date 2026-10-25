@@ -227,7 +227,7 @@ def assemble_sprint(out, assets, model_path):
     A future candidate is integrated by rebuilding the complete package with a
     reviewed model_path, never by patching files on a running board.
     """
-    from sprint_experiment import POLICY, PLAN as SPRINT_PLAN, DEFAULT_MODEL
+    from sprint_experiment import POLICY, PLAN as SPRINT_PLAN, DEFAULT_MODEL, A_ASSETS
     from model_comparison import qhash
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False);assets=Path(assets)
     for name in ('sprint_experiment.py','sprint_selftest.py','evaluation.py','growth_monitor.py','tail_metrics.py',
@@ -240,6 +240,9 @@ def assemble_sprint(out, assets, model_path):
               'audio_replay.hwh':'3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb'}
     for name,digest in expected.items():
         if sha(out/name)!=digest:raise ValueError('RC0 bit/hwh mismatch: '+name)
+    for name in ('replay_trial.py','replay_tools.py','closed_tools.py','residual_tools.py','audio_replay.bit','audio_replay.hwh'):
+        frozen=subprocess.check_output(['git','show',A_ASSETS['commit']+':board/audio_replay/'+name],cwd=ROOT)
+        if (out/name).read_bytes()!=frozen:raise ValueError('ASSET_MISMATCH: '+name+' differs from bound A commit')
     acceptance=check(out,out/'a-driver-acceptance.json')
     if not acceptance['accepted']:raise ValueError('A driver software acceptance failed')
     model,q=load_candidate(model_path,SPRINT_PLAN['fixture_id'],40,48828.125)
@@ -257,20 +260,21 @@ def assemble_sprint(out, assets, model_path):
     guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
     marker='## 2026-10-25 集中实验 RC0'
     (out/'OPERATIONS.md').write_text(guide[guide.index(marker):],encoding='utf8')
-    source='# C sprint RC0.1: fixed baseline, single entry\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
+    source='# C sprint RC0.1-r2: -14 dB, fixed v1 assets, single entry\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
     notebook=dict(nbformat=4,nbformat_minor=5,
         metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
         cells=[dict(cell_type='markdown',metadata={},source=['只运行从上往下第1个代码格；先读 OPERATIONS.md。']),
                dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=source.splitlines(True))])
     (out/'sprint.ipynb').write_text(json.dumps(notebook,ensure_ascii=False,indent=2),encoding='utf8')
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
-    for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt','tests-rc01-r1.txt',
+    for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt','tests-rc01-r1.txt','tests-rc01-r2.txt','a-cf949f2-review.json',
                  'b-handoff-review.json','rc01-input-review.json',
                  'b-6128282-review.json','b-6128282-tests.txt','b-6128282-repro.txt'):
         if (evidence/name).exists():
             (out/'offline-evidence').mkdir(exist_ok=True);shutil.copy2(evidence/name,out/'offline-evidence'/name)
     manifest=dict(policy=POLICY,calculation_version=VERSION,detector_config=CONFIG,plan=SPRINT_PLAN,
         default_model=DEFAULT_MODEL,
+        a_assets=A_ASSETS,
         package_status='bounded_baseline_ready_continuous_not_implemented',
         source_commits={'A':'bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6',
                         'B':'d033d0047542d5e50654a0333777c48ec08dce21',

@@ -17,13 +17,17 @@ from evaluation import VERSION, CONFIG, analyze_npz, sha
 from model_comparison import protection_evidence, qhash, flat_trial, export_csv
 from room_experiment import gate_metrics, sources, write_json
 
-POLICY = 'c-sprint-rc01-1.0.1'
+POLICY = 'c-sprint-rc01-1.0.2'
+A_ASSETS = dict(commit='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6', contract='audio-replay-v1',
+    bit_sha256='8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339',
+    hwh_sha256='3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb',
+    max_run_frames=488281)
 DEFAULT_MODEL = dict(name='calibrated_20261024',source_file='models/room_v1/calibrated_20261024.json',
     file_sha256='c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a',
     coefficients_sha256='c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160',
     validity='same verified calibration scene only; no cross-session fallback')
 RATE = 48828.125
-PLAN = dict(gain_db=0., gain_q12=4096, hp_volume=40, sample_rate_hz=RATE,
+PLAN = dict(gain_db=-14., gain_q12=817, hp_volume=40, sample_rate_hz=RATE,
             fixture_id='room_v1_20261021', speech_seconds=8., pair_seconds=2.5,
             repeats=2, continuous_target_seconds=60., eq='identity',
             gate_drift_db=5., pair_gate_drift_db=1.5,
@@ -41,6 +45,7 @@ def validate_preflight(manifest, preflight):
     if ('preflight.json' not in manifest['hashes'] or preflight.get('all_ok') is not True or
             preflight.get('policy') != POLICY or
             preflight.get('evidence_kind') != 'software_fixture' or
+            preflight.get('a_assets') != manifest.get('a_assets') or
             preflight.get('source_commits') != manifest['source_commits'] or
             preflight.get('payload_hashes') != payload or len(rows)!=13 or
             any(r.get('ok') is not True or any(not isinstance(r.get(k),(int,float)) or
@@ -56,6 +61,10 @@ def check_package(base, require_preflight=True):
             manifest['calculation_version'] != VERSION or manifest['detector_config'] != CONFIG or
             manifest.get('default_model') != DEFAULT_MODEL):
         raise ValueError('frozen policy mismatch')
+    if (manifest.get('a_assets') != A_ASSETS or manifest['source_commits']['A']!=A_ASSETS['commit'] or
+            manifest['hashes'].get('audio_replay.bit')!=A_ASSETS['bit_sha256'] or
+            manifest['hashes'].get('audio_replay.hwh')!=A_ASSETS['hwh_sha256']):
+        raise ValueError('ASSET_MISMATCH: A commit/contract/bit/hwh binding')
     for name, digest in manifest['hashes'].items():
         path = (base/name).resolve()
         if base not in path.parents or sha(path) != digest:
@@ -180,7 +189,7 @@ def collect(folder, state):
     with (folder/'summary.csv').open('w', newline='', encoding='utf-8-sig') as stream:
         fields = ['id','role','category','protection','recovery_ok','first_frame','completed_frames',
                   'frames','waveform_coverage_fraction','gain_q12','hp_volume','bypass','bit_sha256',
-                  'model_sha256','coefficients_sha256','eq_sha256','stop_reasons']
+                  'model_sha256','coefficients_sha256','eq_sha256','gate_status','hearing_basis','stop_reasons']
         writer = csv.DictWriter(stream, fieldnames=fields);writer.writeheader()
         for row in state['trials']:
             writer.writerow({k:json.dumps(row[k]) if isinstance(row.get(k),(list,dict)) else row.get(k) for k in fields})
@@ -208,6 +217,7 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
         manifest = validator(base)
         state['package_source'] = manifest['source_commits'];state['package_hashes'] = manifest['hashes']
         state['default_model'] = DEFAULT_MODEL
+        state['a_assets'] = A_ASSETS
         state['failure_action'] = dict(action='mute_and_stop',automatic_bypass=False,old_session_fallback=False)
         state['model_registry']={manifest['hashes']['model.json']:dict(file='room_v1/calibrated_20261024.json',
             fixture_id=PLAN['fixture_id'],logical_taps=512,role='baseline',
@@ -217,13 +227,16 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             reason='frozen A driver has 10 s ceiling and tail-only PCM; no stitched-window substitute',
             owner='A', request='OPERATIONS.md: A minimal observation and continuous-run request')
         state['eq_contribution'] = dict(status='not_tested', reason='identity EQ baseline; no B candidate supplied')
-        print('PACKAGE_OK; DEFAULT_MODEL=calibrated_20261024 (strong); 60s_CONTINUOUS_NOT_AVAILABLE; fixed gain 0 dB, no escalation')
+        print('PACKAGE_OK; DEFAULT_MODEL=calibrated_20261024 (strong); 60s_CONTINUOUS_NOT_AVAILABLE; fixed gain -14 dB / Q12=817, no escalation')
         if ask('确认现场值守、可立即切断音响电源、不戴耳机、允许本地保存音频；输入 READY：').strip()!='READY':
             raise RuntimeError('operator_cancel')
         if ask('确认麦克风/音响/前放与 strong 标定一致，Codec40；输入 SAME_SCENE，变化则停止交B重标定：').strip()!='SAME_SCENE':
             raise RuntimeError('scene_changed_or_unverified')
         layout = ask('一次填写声源-麦克风距离、麦克风/音响位置、听众/测量位置、固定源文件/音量、测量增益与AGC状态：').strip()
         if not layout: raise RuntimeError('layout_missing')
+        observation = ask('真人现场讲话且有人耳评价才输入 HUMAN_LIVE_AND_LISTENING；代理/预填/仪表代判输入 PROXY；其他输入记未核实：').strip()
+        state['observation_kind'] = ('human_live_and_listening' if observation=='HUMAN_LIVE_AND_LISTENING'
+                                     else 'proxy' if observation=='PROXY' else 'unverified')
         state['scene'] = dict(layout=layout, fixture_id=PLAN['fixture_id'], model_sha256=manifest['hashes']['model.json'])
         scene_hash = hashlib.sha256(json.dumps(state['scene'],sort_keys=True).encode()).hexdigest()
         if runner is None:
@@ -253,7 +266,7 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             status_path = path.with_suffix('.status.json')
             status = json.loads(status_path.read_text(encoding='utf8')) if status_path.exists() else {}
             expected = dict(fixture_id=PLAN['fixture_id'],hp_volume=40,bypass=bypass,
-                gain_q12=0 if direct else 4096, bit_sha256=manifest['hashes']['audio_replay.bit'],
+                gain_q12=0 if direct else PLAN['gain_q12'], bit_sha256=manifest['hashes']['audio_replay.bit'],
                 model_sha256=manifest['hashes']['model.json'],coefficients_sha256=manifest['coefficients_sha256'])
             fir = role in ('fir-off','fir-on')
             evidence = (dict(input_sha256=sha(path),provenance='frozen RC0 scene background floor; operator SOURCE_OFF',
@@ -285,8 +298,10 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             if reasons: raise RuntimeError(';'.join(reasons))
             if hear:
                 code = ask('此项现场听感：CLEAR / DISTORTED / NO_AMPLIFICATION / HOWL / UNKNOWN：').strip()
-                row['hearing_code'] = code
-                if code not in ('CLEAR','UNKNOWN'):raise RuntimeError('hearing_stop:'+code)
+                row['hearing_reported_code'] = code
+                row['hearing_basis'] = state['observation_kind']
+                row['hearing_code'] = code if state['observation_kind']=='human_live_and_listening' else 'PROXY'
+                if code not in ('CLEAR','UNKNOWN','PROXY'):raise RuntimeError('hearing_stop:'+code)
             return row
 
         def gate():
@@ -294,6 +309,9 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             row = trial('path-gate',source=tone,seconds=1.02,direct=True)
             value = gate_metrics(folder/row['local_capture'], -37.8, previous_gate)
             row['path_gate'] = value
+            row['gate_status'] = 'passed' if value['passed'] else 'failed'
+            state['checks']['path_gate'] = dict(status=row['gate_status'], source_on_frames=value['end_frame']-value['first_frame'],
+                scope='source-on tone path check; acoustic stability category is separate')
             row['gate_mic_over_ref_db']=value.get('mic_over_ref_db')
             if not value['passed']: raise RuntimeError('path_gate_failed:'+','.join(value['reasons']))
             if previous_gate is None: previous_gate=value['rms_dbfs']
@@ -304,7 +322,8 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
         trial('real-voice',gate=g,hear=True)
         voice = state['trials'][-1]['hearing_code']
         state['checks']['real_voice'] = dict(status='passed' if voice=='CLEAR' else 'not_tested',
-            basis='A live microphone speech and listening; saved waveform is a tail only',hearing_code=voice)
+            basis=state['observation_kind'], hearing_code=voice,
+            scope='human live speech and human listening required; proxy cannot pass; saved waveform is a tail only')
         print('听众比较使用同一固定录制人声，经外部声源拾音；源/测量设备位置和音量不变，关闭AGC。')
         print('可选测量录音保存到', str((folder/'listener').resolve()),
               '：off-speech.wav/off-noise.wav/on-speech.wav/on-noise.wav；单声道PCM16，每份至少1秒。')

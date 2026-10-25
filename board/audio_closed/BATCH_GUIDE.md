@@ -220,7 +220,7 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ## 2026-10-25 集中实验 RC0
 
-维护者 C；本节就是包内 OPERATIONS.md。当前发布 **RC0.1-r1**，仅适用 `c-sprint-rc01-1.0.1`，不要执行上方历史包。
+维护者 C；本节就是包内 OPERATIONS.md。当前发布 **RC0.1-r2**，仅适用 `c-sprint-rc01-1.0.2`，不要执行上方历史包。
 **默认系数＝calibrated_20261024（A 原名 strong）**。B=d033d00 与原包逐字节相同；RC0实际系数没有变化。
 根目录和包内 select_model 均选择这套已登记基线；旧 candidate_512 只留历史分析，不作缺失时的后备。
 标定/定音/门禁/源关闭核验失败：静音、停批、保留证据，不自动切到原增益旁路，不装另一场旧系数。
@@ -232,31 +232,36 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ### 唯一入口与固定身份
 
-- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01-r1.zip`。
-- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r1/`。用新目录，保留现役基线供恢复。
-- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r1/sprint.ipynb`。
-  重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0.1: fixed baseline, single entry`，
+- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01-r2.zip`。
+- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/`。用新目录，保留现役基线供恢复。
+- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/sprint.ipynb`。
+  重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0.1-r2: -14 dB, fixed v1 assets, single entry`，
   下一行为 `from sprint_experiment import run_sprint`。全包只有一个代码格，不以 In[n] 定位。
 - 使用 A=bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6 的原驱动/bit/hwh，
   strong 模型 c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a；
   Q20 c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160。
   完整文件与源码身份以 `sprint-manifest.json` 为准。版本/文件/系数不符则停止。
-- 参数已冻结：48828.125 Hz、512 taps、lag_first=1、Codec40、Q12=4096（0 dB）、EQ identity。
-  0 dB 仅来自同场历史短运行，不是保证安全或正常扩声的认证；不执行 +3 dB 重试。
+  `a_assets`显式绑定A提交、v1契约、MAX_RUN_FRAMES及bit/hwh完整哈希；不匹配回`ASSET_MISMATCH`，不替换单件凑包。
+- 参数已冻结：48828.125 Hz、512 taps、lag_first=1、Codec40、Q12=817（请求−14 dB，实际约−14.003 dB）、EQ identity。
+  依据A本次0 dB保护中止和−14 dB干净运行报告，下调为单一−14 dB工程测试点；它不证明正常扩声或FIR收益，不执行升档。
   模型/现场几何不符就停止交 B，不自行把同一模型挪到新场景。
 
 RC0.1按用户确认仅修C包内分析区间、汇总和定音前提示；驱动/bit/hwh、模型、EQ、源与门禁原值不变。
-本次r1增加包内`sprint_selftest.py`和构建时自动生成的`preflight.json`，绑定全包载荷及源码身份；
+前版r1增加包内`sprint_selftest.py`和构建时自动生成的`preflight.json`，绑定全包载荷及源码身份；
 不改变上述实验配置。A先读`all_ok=true`并核对板端版本，缺失/false/不符则回`PREFLIGHT_FAIL`原文，
 不上板、不现场改包。唯一代码格也会在导入PYNQ前验证自检记录及其哈希。
 包内可选静默复核命令`python3 sprint_selftest.py`，使用真实Q20和实际13项编排，在临时目录生成合成数据后删除，
 不导入PYNQ、不发声、不覆盖冻结preflight；打印`SELFTEST ok | trials=13 | window_frames min=14920 | gate=passed`。
-该通过只证明软件流程/算术/窗口成立；合成CLEAR及恢复回执不算真实人声、硬件恢复或抗啸叫效果通过。
+该通过只证明软件流程/算术/窗口成立；合成回执不算真实人声、硬件恢复或抗啸叫效果通过。
+本次r2固定−14 dB，新增PROXY来源标记、独立gate_status和显式A资产声明；按实际舍入验证−12/−6/0三点ref/mic映射，结果同样保存在preflight.json。
+门禁为前向开路、gain_q12=0，只测包内定音及模拟路径；闭环工作点下调不改变其噪底/定音占比/漂移阈值。
+保护、削顶、尖峰仍不直接判啸叫；低工作点跑完只能支持该工作点的观测结果，不能称抗啸叫成功。
 路径门禁测源内1000Hz定音，运行1.02秒、定音1秒，正常保留14920帧有效源内样本；
 不能改成1.6秒运行配1秒定音，否则最后16384帧中没有定音。FIR运行2.5秒、宽带源1.87秒，
 源末后排除2442帧过渡，仍保留完整16384帧源后窗。源内/源后窗口分别判断，不套用同一等待时长。
 `summary.json`每项顶层帧区间为实际原捕获；门禁区间见`path_gate`，FIR分析区间见`analysis.tail_analysis_window`。
-A=8c7c49c原回包门禁定音占比11.6%，因此仍判未通过；空源后窗不是实际门禁停止原因。
+A=8c7c49c旧回包定音11.6%仍未通过；A=cf949f2的新回包定音94.7%、path_gate.passed=true，门禁通过。
+新回包第二项0 dB运行9835帧（约0.201秒）保护中止、预测/残差计数3/1；无原NPZ不能复判声学增长。
 本包不替实测失败改判；若安静条件下仍定音不足，停止并保留已有定音NPZ供C复算，不重跑后续项。
 
 ### 编号现场操作单
@@ -266,11 +271,13 @@ A=8c7c49c原回包门禁定音占比11.6%，因此仍判未通过；空源后窗
    缺文件/哈希错误直接生成停止结果。Python 依赖仅标准库、NumPy、板端既有 PYNQ；不现场安装新库。
 2. **一次冻结场景**：固定麦克风、音响、前放和 Codec，与 strong 标定一致；音箱可立即断电，不戴耳机。
    在提示内输入 READY、SAME_SCENE，并一次写清声源到麦距离、设备位置、听众/测量位置、固定源及音量、
-   测量增益/AGC 状态。**每次path-gate前停止手机/外部人声及讲话，只播包内定音**；START提示会再次说明。
+   测量增益/AGC 状态。随后如实选择 HUMAN_LIVE_AND_LISTENING 或 PROXY；只有真人现场讲话且有人耳评价才能选前者。
+   SSH代理预填/仪表代判选择PROXY，其CLEAR保留为原始报告但真实人声判未测；不因代理评价直接通过。**每次path-gate前停止手机/外部人声及讲话，只播包内定音**；START提示会再次说明。
    不能核实就取消，不能用沉默代表同意。听众关项结束后先停外部播放，再执行下一次门禁。
 3. **先真实人声**：路径门禁后，程序完成配置并静音才提示 START。现场此时靠近现有麦克风讲话；
    不移动麦克风或音响。8 秒限时结束后填 CLEAR / DISTORTED / NO_AMPLIFICATION / HOWL / UNKNOWN。
-   CLEAR 只表示 A 的现场人声/听感记录；不自动证明全程无失稳。没有真实拾音不填 CLEAR。
+   CLEAR仅在HUMAN_LIVE_AND_LISTENING来源下可形成现场人声通过记录，仍不证明全程无失稳。
+   无真人/人耳时用PROXY或UNKNOWN；不得代填真人确认。听感异常即停，即使是代理发现也不自动继续。
 4. **固定听众开/关比较**：同一段固定录制人声由同一外部设备、同音量在固定源位置播放，经 MAX4466 拾音。
    关/开各 8 秒，听众与录音设备位置和测量增益不变，AGC 关闭。系统关使用前向开路且数字源全零。
    可选测量 WAV 固定保存到本轮打印的 `.../results/sprint-<id>/listener/` 下，文件名依次为
@@ -293,7 +300,7 @@ A=8c7c49c原回包门禁定音占比11.6%，因此仍判未通过；空源后窗
    不发下一项；由 A 按已核实基线处理，不把恢复 stock overlay 当重新标定或效果通过。
    STOP/通信中断/落盘失败的软件分支通过不等于紧急静音实物已验收。
 8. **一次回包**：最终屏幕 `RETURN_PACKAGE` 给出唯一结果 ZIP：
-   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r1/results/sprint-<id>/return-results.zip`。
+   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-<id>/return-results.zip`。
    包含所有已执行/失败记录、原始 NPZ 哈希、本地路径、汇总 CSV、覆盖和恢复结果；人声 NPZ/WAV 留板，
    B 可直接读 `summary-v3.json` / `summary-v3.csv`（原 schema3）；FIR 开关配对在 `fir_switch_pairs`，
    不冒充不同模型的 baseline/candidate 配对。包中 `models/manifest.json` 绑定当前 strong 基线。
@@ -307,18 +314,24 @@ A=8c7c49c原回包门禁定音占比11.6%，因此仍判未通过；空源后窗
 
 ### A minimal observation and continuous-run request
 
-以下是交 A 的能力与验收要求；C 不修改底层。A=1c84de9的v2契约已记载队长批准3000000帧上限、待新位流部署。
-C未收到新bit/hwh完整交付及60秒结果；本包继续绑定bb56ef1资产，不混用v2驱动与旧位流，不把批准当上板验收。
+以下是交A的能力与验收要求；C不修改底层。队长已批准v2上限及“寄存器时间线＋尾部PCM”作为运行/保护/停止工程观测。
+A=cf949f2报告60秒完成和停止恢复；C已读取报告，但固定提交中主bit/hwh仍为v1，未找到声明的61bb71aa…/92b499a3…原件。
+原2952点完整时间线、尾部PCM及停止原记录亦未入交付，当前仅能记录A报告的工程结果，未独立复现。
+本r2继续绑定bb56ef1完整v1资产。版本不符回ASSET_MISMATCH，不把v2驱动/新闭环时长混进v1包。
+A补齐同一v2资产包与原记录后，C另做静默验收再发完整包；故障注入条件4仍单列待完成，不阻塞本v1 r2。
 基线文件为 A=bb56ef1 的 `board/audio_replay/replay_trial.py`、`live_pa.py`、`closed_tools.py` 和对应 RTL。
 最小建议：由 A 提供 `run_continuous(output_dir, fixture_id, model_path, bypass, gain_q12, hp_volume,
 seconds=60, before_start=..., stop_request=...)` 或说明实际等价入口；配置与静音完成后再调用 before_start。
+cf949f2的`live_run`尚无before_start参数；接入前请A补“完成配置且仍静音→回调确认→取消留证或开始”接点。
+当前NPZ保存位于运行try/finally之外，落盘异常会跳过status写出；请A保证save_error和独立sidecar尽力写出，恢复失败不继续。
+这两项是接入前的驱动静态审阅要求，非本r2的改动；由A维护原实现，C不另写同名驱动。
 
 | 必需证据 | 字段/行为要求 | 可控验收 |
 |---|---|---|
 | 连续主路 | run_id、帧域/epoch、实际首末帧、开始/停止单调时刻、overlay 加载/重装次数、静音/断音区间、停止原因 | 单次实际覆盖至少 60 秒；期间无重新 arm/加载/Codec 静音拼段；正常停止与现场中断都可静音 |
 | 全程事件 | event_sequence、event_kind、frame 或轮询上下界、原始状态/clip words、保护类型、计数覆盖首末帧、饱和计数标志 | 在首/中/末注入保护/计数变化，全部留证；轮询只能定位区间时不填假精确首发帧 |
 | 缺失与覆盖 | 每块 first_frame/end_frame_exclusive、sequence、dropped_frames/blocks、unknown intervals、计数与 PCM 分别覆盖 | 缺块/回卷/重复/乱序/通信中断被识别，不把缺失填零；中间缺失仍保留有效局部证据 |
-| 失稳观测 | 优先保存完整单声道 microphone signed24-in-int32（60秒约12MB），末尾四路继续供算术核对；或提供经C验收的连续FFT特征及参数/覆盖 | 不阻塞音频；丢日志计数；稳定纯音、尖峰、削顶不自动叫啸；增长发生在中段仍可离线检出 |
+| 声学效果观测（单独验收） | 本次工程运行验收按批准范围仅需寄存器时间线＋尾部PCM；C只评价有效波形窗口。若以后需全程声学结论，再交完整mic或经C验收的连续特征 | 不把工程60秒通过写成全程无啸叫/音质通过；未覆盖声学区间为unknown，不以追加全PCM阻塞本次工程接入 |
 | 配置绑定 | source/code/bit/hwh/model/loaded_Q20/EQ 哈希、实际 g/Codec/bypass/源调度、场景/会话、采样率 | 同配置配对，故意改一个字段必须拒绝；FIR/EQ贡献可分别归因 |
 | 失败留证 | 中断/保护先静音冻结，尽力保存；NPZ失败也有独立状态 sidecar，recovery_ok/cleanup_errors/save_error | 正常、取消、保护、执行异常、通讯异常、落盘失败、恢复失败全部可回包；恢复失败不继续 |
 

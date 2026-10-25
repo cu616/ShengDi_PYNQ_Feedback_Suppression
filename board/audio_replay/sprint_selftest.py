@@ -79,6 +79,8 @@ def run_selftest(base=None, require_preflight=True):
     runner = SoftwareRunner(manifest)
 
     def answer(prompt):
+        if 'HUMAN_LIVE_AND_LISTENING' in prompt:
+            return 'PROXY'
         for token in ('READY','SAME_SCENE','SOURCE_OFF','START','CLEAR'):
             if token in prompt:
                 return token
@@ -92,6 +94,20 @@ def run_selftest(base=None, require_preflight=True):
             shutil.copy2(base/name, work/name)
         with contextlib.redirect_stdout(io.StringIO()):
             state = run_sprint(work, ask=answer, runner=runner, validator=lambda _: manifest)
+        mapping = []
+        controls = SoftwareRunner(manifest)
+        for gain_db in (-12., -6., 0.):
+            path=work/('mapping-%s.npz'%gain_db)
+            m=controls(path,'room_v1_20261021',work/'model.json',np.zeros(1,dtype='<i2'),
+                direct_only=False,bypass=True,gain_db=gain_db,seconds=.25,hp_volume=40,before_start=lambda:True)
+            with np.load(path,allow_pickle=False) as capture:
+                # Match the exact n-2 microphone samples, excluding DC before RMS.
+                reference=capture['reference'][2:];mic=capture['microphone'][:-2]
+                actual=float(20*np.log10(np.std(reference)/np.std(mic)))
+            expected=float(20*np.log10(m['gain_q12']/4096))
+            mapping.append(dict(gain_db=gain_db,gain_q12=m['gain_q12'],ref_over_mic_db=actual,
+                expected_db=expected,error_db=actual-expected,bit_exact=m['verification']['bit_exact'],
+                ok=abs(actual-expected)<.001 and m['verification']['bit_exact']))
     trials = []
     for row, call in zip(state['trials'], runner.calls):
         gate = row.get('path_gate')
@@ -108,11 +124,15 @@ def run_selftest(base=None, require_preflight=True):
         trials_complete=len(trials)==13 and len(runner.calls)==13, gates_passed=len(gates)==6 and all(g['passed'] for g in gates),
         fir_pairs_valid=len(state['fir_pairs'])==2 and all(p['window_comparison_valid'] for p in state['fir_pairs']),
         continuous_left_untested=state['checks']['continuous_60s']['status']=='not_tested',
-        listener_left_untested=state['checks']['listener']['status']=='not_tested')
+        listener_left_untested=state['checks']['listener']['status']=='not_tested',
+        proxy_voice_left_untested=state['checks']['real_voice']['status']=='not_tested',
+        gain_mapping_passed=all(c['ok'] for c in mapping))
     model = json.loads((base/'model.json').read_text(encoding='utf8'))
     report = dict(schema_version=1, policy=POLICY, all_ok=all(checks.values()) and all(t['ok'] for t in trials),
         evidence_kind='software_fixture', scope='package workflow, windows and deployed Q20 arithmetic only; no acoustic or board acceptance',
-        source_commits=manifest['source_commits'], payload_hashes={k:v for k,v in manifest['hashes'].items() if k!='preflight.json'},
+        source_commits=manifest['source_commits'], a_assets=manifest['a_assets'],
+        gain_mapping_controls=mapping, gain_mapping_scope='software bypass control with deployed Q20; routing/arithmetic only',
+        payload_hashes={k:v for k,v in manifest['hashes'].items() if k!='preflight.json'},
         model=dict(taps=model['taps'], lag_first=model['lag_first'], coefficients_sha256=qhash(model['coefficients_q20'])),
         checks=checks, trials=trials, stop_reason=state.get('stop_reason'), hardware_test='not_tested',
         continuous_60s='not_tested', acoustic_effect='not_evaluated', estimated_board_active_minutes=sum(t['seconds'] for t in trials)/60,

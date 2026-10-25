@@ -18,6 +18,7 @@ sys.path.insert(0,str(ROOT/'board/audio_replay'))
 import sprint_experiment as sprint
 from evaluation import classify, sha
 from model_comparison import qhash
+from closed_tools import gain_pcm
 from test_room_experiment import Runner as RoomRunner, setup, BIT
 from test_evaluation import metadata, tone, FS
 
@@ -39,21 +40,25 @@ class Runner(RoomRunner):
                 injection[mask]=source[idx[mask]].astype(float)/32768
                 data['reference']=(data['reference']-injection)*5+injection
                 data['microphone']=mic;data['residual_pcm']=np.rint(mic*2**23).astype(np.int64)
+                # Scaling after a rounded gain is equivalent only at unity.
+                # Construct the fixture's real n-2 schedule at the requested Q12.
+                data['reference'][2:]=injection[2:]+gain_pcm(data['residual_pcm'][:-2],result['gain_q12'])/2**23
                 np.savez_compressed(path,**data)
         return result
 
 
 class SprintTests(unittest.TestCase):
     def test_preflight_rejects_failure_stale_payload_and_missing_trial_fields(self):
-        manifest=dict(source_commits={'C':'fixture'},hashes={'model.json':'m','preflight.json':'p'})
+        manifest=dict(source_commits={'C':'fixture'},a_assets=sprint.A_ASSETS,hashes={'model.json':'m','preflight.json':'p'})
         row=dict(seconds=1.02,source_frames=48828,transition_frames=2442,
                  capture_frames=16384,window_frames=14920,ok=True)
         valid=dict(all_ok=True,policy=sprint.POLICY,evidence_kind='software_fixture',
+                   a_assets=sprint.A_ASSETS,
                    source_commits=manifest['source_commits'],payload_hashes={'model.json':'m'},
                    trials=[dict(row) for _ in range(13)])
         sprint.validate_preflight(manifest,valid)
         for patch_value in ({'all_ok':False},{'payload_hashes':{'model.json':'stale'}},
-                            {'source_commits':{'C':'old'}},{'trials':[]}):
+                            {'source_commits':{'C':'old'}},{'a_assets':{'contract':'v2'}},{'trials':[]}):
             with self.assertRaisesRegex(ValueError,'PREFLIGHT_FAIL'):
                 sprint.validate_preflight(manifest,dict(valid,**patch_value))
         for field,value in [('ok',False),('window_frames',0),('window_frames',20000),('seconds',float('nan'))]:
@@ -110,7 +115,7 @@ class SprintTests(unittest.TestCase):
             self.assertFalse(any(c['bypass'] for c in runner.calls))
             self.assertFalse(state['failure_action']['automatic_bypass'])
 
-    def execute(self,base,runner,ready=True):
+    def execute(self,base,runner,ready=True,observation='PROXY'):
         setup(base)
         # A's mock emits all-zero coefficients; no borrowed golden detector.
         (base/'model.json').write_bytes((base/'models/candidate_512.json').read_bytes())
@@ -118,6 +123,7 @@ class SprintTests(unittest.TestCase):
         manifest=dict(source_commits={'C':'test'},coefficients_sha256=qhash(np.zeros(512,dtype=int)),
                       hashes={'audio_replay.bit':BIT,'model.json':sha(base/'model.json')})
         def answer(prompt):
+            if 'HUMAN_LIVE_AND_LISTENING' in prompt:return observation
             if 'READY' in prompt:return 'READY' if ready else 'CANCEL'
             if 'SAME_SCENE' in prompt:return 'SAME_SCENE'
             if 'SOURCE_OFF' in prompt:return 'SOURCE_OFF'
@@ -137,6 +143,8 @@ class SprintTests(unittest.TestCase):
             self.assertTrue(all(p['window_comparison_valid'] for p in state['fir_pairs']))
             self.assertEqual(state['checks']['continuous_60s']['status'],'not_tested')
             self.assertEqual(state['checks']['listener']['status'],'not_tested')
+            self.assertEqual(state['checks']['real_voice']['status'],'not_tested')
+            self.assertEqual(state['observation_kind'],'proxy')
             self.assertIsNone(state['asg_db'])
             for row in state['trials']:
                 original=row['analysis']['original_metadata']
@@ -144,6 +152,7 @@ class SprintTests(unittest.TestCase):
                 self.assertEqual(row['first_frame'],original['first_frame'])
                 self.assertEqual(row['completed_frames'],original['completed_frames'])
                 if row['role']=='path-gate':
+                    self.assertEqual(row['gate_status'],'passed')
                     gate=row['path_gate']
                     self.assertEqual(gate['end_frame']-gate['first_frame'],14920)
                     self.assertEqual(row['analysis']['tail_analysis_window']['frames'],16384)
@@ -155,6 +164,26 @@ class SprintTests(unittest.TestCase):
             with zipfile.ZipFile(next(base.rglob('return-results.zip'))) as archive:
                 self.assertFalse(any(n.endswith(('.npz','.wav')) for n in archive.namelist()))
                 self.assertIn('return-manifest.json',archive.namelist())
+
+    def test_proxy_clear_cannot_pass_voice_but_explicit_human_fixture_can(self):
+        for observation,expected in [('PROXY','not_tested'),('','not_tested'),('HUMAN_LIVE_AND_LISTENING','passed')]:
+            with self.work() as d:
+                state=self.execute(Path(d),Runner(),observation=observation)
+                self.assertEqual(state['status'],'completed_with_unmeasured_requirements',state.get('stop_reason'))
+                self.assertEqual(state['checks']['real_voice']['status'],expected)
+                row=next(r for r in state['trials'] if r['role']=='real-voice')
+                self.assertEqual(row['hearing_reported_code'],'CLEAR')
+                self.assertEqual(row['hearing_code'],'CLEAR' if expected=='passed' else 'PROXY')
+
+    def test_reduced_point_is_fixed_without_changing_direct_gate_or_thresholds(self):
+        self.assertEqual(sprint.PLAN['gain_db'],-14.)
+        self.assertEqual(sprint.PLAN['gain_q12'],int(np.floor(4096*10**(-14/20)+.5)))
+        with self.work() as d:
+            state=self.execute(Path(d),Runner())
+            self.assertTrue(all(r['gain_q12']==(0 if r['role'] in ('path-gate','listener-off') else 817)
+                                for r in state['trials']))
+            self.assertEqual(state['checks']['path_gate']['status'],'passed')
+            self.assertFalse(sprint.PLAN['automatic_gain_escalation'])
 
     def test_literal_gate_source_has_samples_at_1p02s_but_none_at_1p6s(self):
         # Use the unchanged gate function with actual source and ring geometry.

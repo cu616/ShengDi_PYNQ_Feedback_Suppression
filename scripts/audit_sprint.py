@@ -5,11 +5,13 @@ Expected crossing results come from the signs of the real/imaginary parts.
 """
 import argparse
 import ast
+import io
 import json
 import platform
 from pathlib import Path
 import subprocess
 import sys
+import zipfile
 
 import numpy as np
 
@@ -178,10 +180,79 @@ def audit(a_commit,b_commit,out):
     return result
 
 
+def audit_return(a_commit, out):
+    """Inspect this sprint's metadata return and declared assets, without PCM or board access."""
+    a_commit=subprocess.check_output(
+        ['git','rev-parse',a_commit],cwd=ROOT).decode().strip()
+    packet=blob(a_commit,'report/verification/audio-replay/c-sprint-rc01-return.zip')
+    with zipfile.ZipFile(io.BytesIO(packet)) as archive:
+        manifest=json.loads(archive.read('return-manifest.json'))
+        checks={n:digest(archive.read(n))==h for n,h in manifest['hashes'].items()}
+        if not all(checks.values()):raise ValueError('return member hash mismatch')
+        state=json.loads(archive.read('summary.json'))
+        with zipfile.ZipFile(ROOT/'build/packages/c-sprint-rc01-r1.zip') as original:
+            frozen=json.loads(original.read('sprint-manifest.json'))
+        package_identity=dict(policy=state['policy']==frozen['policy'],plan=state['plan']==frozen['plan'],
+            source_commits=state['package_source']==frozen['source_commits'],payload_hashes=state['package_hashes']==frozen['hashes'])
+        if not all(package_identity.values()):raise ValueError('returned package identity mismatch')
+        trials=[]
+        for row in state['trials']:
+            side=json.loads(archive.read('%02d-%s.status.json'%(row['id'],row['role'])))
+            trials.append(dict(id=row['id'],role=row['role'],category=row['category'],
+                acoustic_reasons=row['analysis']['reasons'],path_gate=row.get('path_gate'),
+                completed_frames=row['completed_frames'],duration_seconds=row['completed_frames']/48828.125,
+                frames=row['frames'],first_frame=row['first_frame'],stop_reasons=row['stop_reasons'],
+                sidecar=side,counts_from_raw=dict(prediction=side['clip_counts_raw'][0]&65535,
+                    residual=side['clip_counts_raw'][0]>>16,gain=side['clip_counts_raw'][1],mix=side['clip_counts_raw'][2])))
+    assets=[]
+    for path in subprocess.check_output(['git','ls-tree','-r','--name-only',a_commit],cwd=ROOT).decode().splitlines():
+        if path.endswith(('.bit','.hwh')):
+            value=blob(a_commit,path)
+            assets.append(dict(path=path,bytes=len(value),sha256=digest(value)))
+    continuous=json.loads(blob(a_commit,'report/verification/audio-replay/v2-continuous-run-2026-10-25.json'))
+    declared={k:continuous['build'][k] for k in ('bit_sha256','hwh_sha256')}
+    driver=ast.parse(blob(a_commit,'board/audio_replay/live_run.py'))
+    entry=next(n for n in driver.body if isinstance(n,ast.FunctionDef) and n.name=='live_run')
+    parents={child:node for node in ast.walk(entry) for child in ast.iter_child_nodes(node)}
+    save=next(n for n in ast.walk(entry) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)
+              and isinstance(n.func.value,ast.Name) and n.func.value.id=='np' and n.func.attr=='savez_compressed')
+    ancestors=[];cursor=save
+    while cursor in parents:
+        cursor=parents[cursor];ancestors.append(cursor)
+    result=dict(a_commit=a_commit,return_zip_sha256=digest(packet),member_hash_checks=checks,package_identity=package_identity,
+        verification_level='independent_metadata_integrity_and_fixed_git_asset_inventory; no PCM or board reproduction',
+        trials=trials,reported_checks=state['checks'],reported_stop_reason=state.get('stop_reason'),
+        raw_capture_inventory=state['raw_files'],raw_npz_in_return=False,
+        hearing_provenance=dict(user_report='PROXY; SSH noninteractive',
+            explicit_top_level_proxy_field_present=any('proxy' in k.lower() for k in state),
+            assessment='human speech and hearing not independently verified; must not mark passed'),
+        asset_inventory=assets,declared_v2_assets=declared,
+        declared_v2_found={k:any(x['sha256']==v for x in assets) for k,v in declared.items()},
+        continuous_report=continuous,continuous_raw_timeline_present=False,continuous_tail_pcm_present=False,
+        continuous_acceptance='A reports engineering completion and stop; C accepts scope, not yet independently reproduced',
+        live_run_static_review=dict(before_start_parameter_present=any(n.arg=='before_start' for n in entry.args.args),
+            npz_save_in_protected_try=any(isinstance(n,ast.Try) for n in ancestors),
+            integration_requests=['A-owned muted after-configuration start/cancel callback',
+                'NPZ write error must not skip independent status save; preserve save_error and cleanup facts']),
+        missing_for_v2=['actual matching v2 bit and hwh blobs',
+            'raw 5s/60s/stop status with complete timeline and existing tail PCM; config/model/Q20 binding',
+            'v2 build timing/utilization reports bound to source and assets',
+            'A condition-4 silent/simulated saturation protection evidence'],
+        decisions=dict(path_gate='passed; source-on tone gate is independent from acoustic category unknown',
+            real_voice_trial='protection after 9835 frames; not a measured howl onset threshold',
+            r2='fixed -14 dB / Q12=817; unchanged direct gate and thresholds; exact v1 assets',
+            v2='defer integration until exact assets and acceptance evidence available'),board_access=False)
+    target=Path(out);target.parent.mkdir(parents=True,exist_ok=True)
+    target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    return result
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--a-commit',default='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6')
     p.add_argument('--b-commit',default='d033d0047542d5e50654a0333777c48ec08dce21')
+    p.add_argument('--return-only',action='store_true')
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    result=audit(a.a_commit,a.b_commit,a.output)
-    print(json.dumps({k:result[k] for k in ('a_commit','b_commit','npz_count','b_counterexamples','deployment')},ensure_ascii=False))
+    result=audit_return(a.a_commit,a.output) if a.return_only else audit(a.a_commit,a.b_commit,a.output)
+    keys=('a_commit','declared_v2_found','decisions') if a.return_only else ('a_commit','b_commit','npz_count','b_counterexamples','deployment')
+    print(json.dumps({k:result[k] for k in keys},ensure_ascii=False))
