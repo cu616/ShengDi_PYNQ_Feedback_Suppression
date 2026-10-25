@@ -743,5 +743,11 @@
    "gated": false
   }
  ],
- "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；允许增益是 Nyquist 近似，余量=允许−实际；受迫响应不是抵消深度"
+ "revision": 1,
+ "pre_registered": false,
+ "supersedes": "dbf2858 原稿（受迫响应口径作废，见 revision-1.md）",
+ "criteria_note": "max|gL|<1 为充分条件（非必要），仅在完整频率范围与相关稳定性假设成立时担保稳定；门控网格有缺口，不担保全频稳定；与正实轴穿越分别报告，不互相替代",
+ "statistic_note": "全带/合格 bin 参考是过门控 bin 上的白谱稳态参考，不等于现场全带 RMS，也不覆盖整个物理频带",
+ "margin_definition": "余量=允许增益−实际增益；环路增益dB=实际−允许=−余量",
+ "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；受迫响应不是抵消深度，也不是 ASG"
 }

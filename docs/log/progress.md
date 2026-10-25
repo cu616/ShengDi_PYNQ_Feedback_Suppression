@@ -1297,3 +1297,23 @@ C 的另外三条也改了：
 原稿保留在 README.md（顶部加横幅注明作废范围），修订写在 revision-1.md，标明"口径修订，非事前预测"。
 回归：预测表 5 项重写（含 C 的 429.153 Hz 反例、闭环 OFF、闭式 M≡H、更差 bin、余量定义），
 全量 116 项通过。输出在 run-rev1/。
+
+## N1–N3 发布口径 + Part 二 实测判读（2026-10-25，B）
+
+Part 二（基于 C 的 896657b 的 c-r4-to-b-r1.zip，sha 47497527…，2 组配对）：
+两组资格齐全（configuration_matches / window_comparison_valid 均 true，reasons 空），
+四试次帧区间完全一致 107174–121582（14408 帧尾部子窗），无保护/削顶/早停，source_response.valid。
+ON−OFF：总 −0.171 / −0.244（两次都 ON 略安静）；300–1000 −0.756 / +0.051（方向不一致）；
+1000–3000 −0.120 / −0.445；8200–8600 +0.379 / +0.253。
+对内门禁漂移 0.086/0.115 dB；跨 repeat 的 OFF 臂自身差 0.690 dB，与低频那次 0.807 dB 摆动同量级，
+所以不能把低频摆动读成"抵消有效/无效"。
+与修订预测对照：总/中/高三个同向，低频一次反向。统计量不同（预测是合格 bin 白谱稳态参考，
+实测是整带麦克风 RMS；14408 帧 0.295 s 受迫响应；标定 −12 dBFS vs 源 −24 dBFS），不换算。
+不产生 MSG/ASG（summary 里 measured_msg_db/measured_asg_db 均 null），不写整体成功；
+OFF 臂本身余量 +6.605 dB，"没叫"两边都成立。
+
+N1：max|gL|<1 只说充分非必要、门控有缺口就不担保全频；余量=允许−实际、环路增益=实际−允许=−余量
+（旧"实际+允许"是公式错误）；删掉 385 dB/s。
+N2："全带"改称合格 bin 白谱稳态参考；否证降级为调查触发；repeat 散布只描述本批，不替代 1.5 dB。
+N3：入口 [7] 标题改"口径修订 1"，JSON 加 revision=1/pre_registered=false/supersedes。
+交付：revision-1.md、part2-field-pairs.md、run-rev1/{repro.txt,prediction.json}。116 项测试通过。

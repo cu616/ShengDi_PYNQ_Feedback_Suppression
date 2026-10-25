@@ -782,10 +782,17 @@ def main():
     # ---- [7] 事前预测：FIR OFF vs ON ----------------------------------
     g_lin = args.work_gain_q12 / 4096.0
     g_db = 20 * np.log10(g_lin)
-    say("\n[7] 事前预测：FIR OFF vs ON（工作点 g = %.3f dB，Q12=%d，delay=%d 拍）"
+    say("\n[7] 口径修订 1（revision=1, pre_registered=false）：FIR OFF vs ON"
+        "（工作点 g = %.3f dB，Q12=%d，delay=%d 拍）"
         % (g_db, args.work_gain_q12, args.delay_frames))
-    say("  三样东西分开：允许增益（Nyquist 近似）／余量(=允许−实际)／受迫响应带功率比")
+    say("  判据性质：max|gL|<1 是**充分条件**（不是必要），只在完整频率范围与相关稳定性假设成立时")
+    say("            才担保稳定；本门控网格有缺口（覆盖率见下），因此**不担保全频稳定**。")
+    say("            它与正实轴穿越是两套估计，分别报告，不互相替代、不拼成一个区间。")
+    say("  三个量：允许增益（Nyquist 近似）／余量(=允许−实际)／受迫响应带功率比")
+    say("  环路增益 dB = 实际 − 允许 = −余量。（旧式 g+允许 是把负号算两次的公式错误，")
+    say("            既不是余量也不是环路增益，已废弃。）")
     say("  T_off = H/(1−gDH)，T_on = H/[1−gD(H−M)]，D = e^{−jω·%d}；两臂都是闭环" % args.delay_frames)
+    say("  「合格 bin 参考」= 过门控 bin 上的白谱稳态参考，**不等于现场全带 RMS**，也不覆盖整个物理频带。")
     pred = {}
     ctrl = {}
     for dname, files in (("train", tr), ("heldout", va)):
@@ -803,7 +810,7 @@ def main():
             say("    余量(允许−实际)：OFF %+.2f / ON %+.2f dB；环路增益 g·max|·|：OFF %+.2f / ON %+.2f dB"
                 % (gtot["off_margin_db"], gtot["on_margin_db"],
                    gtot["off_loop_gain_db"], gtot["on_loop_gain_db"]))
-            say("    全带受迫响应 ON−OFF：%+.2f dB（逐 bin %+.2f … %+.2f）；更差 bin %d"
+            say("    合格 bin 参考 ON−OFF：%+.2f dB（逐 bin %+.2f … %+.2f）；更差 bin %d"
                 % (gtot["on_minus_off_band_db"], gtot["band_min_db"], gtot["band_max_db"],
                    gtot["worse_bins"]))
             say("    %-10s %8s %9s %9s %8s %9s %9s %9s %6s"
@@ -843,8 +850,17 @@ def main():
                             "tables": pred,
                             "controls": ctrl,
                             "band_8200_8600_bins": gap,
+                            "revision": 1,
+                            "pre_registered": False,
+                            "supersedes": "dbf2858 原稿（受迫响应口径作废，见 revision-1.md）",
+                            "criteria_note": "max|gL|<1 为充分条件（非必要），仅在完整频率范围与相关"
+                                             "稳定性假设成立时担保稳定；门控网格有缺口，不担保全频稳定；"
+                                             "与正实轴穿越分别报告，不互相替代",
+                            "statistic_note": "全带/合格 bin 参考是过门控 bin 上的白谱稳态参考，"
+                                              "不等于现场全带 RMS，也不覆盖整个物理频带",
+                            "margin_definition": "余量=允许增益−实际增益；环路增益dB=实际−允许=−余量",
                             "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；"
-                                    "允许增益是 Nyquist 近似，余量=允许−实际；受迫响应不是抵消深度"}
+                                    "受迫响应不是抵消深度，也不是 ASG"}
     if out:
         (out / "prediction.json").write_text(
             json.dumps(result["prediction"], indent=1, ensure_ascii=False) + "\n", encoding="utf-8")

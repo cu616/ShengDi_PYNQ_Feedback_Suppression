@@ -2,13 +2,13 @@
  "config": {
   "data_dir": "D:/Always/QianSai/_inbox/2026-10-25_lowband2_return/lowband2",
   "model": "models/room_v1/calibrated_20261024.json",
-  "cross_session_dir": "D:/Always/QianSai/_inbox/2026-10-23_room6/manifest",
+  "cross_session_dir": null,
   "out_dir": "report/verification/rc01-r4-2026-10-25/run-rev1",
   "train": "0-9",
   "valid": "10-15",
   "nfft": 8192,
   "nfft_sens": 4096,
-  "compare_model": "models/room_v1/candidate_512.json",
+  "compare_model": null,
   "work_gain_q12": 817,
   "stop_after_inputs": false,
   "coherence": 0.8,
@@ -329,24 +329,6 @@
    }
   }
  },
- "compare_model": {
-  "file": "candidate_512.json",
-  "q20_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
-  "thresholds": {
-   "small_gain_bound_db": -4.542172102263647,
-   "small_gain_at_hz": 8416.175842285156,
-   "positive_real_db": -0.6202585600004027,
-   "positive_real_at_hz": 3640.738412513577,
-   "max_abs_E_db": 4.542172102263646,
-   "max_abs_E_at_hz": 8416.175842285156,
-   "coverage_ratio": 0.29021235050036615,
-   "gated_bins": 1189
-  },
-  "gain_over_fir_off_db": {
-   "small_gain": 2.855871228488989,
-   "positive_real": 5.84062241391147
-  }
- },
  "screening_a_ridge": [
   {
    "ridge": 1e-09,
@@ -465,15 +447,7 @@
   "fit_delta_db": 0.0012916648771446049
  },
  "session_20261023": {
-  "status": "excluded_from_training_and_validation",
-  "dir": "D:\\Always\\QianSai\\_inbox\\2026-10-23_room6\\manifest",
-  "segments": 6,
-  "role": "cross_session_stress_test_not_validation",
-  "small_gain_bound_db": -5.330618629860603,
-  "positive_real_db": -3.9449549016724066,
-  "positive_real_at_hz": 8434.080639164009,
-  "fir_off_small_gain_db": -11.27223593882874,
-  "fir_off_positive_real_db": -9.633931174847664
+  "status": "excluded_from_training_and_validation"
  },
  "prediction": {
   "work_point": {
@@ -1220,6 +1194,12 @@
     "gated": false
    }
   ],
-  "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；允许增益是 Nyquist 近似，余量=允许−实际；受迫响应不是抵消深度"
+  "revision": 1,
+  "pre_registered": false,
+  "supersedes": "dbf2858 原稿（受迫响应口径作废，见 revision-1.md）",
+  "criteria_note": "max|gL|<1 为充分条件（非必要），仅在完整频率范围与相关稳定性假设成立时担保稳定；门控网格有缺口，不担保全频稳定；与正实轴穿越分别报告，不互相替代",
+  "statistic_note": "全带/合格 bin 参考是过门控 bin 上的白谱稳态参考，不等于现场全带 RMS，也不覆盖整个物理频带",
+  "margin_definition": "余量=允许增益−实际增益；环路增益dB=实际−允许=−余量",
+  "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；受迫响应不是抵消深度，也不是 ASG"
  }
 }
