@@ -914,3 +914,16 @@ v2 JSON有60秒、2952点与停止延迟汇总，没有完整时间线和尾PCM�
 这些是软件旁路控制，不是三点板端实测或默认模型替换。[150项C回归](sprint-rc0-20261025/tests-rc01-r2.txt)通过；
 其中PROXY/未核实CLEAR不可通过，明确真人软件夹具可通过，−14dB与gain0门禁分离，原失败即停与窗口测试保持。
 源码提交信息：`[C] 核验A回包并固定负14dB完整实验流程`；范围为C编排/自检/审计/打包及测试、操作单和C协作文档。
+
+最终完整[r2 ZIP](../../../build/packages/c-sprint-rc01-r2.zip)从清洁源码e844119f029220a587893ec4a44ff8225f7f9871构建，
+322454字节，SHA256=182f5e05bf999a45a7e935cbfa8b3cdddbd18d45038b8db0b56f72df3f5365fd。
+[实际归档验收](sprint-rc0-20261025/sprint-package-check-rc01-r2.json)验证34载荷、A六件/C七件原件身份，
+真实包内13项自检完整复现preflight；5类preflight拒绝、3类ASSET_MISMATCH拒绝通过，Notebook取消无硬件导入。
+与r1相比，仅闭环工作点参数变化，源/时长/模型/Q20/EQ/A原资产/检测阈值逐字节或逐字段保持。
+新增软件测试来源、资产/自检约束和操作单已明示；旧包不覆盖。
+
+```text
+SELFTEST ok | trials=13 | window_frames min=14920 | gate=passed | 预计板端 0.669分钟（另加配置和人工等待）
+```
+
+发布提交信息：`[C] 交付固定负14dB及资产绑定的RC0.1-r2`。
