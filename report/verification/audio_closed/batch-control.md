@@ -1237,3 +1237,45 @@ python -I -S tools/deliver_check.py listener-pipeline
 B继续已有R-007，本轮不新增任务。
 见[b-handoff-r1-check.json](sprint-rc0-20261025/b-handoff-r1-check.json)。入口根目录summary-v3.json的fir_switch_pairs两组，
 每项source_response在原summary.json，B无需再等人转发单独文件；原PCM与真人结果没有冒充齐全。
+
+## 2026-10-25 B05657e5独立验收与波形入口反例
+
+本轮回答一个问题：B的修订结果与新波形复核能否整体验收。固定原代码、回归、原CLI、报告文字分别核对，
+见[机器验收](sprint-rc0-20261025/b-05657e5-review.json)、[124项原回归](sprint-rc0-20261025/b-05657e5-tests.txt)、
+[原预测CLI输出](sprint-rc0-20261025/b-05657e5-repro.txt)。
+本线新增入口控制工具后，[C原164项回归](sprint-rc0-20261025/c-b056-review-tests.txt)也全部通过；没有改A/B生产实现。
+
+指定三处N1残句/归因/全频稳定断言修订接受；原预测JSON逐值一致，数学函数体未改。
+五原件波形正例重算、两次差分及原保存输出吻合；60秒output在B侧仍未测，保留独立证据来源。
+C额外核对冻结A=85f4967的live_run只装载单个零源样本，故C先前的尾环output检查采用无注入源的反馈关系；
+不把该项转成B已测。
+
+新发现集中在生产CLI的返回判定：main最后只按pkg_ok退出。以下五项均由完整子进程运行，
+不是只测试helper，原脚本未修改；每项退出0且写waveform.json：
+
+| 控制 | 实际证据 | 类别 |
+|---|---|---|
+| 09-fir-on的prediction_pcm[1024]加1，更新该文件清单哈希 | prediction_mismatches=1，package_ok=true | D4 |
+| 删除60秒文件，同时从manifest.files漏列它 | 只核对4项却报5/5一致，tail_60s=null | D3 |
+| 模型Q20首项加1，原捕获不改 | 装入哈希与四捕获声明不同，仍成功 | D2 |
+| 显式给入的summary-v3首组总差分加1dB | 差1.000dB只打印，不进入失败判定 | D4 |
+| 显式指定不存在的summary-v3路径 | 打印不存在并跳过，仍成功 | D3 |
+
+[五项原始命令/输出与退出码](sprint-rc0-20261025/b-05657e5-cli-controls.json)已保存。
+C的[一次入口检查器](../../../tools/check_b_waveform_cli.py)只构造输入并调用B的精确Git原件，
+不另实现FIR/分带/配对算法，也不修改B生产代码。已取得本线源码和B提交的检出中运行：
+
+```text
+python tools/check_b_waveform_cli.py --b-commit 05657e5784d0d78eb446d752bff258a0cf21e51e --out-dir tmp/b-waveform-cli-review
+```
+
+真实Python退出2，最后一行：
+
+```text
+B_WAVEFORM_CLI_REVIEW failed | positive=passed | bad_rejected=0/5
+```
+
+R-007只保留这一处整体资格阻塞，请B修原入口及入口级回归：精确五件齐全，模型绑定相符，算术合格，
+显式请求的对照文件存在且身份/组数/帧区间/数值一致，才退出0。失败允许保存明确标失败的诊断，不能作为合格测量结果。
+原正例及保存数字不得漂移；修完用B新提交运行同一C检查器，正例通过、五项全拒绝才整体通过。
+默认模型、候选否定、门禁不变。A本轮无新增任务，既有R-009启动D4及现场事实待核实，不新增有声试验。

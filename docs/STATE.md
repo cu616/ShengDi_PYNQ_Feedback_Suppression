@@ -40,8 +40,8 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-25从固定源码be3200e建立独立干净检出，CPython3.14 -I -S分别运行cold-start/listener-pipeline均退出0、生成PACKAGE_COMPLETE；两个ZIP在独立解压目录再用包内检查器通过。冻结Q20/bit/hwh和三点映射一致，合成+3dB误差约−0.000161dB，三类坏输入全部failed；164项软件回归通过。R-010/R-011关闭，旧真人ZIP保持。
-**当前卡点**：结束前收A=47367f9真人包，原件显示只执行2项即NO_AMPLIFICATION停批，real_voice=failed、listener=not_tested，不能称五项跑通。R-009的D4脚本未改及旧保护原因待核实，不续跑现场。B=05657e5已交修订与波形复核，R-007转C待独立验收，不重复派B；冷启动不替代另一队友现场复现，默认与无新候选决定不变。
+**最后动作**：2026-10-25独立验收B=05657e5原代码：124项原回归通过、16段原CLI与保存JSON完全一致，五原件波形及两组配对与C复算一致；指定三处文字修订接受。但生产波形入口对五类坏输入全退出0并写报告，C独立入口检查器真实退出2。已把反例交回B唯一实现，不代改算法。两个离线完整交付及R-010/R-011保持。
+**当前卡点**：R-007只余B波形检查器整体失败判定（D4/D2/D3）；原数字、默认模型和无新候选决定不重议。A=47367f9无更新，R-009的启动D4及既有现场事实仍待修；真人NO_AMPLIFICATION明确failed、听众未测，暂停现场重跑。冷启动不替代另一队友现场复现。
 
 - [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
 - [r4五原件独立波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)：A=63f6a69的r4-review-return.zip共2082636字节、SHA256=e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48；5/5与原清单一致。四FIR源内功率和两次差分吻合，五份环形尾部预测/残差/输出算术零失配；60秒原时间线与状态一致，声学覆盖边界不变。
@@ -50,10 +50,11 @@
 - 真人包只做2门禁、真人、听众关/开5项；PROXY触板前拒绝，明确人耳负面记failed，四份固定增益/无AGC录音缺失记未测。A的run_rc4_human2.sh仍在START回调返回前倒计时讲话、自动填人工确认；原脚本控制复现通过。待本次保护问题核实后，使用C唯一Notebook在实际START后讲话，听众用同一固定录制源。
 - [A新增三次回包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-9edd83b-review.json)：均是旧r4 1.0.4，不是human-only 1.0.5。首次听感OTHER；第二次约3.568秒保护，原回包记录prediction/residual=0/2、保存窗麦克风满幅13样本，原因未知；第三次14920帧定音窗存在、tonal_fraction=0.746<0.8。三次清理回执通过，不据此证明声学可用或已排除故障。
 - 两组总/中带响应均减小，高带均增大，低带方向不一致；只描述14408帧源内窗，不推出整体抑制或ASG。60秒PCM覆盖约0.559%，全程声学未知，真人/听众不能以PROXY填通过。
-- [B最新发布复核](../report/verification/audio_closed/sprint-rc0-20261025/b-3657242-review.json)、[接受项与余项](../report/verification/audio_closed/batch-control.md#2026-10-25-b3657242发布复核与a新增真人回包)：原CLI退出0，revision=1/pre_registered=false及保存结果完全吻合；数学函数、phase/Q20入口和旧dbf原件未改，N2/N3接受。N1旧必要条件式/旧加法标签残句仍在；0.690dB定音差不能证明0.807dB低带差的原因，采样余量不能证明OFF本来就稳。
+- [B=05657e5独立验收](../report/verification/audio_closed/sprint-rc0-20261025/b-05657e5-review.json)：原回归124项、原预测及波形CLI正例通过，三个指定发布修正接受。四replay预测/残差/输出全零失配，60秒预测/残差零失配、output在B侧未测，不混用C证据。两组差分与C一致。
+- [B入口坏输入回执](../report/verification/audio_closed/sprint-rc0-20261025/b-05657e5-cli-controls.json)：单帧预测错、删去并漏列尾环、错误冻结模型、汇总差1dB、指定汇总缺失，5/5仍退出0。C的[专用入口检查器](../tools/check_b_waveform_cli.py)对原B真实退出2（positive=passed、bad_rejected=0/5）；R-007仍open，只请B修原入口及CLI回归，不增加板端试验。
 - [给B的冻结原始汇总包](../build/packages/c-r4-to-b-r1.zip)、[字节与哈希核验](../report/verification/audio_closed/sprint-rc0-20261025/b-handoff-r1-check.json)：入口summary-v3.json → fir_switch_pairs两组，含原A回包和C审核；376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367，14载荷通过，源c0af379。新增波形取固定A=63f6a69的r4-review-return.zip；C波形复算已完成，B按同一原件补独立判读。
 - 用户常设要求：每轮回应前分别检查A、B是否需要派单；有新动作就给完整可转发消息，无新动作明确写无需新增。按最新提交去重，不因等待原件重复已经通过的现场项目。
-- [冷启动一条命令](ref/cold-start-reproduction.md)只验证冻结资产与软件证据；[A新入口控制](../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)实测wait=None/CANCEL/GO均返回START，D4未闭合。当前两项离线交付不依赖A给文件，也不替代真人扩声/听众或另一队友板端复现。
+- [冷启动一条命令](ref/cold-start-reproduction.md)只验证冻结资产与软件证据；[A新入口控制](../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)实测wait=None/CANCEL/GO均返回START，D4未闭合。当前两项离线交付不依赖A给文件，也不替代真人扩声/听众或另一队友板端复现。A本轮无需新增派单，保留原修复与事实核实要求。
 - [冷启动完整包](../build/packages/c-cold-start-r1.zip)：389560字节，SHA256=aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/cold-start.json)资产字段非空，原冻结包用a_assets，新生成器兼容assets同值别名。
 - [听众管线完整包](../build/packages/c-listener-pipeline-r1.zip)：49280字节，SHA256=e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/listener-pipeline.json)扣背景后的语音变化2.999839dB，原snr_db总录音/背景口径差2.978339dB，均距+3dB小于0.5dB；全为合成WAV，不算真人。
 - [正式退出码与独立解压复核](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-check.json)、[原工具回执](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-console.json)。每个交付只回答一个问题，首行来自其真实检查器最后一行；非0不作交付，缺陷附D1–D4和具体命令。接收方无需提供文件，后续现场四份固定增益录音仍由A外部录制。
