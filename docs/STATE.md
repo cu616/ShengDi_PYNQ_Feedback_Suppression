@@ -44,6 +44,7 @@
 **当前卡点**：R-008只待同轮4个FIR及60秒共5个非人声NPZ，不再索要已收ZIP。真人/听众效果及另一队友复现未测。B=dbf2858新预测漏OFF闭环，零系数应0却报+0.906dB，R-007退五项必修；旧默认/候选和既有判据验收保持。
 
 - [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
+- [真人完整ZIP](../build/packages/c-sprint-rc01-human-r1.zip)、[归档验收](../report/verification/audio_closed/sprint-rc0-20261025/sprint-package-check-human-r1.json)：源码59f2b2a，365967字节，SHA256=0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e；48载荷/A七件/C八件身份与实际归档5项自检原样复现通过，8类负例拒绝。SELFTEST min14920/gate passed/0.434分钟，现场未测。
 - 绑定资产仍A=85f4967/v2 bit61bb71aa…/hwh92b499a3…；d013930是结果提交。strong、EQ identity、−14dB/Q12=817、Codec40不变。失败静音停批，不升档、不自动旁路、不装旧场系数。
 - 真人包只做2门禁、真人、听众关/开5项；PROXY触板前拒绝，明确人耳负面记failed，四份固定增益/无AGC录音缺失记未测。A新增shell的5秒讲话在START返回前、Codec仍静音，本次使用C唯一Notebook在START开始后讲话；听众用同一固定录制源。
 - 两组总/中带响应均减小，高带均增大，低带方向不一致；只描述14408帧源内窗，不推出整体抑制或ASG。60秒PCM覆盖约0.559%，全程声学未知，真人/听众不能以PROXY填通过。
