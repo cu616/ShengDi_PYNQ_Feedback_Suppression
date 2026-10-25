@@ -9,6 +9,7 @@
   "nfft": 8192,
   "nfft_sens": 4096,
   "compare_model": "models/room_v1/candidate_512.json",
+  "stop_after_inputs": false,
   "coherence": 0.8,
   "delay_frames": 2
  },
@@ -194,7 +195,8 @@
   "missing": [],
   "duplicates": [],
   "unexpected": [],
-  "failures": []
+  "failures": [],
+  "unverified": []
  },
  "baseline": {
   "nfft_8192": {

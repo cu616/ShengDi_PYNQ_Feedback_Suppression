@@ -256,9 +256,8 @@ def split_pairing_control(coef, u, m, taps=TAPS, pieces=8):
     piece_res, keep, dropped = [], [], []
     for k in range(pieces):
         a, b = int(bounds[k]), int(bounds[k + 1])
-        if b - a <= taps:
+        if b - a <= taps:                             # 短片：没有段内历史，不放入 piece_res
             dropped.append((a, b))
-            piece_res.append(None)
             continue
         piece_res.append((a, b, m[a:b] - predict_stream(coef, u[a:b])))
         keep.append(np.arange(a + taps, b))          # 片内有效帧的全局索引
@@ -268,7 +267,8 @@ def split_pairing_control(coef, u, m, taps=TAPS, pieces=8):
     if not keep:
         return out
     idx = np.concatenate(keep)
-    e_piece = np.concatenate([r[taps:] for (_, _, r) in piece_res if r is not None])
+    # piece_res 里只放已保留的片，这里无需再过滤 None（短片压根没进来）
+    e_piece = np.concatenate([r[taps:] for (_, _, r) in piece_res])
     e_whole = res_whole[idx]
     rms = lambda x: float(np.sqrt(np.mean(np.square(x))))
     out["frames"] = {"whole": int(n_total - taps), "piece": int(idx.size),
@@ -304,6 +304,8 @@ def main():
                     help="第二个窗长，用来展示窗长敏感性（两个窗长分开报）")
     ap.add_argument("--compare-model", default=None,
                     help="同门控下再评一个模型，用来做「模型 vs FIR-off」的对照（不改变默认选择）")
+    ap.add_argument("--stop-after-inputs", action="store_true",
+                    help="只跑输入资格检查（供入口级回归与现场预检），不进入数值计算")
     ap.add_argument("--coherence", type=float, default=0.8)
     ap.add_argument("--delay-frames", type=int, default=2)
     args = ap.parse_args()
@@ -371,7 +373,16 @@ def main():
     if bad_hash:
         say("  [哈希不符] %s" % bad_hash)
         res["failures"].append("manifest 声明与文件内容不一致：%s" % bad_hash)
+    # sha_match 为 None 表示"未核对"（清单缺失、破损，或干脆没列这一条）。
+    # 参与训练/留出的文件必须核验过，None 与 False 一样阻断——不能把"没查"当"没问题"。
+    unverified = [i["file"] for i in inv
+                  if i["sha_match"] is None and i["role"] in ("train", "heldout")]
+    if unverified:
+        say("  [未核验] 训练/留出中 %d 个文件没有哈希核对（清单缺失、破损或漏列）：%s"
+            % (len(unverified), unverified))
+        res["failures"].append("训练/留出中 %d 个文件未核验：%s" % (len(unverified), unverified))
     result["input_check"]["failures"] = list(res["failures"])
+    result["input_check"]["unverified"] = unverified
     if res["failures"]:
         for f in res["failures"]:
             say("  [不合格] %s" % f)
@@ -379,9 +390,14 @@ def main():
         if out:
             (out / "input-check.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
         return 2
-    say("  合格：训练 %d 段（%s）、留出 %d 段（%s）；留出段不进入训练"
+    say("  合格：训练 %d 段（%s）、留出 %d 段（%s），全部哈希已核对；留出段不进入训练"
         % (len(tr), ",".join("seg_%d" % i for i in tr_idx),
            len(va), ",".join("seg_%d" % i for i in va_idx)))
+    if args.stop_after_inputs:
+        say("  （--stop-after-inputs：只做输入资格检查，到此结束）")
+        if out:
+            (out / "input-check.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return 0
 
     # ---- [2] 基线：部署 Q20 -------------------------------------------
     model, coef, info = load_deployed_model(args.model)

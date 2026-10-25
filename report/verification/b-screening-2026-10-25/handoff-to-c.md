@@ -119,7 +119,7 @@
 | 输入 | `_inbox/2026-10-25_lowband2_return/lowband2/seg_0..15.npz`（16 个，哈希在 `repro/repro.json` 的 `inputs`，与 manifest 逐条一致） |
 | 输出 | `<out>/repro.txt`、`<out>/repro.json` |
 | 依赖 | Python 3.13.14、numpy 2.5.2；无随机步骤（无种子） |
-| 测试 | `python -m unittest discover -s sim/feedback -p "test_*.py"` → 103 项通过 |
-| 通过 | 判据回归（右端/孤立端点/折返/缺口/计数）、Q20 入口与哈希绑定、基线复算、分段配对一致性、输入资格（缺号/重号/意外项、清单缺失、哈希不符） |
+| 测试 | `python -m unittest discover -s sim/feedback -p "test_*.py"` → 109 项通过 |
+| 通过 | 判据回归（右端/孤立端点/折返/缺口/计数）、Q20 入口与哈希绑定、基线复算、分段配对一致性（含短片与有效片混合）、输入资格（入口级：清单缺失/破损/漏列、哈希不符、缺号、重号、重叠均退出 2；完整清单通过预检） |
 | 已修未通过项 | 无（原"通过"里缺的三项控制已在本次补齐） |
 | 未测 | 多场次系数（无第三场）、EQ 的人声代价、板端（B 不操板）、10-23 压力测试的独立复算（原 NPZ 未交 C） |

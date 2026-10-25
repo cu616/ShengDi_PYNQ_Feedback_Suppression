@@ -18,7 +18,7 @@
   seg_13  heldout   16384 样本  mic -16.07 dBFS  a4313c65b98a5600  (manifest 一致)
   seg_14  heldout   16384 样本  mic -16.09 dBFS  7100f9b20d0b3f29  (manifest 一致)
   seg_15  heldout   16384 样本  mic -16.26 dBFS  634dac2421ed5a0f  (manifest 一致)
-  合格：训练 10 段（seg_0,seg_1,seg_2,seg_3,seg_4,seg_5,seg_6,seg_7,seg_8,seg_9）、留出 6 段（seg_10,seg_11,seg_12,seg_13,seg_14,seg_15）；留出段不进入训练
+  合格：训练 10 段（seg_0,seg_1,seg_2,seg_3,seg_4,seg_5,seg_6,seg_7,seg_8,seg_9）、留出 6 段（seg_10,seg_11,seg_12,seg_13,seg_14,seg_15），全部哈希已核对；留出段不进入训练
 
 [2] 基线（部署口径）
   模型 calibrated_20261024.json  taps=512  file=c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a

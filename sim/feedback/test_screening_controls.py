@@ -6,7 +6,9 @@
   3. manifest 哈希不符只打警告，仍继续产出数字；
   4. manifest 缺失或解析失败时把 sha_match 写成 True（"未核对"被当成"一致"）。
 """
+import hashlib
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -123,6 +125,115 @@ class ManifestQualificationTest(unittest.TestCase):
             man, status = rbs.load_manifest_hashes(p)
             self.assertEqual(man, {"seg_3.npz": "a" * 64, "seg_4.npz": "b" * 64})
             self.assertIn("已读取 2 条", status)
+
+
+class SplitPairingMixedTest(unittest.TestCase):
+    """短片与有效片同时存在：必须只丢短片，不能因 None 解包而崩。"""
+
+    def test_mixed_short_and_valid_pieces(self):
+        """C 的触发条件：4100 帧、512 抽头、8 片 → 片长 512/513 交替。
+
+        512 帧的 4 片没有段内历史被丢弃，513 帧的 4 片各留 1 帧，配对差为 0。
+        """
+        n, taps = 4100, 512
+        rng = np.random.default_rng(7)
+        u = rng.standard_normal(n)
+        h = np.zeros(taps)
+        h[0], h[3] = 0.6, -0.1
+        m = np.convolve(u, h)[:n]
+        out = rbs.split_pairing_control(h, u, m, taps=taps, pieces=8)
+        self.assertEqual(len(out["dropped_pieces"]), 4)
+        self.assertEqual(out["frames"]["paired"], 4)
+        self.assertEqual(out["max_abs_diff"], 0.0)
+        self.assertAlmostEqual(out["rms_delta_db"], 0.0, places=9)
+
+
+REPO = Path(__file__).resolve().parents[2]
+SCRIPT = REPO / "scripts" / "reproduce_b_screening.py"
+MODEL = REPO / "models" / "room_v1" / "calibrated_20261024.json"
+
+
+def _make_dataset(root, ids, manifest="complete", corrupt=None):
+    """造一个小数据包：npz 只有必须字段，manifest 按 hash 逐条列。"""
+    d = Path(root) / "lowband2"
+    d.mkdir(parents=True, exist_ok=True)
+    entries = []
+    for i in ids:
+        p = d / ("seg_%d.npz" % i)
+        np.savez(p, reference=np.zeros(64), microphone=np.zeros(64),
+                 sample_rate_hz=np.float64(48828.125))
+        entries.append({"path": "lowband2/seg_%d.npz" % i,
+                        "sha256": hashlib.sha256(p.read_bytes()).hexdigest()})
+    if corrupt is not None:
+        for e in entries:
+            if e["path"].endswith("seg_%d.npz" % corrupt):
+                e["sha256"] = "0" * 64
+    man = Path(root) / "manifest.json"
+    if manifest == "complete":
+        man.write_text(json.dumps({"files": entries}), encoding="utf-8")
+    elif manifest == "omit_one":
+        man.write_text(json.dumps({"files": entries[1:]}), encoding="utf-8")
+    elif manifest == "broken":
+        man.write_text("{not json", encoding="utf-8")
+    # "missing" 就什么都不写
+    return d
+
+
+def _run(data_dir, out_dir, *extra):
+    cmd = [sys.executable, str(SCRIPT),
+           "--data-dir", str(data_dir), "--model", str(MODEL),
+           "--train", "0-1", "--valid", "2-3", "--out-dir", str(out_dir), *extra]
+    return subprocess.run(cmd, cwd=str(REPO), capture_output=True, text=True)
+
+
+class CliInputGateTest(unittest.TestCase):
+    """入口级：不合格输入必须返回 2，且不写 repro.txt/json（不能只测辅助函数）。"""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def assert_blocked(self, proc, n_unverified=None):
+        self.assertEqual(proc.returncode, 2, proc.stdout[-800:] + proc.stderr[-400:])
+        out = self.root / "out"
+        self.assertFalse((out / "repro.txt").exists(), "不合格输入却写出了 repro.txt")
+        self.assertFalse((out / "repro.json").exists(), "不合格输入却写出了 repro.json")
+        self.assertIn("[未核验]", proc.stdout)
+        if n_unverified is not None:
+            self.assertIn("训练/留出中 %d 个文件没有哈希核对" % n_unverified, proc.stdout)
+
+    def test_missing_manifest_blocks_full_cli(self):
+        d = _make_dataset(self.root, [0, 1, 2, 3], manifest="missing")
+        self.assert_blocked(_run(d, self.root / "out"), n_unverified=4)
+
+    def test_broken_manifest_blocks_full_cli(self):
+        d = _make_dataset(self.root, [0, 1, 2, 3], manifest="broken")
+        self.assert_blocked(_run(d, self.root / "out"), n_unverified=4)
+
+    def test_manifest_omitting_one_segment_blocks_full_cli(self):
+        """漏列一条：只有那一行未核验，也必须阻断。"""
+        d = _make_dataset(self.root, [0, 1, 2, 3], manifest="omit_one")
+        self.assert_blocked(_run(d, self.root / "out"), n_unverified=1)
+
+    def test_wrong_hash_blocks_full_cli(self):
+        d = _make_dataset(self.root, [0, 1, 2, 3], corrupt=2)
+        proc = _run(d, self.root / "out")
+        self.assertEqual(proc.returncode, 2, proc.stdout[-800:])
+        self.assertIn("[哈希不符]", proc.stdout)
+        self.assertFalse((self.root / "out" / "repro.txt").exists())
+
+    def test_complete_manifest_passes_preflight(self):
+        """正例：清单完整时预检返回 0 并写 input-check.txt，不进入数值阶段。"""
+        d = _make_dataset(self.root, [0, 1, 2, 3])
+        proc = _run(d, self.root / "out", "--stop-after-inputs")
+        self.assertEqual(proc.returncode, 0, proc.stdout[-800:] + proc.stderr[-400:])
+        self.assertIn("全部哈希已核对", proc.stdout)
+        out = self.root / "out"
+        self.assertTrue((out / "input-check.txt").exists())
+        self.assertFalse((out / "repro.txt").exists())
 
 
 if __name__ == "__main__":
