@@ -102,6 +102,11 @@ for marker, value, need in EXPECT:
     seen.add(marker)
     needs.clear()
     namespace['queue'] = ['LAYOUT']
+    # the real-voice item needs a valid go before it may start; other items do not
+    if marker == '\u771f\u5b9e\u4eba\u58f0\u9879\u6b64\u65f6\u5c31\u4f4d':
+        namespace['wait_file'] = lambda path, need, extra=None: (needs.append(need), 'GO')[1]
+    else:
+        namespace['wait_file'] = fake_wait_file
     got = ask(match)
     got_need = needs[0] if needs else None
     ok_value = (value is None) or (got == value)

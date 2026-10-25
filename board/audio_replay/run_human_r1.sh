@@ -71,10 +71,16 @@ def ask(prompt=''):
         seq['trial'] += 1
         real = '真实人声项此时就位' in text
         if real:
-            # the speaker must already be talking when the codec unmutes; wait for A's go,
-            # then return START so the 8 s capture happens while the person keeps speaking
-            wait_file(pathlib.Path('/home/xilinx/go_voice'), 'GO_VOICE',
-                      {'trial': seq['trial'], 'cue': seq['trial']})
+            # The speaker must already be talking when the codec unmutes, so wait for A's go.
+            # D4: ONLY an explicit GO/START authorises arming. Timeout, CANCEL, an empty file
+            # or any other token must cancel WITHOUT unmuting and WITHOUT arming.
+            value = wait_file(pathlib.Path('/home/xilinx/go_voice'), 'GO_VOICE',
+                              {'trial': seq['trial'], 'cue': seq['trial']})
+            token = (value or '').strip().upper()
+            if token not in ('GO', 'START'):
+                publish(step='cancelled', trial=seq['trial'],
+                        reason=token or 'TIMEOUT_OR_EMPTY')
+                return 'CANCEL'
         publish(step='start', trial=seq['trial'], real_voice=real)
         return 'START'
     if 'CLEAR' in text and 'HOWL' in text:
