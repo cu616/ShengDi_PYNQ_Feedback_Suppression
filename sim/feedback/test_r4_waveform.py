@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -27,11 +29,23 @@ RATE = 48828.125
 SCALE = 2 ** 23
 
 
-def build_trial(band, frames=4096, taps=64, bypass=False, seed=3):
-    """按 RTL 的定义造一个自洽试次：played = source + g·residual[n−2]。"""
+def make_model(taps=16, seed=11):
     rng = np.random.default_rng(seed)
     q = np.zeros(taps, dtype=np.int64)
-    q[:8] = rng.integers(-2 ** 16, 2 ** 16, size=8)
+    q[:6] = rng.integers(-2 ** 16, 2 ** 16, size=6)
+    return q
+
+
+def build_trial(band, frames=4096, taps=64, bypass=False, seed=3, q=None):
+    """按 RTL 的定义造一个自洽试次：played = source + g·residual[n−2]。
+
+    `q` 给了就用它（整包必须共用同一条模型，否则模型绑定一列就对不上）。
+    """
+    rng = np.random.default_rng(seed)
+    if q is None:
+        q = np.zeros(taps, dtype=np.int64)
+        q[:8] = rng.integers(-2 ** 16, 2 ** 16, size=8)
+    taps = len(q)
     gain_q12 = 817
 
     # first_frame 之前也要有源，否则 injected 在后半段变 0、output 检查失效
@@ -137,6 +151,189 @@ class ResponseWindowTest(unittest.TestCase):
         meta = {"first_frame": 0, "completed_frames": 4096, "source_frames": 122070}
         _begin, _stop, frames = vrw.response_window(meta, 122070, RATE)
         self.assertEqual(frames, 0)
+
+
+# --------------------------------------------------------------------------
+# 入口级判定：整包正例必须 0，五种坏输入必须非 0（C 的 D2/D3/D4 反例）
+# --------------------------------------------------------------------------
+
+SCRIPT = REPO / "scripts" / "verify_r4_waveforms.py"
+TRIAL_NAMES = [("07-fir-off.npz", True), ("09-fir-on.npz", False),
+               ("11-fir-on.npz", False), ("13-fir-off.npz", True)]
+TAIL_NAME = "15-continuous-60s.npz"
+
+
+def write_npz(path, cap):
+    np.savez(path, **cap)
+
+
+def build_pack(root, frames=11000):
+    """造一个"五件齐全、模型绑定一致、算术全对"的包，外加配套模型/汇总/复核。"""
+    q = make_model()
+    pack = Path(root) / "pack"
+    pack.mkdir(parents=True)
+    caps = {}
+    for index, (name, bypass) in enumerate(TRIAL_NAMES):
+        cap, _q, _meta = build_trial(name, frames=frames, bypass=bypass,
+                                     seed=101 + index, q=q)
+        caps[name] = cap
+        write_npz(pack / name, cap)
+    # 60 s 尾环：不带 source_pcm16 / coefficients_q20 / sample_rate_hz
+    rng = np.random.default_rng(21)
+    played = (rng.standard_normal(frames) * 2000).astype(np.int64)
+    mic = (rng.standard_normal(frames) * 1500).astype(np.int64)
+    acc = np.convolve(played, np.r_[np.int64(0), q])[:frames]
+    pred = np.clip(vrw.rounded_shift(acc, 20), -SCALE, SCALE - 1)
+    res = np.clip(mic - pred, -SCALE, SCALE - 1)
+    tail_meta = dict(label="run", bypass=False, zero_coeff=False, gain_db=-14.0, gain_q12=817,
+                     hp_volume=40, sample_rate_hz=RATE, frames_requested=200000,
+                     first_frame=1000, completed_frames=1000 + frames,
+                     coefficients_sha256=hashlib.sha256(q.astype("<i4").tobytes()).hexdigest(),
+                     timeline=[[0.0, 1, 0, 0, 0, 0, 0]])
+    caps[TAIL_NAME] = dict(reference=played / SCALE, microphone=mic / SCALE,
+                           prediction_pcm=pred, residual_pcm=res,
+                           metadata_json=json.dumps(tail_meta))
+    write_npz(pack / TAIL_NAME, caps[TAIL_NAME])
+
+    # 清单
+    entries = {}
+    for name in caps:
+        raw = (pack / name).read_bytes()
+        entries[name] = {"sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw)}
+    (pack / "manifest.json").write_text(json.dumps({"files": entries}), encoding="utf-8")
+
+    # 模型
+    model = {"coefficients": (q / 2 ** 20).tolist(), "coefficients_q20": q.tolist(),
+             "taps": int(len(q)), "lag_first": 1}
+    model_path = Path(root) / "model.json"
+    model_path.write_text(json.dumps(model), encoding="utf-8")
+
+    # 汇总与复核：都用同一套场景数（真实场景里就是 C 侧算出来的那批）
+    responses = {}
+    for name, _b in TRIAL_NAMES:
+        meta = json.loads(vrw.as_text(caps[name]["metadata_json"]))
+        responses[name] = vrw.response_metrics(caps[name], meta)
+    pairs = []
+    for repeat, (off_name, _), (on_name, _) in ((1, TRIAL_NAMES[0], TRIAL_NAMES[1]),
+                                                (2, TRIAL_NAMES[3], TRIAL_NAMES[2])):
+        off, on = responses[off_name], responses[on_name]
+        pairs.append({
+            "repeat": repeat, "on_minus_off_response_rms_db": on["rms_dbfs"] - off["rms_dbfs"],
+            "on_minus_off_band_response_db": {k: on["bands_dbfs"][k] - off["bands_dbfs"][k]
+                                              for k in on["bands_dbfs"]},
+            "configuration_matches": True, "window_comparison_valid": True})
+    summary_path = Path(root) / "summary-v3.json"
+    summary_path.write_text(json.dumps({"fir_switch_pairs": pairs}), encoding="utf-8")
+
+    review_files = []
+    for name, _b in TRIAL_NAMES:
+        review_files.append({"file": name,
+                             "response_rms_dbfs": responses[name]["rms_dbfs"],
+                             "response_bands_dbfs": responses[name]["bands_dbfs"],
+                             "independent_arithmetic_mismatches":
+                                 {"prediction": 0, "residual": 0, "output": 0}})
+    review_files.append({"file": TAIL_NAME, "response_rms_dbfs": 0.0, "response_bands_dbfs": {},
+                         "independent_arithmetic_mismatches":
+                             {"prediction": 0, "residual": 0, "output": 0}})
+    review_path = Path(root) / "c-review.json"
+    review_path.write_text(json.dumps({"files": review_files}), encoding="utf-8")
+    return pack, model_path, summary_path, review_path, q
+
+
+def run_cli(pack, model, summary, review, out):
+    cmd = [sys.executable, str(SCRIPT), "--pack", str(pack), "--model", str(model),
+           "--summary-v3", str(summary), "--c-review", str(review), "--out-dir", str(out)]
+    return subprocess.run(cmd, cwd=str(REPO), capture_output=True, text=True)
+
+
+class CliVerdictTest(unittest.TestCase):
+    """整包判定：文件齐全 + 模型绑定 + 算术 + 显式对照，四项都过才退出 0。"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.root = Path(cls.tmp.name)
+        cls.base = cls.root / "base"          # 基准包单独放一层，复制时不会把自己拷进去
+        cls.pack, cls.model, cls.summary, cls.review, cls.q = build_pack(cls.base)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def fresh(self, tag):
+        """每个用例复制一份整包，避免相互污染。"""
+        dst = self.root / tag
+        if dst.exists():
+            shutil.rmtree(dst)
+        shutil.copytree(self.base, dst)
+        return (dst / "pack", dst / "model.json", dst / "summary-v3.json",
+                dst / "c-review.json", dst / "out")
+
+    def repack(self, pack, name):
+        """改过 npz 之后必须同步 manifest，否则会被完整性门先挡掉。"""
+        man = json.loads((pack / "manifest.json").read_text(encoding="utf-8"))
+        raw = (pack / name).read_bytes()
+        man["files"][name] = {"sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw)}
+        (pack / "manifest.json").write_text(json.dumps(man), encoding="utf-8")
+
+    def test_positive_pack_passes(self):
+        pack, model, summary, review, out = self.fresh("pos")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 0, proc.stdout[-1200:] + proc.stderr[-400:])
+        self.assertIn("判定：**合格**", proc.stdout)
+        data = json.loads((out / "waveform.json").read_text(encoding="utf-8"))
+        self.assertTrue(data["ok"])
+        self.assertEqual(data["failures"], [])
+
+    def test_prediction_off_by_one_is_rejected(self):
+        """D4：prediction_pcm 改一帧，manifest 同步更新也必须被算术门挡下。"""
+        pack, model, summary, review, out = self.fresh("d4arith")
+        cap = {k: np.load(pack / "07-fir-off.npz")[k] for k in
+               np.load(pack / "07-fir-off.npz").files}
+        cap["prediction_pcm"][1024] += 1
+        write_npz(pack / "07-fir-off.npz", cap)
+        self.repack(pack, "07-fir-off.npz")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("arithmetic", proc.stdout)
+
+    def test_missing_sixty_second_file_is_rejected(self):
+        """D3：删 60 s 原件并从清单漏列，只剩 4 件也必须被角色门挡下。"""
+        pack, model, summary, review, out = self.fresh("d3miss")
+        (pack / TAIL_NAME).unlink()
+        man = json.loads((pack / "manifest.json").read_text(encoding="utf-8"))
+        del man["files"][TAIL_NAME]
+        (pack / "manifest.json").write_text(json.dumps(man), encoding="utf-8")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("package_incomplete", proc.stdout)
+
+    def test_frozen_model_drift_is_rejected(self):
+        """D2：模型 Q20 首项改 1，哈希就对不上，必须挡下。"""
+        pack, model, summary, review, out = self.fresh("d2model")
+        data = json.loads(Path(model).read_text(encoding="utf-8"))
+        data["coefficients_q20"][0] += 1
+        Path(model).write_text(json.dumps(data), encoding="utf-8")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("model_binding", proc.stdout)
+
+    def test_summary_difference_is_rejected(self):
+        """D4：汇总里第一组差分改 1 dB，本来只打印差异，现在必须挡下。"""
+        pack, model, summary, review, out = self.fresh("d4sum")
+        data = json.loads(Path(summary).read_text(encoding="utf-8"))
+        data["fir_switch_pairs"][0]["on_minus_off_response_rms_db"] += 1.0
+        Path(summary).write_text(json.dumps(data), encoding="utf-8")
+        proc = run_cli(pack, model, summary, review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("summary_mismatch", proc.stdout)
+
+    def test_missing_explicit_summary_is_rejected(self):
+        """D3：显式指定一个不存在的汇总，不能"跳过"就算过。"""
+        pack, model, _summary, review, out = self.fresh("d3nosum")
+        proc = run_cli(pack, model, Path(self.root) / "nope.json", review, out)
+        self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])
+        self.assertIn("summary_missing", proc.stdout)
 
 
 if __name__ == "__main__":

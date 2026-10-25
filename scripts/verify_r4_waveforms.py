@@ -34,6 +34,11 @@ import numpy as np
 
 BANDS = ((300, 1000), (1000, 3000), (8200, 8600))
 SCALE = 2 ** 23
+# 对照容差：同一口径下本侧与汇总/复核只应有浮点末位差（实测 ≤7.1e−15），
+# 1e−3 dB 既容得下末位噪声，也挡得住"改 1 dB"这类伪造。
+TOL_DB = 1e-3
+# r4 包按角色应恰有的件数：两臂各两次 + 一个 60 s 尾环。
+EXPECTED_ROLES = {"fir_off": 2, "fir_on": 2, "continuous": 1}
 
 
 def sha256_file(path):
@@ -187,11 +192,24 @@ def main() -> int:
         print(text)
         lines.append(text)
 
+    failures = []          # [(代码, 说明)]：空才允许返回 0
+
+    def fail(code, detail):
+        failures.append({"code": code, "detail": detail})
+        say("  [不合格] %s：%s" % (code, detail))
+
     say("=" * 78)
     say("[1] 包完整性（%s）" % pack)
     pkg_ok, pkg_rows = check_package(pack)
     if pkg_ok is None:
         say("  manifest.json 缺失，无法核对")
+        fail("manifest_missing", "manifest.json 不存在，无法核对任何哈希")
+        say("\n判定：**不合格**（1 项）— 不产出合格测量结果")
+        if out:
+            (out / "waveform.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+            (out / "waveform.json").write_text(
+                json.dumps({"ok": False, "failures": failures}, indent=1, ensure_ascii=False) + "\n",
+                encoding="utf-8")
         return 2
     for r in pkg_rows:
         if r["status"] == "missing":
@@ -200,7 +218,12 @@ def main() -> int:
             say("  %-24s %8d B  sha %s  %s"
                 % (r["file"], r["bytes"], r["sha256"][:16],
                    "一致" if r["status"] == "ok" else "**不符**"))
-    say("  结论：%s" % ("5/5 一致" if pkg_ok else "**有文件不符，后续结论作废**"))
+    say("  结论：%s" % ("%d/%d 一致" % (sum(1 for r in pkg_rows if r["status"] == "ok"),
+                                          len(pkg_rows)) if pkg_ok
+                        else "**有文件不符或缺失**"))
+    if not pkg_ok:
+        bad = [r["file"] for r in pkg_rows if r["status"] != "ok"]
+        fail("package_integrity", "文件哈希/字节数不符或缺失：%s" % bad)
 
     model = json.loads(Path(args.model).read_text(encoding="utf-8"))
     q20 = np.asarray(model["coefficients_q20"], dtype=np.int64)
@@ -216,9 +239,13 @@ def main() -> int:
         if not p.exists():
             say("  %-18s 缺文件" % name)
             continue
-        cap = load_trial(p)
-        meta = json.loads(as_text(cap["metadata_json"]))
-        r = arithmetic(cap, bypass=bool(meta["bypass"]))
+        try:
+            cap = load_trial(p)
+            meta = json.loads(as_text(cap["metadata_json"]))
+            r = arithmetic(cap, bypass=bool(meta["bypass"]))
+        except Exception as exc:                      # 结构损坏也要是"不合格"，不是崩溃
+            fail("trial_unreadable", "%s：%s" % (name, exc))
+            continue
         r.update(file=name, capture_id=meta["capture_id"], bypass=bool(meta["bypass"]),
                  gain_q12=int(meta["gain_q12"]), hp_volume=int(meta["hp_volume"]),
                  coefficients_sha256=meta.get("coefficients_sha256"))
@@ -228,10 +255,18 @@ def main() -> int:
             % (name, r["bypass"], r["prediction_mismatches"], r["prediction_evaluated_frames"],
                r["residual_mismatches"], r["residual_evaluated_frames"],
                r["output_mismatches"], r["output_evaluated_frames"], r["mic_full_scale_samples"]))
-        say("  %-18s 模型哈希与包内 %s；响应窗 %d–%d（%d 帧），总 %.3f dBFS"
-            % ("", "一致" if r["coefficients_sha256"] == q_sha else "**不一致**",
+        bound = r["coefficients_sha256"] == q_sha
+        say("  %-18s 模型绑定 %s；响应窗 %d–%d（%d 帧），总 %.3f dBFS"
+            % ("", "一致" if bound else "**不一致**",
                r["response"]["first_frame"], r["response"]["end_frame"],
                r["response"]["frames"], r["response"]["rms_dbfs"]))
+        r["model_bound"] = bool(bound)
+        if not bound:
+            fail("model_binding", "%s 记录的 coefficients_sha256 与给定模型不符" % name)
+        if not r["bit_exact"]:
+            fail("arithmetic", "%s：prediction %d / residual %d / output %s 帧失配"
+                 % (name, r["prediction_mismatches"], r["residual_mismatches"],
+                    r["output_mismatches"]))
 
     tail_name = "15-continuous-60s.npz"
     say("\n[3] 60 s 尾环（%s）" % tail_name)
@@ -255,9 +290,27 @@ def main() -> int:
         say("  timeline 点 %d，环覆盖帧 %d–%d（%d 帧），占整次 %d 帧的 %.3f%%"
             % (len(tl), first, first + r["frames"] - 1, r["frames"], total,
                100.0 * r["frames"] / max(total, 1)))
+        bound = r["coefficients_sha256"] == q_sha
+        r["model_bound"] = bool(bound)
+        if not bound:
+            fail("model_binding", "%s 记录的 coefficients_sha256 与给定模型不符" % tail_name)
+        if r["prediction_mismatches"] or r["residual_mismatches"]:
+            fail("arithmetic", "%s：prediction %d / residual %d 帧失配"
+                 % (tail_name, r["prediction_mismatches"], r["residual_mismatches"]))
     else:
         tail = None
         say("  缺文件")
+        fail("missing_file", "%s 不存在" % tail_name)
+
+    roles = {"fir_off": 0, "fir_on": 0, "continuous": 1 if tail is not None else 0}
+    for r in results.values():
+        roles["fir_off" if r["bypass"] else "fir_on"] += 1
+    say("\n[3b] 角色齐备性：期望 %s，实际 %s"
+        % (EXPECTED_ROLES, roles))
+    if roles != EXPECTED_ROLES:
+        fail("package_incomplete",
+             "角色件数不符（期望 %s，实际 %s）——少件或多了同一臂的重复件"
+             % (EXPECTED_ROLES, roles))
 
     say("\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）")
     say("  %-18s %10s %10s %10s %10s" % ("试次", "总", "300-1000", "1000-3000", "8200-8600"))
@@ -288,10 +341,24 @@ def main() -> int:
     reference = None
     if args.summary_v3:
         sp = Path(args.summary_v3)
-        if sp.exists():
-            summary = json.loads(sp.read_text(encoding="utf-8"))
-            reference = summary.get("fir_switch_pairs") or []
+        if not sp.exists():
+            say("\n[6] summary-v3 不存在：%s" % sp)
+            fail("summary_missing", "显式指定了 --summary-v3，但文件不存在：%s" % sp)
+        else:
+            try:
+                summary = json.loads(sp.read_text(encoding="utf-8"))
+                reference = summary.get("fir_switch_pairs") or []
+            except Exception as exc:
+                reference = None
+                say("\n[6] summary-v3 解析失败：%s" % exc)
+                fail("summary_unreadable", "--summary-v3 无法解析：%s" % exc)
+        if reference is not None:
             say("\n[6] 与 C 的 summary-v3 对照")
+            if not reference:
+                fail("summary_empty", "--summary-v3 里没有 fir_switch_pairs")
+            if len(computed) != len(reference):
+                fail("pair_count", "配对组数不一致：本侧 %d、汇总 %d"
+                     % (len(computed), len(reference)))
             worst = 0.0
             for got, want in zip(computed, reference):
                 d_total = abs(got["total_db"] - want["on_minus_off_response_rms_db"])
@@ -306,14 +373,29 @@ def main() -> int:
                     worst = max(worst, d)
                     say("           %-10s 本侧 %+0.6f / 汇总 %+0.6f（差 %.2e）"
                         % (key, got["bands_db"][key], value, d))
-            say("  最大差 %.3e dB（只为确认同口径；差值本身不是新结论）" % worst)
-            if len(computed) != len(reference):
-                say("  **配对组数不一致：本侧 %d、汇总 %d**" % (len(computed), len(reference)))
-        else:
-            say("\n[6] summary-v3 不存在：%s" % sp)
+            say("  最大差 %.3e dB（容差 %.0e；超了就是两套数字对不上）" % (worst, TOL_DB))
+            if worst > TOL_DB:
+                fail("summary_mismatch", "与 summary-v3 的配对差 %.3e dB 超过容差 %.0e"
+                     % (worst, TOL_DB))
+            for got, want in zip(computed, reference):
+                if not (want.get("window_comparison_valid") is True
+                        and want.get("configuration_matches") is True):
+                    fail("pair_not_valid",
+                         "repeat %s 的配对在汇总里未被判定有效（window/config）" % got["repeat"])
 
-    if args.c_review and Path(args.c_review).exists():
-        review = json.loads(Path(args.c_review).read_text(encoding="utf-8"))
+    if args.c_review and not Path(args.c_review).exists():
+        say("\n[7] 复核 JSON 不存在：%s" % args.c_review)
+        fail("c_review_missing", "显式指定了 --c-review，但文件不存在：%s" % args.c_review)
+    elif args.c_review:
+        try:
+            review = json.loads(Path(args.c_review).read_text(encoding="utf-8"))
+        except Exception as exc:
+            review = None
+            say("\n[7] 复核 JSON 解析失败：%s" % exc)
+            fail("c_review_unreadable", "--c-review 无法解析：%s" % exc)
+      # 解析成功才进对照
+        if review is None:
+            review = {}
         say("\n[7] 与 C 的独立波形复核对照（%s）" % Path(args.c_review).name)
         by_file = {r["file"]: r for r in review.get("files", [])}
         worst = 0.0
@@ -321,6 +403,7 @@ def main() -> int:
             mine, theirs = results.get(name) or (tail if name == tail_name else None), by_file.get(name)
             if mine is None or theirs is None:
                 say("  %-22s 一侧缺记录" % name)
+                fail("c_review_incomplete", "%s 在复核 JSON 里没有对应记录，无法对照" % name)
                 continue
             d = abs(mine["response"]["rms_dbfs"] - theirs["response_rms_dbfs"]) \
                 if "response" in mine else 0.0
@@ -335,7 +418,13 @@ def main() -> int:
             for key, value in (theirs.get("response_bands_dbfs") or {}).items():
                 if "response" in mine and key in mine["response"]["bands_dbfs"]:
                     worst = max(worst, abs(mine["response"]["bands_dbfs"][key] - value))
-        say("  最大差 %.3e（电平/分带）；失配计数两侧都为 0 才算对上" % worst)
+            theirs_m = theirs["independent_arithmetic_mismatches"]
+            if any(int(theirs_m.get(k) or 0) for k in ("prediction", "residual", "output")):
+                fail("c_review_disagrees", "%s：复核侧记录到非零失配 %s" % (name, theirs_m))
+        say("  最大差 %.3e（容差 %.0e）；失配计数两侧都为 0 才算对上" % (worst, TOL_DB))
+        if worst > TOL_DB:
+            fail("c_review_mismatch", "与复核 JSON 的电平/分带差 %.3e 超过容差 %.0e"
+                 % (worst, TOL_DB))
     else:
         say("\n[7] 未给 C 的复核 JSON：跳过逐文件对照")
 
@@ -349,14 +438,33 @@ def main() -> int:
                "method": ("played=reference·2^23；prediction=clip(round_shift(Σq[k]·played[n−1−k],20))；"
                           "residual=mic（bypass）或 clip(mic−prediction)；"
                           "output=clip(source·256+gain_q12(residual[n−2])) 只用记录 residual"),
+               "ok": not failures, "failures": failures,
+               "tolerance_db": TOL_DB, "expected_roles": EXPECTED_ROLES,
                "scope": ("整数算术与 14408 帧受迫响应窗；不含全程声学、ASG、听感；"
                          "60 s 文件的 output 因缺 source 未复核")}
+    verdict = [""]
+    if failures:
+        verdict.append("判定：**不合格**（%d 项）— 以下任一项存在时，本次数字只能当诊断，"
+                       "不能当合格测量结果：" % len(failures))
+        for item in failures:
+            verdict.append("  - %s：%s" % (item["code"], item["detail"]))
+    else:
+        verdict.append("判定：**合格** — 文件齐全（角色件数一致）、模型绑定一致、4 试次算术 0 失配、"
+                       "60 s 尾环 prediction/residual 0 失配%s"
+                       % ("、与 summary-v3 及复核 JSON 在容差 %.0e 内一致" % TOL_DB
+                          if (args.summary_v3 or args.c_review) else "（未显式请求外部对照）"))
+    lines.extend(verdict)
+    payload["verdict"] = verdict[-1]
+
     if out:
         (out / "waveform.json").write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n",
                                            encoding="utf-8")
         (out / "waveform.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-        say("\n输出：%s" % out)
-    return 0 if pkg_ok else 2
+    for line in verdict:
+        print(line)
+    if out:
+        print("\n输出：%s" % out)
+    return 2 if failures else 0
 
 
 if __name__ == "__main__":

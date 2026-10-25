@@ -79,7 +79,8 @@
      "1000-3000": -35.10727039821748,
      "8200-8600": -33.798442818568375
     }
-   }
+   },
+   "model_bound": true
   },
   "09-fir-on.npz": {
    "taps": 512,
@@ -110,7 +111,8 @@
      "1000-3000": -35.226867143492946,
      "8200-8600": -33.41896741493571
     }
-   }
+   },
+   "model_bound": true
   },
   "11-fir-on.npz": {
    "taps": 512,
@@ -141,7 +143,8 @@
      "1000-3000": -35.42074866027888,
      "8200-8600": -33.50594220382058
     }
-   }
+   },
+   "model_bound": true
   },
   "13-fir-off.npz": {
    "taps": 512,
@@ -172,7 +175,8 @@
      "1000-3000": -34.9761865083877,
      "8200-8600": -33.759031801077334
     }
-   }
+   },
+   "model_bound": true
   }
  },
  "tail_60s": {
@@ -191,7 +195,8 @@
   "file": "15-continuous-60s.npz",
   "capture_id": "run",
   "bypass": false,
-  "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160"
+  "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+  "model_bound": true
  },
  "pairs_computed": [
   {
@@ -265,5 +270,14 @@
  ],
  "c_review_compared": true,
  "method": "played=reference·2^23；prediction=clip(round_shift(Σq[k]·played[n−1−k],20))；residual=mic（bypass）或 clip(mic−prediction)；output=clip(source·256+gain_q12(residual[n−2])) 只用记录 residual",
- "scope": "整数算术与 14408 帧受迫响应窗；不含全程声学、ASG、听感；60 s 文件的 output 因缺 source 未复核"
+ "ok": true,
+ "failures": [],
+ "tolerance_db": 0.001,
+ "expected_roles": {
+  "fir_off": 2,
+  "fir_on": 2,
+  "continuous": 1
+ },
+ "scope": "整数算术与 14408 帧受迫响应窗；不含全程声学、ASG、听感；60 s 文件的 output 因缺 source 未复核",
+ "verdict": "判定：**合格** — 文件齐全（角色件数一致）、模型绑定一致、4 试次算术 0 失配、60 s 尾环 prediction/residual 0 失配、与 summary-v3 及复核 JSON 在容差 1e-03 内一致"
 }

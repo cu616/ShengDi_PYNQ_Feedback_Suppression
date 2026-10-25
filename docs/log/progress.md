@@ -1339,3 +1339,19 @@ C 的 9b2424 验收：3657242 的 N2/N3、配对原值、默认模型都通过�
 踩坑：第一版用 cap.get("bypass") 判臂别，而 bypass 只在 metadata_json 里，于是 bypass 臂按 FIR-on 算，
 residual 整段 15872/15872 失配——像"原件有问题"，其实是检查器错。改为从 metadata 传入，并加回归
 （test_r4_waveform.py 8 项，含"故意传错臂别必须报失配"）。全量 124 项通过，check_docs 0 错误。
+
+## 波形检查器补整体资格判定（2026-10-25，B）
+
+C 的 R-007 只剩这一项：verify_r4_waveforms.py 的 main 原来只按 pkg_ok 返回，其余失败只打印不拦截，
+所以"算出来有失配"也能退出 0，产物看起来像合格结果。C 复现了五个反例全部退出 0（D2/D3/D4）。
+
+现在四项同时成立才返回 0（否则 2）：
+1) 文件齐全：包哈希/字节数 + 角色件数（2 个 FIR-off、2 个 FIR-on、1 个 60 s）；
+2) 模型绑定：每次试次 metadata 里的 coefficients_sha256 必须等于给定模型的 Q20 哈希；
+3) 算术：4 试次 prediction/residual/output、60 s 的 prediction/residual 必须 0 失配；
+4) 显式对照：给了 --summary-v3/--c-review 就必须存在、可解析、差值 <=1e-3 dB。
+不合格时打印"判定：不合格（N 项）"+代码，waveform.json 写 ok=false 与 failures，判定行也写进 waveform.txt。
+
+回归 test_r4_waveform.py 扩到 14 项，新增 CliVerdictTest 6 项（整包正例必须 0；改一帧 prediction、
+删 60 s 并漏列、模型 Q20 首项 +1、汇总差分 +1 dB、显式不存在的汇总，五种坏输入必须非 0）。
+自建合成包（11000 帧 × 5 件）跑 subprocess，不依赖真实 200MB 原件。全量 130 项通过，check_docs 0 错误。

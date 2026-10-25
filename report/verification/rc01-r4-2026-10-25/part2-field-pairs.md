@@ -145,7 +145,26 @@
 一处必须写清的口径差别：60 s 尾环的 output 我只能算 prediction 和 residual——包里没带 `source_pcm16`，
 `injected` 无法重建。C 侧报该文件 output 也是 0 失配，但那是 C 的证据，**本侧记为未测，不并进"通过"**。
 
-### 8.1 发现并修掉的一处实现错误
+### 8.1 入口判定（R-007 的剩余项）
+
+`main` 原来只按"包完整性"返回，其余问题只打印不拦截——于是"算出来有失配"也能退出 0，
+产物看起来像合格结果。现在四项**同时**成立才返回 0，否则返回 2：
+
+| 门 | 代码 | 挡的是什么 |
+|---|---|---|
+| 文件齐全 | `package_integrity` / `package_incomplete` / `missing_file` | 哈希或字节数不符；角色件数不是 2 个 FIR-off + 2 个 FIR-on + 1 个 60 s |
+| 模型绑定 | `model_binding` | 每次试次记录的 `coefficients_sha256` 必须等于给定模型的 Q20 哈希 |
+| 算术 | `arithmetic` | 4 试次 prediction/residual/output 与 60 s 的 prediction/residual 必须 0 失配 |
+| 显式对照 | `summary_missing` / `summary_mismatch` / `pair_count` / `c_review_*` | 显式给了 `--summary-v3`/`--c-review` 就必须存在、可解析、且差值 ≤ **1e−3 dB** |
+
+不合格时会打印"判定：**不合格**（N 项）"并逐条列代码，`waveform.json` 里 `ok=false` + `failures`——
+**这份产物不能当合格测量结果**。容差 1e−3 dB 的依据：同口径下本侧与汇总/复核只差浮点末位（实测 ≤7.1e−15）。
+
+C 的六个用例（`tools/check_b_waveform_cli.py`）本侧都有对应的 subprocess 回归
+（`test_r4_waveform.py::CliVerdictTest`，6 项）：整包正例必须 0；改一帧 prediction、删 60 s 件并漏列、
+模型 Q20 首项 +1、汇总差分 +1 dB、显式指定不存在的汇总——五种坏输入必须全部非 0。
+
+### 8.2 发现并修掉的一处实现错误
 
 第一版脚本用 `cap.get("bypass")` 判断臂别，而 `bypass` 只存在于 `metadata_json` 里、npz 数组没有这个键，
 于是 bypass 臂被当成 FIR-on 臂算，residual 整段 15872/15872 失配——看起来像"原件有问题"，其实是检查器错了。
