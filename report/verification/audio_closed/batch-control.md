@@ -1348,3 +1348,32 @@ A报参考−40.9/麦克风−37.9dBFS，差值算术为+3dB；原校准捕获/�
 A新表的broadband为−5.816dB而非原口头+3dB，缺ref/mic、相位/相干及配置，不混为同一次测量或命名最大稳定增益；新模型不接入。
 B新预算数字尚未独立复核；其中最大允许增益、旧场推新场“不能/唯一出路”须按既有N1收窄为受条件限制的采样界参考，不能作为现场放行。
 已有向A索取非人声原件的事项由B同包统筹，C不另加重复原件请求或新采集。
+
+## 2026-10-25 B7c6d3ed最终验收与R-007关闭
+
+[最终机器验收](sprint-rc0-20261025/b-7c6d3ed-review.json)、[原134项回归](sprint-rc0-20261025/b-7c6d3ed-tests.txt)、
+[完整CLI控制回执](sprint-rc0-20261025/b-7c6d3ed-cli-controls.json)均由C实际执行生成。
+固定B=7c6d3ed与8b01999的波形脚本Git blob相同；Git blob SHA-1与文件SHA256在报告中分开记录。
+
+```text
+python tools/check_b_waveform_cli.py --b-commit 7c6d3ed --out-dir tmp/b-waveform-cli-review
+```
+
+正例返回0，八个坏例均返回2且waveform.json.ok=false、附失败代码；C检查器整体返回0：
+
+```text
+B_WAVEFORM_CLI_REVIEW passed | positive=passed | bad_rejected=8/8
+```
+
+另以原CLI显式给summary-v3和C-review，实际退出0；四replay整数算术全零失配、响应窗及两组差分逐值吻合12e5ce2，
+两个按capture绑定的配对均成立。60秒output在B侧继续未测，不借用C已有证据填通过。
+指定N1的采样界、旧场限定、非现场放行表述接受；gain-budget保存数字blob未改，但新预算数字仍未经C独立复算。
+R-007按本项目r4原包、部署约定与既定控制范围关闭，不宣称通用坏输入认证、物理稳定或真人/MSG/ASG验收。
+B本轮无需新增任务，不重议模型、系数或候选。
+本线将检查器默认固定到验收提交后，[C原164项回归](sprint-rc0-20261025/c-b7-close-tests.txt)通过，文档检查零错误。
+
+A新到3ef1532：[撤回接收](sprint-rc0-20261025/a-3ef1532-receipt.json)接受其撤回不可靠抵消目标和禁用新场模型。
+本次只读其报告，未独立重算所报相干；相关软件四文件仍与d8ffaf0同blob，原R-009可复现交付事项继续。
+报告仍有results.reliable_peak.max_stable_gain_db=8，需把物理实测增益记null/未测；单个频点不能证明全频最大稳定增益。
+仅2个过门控bin不能支持4–8kHz整带已辨识，低相干也不能证明谱峰的来源就是噪声。
+这两项记录修正并入原交付，不重复派已通过的START控制或新现场试验。

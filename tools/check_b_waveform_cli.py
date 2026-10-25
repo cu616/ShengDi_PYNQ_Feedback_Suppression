@@ -171,7 +171,7 @@ def run(b_commit, out_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--b-commit", default="12e5ce21e88bc4e17166cc327182cc10929932cf")
+    parser.add_argument("--b-commit", default="7c6d3ede5e3d57b353206d712a0ede13183d7bdf")
     parser.add_argument("--out-dir", type=Path, default=ROOT / "tmp/b-waveform-cli-review")
     arguments = parser.parse_args()
     try:

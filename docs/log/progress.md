@@ -5,6 +5,15 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-25 C 独立验收B7c6d3ed并关闭R-007
+
+B原134项回归通过，原件正例带summary/C-review退出0，原响应窗与两组配对数值不变；
+C原入口控制器正例通过、八坏例均非0且ok=false/带诊断，整体退出0，R-007按既定验收范围关闭。
+N1指定文本/标签修订接受，预算数字仍未独立复算、不作现场放行；B无新增任务，默认系数/候选决定不变。
+见[最终验收](../../report/verification/audio_closed/sprint-rc0-20261025/b-7c6d3ed-review.json)、[实际CLI回执](../../report/verification/audio_closed/sprint-rc0-20261025/b-7c6d3ed-cli-controls.json)。
+A=3ef1532新增测量撤回而未改R-009软件四文件；接受新模型禁用和撤回目标，单bin稳定增益字段及整带归因仍应修为未知。
+该记录修正并入原软件交付，不新派上板或采集。见[A接收](../../report/verification/audio_closed/sprint-rc0-20261025/a-3ef1532-receipt.json)。
+
 ## 2026-10-25 C 验收B入口修复、A启动修复并补齐外录清单
 
 B=12e5ce2的原130项回归、五原件正例及旧五坏例通过，数字不变；三个身份/模型绑定控制仍退出0且ok=true，
