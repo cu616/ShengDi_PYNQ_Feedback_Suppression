@@ -43,7 +43,8 @@
 **最后动作**：2026-10-25核对A=85f4967，r3第7项首个FIR因源/预算等长在装载前拒绝，是C软件夹具漏检真实A参数约束。RC0.1-r4改源2.50秒/运行2.52秒，原门禁/信号底限/保护不变；自检直接执行冻结A纯参数前缀，并要求旧等长反例被拒绝。942fd5b两项驱动修复独立7控制全通过，完整接入匹配v2资产与当前strong/−14dB一次60秒工程项。
 **当前卡点**：r4现场及真人/听众/FIR效果、当前配置60秒仍待A执行；另一队友独立复现未测。历史−12dB/旁路/另一模型60秒仅闭合其工程记录。B必修项清零，默认calibrated_20261024与无新候选决定保持。
 
-- [r3回包与r4决定](../report/verification/audio_closed/batch-control.md#2026-10-25-r3装载失败与r4完整v2接入)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。源码及归档身份由最终交付记录绑定，旧包全部保留。
+- [r3回包与r4决定](../report/verification/audio_closed/batch-control.md#2026-10-25-r3装载失败与r4完整v2接入)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)、[r4完整ZIP](../build/packages/c-sprint-rc01-r4.zip)、[归档独立检查](../report/verification/audio_closed/sprint-rc0-20261025/sprint-package-check-rc01-r4.json)。冻结源码0c6102b，154项C回归、44载荷哈希、A七件/C八件原件匹配及归档15项自检原样复现通过；旧包全部保留。
+- ZIP为357884字节，SHA256=4686557c73fae096cc136f52fc56931448b74d35df141111d72c6bd19f4f6ab1；软件SELFTEST为15项/min=14408/gate passed/纯采集1.687分钟，不代表上板通过。
 - 固定A=85f4967、v2 bit 61bb71aa…/hwh 92b499a3…、MAX_RUN_FRAMES=3000000；模型strong、EQ identity、−14dB/Q12=817。只接受核实同标定场景；失败静音停批，不升档、不自动旁路、不装旧场系数。
 - 正常流程15项；FIR同帧源内窗14408帧，源/运行余量976帧。source_response.valid仅表示测量资格，category=unknown保留；配对完成不自动说明改善，不生成MSG/ASG。PROXY不作真人通过。
 - 连续项使用寄存器时间线+最后16384帧PCM，只用于运行/保护/停止；声学覆盖约0.559%，全程稳定性unknown。缺失清理回执写未核实，有明确失败才判failed，两者均停批。

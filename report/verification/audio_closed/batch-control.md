@@ -1029,3 +1029,10 @@ A=942fd5b两项修复独立复跑：确认前仍静音、取消真实清理均�
 本轮C回归154项通过，原A有界8控制及连续7控制均通过；源码冻结后再按最终归档复跑与逐文件核对。
 尾部PCM约占60秒的0.559%，工程时间线与声学覆盖分别报告，不能声称全程音质或抗啸叫。
 操作单及结果入口见[集中实验](../../../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。
+
+最终从清洁源码0c6102b2043ffb375fb2b7eb635fad29653e8f77生成[r4完整ZIP](../../../build/packages/c-sprint-rc01-r4.zip)，
+357884字节，SHA256=4686557c73fae096cc136f52fc56931448b74d35df141111d72c6bd19f4f6ab1。
+44载荷哈希及A七件/C八件Git原件一致；解包后唯一Notebook取消不导入板卡驱动，实际15项自检与冻结preflight逐字段一致。
+5类preflight及3类资产故意不匹配均被拒绝；四项FIR窗口14408、余量976帧，连续项明确engineering_tail_only。
+见[最终归档检查](sprint-rc0-20261025/sprint-package-check-rc01-r4.json)及[154项回归](sprint-rc0-20261025/tests-rc01-r4.txt)。
+现场及另一队友独立复现均未执行，不借用旧连续记录填本配置通过。
