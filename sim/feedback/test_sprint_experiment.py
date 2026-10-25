@@ -186,6 +186,20 @@ class SprintTests(unittest.TestCase):
             self.assertGreater(window['first_frame'],row['first_frame'])
             self.assertLess(window['frames'],row['frames'])
 
+    def test_reset_fir_matches_whole_record_on_the_same_valid_samples(self):
+        sys.path.insert(0,str(ROOT/'scripts'))
+        from audit_sprint import matched_boundary_control
+        frames=np.arange(8192)
+        u=.1*np.sin(.13*frames)
+        mic=.01*(1+frames/8192)*np.sin(.17*frames)
+        q=np.zeros(512);q[0]=.125;q[200]=-.25
+        out=matched_boundary_control(({'reference':u,'microphone':mic},{}),q)
+        self.assertEqual(out['matched_frames'],4096)
+        self.assertEqual(out['reset_frames'],4096)
+        self.assertEqual(out['matched_residual_max_difference'],0.)
+        self.assertEqual(out['matched_delta_db'],0.)
+        self.assertGreater(out['b_unbounded_suffix_frames'],out['matched_frames'])
+
     def test_clipping_stops_all_later_trials_and_cancel_does_not_call_driver(self):
         with self.work() as d:
             runner=Runner(clip_first_closed=True);state=self.execute(Path(d),runner)

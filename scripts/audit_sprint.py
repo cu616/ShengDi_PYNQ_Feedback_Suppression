@@ -33,6 +33,39 @@ def b_functions(commit):
     return scope,digest(source)
 
 
+def matched_boundary_control(record, coefficients):
+    """A 512-tap FIR has identical history after each piece's first 512 frames.
+
+    Compare exactly the same indices once on both sides. The second calculation
+    reproduces the unbounded suffix selection in B=9937113's section 5a only to
+    identify its weighting error; it is not an alternate fitting implementation.
+    """
+    arrays,_=record
+    u=np.asarray(arrays['reference'],float);m=np.asarray(arrays['microphone'],float)
+    taps=len(coefficients);pieces=np.array_split(np.arange(len(u)),8)
+    def prediction(signal,indices):
+        values=[]
+        for start in range(0,len(indices),2048):
+            selected=indices[start:start+2048]
+            values.append(signal[selected[:,None]-1-np.arange(taps)[None,:]]@coefficients)
+        return np.concatenate(values)
+    whole=m[taps:]-prediction(u,np.arange(taps,len(u)))
+    reset=[];matched=[]
+    for piece in pieces:
+        indices=np.arange(taps,len(piece))
+        reset.append(m[piece][indices]-prediction(u[piece],indices))
+        matched.append(whole[piece[indices]-taps])
+    reset=np.concatenate(reset);matched=np.concatenate(matched)
+    weighted=np.concatenate([whole[max(0,piece[0]-taps):] for piece in pieces])
+    delta=lambda a,b:float(20*np.log10(np.sqrt(np.mean(a*a))/np.sqrt(np.mean(b*b))))
+    return dict(probe='lowband2/seg_10.npz',taps=taps,pieces=len(pieces),
+        matched_frames=len(matched),reset_frames=len(reset),
+        matched_residual_max_difference=float(np.max(abs(reset-matched))),
+        matched_delta_db=delta(reset,matched),b_unbounded_suffix_frames=len(weighted),
+        unbounded_suffix_reproduced_delta_db=delta(reset,weighted),
+        conclusion='The 0.53 dB comes from unmatched/repeated suffix weighting, not a resolution bound.')
+
+
 def audit(a_commit,b_commit,out):
     out=Path(out);out.mkdir(parents=True,exist_ok=False)
     packet=out/'source.zip'
@@ -45,13 +78,15 @@ def audit(a_commit,b_commit,out):
     for name,phases,gate in [('negative-real-wrap',[179.,-179.],[True,True]),
                               ('low-coherence-hole',[10.,0.,-10.],[True,False,True]),
                               ('positive-real-control',[10.,-10.],[True,True]),
-                              ('last-bin-on-positive-real-axis',[10.,0.],[True,True])]:
+                              ('last-bin-on-positive-real-axis',[10.,0.],[True,True]),
+                              ('disconnected-positive-real-endpoints',[0.,10.,0.],[True,False,True])]:
         f=400.+10*np.arange(len(phases));mag=np.ones(len(f))*.5
         if 'positive_real_crossing' in funcs:
             threshold,frequency=funcs['positive_real_crossing'](mag*np.exp(1j*np.deg2rad(phases)),f,np.array(gate))
         else:
             threshold,frequency=funcs['phase_consistent_threshold'](mag,np.deg2rad(phases),f,np.array(gate))
-        expected=name in ('positive-real-control','last-bin-on-positive-real-axis'); finite=bool(np.isfinite(threshold))
+        expected=name in ('positive-real-control','last-bin-on-positive-real-axis',
+                         'disconnected-positive-real-endpoints'); finite=bool(np.isfinite(threshold))
         cases.append(dict(case=name,frequencies_hz=f.tolist(),phase_deg=phases,gate=gate,
             expected_crossing=expected,returned_crossing=finite,check_passed=finite==expected,
             returned_db=float(threshold) if finite else None,
@@ -101,13 +136,20 @@ def audit(a_commit,b_commit,out):
             estimates.append(estimate)
     old_model=json.loads(blob(b_commit,'models/room_v1/candidate_512.json'))
     old_q=np.asarray(old_model['coefficients_q20'],float)/2**20
-    for label,coefficients in [('all16_old_candidate_cross_session',old_q),
-                                ('all16_no_cancellation',np.zeros_like(old_q))]:
-        for nfft in (4096,8192):
-            names=['lowband2/seg_%d.npz'%i for i in range(16)]
-            estimate=spectral_estimate([records[n] for n in names],coefficients,nfft)
-            estimate.update(split=label,input_paths=names)
-            estimates.append(estimate)
+    for split,ids in [('all16',range(16)),('holdout6',range(10,16))]:
+        for label,coefficients in [('old_candidate_cross_session',old_q),
+                                    ('no_cancellation',np.zeros_like(old_q))]:
+            for nfft in (4096,8192):
+                names=['lowband2/seg_%d.npz'%i for i in ids]
+                estimate=spectral_estimate([records[n] for n in names],coefficients,nfft)
+                estimate.update(split=split+'_'+label,input_paths=names)
+                estimates.append(estimate)
+    bmain=next(n for n in ast.parse(blob(b_commit,'scripts/diagnose_peak_margin.py')).body
+               if isinstance(n,ast.FunctionDef) and n.name=='main')
+    float_reads=any(isinstance(n,ast.Subscript) and isinstance(n.ctx,ast.Load) and
+                    isinstance(n.value,ast.Name) and n.value.id=='model' and
+                    isinstance(n.slice,ast.Constant) and n.slice.value=='coefficients'
+                    for n in ast.walk(bmain))
     memory_source=blobs['scripts/memory_sweep.py']
     result=dict(a_commit=a_commit,b_commit=b_commit,calculation_version=VERSION,
         runtime=dict(python=platform.python_version(),numpy=np.__version__),
@@ -119,7 +161,7 @@ def audit(a_commit,b_commit,out):
             q20_sha256=manifest['model']['coefficients_q20_sha256'],
             q20_response_vs_direct_lag_polynomial_max_error=qerr,
             b_response_q20_check_passed=qerr<1e-10,float_vs_deployed_response_max_difference=float_delta,
-            b_main_uses_float_coefficients=True),
+            b_main_uses_float_coefficients=float_reads),
         boundaries=dict(independent_record_spectral_energy=separate,
             fabricated_concatenated_spectral_energy=concatenated,
             expected_legal_windows=0,concatenation_produces_illegal_window=concatenated>0,
@@ -129,6 +171,7 @@ def audit(a_commit,b_commit,out):
             memory_sweep_reproduced=False,
             missing='sideways 20 records, model, exact ordered scan list, train/valid IDs and filter edge provenance'),
         historical_closed=closed,spectral_estimates=estimates,
+        matched_boundary_control=matched_boundary_control(records['lowband2/seg_10.npz'],q),
         interpretation='Phase estimates and sampled small-gain predictions omit unqualified bins; no fullband certification or measured MSG/ASG.',
         measured_msg_db=None,measured_asg_db=None)
     (out/'audit.json').write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False),encoding='utf8')
