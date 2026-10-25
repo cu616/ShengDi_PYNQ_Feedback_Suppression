@@ -41,7 +41,7 @@
 ### C 测评与工具
 
 **最后动作**：2026-10-25独立验收B=05657e5原代码：124项原回归通过、16段原CLI与保存JSON完全一致，五原件波形及两组配对与C复算一致；指定三处文字修订接受。但生产波形入口对五类坏输入全退出0并写报告，C独立入口检查器真实退出2。已把反例交回B唯一实现，不代改算法。两个离线完整交付及R-010/R-011保持。
-**当前卡点**：R-007只余B波形检查器整体失败判定（D4/D2/D3）；原数字、默认模型和无新候选决定不重议。A=47367f9无更新，R-009的启动D4及既有现场事实仍待修；真人NO_AMPLIFICATION明确failed、听众未测，暂停现场重跑。冷启动不替代另一队友现场复现。
+**当前卡点**：R-007只余B波形检查器整体失败判定（D4/D2/D3）；原数字、默认模型和无新候选决定不重议。发布后取得A=50f30dd新真人回包，仍2项即NO_AMPLIFICATION failed、听众未测，D4脚本未改；标题5cm与scene仍15cm待核实。只更新R-009已有事实缺项，暂停现场重跑。冷启动不替代另一队友现场复现。
 
 - [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
 - [r4五原件独立波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)：A=63f6a69的r4-review-return.zip共2082636字节、SHA256=e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48；5/5与原清单一致。四FIR源内功率和两次差分吻合，五份环形尾部预测/残差/输出算术零失配；60秒原时间线与状态一致，声学覆盖边界不变。
@@ -58,7 +58,7 @@
 - [冷启动完整包](../build/packages/c-cold-start-r1.zip)：389560字节，SHA256=aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/cold-start.json)资产字段非空，原冻结包用a_assets，新生成器兼容assets同值别名。
 - [听众管线完整包](../build/packages/c-listener-pipeline-r1.zip)：49280字节，SHA256=e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/listener-pipeline.json)扣背景后的语音变化2.999839dB，原snr_db总录音/背景口径差2.978339dB，均距+3dB小于0.5dB；全为合成WAV，不算真人。
 - [正式退出码与独立解压复核](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-check.json)、[原工具回执](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-console.json)。每个交付只回答一个问题，首行来自其真实检查器最后一行；非0不作交付，缺陷附D1–D4和具体命令。接收方无需提供文件，后续现场四份固定增益录音仍由A外部录制。
-- [最新真人回包接收](../report/verification/audio_closed/sprint-rc0-20261025/a-47367f9-human-receipt.json)：成员及冻结human-r1身份通过、门禁通过、无保护、清理通过；人耳报告无可辨扩声是明确失败，不能因安静或包运行而转为通过。没上传人声PCM，听众定量未测。
+- [最新真人回包接收](../report/verification/audio_closed/sprint-rc0-20261025/a-50f30dd-human-receipt.json)：A=50f30dd的7成员/冻结human-r1身份通过、门禁通过、无保护、清理通过；仍2项停在NO_AMPLIFICATION，明确failed。标题称5cm但scene写15cm，实际距离/声源未核实；麦克风未满幅只限保存尾窗的metadata统计，不推全8秒。没读人声PCM，听众未测；R-009启动脚本字节未改，事实补正与原D4合并处理，不新派有声试验。
 - C未操板或改A/B实现。10/26质检，10/27 20:00冻结，10/28另一队友复现并冻结源码/bit/hwh/模型/配置/哈希；v2外部I/O签核仍不完整。
 
 ## 已验证 / 未验证（只在这里写一次）

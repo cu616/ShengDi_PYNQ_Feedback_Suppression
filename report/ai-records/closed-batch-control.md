@@ -367,3 +367,10 @@ C按常设要求同步检查A/B。第一次误用origin的SSH地址取数超时�
 没有生成虚假的PACKAGE_COMPLETE。反例命令、原stdout/stderr与返回值进机器证据，R-007保持open。
 另核对冻结live_run装载单个零源帧，解释C已有的60秒反馈输出检查来源；B的60秒output仍未测，不借用C结论。
 A本轮无需新增任务，既有超时/取消不得START及现场前置事实修复仍有效；现场继续暂停。
+
+C=f4cba1b通过HTTPS推送后，最后一次核远端发现A新到50f30dd，主动取原回包而不是继续说A无更新。
+标题原文：“[A] 队长第一步结论:近讲 5 cm 仍无可辨扩声,输入未削顶”。
+独立核对7成员及冻结包身份通过，实际仍2项、人耳NO_AMPLIFICATION明确failed、听众未测；不读人声PCM。
+发现summary.scene.layout仍写source-mic 15cm，故不把标题5cm直接当已验证现场事实；
+mic_full_scale_samples=0只限保存尾窗，不据此排除全8秒输入削顶。
+原包装脚本字节未改，D4继续open；具体事实核对并入原R-009，不再新增试次或人声取件。

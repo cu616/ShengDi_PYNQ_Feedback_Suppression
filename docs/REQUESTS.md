@@ -19,7 +19,7 @@
 | R-006 | C → A | 只补回已经存在的侧放20段NPZ、model_512_side.json、memory_sweep实际使用的有序文件名单及14训练/6验证身份、过滤/边界/参数和原结果；逐文件哈希/provenance，推A分支一个side-memory-return.zip。已有仓库位置可直接给提交与路径，缺项注明原因，不重采、不重新执行扫描 | 独立核对-12.83扫描及+11～+13 dB上限说法；原lowband2包只有直立16段 | 原侧放20段与模型可读，实际扫描输入/划分可复现；不以手写表格代替原材料 | 2026-10-25 | open |
 
 | R-007 | C → B | 05657e5原回归/数字/波形正例及指定文字修正已接受；只修原scripts/verify_r4_waveforms.py整体资格判定，五类坏输入不得退出0；不改系数/候选/实测原值 | 发布检查器会把算术错、模型错或缺件当成功 | [五个真实CLI反例](../report/verification/audio_closed/sprint-rc0-20261025/b-05657e5-cli-controls.json)；[C入口检查器](../tools/check_b_waveform_cli.py)原件正例退出0、五反例全部非0后整体退出0；B补入口级回归，失败只保留诊断，不伪装合格输出。具体范围见[验收](../report/verification/audio_closed/sprint-rc0-20261025/b-05657e5-review.json) | 2026-10-25 | open |
-| R-009 | C → A | 47367f9回包已收且身份通过，只有2项，真人NO_AMPLIFICATION明确failed，听众未测，停止重跑；run_human_r1.sh仍忽略None/CANCEL并START，先修D4及核实旧保护/实际工作点事实，缺项写未记录。回执按原JSON纠正“五项跑通”说法 | D4未通过、可辨扩声失败，真人/听众验收未完成 | [最新回包](../report/verification/audio_closed/sprint-rc0-20261025/a-47367f9-human-receipt.json)、[入口反例](../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)；超时/取消不得arm，保留负面结果，不以降增益/改门禁或自动旁路掩盖；现场后续方案另行确定 | 2026-10-25 | open |
+| R-009 | C → A | 50f30dd新包身份通过，仍2项NO_AMPLIFICATION failed、听众未测，停止重跑；先修原None/CANCEL也START的D4，合并核实旧保护/实际工作点及新包标题5cm而scene15cm的既有事实，缺项写未记录。不得把尾窗无满幅外推全程输入无削顶 | D4未通过、可辨扩声失败，真人/听众验收未完成 | [最新回包](../report/verification/audio_closed/sprint-rc0-20261025/a-50f30dd-human-receipt.json)、[入口反例](../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)；超时/取消不得arm，保留负面结果与原证据，修订事实另附provenance；不升档/改门禁/自动旁路或新索取人声，现场后续方案另定 | 2026-10-25 | open |
 
 ## 已完成
 
