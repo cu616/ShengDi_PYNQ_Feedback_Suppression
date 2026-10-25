@@ -1,0 +1,25 @@
+{
+  "status": "proposal_only_not_applied_to_product",
+  "production_code_changed": false,
+  "base_c_commit": "b5b2941651928a090a32e2dddab3ec32162702e7",
+  "changed_fields": [
+    "analysis interval parameter only for FIR",
+    "original capture frame extents in summary",
+    "explicit quiet-source prompt for path gate",
+    "gate reason and measured ratio in summary"
+  ],
+  "original_trial_seconds": 1.02,
+  "original_tone_seconds": 1.0,
+  "fir_seconds": 2.5,
+  "fir_source_seconds": 1.87,
+  "tests": {
+    "complete_software_trials": 13,
+    "actual_capture_extent_preserved": true,
+    "gate_source_on_frames": 14920,
+    "fir_tail_frames": 16384,
+    "driver_changed": false,
+    "thresholds_changed": false,
+    "board_access": false
+  },
+  "requires_scope_approval": "User restricted RC0.1 to timing-only changes; these minimal package changes are outside that literal scope"
+}
