@@ -92,7 +92,8 @@ class SprintTests(unittest.TestCase):
     def test_pair_only_bypass_may_change(self):
         a={k:'same' for k in sprint.PAIR_FIELDS}
         a.update(bypass=True,category='no_instability_observed_in_window',protection=False,
-                 recovery_ok=True,gate_mic_over_ref_db=-10.,tail_valid=True)
+                 recovery_ok=True,gate_mic_over_ref_db=-10.,source_response={'valid':True},
+                 measurement_kind='forced_source_response')
         b=dict(a,bypass=False)
         self.assertTrue(sprint.pair_check(a,b)['window_comparison_valid'])
         for field in sprint.PAIR_FIELDS:
@@ -100,6 +101,10 @@ class SprintTests(unittest.TestCase):
             self.assertFalse(sprint.pair_check(a,bad)['configuration_matches'],field)
         self.assertFalse(sprint.pair_check(a,dict(b,gate_mic_over_ref_db=-8.4))['window_comparison_valid'])
         self.assertFalse(sprint.pair_check(a,dict(b,protection=True))['window_comparison_valid'])
+        known=dict(b,category='unknown',analysis={'reasons':['source_or_transition_overlap']})
+        self.assertTrue(sprint.pair_check(a,known)['window_comparison_valid'])
+        self.assertFalse(sprint.pair_check(a,dict(known,analysis={'reasons':['execution_interrupted']}))['window_comparison_valid'])
+        self.assertFalse(sprint.pair_check(a,dict(known,source_response={'valid':False}))['window_comparison_valid'])
 
     def test_default_is_same_calibration_and_failure_does_not_start_a_bypass_trial(self):
         path=ROOT/'models/room_v1/calibrated_20261024.json'
@@ -157,10 +162,14 @@ class SprintTests(unittest.TestCase):
                     self.assertEqual(gate['end_frame']-gate['first_frame'],14920)
                     self.assertEqual(row['analysis']['tail_analysis_window']['frames'],16384)
                 if row['role'] in ('fir-off','fir-on'):
-                    window=row['analysis']['tail_analysis_window']
-                    self.assertEqual(row['source_frames'],91308)
-                    self.assertEqual(window['frames'],16384)
-                    self.assertGreaterEqual(window['first_frame'],row['source_frames']+2442)
+                    window=row['source_response']
+                    self.assertEqual(row['source_frames'],122070)
+                    self.assertEqual(window['frames'],15384)
+                    self.assertEqual(window['first_frame'],row['first_frame']+512)
+                    self.assertEqual(window['end_frame'],row['source_frames']-488)
+                    self.assertTrue(window['valid'])
+                    self.assertFalse(row['tail_valid'])
+                    self.assertEqual(row['category'],'unknown')
             with zipfile.ZipFile(next(base.rglob('return-results.zip'))) as archive:
                 self.assertFalse(any(n.endswith(('.npz','.wav')) for n in archive.namelist()))
                 self.assertIn('return-manifest.json',archive.namelist())
@@ -223,18 +232,51 @@ class SprintTests(unittest.TestCase):
             self.assertLess(state['trials'][0]['path_gate']['tonal_fraction'],.8)
             self.assertEqual(state['trials'][0]['frames'],16384)
 
-    def test_partial_fir_analysis_does_not_overwrite_original_capture_extent(self):
-        # Start of a saved ring overlaps the transition, so only analysis crops.
-        burst,tone=sprint.sources()
-        longer=np.pad(burst,(0,int(2.18*sprint.RATE)-len(burst)))
-        with self.work() as d,patch.object(sprint,'sources',return_value=(longer,tone)):
+    def test_source_on_comparison_does_not_overwrite_original_capture_extent(self):
+        with self.work() as d:
             state=self.execute(Path(d),Runner())
             row=next(r for r in state['trials'] if r['role']=='fir-off')
-            window=row['analysis']['tail_analysis_window']
+            window=row['source_response']
             self.assertEqual(row['frames'],16384)
             self.assertEqual(row['first_frame'],row['analysis']['original_metadata']['first_frame'])
             self.assertGreater(window['first_frame'],row['first_frame'])
             self.assertLess(window['frames'],row['frames'])
+
+    def test_quiet_tail_is_not_fixed_by_waiting_and_does_not_qualify_for_forced_response(self):
+        # Independent absolute levels: -38 dBFS remains below -37.8+6 dB.
+        from tail_metrics import tail_statistics
+        for frames in (16384,32768):
+            x=np.rint(2**23*np.sqrt(2)*10**(-38/20)*np.sin(np.arange(frames)*.2)).astype(np.int64)
+            m=dict(first_frame=100000,completed_frames=100000+frames,frames=frames,
+                source_end_frame_exclusive=90000,source_frames=90000,source_schedule_verified=True,
+                external_source_off_verified=True,noise_floor_dbfs=-37.8)
+            value=tail_statistics(x,x,m,sprint.RATE)
+            self.assertFalse(value['tail_valid'])
+            self.assertEqual(value['tail_reasons'],['tail_below_signal_floor'])
+
+    def test_forced_response_rejects_quiet_unverified_mismatched_and_short_windows(self):
+        from sprint_selftest import SoftwareRunner
+        with self.work() as d:
+            base=Path(d);setup(base)
+            model=base/'models/candidate_512.json';source=sprint.comparison_source();path=base/'response.npz'
+            runner=SoftwareRunner({'hashes':{'audio_replay.bit':BIT}})
+            runner(path,sprint.PLAN['fixture_id'],model,source,direct_only=False,bypass=True,
+                   gain_db=-14.,seconds=2.5,hp_volume=40,before_start=lambda:True)
+            self.assertTrue(sprint.source_response(path,source,True)['valid'])
+            self.assertEqual(sprint.source_response(path,source,False)['reasons'],['external_source_off_unverified'])
+            self.assertEqual(sprint.source_response(path,source[:-1],True)['reasons'],['forcing_source_mismatch'])
+            with np.load(path,allow_pickle=False) as capture:original={k:np.array(capture[k]) for k in capture.files}
+            quiet=dict(original,microphone=original['microphone']*.01)
+            np.savez_compressed(path,**quiet)
+            self.assertEqual(sprint.source_response(path,source,True)['reasons'],['response_below_signal_floor'])
+            short=dict(original);m=json.loads(str(short['metadata_json'].item()))
+            m['source_schedule_verified']=False;short['metadata_json']=json.dumps(m)
+            np.savez_compressed(path,**short)
+            self.assertEqual(sprint.source_response(path,source,True)['reasons'],['forcing_schedule_unverified'])
+            m['source_schedule_verified']=True;m['frames']=1000;m['first_frame']=m['completed_frames']-1000
+            short['microphone']=original['microphone'][-1000:];short['metadata_json']=json.dumps(m)
+            np.savez_compressed(path,**short)
+            self.assertEqual(sprint.source_response(path,source,True)['reasons'],['response_window_too_short'])
 
     def test_reset_fir_matches_whole_record_on_the_same_valid_samples(self):
         sys.path.insert(0,str(ROOT/'scripts'))

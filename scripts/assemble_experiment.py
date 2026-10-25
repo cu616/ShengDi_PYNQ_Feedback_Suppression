@@ -260,14 +260,16 @@ def assemble_sprint(out, assets, model_path):
     guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
     marker='## 2026-10-25 集中实验 RC0'
     (out/'OPERATIONS.md').write_text(guide[guide.index(marker):],encoding='utf8')
-    source='# C sprint RC0.1-r2: -14 dB, fixed v1 assets, single entry\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
+    source='# C sprint RC0.1-r3: forced-source FIR comparison, -14 dB, v1\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
     notebook=dict(nbformat=4,nbformat_minor=5,
         metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
         cells=[dict(cell_type='markdown',metadata={},source=['只运行从上往下第1个代码格；先读 OPERATIONS.md。']),
                dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=source.splitlines(True))])
     (out/'sprint.ipynb').write_text(json.dumps(notebook,ensure_ascii=False,indent=2),encoding='utf8')
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
-    for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt','tests-rc01-r1.txt','tests-rc01-r2.txt','a-cf949f2-review.json',
+    for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt','tests-rc01-r1.txt','tests-rc01-r2.txt',
+                 'tests-rc01-r3.txt','a-cf949f2-review.json','a-1219851-review.json',
+                 'a-1cddd52-continuous-review.json','a-1cddd52-driver-review.json',
                  'b-handoff-review.json','rc01-input-review.json',
                  'b-6128282-review.json','b-6128282-tests.txt','b-6128282-repro.txt'):
         if (evidence/name).exists():

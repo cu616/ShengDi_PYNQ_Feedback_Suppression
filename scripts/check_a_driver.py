@@ -4,11 +4,13 @@ Run on A's returned package. This is a consumer test, not a driver patch.
 Nonzero means the package must not be enabled for C's field experiment.
 """
 import argparse
+import ast
 import contextlib
 import hashlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -149,11 +151,82 @@ def check(folder, output):
     return result
 
 
+def check_continuous(folder, output):
+    """Consume A's exact fake register fixture, plus independent callback/save controls."""
+    folder=Path(folder).resolve();source=(folder/'condition4_injection.py').read_text(encoding='utf8')
+    tree=ast.parse(source);nodes=[]
+    for node in tree.body:
+        if isinstance(node,ast.Expr) and isinstance(node.value,ast.Call) and isinstance(node.value.func,ast.Name) and node.value.func.id=='print':
+            break
+        if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='HERE' for t in node.targets):
+            node.value=ast.Call(func=ast.Name(id='Path',ctx=ast.Load()),args=[ast.Constant(str(folder))],keywords=[])
+        nodes.append(node)
+    cases=[];tmp=ROOT/'tmp';tmp.mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=tmp,prefix='c-continuous-review-') as d, \
+            patch.dict(sys.modules),patch.dict(os.environ,{'TMPDIR':d}),contextlib.redirect_stdout(io.StringIO()):
+        scope={'__name__':'a_exact_register_fixture'}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=nodes,type_ignores=[])),str(folder/'condition4_injection.py'),'exec'),scope)
+        driver=scope['live_run'];original_run=driver.live_run
+        scenario=scope['scenario'];mmio=scope['FakeMMIO'];fake_os=scope['FakeOS']
+        original_write=mmio.write;original_i2c=fake_os.write;events=[];armed=[False];fail_shutdown=[False]
+        def write(self,offset,value):
+            events.append(('pl',self.addr,offset,value))
+            if self.addr==0x41200000 and offset==0 and value&1:armed[0]=True
+            return original_write(self,offset,value)
+        def i2c(fd,payload):
+            addr=int.from_bytes(payload[:2],'big')
+            if len(payload)>2:
+                events.append(('codec',addr,bytes(payload[2:])))
+                if fail_shutdown[0] and armed[0] and addr==0x401C:raise OSError('C injected shutdown mute failure')
+            return original_i2c(fd,payload)
+        mmio.write=write;fake_os.write=i2c
+        def execute(name,packed=0,done=True,callback=None,save_fail=False,shutdown_fail=False):
+            events.clear();armed[0]=False;fail_shutdown[0]=shutdown_fail
+            callback_facts={}
+            def before():
+                regs={e[1]:e[2] for e in events if e[0]=='codec'}
+                callback_facts.update(armed=armed[0],codec_muted=all(regs.get(a)==bytes([v]) for a,v in
+                    ((0x401C,0),(0x401E,0),(0x4023,0xE5),(0x4024,0xE5))))
+                return callback
+            def run(*args,**kwargs):
+                kwargs['stop_file']=str(Path(d)/'not-requested.stop')
+                if callback is not None:kwargs['before_start']=before
+                return original_run(*args,**kwargs)
+            driver.live_run=run
+            with patch.object(driver.np,'savez_compressed',side_effect=OSError('C injected disk full')) if save_fail else contextlib.nullcontext():
+                scenario(name,packed=packed,gain_word=5 if packed and done else 0,mix_word=0,done=done)
+            state=json.loads((Path(d)/('inject_'+name)/('run_'+name+'.status.json')).read_text(encoding='utf8'))
+            return state,dict(callback_facts)
+        for name,packed,done in (('saturation',0x30002,False),('terminal_saturation',0x30002,True),('clean',0,True)):
+            s,_=execute(name,packed,done)
+            expected='saturation' if not done else 'completed_with_protection' if packed else 'completed'
+            cases.append(dict(name=name,passed=s['stop_reason']==expected and s['counts']['prediction']==(packed&65535)
+                and s['counts']['residual']==packed>>16 and s['recovered'] is True,stop_reason=s['stop_reason'],counts=s['counts']))
+        s,_=execute('shutdown_mute_failure',0x30002,False,shutdown_fail=True)
+        cases.append(dict(name='armed_shutdown_mute_failure',passed='t_arm' in s and s.get('muted') is False and s['recovered'] is False,
+            arm_reached='t_arm' in s,muted=s.get('muted'),recovered=s['recovered'],cleanup_errors=s['cleanup_errors']))
+        s,_=execute('save_failure',save_fail=True)
+        cases.append(dict(name='npz_save_failure_sidecar',passed=bool(s.get('save_error')),save_error=s.get('save_error')))
+        s,facts=execute('callback_start',callback=True)
+        cases.append(dict(name='callback_before_codec_unmute',passed=facts.get('codec_muted') is True and facts.get('armed') is False,
+            callback_facts=facts))
+        s,facts=execute('callback_cancel',callback=False)
+        cases.append(dict(name='cancel_records_verified_cleanup',passed='t_arm' not in s and s.get('disarm_ok') is True
+            and s.get('mute_ok') is True and s['recovered'] is True,stop_reason=s['stop_reason'],callback_facts=facts,
+            disarm_ok=s.get('disarm_ok'),mute_ok=s.get('mute_ok'),recovered=s['recovered']))
+    result=dict(suite='c-a-continuous-consumer-acceptance',hardware_access=False,
+        driver_sha256=hashlib.sha256((folder/'live_run.py').read_bytes()).hexdigest(),
+        a_fixture_sha256=hashlib.sha256(source.encode()).hexdigest(),cases=cases,accepted=all(c['passed'] for c in cases))
+    Path(output).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    return result
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--driver-dir', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--continuous',action='store_true')
     args = parser.parse_args()
-    result = check(args.driver_dir, args.output)
+    result = check_continuous(args.driver_dir,args.output) if args.continuous else check(args.driver_dir, args.output)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     sys.exit(0 if result['accepted'] else 1)

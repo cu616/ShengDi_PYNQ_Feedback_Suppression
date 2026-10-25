@@ -17,7 +17,7 @@ import numpy as np
 from closed_tools import gain_pcm, rounded_shift
 from evaluation import sha
 from model_comparison import qhash
-from replay_tools import verify_replay
+from replay_tools import verify_replay, MAX_SOURCE_FRAMES
 from sprint_experiment import POLICY, RATE, check_package, run_sprint
 
 
@@ -112,12 +112,13 @@ def run_selftest(base=None, require_preflight=True):
     for row, call in zip(state['trials'], runner.calls):
         gate = row.get('path_gate')
         window = row['analysis'].get('tail_analysis_window', {})
-        frames = gate['end_frame']-gate['first_frame'] if gate else window.get('frames', 0)
+        response=row.get('source_response')
+        frames = gate['end_frame']-gate['first_frame'] if gate else response['frames'] if response else window.get('frames', 0)
         ok = (frames >= 2048 and row['recovery_ok'] is True and not row['stop_reasons'] and
-              call['bit_exact'] is True and (gate['passed'] if gate else row['category'] not in ('invalid','protection')))
+              call['bit_exact'] is True and (gate['passed'] if gate else response['valid'] if response else row['category'] not in ('invalid','protection')))
         trials.append(dict(id=row['id'], role=row['role'], **call,
             transition_frames=row['analysis']['capture_window']['transition_frames'],
-            window_kind='source_on_tone' if gate else 'source_off_tail' if row['role'].startswith('fir-') else 'saved_waveform',
+            window_kind='source_on_tone' if gate else 'forced_source_response' if response else 'saved_waveform',
             window_frames=frames, ok=bool(ok), category=row['category']))
     gates = [row['path_gate'] for row in state['trials'] if row.get('path_gate')]
     checks = dict(schedule_completed=state['status']=='completed_with_unmeasured_requirements',
@@ -126,7 +127,10 @@ def run_selftest(base=None, require_preflight=True):
         continuous_left_untested=state['checks']['continuous_60s']['status']=='not_tested',
         listener_left_untested=state['checks']['listener']['status']=='not_tested',
         proxy_voice_left_untested=state['checks']['real_voice']['status']=='not_tested',
+        source_on_not_called_stable=all(r['category']=='unknown' and r['tail_valid'] is False
+            for r in state['trials'] if r['role'].startswith('fir-')),
         gain_mapping_passed=all(c['ok'] for c in mapping))
+    checks['source_buffer_fits']=all(c['source_frames']<=MAX_SOURCE_FRAMES for c in runner.calls)
     model = json.loads((base/'model.json').read_text(encoding='utf8'))
     report = dict(schema_version=1, policy=POLICY, all_ok=all(checks.values()) and all(t['ok'] for t in trials),
         evidence_kind='software_fixture', scope='package workflow, windows and deployed Q20 arithmetic only; no acoustic or board acceptance',

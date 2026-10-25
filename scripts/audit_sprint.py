@@ -180,17 +180,17 @@ def audit(a_commit,b_commit,out):
     return result
 
 
-def audit_return(a_commit, out):
+def audit_return(a_commit, out, revision='r1'):
     """Inspect this sprint's metadata return and declared assets, without PCM or board access."""
     a_commit=subprocess.check_output(
         ['git','rev-parse',a_commit],cwd=ROOT).decode().strip()
-    packet=blob(a_commit,'report/verification/audio-replay/c-sprint-rc01-return.zip')
+    packet=blob(a_commit,'report/verification/audio-replay/c-sprint-rc01'+('-r2' if revision=='r2' else '')+'-return.zip')
     with zipfile.ZipFile(io.BytesIO(packet)) as archive:
         manifest=json.loads(archive.read('return-manifest.json'))
         checks={n:digest(archive.read(n))==h for n,h in manifest['hashes'].items()}
         if not all(checks.values()):raise ValueError('return member hash mismatch')
         state=json.loads(archive.read('summary.json'))
-        with zipfile.ZipFile(ROOT/'build/packages/c-sprint-rc01-r1.zip') as original:
+        with zipfile.ZipFile(ROOT/('build/packages/c-sprint-rc01-'+revision+'.zip')) as original:
             frozen=json.loads(original.read('sprint-manifest.json'))
         package_identity=dict(policy=state['policy']==frozen['policy'],plan=state['plan']==frozen['plan'],
             source_commits=state['package_source']==frozen['source_commits'],payload_hashes=state['package_hashes']==frozen['hashes'])
@@ -202,6 +202,8 @@ def audit_return(a_commit, out):
                 acoustic_reasons=row['analysis']['reasons'],path_gate=row.get('path_gate'),
                 completed_frames=row['completed_frames'],duration_seconds=row['completed_frames']/48828.125,
                 frames=row['frames'],first_frame=row['first_frame'],stop_reasons=row['stop_reasons'],
+                tail_statistics=row['analysis'].get('tail_statistics'),observation_kind=state.get('observation_kind'),
+                capture_window=row['analysis'].get('capture_window'),mic_rms_dbfs=row.get('mic_rms_dbfs'),
                 sidecar=side,counts_from_raw=dict(prediction=side['clip_counts_raw'][0]&65535,
                     residual=side['clip_counts_raw'][0]>>16,gain=side['clip_counts_raw'][1],mix=side['clip_counts_raw'][2])))
     assets=[]
@@ -224,7 +226,7 @@ def audit_return(a_commit, out):
         trials=trials,reported_checks=state['checks'],reported_stop_reason=state.get('stop_reason'),
         raw_capture_inventory=state['raw_files'],raw_npz_in_return=False,
         hearing_provenance=dict(user_report='PROXY; SSH noninteractive',
-            explicit_top_level_proxy_field_present=any('proxy' in k.lower() for k in state),
+            explicit_top_level_proxy_field_present=state.get('observation_kind')=='proxy' or any('proxy' in k.lower() for k in state),
             assessment='human speech and hearing not independently verified; must not mark passed'),
         asset_inventory=assets,declared_v2_assets=declared,
         declared_v2_found={k:any(x['sha256']==v for x in assets) for k,v in declared.items()},
@@ -242,8 +244,74 @@ def audit_return(a_commit, out):
             real_voice_trial='protection after 9835 frames; not a measured howl onset threshold',
             r2='fixed -14 dB / Q12=817; unchanged direct gate and thresholds; exact v1 assets',
             v2='defer integration until exact assets and acceptance evidence available'),board_access=False)
+    if revision=='r2':
+        build_paths=['board/audio_replay/v2/'+name for name in ('audio_replay.bit','audio_replay.hwh','timing.txt','utilization.txt','drc.txt')]
+        timing=blob(a_commit,build_paths[2]).decode().splitlines()
+        header=next(i for i,line in enumerate(timing) if line.strip().startswith('WNS(ns)'))
+        values=timing[header+2].split()
+        result['v2_build_artifacts']=dict(files={p:digest(blob(a_commit,p)) for p in build_paths},
+            timing_wns_ns=float(values[0]),timing_whs_ns=float(values[4]),
+            input_ports_without_delay=1,output_ports_without_delay=3,full_external_io_signoff=False,
+            hwh_max_run_frames=3000000)
+        result['decisions']=dict(workpoint='reported -14 dB runs completed without counters; no human/acoustic acceptance',
+            fir='16384 source-off frames present; -38.014 dBFS below -31.8 dBFS floor; longer waiting does not solve eligibility',
+            r3='same -14 dB v1 assets; sustained fixed forcing and same-frame source-on response pairs; no lower floors',
+            v2='actual bit/hwh hashes matched; inspect later raw evidence and patched driver separately')
+        result['missing_for_v2']=['raw evidence and driver acceptance tracked by later fixed commit 1cddd52']
     target=Path(out);target.parent.mkdir(parents=True,exist_ok=True)
     target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    return result
+
+
+def audit_continuous_records(a_commit, out):
+    """Recompute frame/timeline/mapping checks from the three existing raw v2 runs."""
+    a_commit=subprocess.check_output(['git','rev-parse',a_commit],cwd=ROOT).decode().strip()
+    names=subprocess.check_output(['git','ls-tree','-r','--name-only',a_commit,
+        'report/verification/audio-replay/v2-runs'],cwd=ROOT).decode().splitlines()
+    records=[]
+    for name in names:
+        if not name.endswith('.status.json'):continue
+        side=blob(a_commit,name);state=json.loads(side);capture_name=name.replace('.status.json','.npz')
+        capture_blob=blob(a_commit,capture_name)
+        with np.load(io.BytesIO(capture_blob),allow_pickle=False) as capture:
+            embedded=json.loads(str(capture['metadata_json'].item()))
+            arrays={k:np.array(capture[k]) for k in ('microphone','reference','prediction_pcm','residual_pcm')}
+        checks={k:embedded.get(k)==state.get(k) for k in ('timeline','first_frame','frames_completed','counts',
+            'bit_sha256','hwh_sha256','model_sha256','coefficients_sha256','gain_q12','bypass')}
+        frames=state['frames_completed'];first=state['first_frame'];timeline=np.asarray(state['timeline'])
+        checks.update(tail_extent=all(x.shape==(16384,) for x in arrays.values()) and frames-first==16384,
+            timeline_monotone=bool(np.all(np.diff(timeline[:,0])>=0) and np.all(np.diff(timeline[:,1])>=0)),
+            zero_counter_samples=bool(np.all(timeline[:,3:]==0)),
+            no_fault_samples=bool(np.all((timeline[:,2].astype(np.int64)&(3<<17))==0)),
+            recovered=state['recovered'] is True and state['mute_ok'] is True and state['disarm_ok'] is True)
+        checks.update(bit_asset_matches=state['bit_sha256']==digest(blob(a_commit,'board/audio_replay/v2/audio_replay.bit')),
+            hwh_asset_matches=state['hwh_sha256']==digest(blob(a_commit,'board/audio_replay/v2/audio_replay.hwh')),
+            terminal_read_after_last_poll=int(timeline[-1,1])<=frames and all(v==0 for v in state['counts'].values()),
+            completed_frame_count=(frames==state['frames_requested'] if state['stop_reason']=='completed' else frames<state['frames_requested']))
+        mic=np.rint(arrays['microphone']*2**23).astype(np.int64)
+        ref=np.rint(arrays['reference']*2**23).astype(np.int64)
+        v=mic[:-2]*state['gain_q12'];expected=np.sign(v)*((abs(v)+2048)//4096)
+        residual_errors=int(np.count_nonzero(arrays['residual_pcm']!=mic))
+        reference_errors=int(np.count_nonzero(ref[2:]!=expected))
+        checks['bypass_mapping']=state['bypass'] is True and residual_errors==reference_errors==0
+        gap=float(np.max(np.diff(timeline[:,0])))
+        checks['gap_consistent_with_ms_rounding']=abs(gap-state['max_poll_gap_s'])<.002
+        records.append(dict(status_path=name,status_sha256=digest(side),capture_path=capture_name,capture_sha256=digest(capture_blob),
+            checks=checks,all_checks=all(checks.values()),seconds_requested=state['seconds_requested'],frames_requested=state['frames_requested'],
+            frames_completed=frames,tail_first_frame=first,tail_frames=len(mic),tail_seconds=len(mic)/48828.125,
+            waveform_coverage_fraction=len(mic)/frames,timeline_points=len(timeline),max_rounded_sample_gap_s=gap,
+            terminal_frames_after_last_poll=frames-int(timeline[-1,1]),
+            max_poll_gap_s=state['max_poll_gap_s'],stop_reason=state['stop_reason'],gain_q12=state['gain_q12'],gain_db=state['gain_db'],
+            bypass=state['bypass'],model_file=state['model_file'],model_sha256=state['model_sha256'],coefficients_sha256=state['coefficients_sha256'],
+            bit_sha256=state['bit_sha256'],hwh_sha256=state['hwh_sha256'],elapsed_s=state['elapsed_s'],
+            residual_microphone_mismatches=residual_errors,reference_gain_mismatches=reference_errors,
+            reported_stop_latency_s=state.get('stop_latency_s'),
+            stop_latency_scope='poll detection to cleanup only; stop-file creation time not independently recorded',
+            deployment_model_matches_r3=state['model_sha256']=='c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a'))
+    result=dict(a_commit=a_commit,records=records,all_record_checks=len(records)==3 and all(r['all_checks'] for r in records),
+        scope='independent raw historical engineering records; -12 dB, bypass, other side model; not r3 acceptance or full-run acoustic evidence',
+        driver_identity_in_original_records='not recorded; these runs predate the patched before_start/save-error driver',hardware_access=False)
+    Path(out).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     return result
 
 
@@ -252,7 +320,11 @@ if __name__=='__main__':
     p.add_argument('--a-commit',default='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6')
     p.add_argument('--b-commit',default='d033d0047542d5e50654a0333777c48ec08dce21')
     p.add_argument('--return-only',action='store_true')
+    p.add_argument('--return-revision',choices=('r1','r2'),default='r1')
+    p.add_argument('--continuous-records',action='store_true')
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    result=audit_return(a.a_commit,a.output) if a.return_only else audit(a.a_commit,a.b_commit,a.output)
-    keys=('a_commit','declared_v2_found','decisions') if a.return_only else ('a_commit','b_commit','npz_count','b_counterexamples','deployment')
+    result=(audit_continuous_records(a.a_commit,a.output) if a.continuous_records else
+        audit_return(a.a_commit,a.output,a.return_revision) if a.return_only else audit(a.a_commit,a.b_commit,a.output))
+    keys=(('a_commit','all_record_checks','scope') if a.continuous_records else
+        ('a_commit','declared_v2_found','decisions') if a.return_only else ('a_commit','b_commit','npz_count','b_counterexamples','deployment'))
     print(json.dumps({k:result[k] for k in keys},ensure_ascii=False))

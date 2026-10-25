@@ -220,7 +220,7 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ## 2026-10-25 集中实验 RC0
 
-维护者 C；本节就是包内 OPERATIONS.md。当前发布 **RC0.1-r2**，仅适用 `c-sprint-rc01-1.0.2`，不要执行上方历史包。
+维护者 C；本节就是包内 OPERATIONS.md。当前发布 **RC0.1-r3**，仅适用 `c-sprint-rc01-1.0.3`，不要执行上方历史包。
 **默认系数＝calibrated_20261024（A 原名 strong）**。B=d033d00 与原包逐字节相同；RC0实际系数没有变化。
 根目录和包内 select_model 均选择这套已登记基线；旧 candidate_512 只留历史分析，不作缺失时的后备。
 标定/定音/门禁/源关闭核验失败：静音、停批、保留证据，不自动切到原增益旁路，不装另一场旧系数。
@@ -232,10 +232,10 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ### 唯一入口与固定身份
 
-- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01-r2.zip`。
-- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/`。用新目录，保留现役基线供恢复。
-- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/sprint.ipynb`。
-  重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0.1-r2: -14 dB, fixed v1 assets, single entry`，
+- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01-r3.zip`。
+- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r3/`。用新目录，保留现役基线供恢复。
+- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r3/sprint.ipynb`。
+  重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0.1-r3: forced-source FIR comparison, -14 dB, v1`，
   下一行为 `from sprint_experiment import run_sprint`。全包只有一个代码格，不以 In[n] 定位。
 - 使用 A=bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6 的原驱动/bit/hwh，
   strong 模型 c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a；
@@ -253,16 +253,21 @@ RC0.1按用户确认仅修C包内分析区间、汇总和定音前提示；驱�
 包内可选静默复核命令`python3 sprint_selftest.py`，使用真实Q20和实际13项编排，在临时目录生成合成数据后删除，
 不导入PYNQ、不发声、不覆盖冻结preflight；打印`SELFTEST ok | trials=13 | window_frames min=14920 | gate=passed`。
 该通过只证明软件流程/算术/窗口成立；合成回执不算真实人声、硬件恢复或抗啸叫效果通过。
-本次r2固定−14 dB，新增PROXY来源标记、独立gate_status和显式A资产声明；按实际舍入验证−12/−6/0三点ref/mic映射，结果同样保存在preflight.json。
+前版r2固定−14 dB，新增PROXY来源标记、独立gate_status和显式A资产声明；按实际舍入验证−12/−6/0三点ref/mic映射，结果同样保存在preflight.json。
 门禁为前向开路、gain_q12=0，只测包内定音及模拟路径；闭环工作点下调不改变其噪底/定音占比/漂移阈值。
 保护、削顶、尖峰仍不直接判啸叫；低工作点跑完只能支持该工作点的观测结果，不能称抗啸叫成功。
 路径门禁测源内1000Hz定音，运行1.02秒、定音1秒，正常保留14920帧有效源内样本；
-不能改成1.6秒运行配1秒定音，否则最后16384帧中没有定音。FIR运行2.5秒、宽带源1.87秒，
-源末后排除2442帧过渡，仍保留完整16384帧源后窗。源内/源后窗口分别判断，不套用同一等待时长。
-`summary.json`每项顶层帧区间为实际原捕获；门禁区间见`path_gate`，FIR分析区间见`analysis.tail_analysis_window`。
+不能改成1.6秒运行配1秒定音，否则最后16384帧中没有定音。
+r2的FIR运行2.5秒、源1.87秒，原源后窗完整但只有约−38 dBFS，低于原−31.8 dBFS信号门槛。
+本r3改测受迫响应：运行/数字源均2.5秒、源保持−24 dBFS；保存末尾16384帧，排除512帧未知历史及488帧末端渐弱，
+实际成对窗口[106198,121582)，15384帧。数字源哈希在四项一致，外部源必须关闭。
+源后等待约束只用于源后窗；本项明确为source-on forced response，不把它标成源后窗或无啸叫。
+`summary.json`每项顶层帧区间为实际原捕获；门禁区间见`path_gate`，FIR比较区间见`source_response`，原声学分类仍在`analysis`。
 A=8c7c49c旧回包定音11.6%仍未通过；A=cf949f2的新回包定音94.7%、path_gate.passed=true，门禁通过。
 新回包第二项0 dB运行9835帧（约0.201秒）保护中止、预测/残差计数3/1；无原NPZ不能复判声学增长。
-本包不替实测失败改判；若安静条件下仍定音不足，停止并保留已有定音NPZ供C复算，不重跑后续项。
+A=1219851的r2七项未报饱和/保护，但真人/听众未测；不能据此认证正常人声工作点。
+旧FIR源后观测不足保持，不因PROXY放宽阈值。本r3是另一种明确的响应测量，不改旧结果。
+本包不替实测失败改判；定音或响应信号不足仍停批留证，不重复依赖项。
 
 ### 编号现场操作单
 
@@ -287,10 +292,14 @@ A=8c7c49c旧回包定音11.6%仍未通过；A=cf949f2的新回包定音94.7%、p
    手工录制设备需提前就绪，在提示输入前拷入这四个固定文件即可，不需拼代码。
    不具备固定测量条件直接回车，标未测；音色/噪声/失真由听感字段分别保留，不用总 RMS 冒充语音改善。
    程序扣除背景功率并要求人声相对背景至少 6 dB，条件不足不算语音增益。未校准不输出绝对 SPL。
-5. **FIR 对照**：关闭外部源，保持位置和模拟配置；固定数字 burst，FIR 开/关两组配对，顺序 OFF/ON、ON/OFF。
+5. **FIR受迫响应对照**：关闭外部源，保持位置和模拟配置；包内固定宽带源持续到窗口末，FIR开/关两组配对，顺序OFF/ON、ON/OFF。
    每项 2.5 秒，前置同一门禁。配对实际 Q12/bit/模型/Q20/源/EQ/场景一致，只有 bypass 改变。
    沿用运行漂移 5 dB、配对 mic/ref 漂移 1.5 dB，不放宽它们来跑完整批。
-   有效结果限保存的源后窗口；全程无饱和不推出全程无失稳。未测到有效边界不生成 MSG/ASG。
+   15384帧有效源内窗报告话筒总功率和300–1000/1000–3000/8200–8600Hz三频带功率的ON−OFF差。
+   继续要求原噪底+6dB、8个20ms有效块和原频带信号底限；不足即fir_response_insufficient，不降阈值。
+   配对相同全局帧索引；source_response.valid只表示响应测量资格，category=unknown保留。
+   fir_comparison通过表示两组数据完成，不自动表示FIR改善；有变差照实报。on_minus_off_tail_rms_db保持空。
+   有效结果限受迫响应窗口，不认证无啸叫/稳定裕量；全程无饱和不推出全程无失稳，不生成MSG/ASG。
 6. **连续运行与 EQ**：原驱动最多 10 秒，live_pa 也有窗口停顿。RC0 自动把连续 60 秒列为未测，
    不调用 live_pa 拼段、不修改限时。EQ identity，贡献未测；有 B 候选后由 C 核对配置并重发完整包，
    FIR 对照须在同一 EQ 下，EQ 收益另作开/关对照。
@@ -300,7 +309,7 @@ A=8c7c49c旧回包定音11.6%仍未通过；A=cf949f2的新回包定音94.7%、p
    不发下一项；由 A 按已核实基线处理，不把恢复 stock overlay 当重新标定或效果通过。
    STOP/通信中断/落盘失败的软件分支通过不等于紧急静音实物已验收。
 8. **一次回包**：最终屏幕 `RETURN_PACKAGE` 给出唯一结果 ZIP：
-   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-<id>/return-results.zip`。
+   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r3/results/sprint-<id>/return-results.zip`。
    包含所有已执行/失败记录、原始 NPZ 哈希、本地路径、汇总 CSV、覆盖和恢复结果；人声 NPZ/WAV 留板，
    B 可直接读 `summary-v3.json` / `summary-v3.csv`（原 schema3）；FIR 开关配对在 `fir_switch_pairs`，
    不冒充不同模型的 baseline/candidate 配对。包中 `models/manifest.json` 绑定当前 strong 基线。
@@ -314,17 +323,18 @@ A=8c7c49c旧回包定音11.6%仍未通过；A=cf949f2的新回包定音94.7%、p
 
 ### A minimal observation and continuous-run request
 
-以下是交A的能力与验收要求；C不修改底层。队长已批准v2上限及“寄存器时间线＋尾部PCM”作为运行/保护/停止工程观测。
-A=cf949f2报告60秒完成和停止恢复；C已读取报告，但固定提交中主bit/hwh仍为v1，未找到声明的61bb71aa…/92b499a3…原件。
-原2952点完整时间线、尾部PCM及停止原记录亦未入交付，当前仅能记录A报告的工程结果，未独立复现。
-本r2继续绑定bb56ef1完整v1资产。版本不符回ASSET_MISMATCH，不把v2驱动/新闭环时长混进v1包。
-A补齐同一v2资产包与原记录后，C另做静默验收再发完整包；故障注入条件4仍单列待完成，不阻塞本v1 r2。
+以下是交A的能力与验收要求；C不修改底层。队长批准的工程观测为寄存器时间线＋尾部PCM，仅用于运行/保护/停止。
+A=1219851的v2 bit/hwh已取得并匹配；本次原时序报告实际WNS=0.801ns/WHS=0.015ns，仍有1输入/3输出未设延迟，不能称完整I/O签核。
+C在fetch时还取得后续固定提交1cddd52：已有5秒/60秒/停止的完整时间线和尾部原件已独立核对，不再要求重复导出。
+原运行配置为−12dB、bypass=true、另一侧放模型49c9c572…/Q20 93f7ab6e…；仅闭合对应历史工程记录，不能代替本r3 −14dB强模型验收。
+C的独立模拟寄存器控制已通过饱和/终点饱和/正常/已arm后静音失败/NPZ保存失败留sidecar。
+尚未通过两项：新before_start调用前Codec已经写入非静音值；取消路径不arm，但disarm_ok/mute_ok缺失、recovered=false。
+请A只修原live_run：把解静音寄存器写入移到确认之后，并按实际取消清理写出disarm/mute/recovered；再由C静默验收。
+本r3继续绑定bb56ef1完整v1资产，不混入新live_run。上述v2接点修复后，再接入完整v2包，不为此重跑已有工程试验。
 基线文件为 A=bb56ef1 的 `board/audio_replay/replay_trial.py`、`live_pa.py`、`closed_tools.py` 和对应 RTL。
 最小建议：由 A 提供 `run_continuous(output_dir, fixture_id, model_path, bypass, gain_q12, hp_volume,
 seconds=60, before_start=..., stop_request=...)` 或说明实际等价入口；配置与静音完成后再调用 before_start。
-cf949f2的`live_run`尚无before_start参数；接入前请A补“完成配置且仍静音→回调确认→取消留证或开始”接点。
-当前NPZ保存位于运行try/finally之外，落盘异常会跳过status写出；请A保证save_error和独立sidecar尽力写出，恢复失败不继续。
-这两项是接入前的驱动静态审阅要求，非本r2的改动；由A维护原实现，C不另写同名驱动。
+接入前两项失败的具体反例、驱动哈希和实际输出在包内offline-evidence/a-1cddd52-driver-review.json；C不另写同名驱动。
 
 | 必需证据 | 字段/行为要求 | 可控验收 |
 |---|---|---|

@@ -16,8 +16,9 @@ import numpy as np
 from evaluation import VERSION, CONFIG, analyze_npz, sha
 from model_comparison import protection_evidence, qhash, flat_trial, export_csv
 from room_experiment import gate_metrics, sources, write_json
+from tail_metrics import BANDS, TAIL_CONFIG
 
-POLICY = 'c-sprint-rc01-1.0.2'
+POLICY = 'c-sprint-rc01-1.0.3'
 A_ASSETS = dict(commit='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6', contract='audio-replay-v1',
     bit_sha256='8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339',
     hwh_sha256='3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb',
@@ -31,11 +32,75 @@ PLAN = dict(gain_db=-14., gain_q12=817, hp_volume=40, sample_rate_hz=RATE,
             fixture_id='room_v1_20261021', speech_seconds=8., pair_seconds=2.5,
             repeats=2, continuous_target_seconds=60., eq='identity',
             gate_drift_db=5., pair_gate_drift_db=1.5,
+            fir_observation='forced_source_response', source_rms_dbfs=-24.,
             automatic_gain_escalation=False)
 PAIR_FIELDS = ('gain_q12', 'hp_volume', 'sample_rate_hz', 'fixture_id',
                'bit_sha256', 'model_sha256', 'coefficients_sha256',
                'source_pcm16_sha256', 'session_id', 'scene_sha256', 'eq_sha256')
-PAIR_FIELDS += ('comparison_id','repeat_id','tail_first_frame','tail_end_frame')
+PAIR_FIELDS += ('comparison_id','repeat_id','comparison_first_frame','comparison_end_frame','measurement_kind')
+
+
+def comparison_source():
+    """Same -24 dBFS forcing level, sustained through the saved capture window."""
+    x=np.random.default_rng(20261024).normal(size=int(PLAN['pair_seconds']*RATE))
+    fade=int(.01*RATE)
+    x[:fade]*=np.linspace(0,1,fade);x[-fade:]*=np.linspace(1,0,fade)
+    x*=10**(PLAN['source_rms_dbfs']/20)/np.sqrt(np.mean(x*x))
+    if np.max(abs(x))>.5:raise ValueError('comparison source exceeds fixed headroom')
+    return np.rint(x*32768).astype('<i2')
+
+
+def source_response(path, source, external_source_off_verified):
+    """Descriptive forced-response powers, never a stability or howl criterion.
+
+    Retain the tail metric's signal/noise and band floors. A source-on window is
+    qualified explicitly; no frame metadata are relabelled as a source-off tail.
+    """
+    out=dict(valid=False,kind='forced_source_response',reasons=[],first_frame=None,end_frame=None,frames=0,
+             rms_dbfs=None,mic_band_dbfs={},minimum_mic_dbfs=max(TAIL_CONFIG['minimum_mic_dbfs'],-37.8+6.),
+             minimum_band_mic_dbfs=TAIL_CONFIG['minimum_band_mic_dbfs'],
+             scope='same digital forcing, microphone response in saved source-on window; no stability/MSG/ASG')
+    try:
+        if external_source_off_verified is not True:raise ValueError('external_source_off_unverified')
+        with np.load(path,allow_pickle=False) as capture:
+            m=json.loads(str(capture['metadata_json'].item()));mic=np.asarray(capture['microphone'],float)
+            if ('source_pcm16' not in capture or not np.array_equal(capture['source_pcm16'],source) or
+                    m.get('source_pcm16_sha256')!=hashlib.sha256(source.tobytes()).hexdigest()):
+                raise ValueError('forcing_source_mismatch')
+            if (m.get('source_schedule_verified') is not True or
+                    m.get('source_end_frame_exclusive')!=len(source) or m.get('source_frames')!=len(source)):
+                raise ValueError('forcing_schedule_unverified')
+            first,end,frames=(m.get(k) for k in ('first_frame','completed_frames','frames'))
+            if (any(type(v) is not int for v in (first,end,frames)) or end-first!=frames or
+                    mic.shape!=(frames,) or not np.isfinite(mic).all() or np.any(abs(mic)>=1) or
+                    m.get('dropped_frames',0)):
+                raise ValueError('invalid_response_capture')
+            rate=float(capture['sample_rate_hz'].item())
+            if rate!=RATE:raise ValueError('response_rate_mismatch')
+        # Exclude unknown FIR history and the fixed source fade. Both sides use
+        # identical global frame indices; a longer run cannot enlarge this ring.
+        begin=max(first+512,int(.2*rate));stop=min(end,len(source)-int(.01*rate))
+        out.update(first_frame=begin,end_frame=max(begin,stop),frames=max(0,stop-begin))
+        block=round(rate*TAIL_CONFIG['block_seconds'])
+        if stop-begin<block*TAIL_CONFIG['minimum_blocks']:raise ValueError('response_window_too_short')
+        x=mic[begin-first:stop-first].copy();x-=x.mean()
+        level=float(20*np.log10(max(np.std(x),1e-12)));out['rms_dbfs']=level
+        if level<out['minimum_mic_dbfs']:raise ValueError('response_below_signal_floor')
+        blocks=x[:len(x)//block*block].reshape(-1,block)
+        if np.any(np.std(blocks,axis=1)<10**(out['minimum_mic_dbfs']/20)):
+            raise ValueError('response_blocks_below_signal_floor')
+        window=np.hanning(len(x));power=abs(np.fft.rfft(x*window))**2
+        freq=np.fft.rfftfreq(len(x),1/rate);scale=2/(len(x)*np.sum(window**2))
+        for low,high in BANDS:
+            mask=(freq>=low)&(freq<high);energy=float(power[mask].sum()*scale)
+            key=f'{low}-{high}'
+            if not mask.any() or energy<10**(out['minimum_band_mic_dbfs']/10):
+                out['mic_band_dbfs'][key]=None;out['reasons'].append('band_below_signal_floor:'+key)
+            else:out['mic_band_dbfs'][key]=float(10*np.log10(energy))
+        out['valid']=not out['reasons']
+    except (OSError,ValueError,KeyError,TypeError,zipfile.BadZipFile) as exc:
+        out['reasons'].append(str(exc))
+    return out
 
 
 def validate_preflight(manifest, preflight):
@@ -87,22 +152,31 @@ def pair_check(a, b):
     reasons = [k for k in PAIR_FIELDS if a.get(k) is None or a.get(k) != b.get(k)]
     if a.get('bypass') is not True or b.get('bypass') is not False:
         reasons.append('fir_switch')
-    if any(x.get('category') in ('invalid', 'protection', 'unknown') or
-           x.get('protection') is not False or x.get('recovery_ok') is not True for x in (a,b)):
+    if any(x.get('category') not in ('unknown','no_instability_observed_in_window') or x.get('stop_reasons') or
+           x.get('protection') is not False or x.get('recovery_ok') is not True or
+           (x.get('category')=='unknown' and x.get('analysis',{}).get('reasons')!=['source_or_transition_overlap']) for x in (a,b)):
         reasons.append('validity_or_stop')
-    if any(x.get('tail_valid') is not True for x in (a,b)):
-        reasons.append('tail_not_validated')
+    if any(x.get('source_response',{}).get('valid') is not True or
+           x.get('measurement_kind')!='forced_source_response' for x in (a,b)):
+        reasons.append('source_response_not_validated')
     gates = [x.get('gate_mic_over_ref_db') for x in (a,b)]
     if any(v is None for v in gates) or abs(gates[0]-gates[1]) > PLAN['pair_gate_drift_db']:
         reasons.append('pair_path_drift')
-    tails=[x.get('analysis',{}).get('tail_statistics',{}) for x in (a,b)]
-    levels=[t.get('tail_rms_dbfs') for t in tails]
+    response=[x.get('source_response',{}) for x in (a,b)]
+    levels=[t.get('rms_dbfs') for t in response]
+    band_delta={}
+    for low,high in BANDS:
+        key=f'{low}-{high}';values=[t.get('mic_band_dbfs',{}).get(key) for t in response]
+        band_delta[key]=(values[1]-values[0] if not reasons and all(v is not None for v in values) else None)
     return dict(comparison_id=a.get('comparison_id'),repeat_id=a.get('repeat_id'),
                 off_capture_id=a.get('capture_id'),on_capture_id=b.get('capture_id'),gain_q12=a.get('gain_q12'),
                 configuration_matches=not any(r in PAIR_FIELDS or r=='fir_switch' for r in reasons),
                 window_comparison_valid=not reasons, reasons=reasons,
-                on_minus_off_tail_rms_db=(levels[1]-levels[0] if not reasons and all(v is not None for v in levels) else None),
-                coverage_scope='saved windows only', measured_msg_db=None, measured_asg_db=None)
+                on_minus_off_tail_rms_db=None,
+                on_minus_off_response_rms_db=(levels[1]-levels[0] if not reasons and all(v is not None for v in levels) else None),
+                on_minus_off_band_response_db=band_delta,measurement_kind='forced_source_response',
+                coverage_scope='saved source-on response windows only; no acoustic stability claim',
+                measured_msg_db=None,measured_asg_db=None)
 
 
 def stop_reasons(analysis, status, error=None):
@@ -189,7 +263,7 @@ def collect(folder, state):
     with (folder/'summary.csv').open('w', newline='', encoding='utf-8-sig') as stream:
         fields = ['id','role','category','protection','recovery_ok','first_frame','completed_frames',
                   'frames','waveform_coverage_fraction','gain_q12','hp_volume','bypass','bit_sha256',
-                  'model_sha256','coefficients_sha256','eq_sha256','gate_status','hearing_basis','stop_reasons']
+                  'model_sha256','coefficients_sha256','eq_sha256','gate_status','hearing_basis','response_valid','stop_reasons']
         writer = csv.DictWriter(stream, fieldnames=fields);writer.writeheader()
         for row in state['trials']:
             writer.writerow({k:json.dumps(row[k]) if isinstance(row.get(k),(list,dict)) else row.get(k) for k in fields})
@@ -244,7 +318,7 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             state['runtime']['pynq']=getattr(pynq,'__version__','unknown')
             from replay_trial import replay_trial
             runner = replay_trial
-        burst, tone = sources(); silence = np.zeros(1,dtype='<i2')
+        _, tone = sources(); burst=comparison_source();silence = np.zeros(1,dtype='<i2')
 
         def trial(role, bypass=False, source=None, seconds=8., direct=False, hear=False, gate=None,
                   comparison_id=None,repeat_id=None):
@@ -272,7 +346,7 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             evidence = (dict(input_sha256=sha(path),provenance='frozen RC0 scene background floor; operator SOURCE_OFF',
                              metadata={'noise_floor_dbfs':-37.8}) if fir and path.exists() else None)
             analysis = analyze_npz(path,expected=expected,positive_control_valid=gate is not None,
-                external_source_active=source is None, analysis_interval='source_off_tail' if fir else None,
+                external_source_active=source is None,
                 external_source_off_verified=fir and state.get('external_source_off_verified') is True,
                 metadata_evidence=evidence)
             # Recovery/error status is a separate authoritative sidecar from A.
@@ -293,6 +367,11 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
                 tail_end_frame=analysis.get('tail_analysis_window',{}).get('end_frame'),
                 waveform_coverage_fraction=analysis.get('capture_window',{}).get('waveform_coverage_fraction'))
             row['local_capture'] = path.name;state['trials'].append(row)
+            if fir:
+                response=source_response(path,pcm,state.get('external_source_off_verified'))
+                row.update(source_response=response,response_valid=response['valid'],
+                    measurement_kind='forced_source_response',comparison_first_frame=response['first_frame'],
+                    comparison_end_frame=response['end_frame'])
             state.pop('pending_trial',None)
             collect(folder,state)
             if reasons: raise RuntimeError(';'.join(reasons))
@@ -341,12 +420,15 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
                 g = gate();row = trial('fir-off' if bypass else 'fir-on',bypass,burst,PLAN['pair_seconds'],gate=g,
                     comparison_id=state['run_id']+'-fir-'+str(repeat+1),repeat_id=repeat+1)
                 rows[bypass] = row
-                if row['category']=='unknown' or row['tail_valid'] is not True:
-                    raise RuntimeError('fir_observation_insufficient')
+                if row.get('response_valid') is not True:
+                    reason='fir_response_insufficient:'+','.join(row['source_response']['reasons'])
+                    row['stop_reasons'].append(reason)
+                    raise RuntimeError(reason)
             result = pair_check(rows[True],rows[False]);result['repeat']=repeat+1
             state['fir_pairs'].append(result)
             if not result['window_comparison_valid']:raise RuntimeError('pair_not_valid')
-        state['checks']['fir_comparison'] = dict(status='passed',scope='two same-config saved-window pairs; no MSG/ASG')
+        state['checks']['fir_comparison'] = dict(status='passed',effect_claimed=False,
+            scope='two same-config forced-source response pairs completed; no stability/MSG/ASG claim')
         state['status']='completed_with_unmeasured_requirements'
     except (Exception, KeyboardInterrupt) as exc:
         state['status']='stopped';state['stop_reason']=type(exc).__name__+':'+str(exc)
