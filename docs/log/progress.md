@@ -5,6 +5,14 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-25 C 冻结并核验RC0.1-r3完整归档
+
+从清洁源码45f60d0构建[r3完整包](../../build/packages/c-sprint-rc01-r3.zip)，38载荷、A六件/C七件原件匹配。
+实际归档Notebook取消无板卡导入；包内13项自检完整复现preflight，四项FIR源内窗均15384帧、声学unknown保留。
+5类preflight与3类资产拒绝通过；固定−14dB、原门槛和v1资产，未自动称FIR改善或稳定。
+证据见[归档验收](../../report/verification/audio_closed/sprint-rc0-20261025/sprint-package-check-rc01-r3.json)。
+旧包保留，v2只退已复现的两项驱动接点；C未操板或修改A/B实现。
+
 ## 2026-10-25 C 定位r2低信号并实现r3受迫响应配对
 
 核对A=1219851回包，FIR源后窗完整，实际失败为tail_below_signal_floor；未因PROXY降低阈值或延长等待。

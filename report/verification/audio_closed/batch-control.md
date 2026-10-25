@@ -992,3 +992,16 @@ C使用A原模拟寄存器夹具（只映射HERE/TMPDIR到本机），另加独�
 
 源码提交信息：`[C] 将FIR对照改为同源受迫响应并复核v2原件`。
 范围：C编排/自检/审计/驱动消费者控制/打包及测试、唯一操作单、C状态/日志/AI记录与独立证据。
+
+最终[r3完整ZIP](../../../build/packages/c-sprint-rc01-r3.zip)由清洁源码45f60d0ab13eaaa38638ea4ea1240e8011f03ed7构建，
+335545字节，SHA256=618ffe0fb8420ebfffa5fdbb58b1dc6fd7d0d36dd91d023e7df0b3e5e7e70fd1。
+[归档验收](sprint-rc0-20261025/sprint-package-check-rc01-r3.json)核对38载荷、A六件/C七件源码原件，
+实际Notebook取消及13项包内自检通过，机器preflight完整复现，5类preflight/3类资产拒绝保持。
+四个FIR窗均122070源帧/15384有效帧、category=unknown，source_on_not_called_stable与source_buffer_fits均为true。
+与r2相比增益/模型/Codec/EQ/驱动/bit/hwh/声学判据原件不变，只变FIR源时长和对应显式响应测量协议。
+
+```text
+SELFTEST ok | trials=13 | window_frames min=14920 | gate=passed | 预计板端 0.669分钟（另加配置和人工等待）
+```
+
+发布提交信息：`[C] 交付固定同源FIR响应测量的RC0.1-r3`。

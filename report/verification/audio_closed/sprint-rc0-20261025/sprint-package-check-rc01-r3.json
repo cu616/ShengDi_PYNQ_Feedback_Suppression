@@ -1,0 +1,365 @@
+{
+  "artifact": "build/packages/c-sprint-rc01-r3.zip",
+  "sha256": "618ffe0fb8420ebfffa5fdbb58b1dc6fd7d0d36dd91d023e7df0b3e5e7e70fd1",
+  "size_bytes": 335545,
+  "policy": "c-sprint-rc01-1.0.3",
+  "source_commits": {
+    "A": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+    "B": "d033d0047542d5e50654a0333777c48ec08dce21",
+    "C": "45f60d0ab13eaaa38638ea4ea1240e8011f03ed7"
+  },
+  "b_independently_reviewed_commit": "6128282f2853b829768c7310e57b08f0d84c4b89",
+  "source_tree_clean": true,
+  "payload_hashes_verified": 38,
+  "c_source_blob_matches": 7,
+  "a_exact_blob_matches": 6,
+  "default_model": {
+    "name": "calibrated_20261024",
+    "source_file": "models/room_v1/calibrated_20261024.json",
+    "file_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+    "validity": "same verified calibration scene only; no cross-session fallback"
+  },
+  "notebook_code_cells": 1,
+  "notebook_first_line": "# C sprint RC0.1-r3: forced-source FIR comparison, -14 dB, v1",
+  "actual_packaged_notebook_cancel_executed": true,
+  "board_imports": false,
+  "archived_selftest_exact_reproduction": true,
+  "frozen_plan_unchanged": false,
+  "only_workpoint_changed": false,
+  "fir_measurement_protocol_changed": true,
+  "gain_unchanged": true,
+  "asset_mismatch_controls": 3,
+  "thresholds_unchanged": true,
+  "a_driver_bit_hwh_model_eq_unchanged": true,
+  "preflight_negative_controls": 5,
+  "driver_acceptance": {
+    "schema_version": 1,
+    "suite": "c-a-driver-acceptance-v2",
+    "hardware_access": false,
+    "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+    "accepted": true,
+    "cases": [
+      {
+        "name": "guard_distinct_counts",
+        "passed": true
+      },
+      {
+        "name": "bypass_prediction_only",
+        "passed": true
+      },
+      {
+        "name": "terminal_counts",
+        "passed": true
+      },
+      {
+        "name": "completed_zero_counts",
+        "passed": true
+      },
+      {
+        "name": "protocol_fault",
+        "passed": true
+      },
+      {
+        "name": "operator_cancel",
+        "passed": true
+      },
+      {
+        "name": "restore_failure",
+        "passed": true
+      },
+      {
+        "name": "capture_write_failure",
+        "passed": true
+      }
+    ]
+  },
+  "c_software_tests": 152,
+  "b_software_tests": 109,
+  "preflight": {
+    "schema_version": 1,
+    "policy": "c-sprint-rc01-1.0.3",
+    "all_ok": true,
+    "evidence_kind": "software_fixture",
+    "scope": "package workflow, windows and deployed Q20 arithmetic only; no acoustic or board acceptance",
+    "source_commits": {
+      "A": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+      "B": "d033d0047542d5e50654a0333777c48ec08dce21",
+      "C": "45f60d0ab13eaaa38638ea4ea1240e8011f03ed7"
+    },
+    "a_assets": {
+      "commit": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+      "contract": "audio-replay-v1",
+      "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+      "hwh_sha256": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb",
+      "max_run_frames": 488281
+    },
+    "gain_mapping_controls": [
+      {
+        "gain_db": -12.0,
+        "gain_q12": 1029,
+        "ref_over_mic_db": -11.998891594303,
+        "expected_db": -11.99889146410683,
+        "error_db": -1.3019617028930952e-07,
+        "bit_exact": true,
+        "ok": true
+      },
+      {
+        "gain_db": -6.0,
+        "gain_q12": 2053,
+        "ref_over_mic_db": -5.999419991276285,
+        "expected_db": -5.999419971943649,
+        "error_db": -1.9332635936564202e-08,
+        "bit_exact": true,
+        "ok": true
+      },
+      {
+        "gain_db": 0.0,
+        "gain_q12": 4096,
+        "ref_over_mic_db": 0.0,
+        "expected_db": 0.0,
+        "error_db": 0.0,
+        "bit_exact": true,
+        "ok": true
+      }
+    ],
+    "gain_mapping_scope": "software bypass control with deployed Q20; routing/arithmetic only",
+    "payload_hashes": {
+      "a-driver-acceptance.json": "6c45a38fe9687030c208e22f2d18f71d64991aba58fa60ceb4d0d7217e247813",
+      "a-historical-scene.json": "fc6fa5e99d4255f849ce49e92d62c6f03e07362dff7ad5dd33f2a714f04b488c",
+      "audio_replay.bit": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+      "audio_replay.hwh": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb",
+      "closed_tools.py": "7643726b465cb672fefbd179354e03d184d70572039e205d94370beb43b1616e",
+      "eq.json": "24623514603cc16e0e13f74da588b2f84aaaa110c59d42d5d8e2c13cb4d27ea3",
+      "evaluation.py": "d9e868013f49c6901a6f7084f72b99ba1954ec663300a72a8b17c64a8c731565",
+      "growth_monitor.py": "877f843e83d604a8cf6dd46cfccb1c908ecf2c5d00520fb3ff08535dbd580d7d",
+      "model.json": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+      "model_comparison.py": "209c7d5dab96662fdafb432dca88af8fda0ff016145ec95bf5a66869302a0a55",
+      "models/manifest.json": "4f3248de3248540ce7e6beb5883e438b31defb9db159104b50ed954dda708efb",
+      "models/room_v1/calibrated_20261024.json": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+      "offline-evidence/a-1219851-review.json": "72258eb6326de44cef2cc1040657cab7c3becf6966a52793dc3e4a0e463b2300",
+      "offline-evidence/a-1cddd52-continuous-review.json": "2e2c3c19f424cf0b93d54271b038fc57ddd46d981ae74434ac58193315bc976a",
+      "offline-evidence/a-1cddd52-driver-review.json": "98b1aa8ec1473d6669fd8919a6a298488266e1a44d7f63a05741793f8e0e806c",
+      "offline-evidence/a-cf949f2-review.json": "8b23690c7e2a4cac60208f3345f5b8cca6341aa3a039992b5983b312b98dc142",
+      "offline-evidence/audit.json": "d7e821bb75d2f99e090a2fb2b1f39c5a14680a2607561daec316df9c8d2f264e",
+      "offline-evidence/b-6128282-repro.txt": "3c19f4e8289883a4dc1a61defc84b9149a134c2392fdd287e9d85211d6a95929",
+      "offline-evidence/b-6128282-review.json": "b5171c1255345a46a6345c1f8654028b9cca6812f0f723f9df4cc7995be5c849",
+      "offline-evidence/b-6128282-tests.txt": "c9caf4053eb0b923bb28e2a05c359034209a84e701c67d92d4abaa8f86cf0a01",
+      "offline-evidence/b-handoff-review.json": "ccb35fd3c84b0624bba4c6fce3a3ac8d81e579c9e8bac56e0c1dee564bc542f3",
+      "offline-evidence/rc01-input-review.json": "7b2099404ffc6434bc01511cb71949f75e3f067999d8a85a4be94a38045386aa",
+      "offline-evidence/tests-r1.txt": "d82947a01b89926b644a171cf9c1c1b539dd443d066d5490d7f5eeb5b91e2d48",
+      "offline-evidence/tests-rc01-r1.txt": "64ca0cd51c97ecbdcc7f4931cccd36ba39320761dc2888e0cf6f7b2026165445",
+      "offline-evidence/tests-rc01-r2.txt": "90e88f1b98b1cd9a0e5c42e379b9155d6832d6f588781d45300e17544e8dd085",
+      "offline-evidence/tests-rc01-r3.txt": "c7853ad1b026bc3bcbf734de6bebf35ef3066c0985e12c7d6ce41a0b5f9c9c8f",
+      "offline-evidence/tests-rc01.txt": "4961a60ca5bda37ed5e12eb34096da0ce717ecbe9328a858fdcc26d38a0e127d",
+      "offline-evidence/tests.txt": "7109e2ed1a685e1590d91b1863cd41a9dfe17a9ded31cddd90575d2fa8acd2c4",
+      "OPERATIONS.md": "57364955f81e45420d947fe54ba3b9e80d1fdda0e21ff8ee745e4b0658757eee",
+      "replay_tools.py": "e3c748e07a6e87e9dd1522eebe11a24e171407039d35142590e70a85dc6bb767",
+      "replay_trial.py": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+      "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "room_experiment.py": "b41ee2354afc85c30c41c0b560d1325113f3f09b710194f4fb39893cc73d3572",
+      "sprint.ipynb": "ac78ad12532b26556cd5dc0c448ba4da9ca76f4db87eec93322bba0c79ad0ecb",
+      "sprint_experiment.py": "df39ebf9d09ad1b227bf1e45b0e19010e397b01da23f82ce47d4cd82abf58d4d",
+      "sprint_selftest.py": "beef273393723a656dfb8311a2a0c4c6cc7e54df53c753cd0f2fabf328911c57",
+      "tail_metrics.py": "8ddd200ceff7bb00ca16da25837dc2fe5aeffaa15abeadd8b6ba4b0f3cbe7bef"
+    },
+    "model": {
+      "taps": 512,
+      "lag_first": 1,
+      "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160"
+    },
+    "checks": {
+      "schedule_completed": true,
+      "trials_complete": true,
+      "gates_passed": true,
+      "fir_pairs_valid": true,
+      "continuous_left_untested": true,
+      "listener_left_untested": true,
+      "proxy_voice_left_untested": true,
+      "source_on_not_called_stable": true,
+      "gain_mapping_passed": true,
+      "source_buffer_fits": true
+    },
+    "trials": [
+      {
+        "id": 1,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 2,
+        "role": "real-voice",
+        "seconds": 8.0,
+        "source_frames": 1,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "saved_waveform",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 3,
+        "role": "listener-off",
+        "seconds": 8.0,
+        "source_frames": 1,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "saved_waveform",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 4,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 5,
+        "role": "listener-on",
+        "seconds": 8.0,
+        "source_frames": 1,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "saved_waveform",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 6,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 7,
+        "role": "fir-off",
+        "seconds": 2.5,
+        "source_frames": 122070,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "forced_source_response",
+        "window_frames": 15384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 8,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 9,
+        "role": "fir-on",
+        "seconds": 2.5,
+        "source_frames": 122070,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "forced_source_response",
+        "window_frames": 15384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 10,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 11,
+        "role": "fir-on",
+        "seconds": 2.5,
+        "source_frames": 122070,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "forced_source_response",
+        "window_frames": 15384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 12,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 13,
+        "role": "fir-off",
+        "seconds": 2.5,
+        "source_frames": 122070,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "forced_source_response",
+        "window_frames": 15384,
+        "ok": true,
+        "category": "unknown"
+      }
+    ],
+    "stop_reason": null,
+    "hardware_test": "not_tested",
+    "continuous_60s": "not_tested",
+    "acoustic_effect": "not_evaluated",
+    "estimated_board_active_minutes": 0.6686666666666666,
+    "estimate_scope": "audio/observation time only; configuration, operator and optional recording waits additional"
+  },
+  "latest_a_r2_result": "seven reported zero-counter trials; source-off FIR window below signal floor",
+  "hardware_test": "not_tested",
+  "continuous_60s": "not_tested",
+  "independent_board_reproduction": "not_tested"
+}

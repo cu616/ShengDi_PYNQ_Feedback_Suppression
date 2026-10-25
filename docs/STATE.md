@@ -40,10 +40,10 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-25核验A=1219851的r2回包：7项饱和计数为零、无保护，FIR窗完整16384帧，失败为约−38.014dBFS低于−31.8dBFS信号门槛，非窗口太短。r3改为固定宽带源播放期间的同帧响应配对，−14dB/Q12=817、原门禁与信号底限保持；有效窗15384帧，152项C回归和13项真实Q20软件空跑通过，待冻结源码重建完整包。
+**最后动作**：2026-10-25核验A=1219851回包，r2 FIR窗完整但低于信号底限。冻结源码45f60d0重建RC0.1-r3：−14dB/Q12=817、原门槛不变，改测固定宽带源播放期间的15384帧同帧响应；152项回归、38载荷原件身份、归档13项自检原样复现、5类preflight/3类资产拒绝通过，未将受迫响应改判声学稳定。
 **当前卡点**：r3现场及正常真人/听众/FIR效果仍待测。v2 bit/hwh已核验匹配，实际时序报告WNS/WHS=0.801/0.015ns，仍有1输入/3输出未设延迟。另取A后续1cddd52原5秒/60秒/停止记录，帧/时间线/旁路算术一致；这些是−12dB、旁路、另一侧放模型的历史工程记录，不代替本配置验收。新live_run独立7控制通过5项，尚余确认前Codec非静音、取消清理回执缺失两项；本r3继续完整v1，不混用。
 
-- [r2与v2复核、r3决定](../report/verification/audio_closed/batch-control.md#2026-10-25-r2低信号停批与r3受迫响应)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。B必修项已清零，默认calibrated_20261024和无新候选决定保持。
+- [r2与v2复核、r3决定](../report/verification/audio_closed/batch-control.md#2026-10-25-r2低信号停批与r3受迫响应)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)、[r3完整包](../build/packages/c-sprint-rc01-r3.zip)、[归档验收](../report/verification/audio_closed/sprint-rc0-20261025/sprint-package-check-rc01-r3.json)。ZIP SHA256=618ffe0fb8420ebfffa5fdbb58b1dc6fd7d0d36dd91d023e7df0b3e5e7e70fd1；B必修项已清零，默认与无新候选决定保持。
 - 只接受已核实同标定场景；门禁/源/版本/保护/恢复/有效信号任一失败即静音停批。不因PROXY放宽门槛，不升档、不自动原增益旁路、不装旧场系数。
 - r3的source_response.valid表示受迫响应测量资格，声学category=unknown保留；两组配对完成不自动说明FIR改善，更不生成MSG/ASG。PROXY不作真人通过，旧低信号失败不改判。
 - A=bb56ef1完整v1资产、EQ identity、固定−14dB；C未改A/B实现或操板，旧ZIP保留。v2保存失败留证及模拟饱和/静音失败已独立通过，只退两项开始/取消接点，不要求重复导出或重跑已有工程数据。
