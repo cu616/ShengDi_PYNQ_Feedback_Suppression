@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "topic": "captain condition 4: saturation-protection fault injection with simulated registers",
+  "recorded_at": "2026-10-25",
+  "recorded_by": "A",
+  "method": "no board and no audio. A fake MMIO/Overlay/I2C layer feeds live_run the same register words the PL would produce; the stop, mute and evidence paths are exercised exactly as on hardware. No audible runaway was created.",
+  "scenarios": {
+    "saturation_only": {
+      "injected": {
+        "packed_prediction_residual": "0x00030002",
+        "gain_clip": 0,
+        "status": "no done bit"
+      },
+      "observed": {
+        "stop_reason": "saturation",
+        "counts": {
+          "prediction": 2,
+          "residual": 3,
+          "gain": 0,
+          "mix": 0
+        },
+        "muted": true,
+        "disarm_ok": true,
+        "mute_ok": true,
+        "recovered": true
+      }
+    },
+    "done_plus_saturation": {
+      "injected": {
+        "packed_prediction_residual": "0x00030002",
+        "gain_clip": 5,
+        "status": "done bit set"
+      },
+      "observed": {
+        "stop_reason": "completed_with_protection",
+        "counts": {
+          "prediction": 2,
+          "residual": 3,
+          "gain": 5,
+          "mix": 0
+        },
+        "muted": true,
+        "recovered": true
+      },
+      "note": "protection is recorded even though the frame count was reached; it is not overwritten by 'completed'"
+    },
+    "mute_failure": {
+      "injected": {
+        "packed_prediction_residual": "0x00030002",
+        "i2c": "shutdown mute raises OSError"
+      },
+      "observed": {
+        "stop_reason": "exception",
+        "muted": null,
+        "disarm_ok": null,
+        "mute_ok": null,
+        "recovered": false,
+        "error": "OSError: simulated I2C failure"
+      },
+      "note": "a failed mute is never reported as muted or recovered true"
+    },
+    "clean_completion": {
+      "injected": {
+        "packed_prediction_residual": "0x00000000",
+        "status": "done bit set"
+      },
+      "observed": {
+        "stop_reason": "completed",
+        "counts": {
+          "prediction": 0,
+          "residual": 0,
+          "gain": 0,
+          "mix": 0
+        },
+        "muted": true,
+        "recovered": true
+      }
+    }
+  },
+  "assertions": {
+    "saturation_is_its_own_stop_reason": true,
+    "protection_survives_a_completed_run": true,
+    "counters_unpack_as_two_16_bit_fields": true,
+    "gain_counter_keeps_full_32_bits": true,
+    "mute_failure_not_reported_as_success": true,
+    "clean_run_not_misclassified": true
+  },
+  "result": "PASS",
+  "condition_4_closed": true,
+  "limitation": "this validates the driver-side logic against simulated registers; it does not replace the on-board protection behaviour already observed in real trials (for example the RC0.1-r1 real-voice trial stopping on packed_prediction_residual=65539)"
+}
