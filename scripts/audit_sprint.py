@@ -11,6 +11,7 @@ import platform
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import zipfile
 
 import numpy as np
@@ -33,6 +34,68 @@ def b_functions(commit):
     scope = {'np':np,'FMIN_HZ':300.}
     exec(compile(ast.Module(body=nodes,type_ignores=[]),'B exact AST functions','exec'),scope)
     return scope,digest(source)
+
+
+def audit_b_prediction(commit,out):
+    """Independent algebraic controls against B's exact new prediction function.
+
+    Diagnostic only: return counterexamples to B, never fork its production CLI.
+    """
+    commit=subprocess.check_output(['git','rev-parse',commit],cwd=ROOT).decode().strip()
+    source=blob(commit,'scripts/reproduce_b_screening.py')
+    scope,_=b_functions(commit)
+    helpers=ast.parse(blob(commit,'scripts/diagnose_peak_margin.py'))
+    nodes=[n for n in helpers.body if isinstance(n,ast.FunctionDef) and n.name=='estimate_H']
+    nodes += [n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef) and n.name=='band_switch_table']
+    exec(compile(ast.Module(body=nodes,type_ignores=[]),'B exact prediction functions','exec'),scope)
+    fs=48828.125;g=817/4096;nfft=1024;f=np.fft.rfftfreq(nfft,1/fs)
+    coh=np.zeros(len(f));coh[9]=1.;H=np.full(len(f),.5+0j)
+    row=scope['band_switch_table'](nfft,f,H,coh,np.zeros(1),1,fs,2,g,[])[0]
+    assert abs(row['on_minus_off_response_db'])>.1
+    counter=dict(case='zero coefficients: ON and OFF loops are identical',frequency_hz=float(f[9]),
+        gain_q12=817,expected_on_minus_off_db=0.,b_original_on_minus_off_db=row['on_minus_off_response_db'],passed=False)
+    packet=blob('bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6','report/verification/audio-replay/lowband2-return.zip')
+    data,manifest,model,inventory,unbound=inspect_packet(io.BytesIO(packet))
+    coef=np.asarray(model['coefficients_q20'],float)/2**20
+    tables=[]
+    with tempfile.TemporaryDirectory(dir=ROOT/'tmp') as directory:
+        paths=[]
+        for i in range(10,16):
+            path=Path(directory)/('seg_%d.npz'%i);path.write_bytes(data['lowband2/'+path.name]);paths.append(path)
+        for nfft in (8192,4096):
+            f,H,coh,_S,_n,fs=scope['estimate_H'](paths,nperseg=nfft)
+            M=scope['model_response'](coef,nfft,lag_first=1);D=np.exp(-2j*2*np.pi*f/fs)
+            original=scope['band_switch_table'](nfft,f,H,coh,coef,1,fs,2,g,[(300,1000),(1000,3000),(8200,8600)])
+            values=[]
+            for lo,hi in ((300,1000),(1000,3000),(8200,8600),(300,fs/2+1)):
+                mask=(f>=lo)&(f<hi)&(coh>=.8)
+                off=H[mask]/(1-g*D[mask]*H[mask]);on=H[mask]/(1-g*D[mask]*(H[mask]-M[mask]))
+                values.append(dict(band='all' if hi>fs/2 else '%d-%d'%(lo,hi),gated_bins=int(mask.sum()),
+                    c_white_source_stationary_reference_db=float(10*np.log10(np.sum(abs(on)**2)/np.sum(abs(off)**2)))))
+            allowed=original[-1]
+            tables.append(dict(nfft=nfft,heldout_ids=list(range(10,16)),b_original=original,c_reference=values,
+                sampled_small_gain_headroom_db=dict(off=allowed['off_allowed_db']-20*np.log10(g),
+                    on=allowed['on_allowed_db']-20*np.log10(g))))
+    saved=json.loads(blob(commit,'report/verification/rc01-r4-2026-10-25/run/prediction.json'))
+    result=dict(b_commit=commit,source_sha256=digest(source),hardware_access=False,production_code_modified=False,
+        zero_model_control=counter,heldout_references=tables,
+        equation=dict(off='H/(1-g*D*H)',on='H/(1-g*D*(H-M))',
+            pointwise_on_over_off='(1-g*D*H)/(1-g*D*(H-M))',
+            band_power='sum(abs(T_on)^2*Sss)/sum(abs(T_off)^2*Sss)',
+            reference_scope='white stationary forcing on qualified bins only; not a finite-window board prediction'),
+        saved_allband_worse_bins={k:v[-1]['worse_bins'] for k,v in saved['tables'].items()},
+        stable_magnitude_counterexample=dict(loop='1.28*z^-2 - 0.4096*z^-4',closed_denominator='(1-0.64*z^-2)^2',
+            poles=[.8,.8,-.8,-.8],loop_abs_at_quarter_rate=1.6896,
+            conclusion='magnitude above unity at a sampled frequency does not prove instability or a fixed growth time'),
+        review_status='changes_required_new_prediction_only',
+        unchanged_decisions=['default model','no new candidate','previous phase/Q20/input/boundary acceptance'],
+        required_changes=['include OFF feedback and correct power weighting; zero model must predict zero',
+            'headroom is allowed_dB minus actual_gain_dB; omitted bins remain unknown',
+            'pair drift gate is not measurement resolution; remove universal 1.5dB effect threshold',
+            'protection is not howl; magnitude above unity is not sufficient for instability or guaranteed growth time',
+            'reconcile prose with nonzero worse_bins; response window is a subset of 16384-frame tail, not the full run'])
+    Path(out).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    return result
 
 
 def matched_boundary_control(record, coefficients):
@@ -332,9 +395,12 @@ if __name__=='__main__':
     p.add_argument('--return-only',action='store_true')
     p.add_argument('--return-revision',choices=('r1','r2','r3'),default='r1')
     p.add_argument('--continuous-records',action='store_true')
+    p.add_argument('--b-prediction',action='store_true')
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    result=(audit_continuous_records(a.a_commit,a.output) if a.continuous_records else
+    result=(audit_b_prediction(a.b_commit,a.output) if a.b_prediction else
+        audit_continuous_records(a.a_commit,a.output) if a.continuous_records else
         audit_return(a.a_commit,a.output,a.return_revision) if a.return_only else audit(a.a_commit,a.b_commit,a.output))
-    keys=(('a_commit','all_record_checks','scope') if a.continuous_records else
+    keys=(('b_commit','zero_model_control','review_status') if a.b_prediction else
+        ('a_commit','all_record_checks','scope') if a.continuous_records else
         ('a_commit','declared_v2_found','decisions') if a.return_only else ('a_commit','b_commit','npz_count','b_counterexamples','deployment'))
     print(json.dumps({k:result[k] for k in keys},ensure_ascii=False))

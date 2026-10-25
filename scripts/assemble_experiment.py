@@ -221,7 +221,7 @@ def assemble_room(out,assets):
     return manifest
 
 
-def assemble_sprint(out, assets, model_path):
+def assemble_sprint(out, assets, model_path, human_only=False):
     """RC0 with the strong historical baseline and byte-identical A drivers.
 
     A future candidate is integrated by rebuilding the complete package with a
@@ -264,7 +264,9 @@ def assemble_sprint(out, assets, model_path):
     guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
     marker='## 2026-10-25 集中实验 RC0'
     (out/'OPERATIONS.md').write_text(guide[guide.index(marker):],encoding='utf8')
-    source='# C sprint RC0.1-r4: source 2.50s/run 2.52s, -14 dB, v2 continuous 60s\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
+    title=('# C sprint RC0.1-human-r1: live speech and listener only, -14 dB, v2' if human_only else
+           '# C sprint RC0.1-full: source 2.50s/run 2.52s, -14 dB, v2 continuous 60s')
+    source=title+'\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
     notebook=dict(nbformat=4,nbformat_minor=5,
         metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
         cells=[dict(cell_type='markdown',metadata={},source=['只运行从上往下第1个代码格；先读 OPERATIONS.md。']),
@@ -272,7 +274,8 @@ def assemble_sprint(out, assets, model_path):
     (out/'sprint.ipynb').write_text(json.dumps(notebook,ensure_ascii=False,indent=2),encoding='utf8')
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
     for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt','tests-rc01-r1.txt','tests-rc01-r2.txt',
-                 'tests-rc01-r3.txt','tests-rc01-r4.txt','a-cf949f2-review.json','a-1219851-review.json',
+                 'tests-rc01-r3.txt','tests-rc01-r4.txt','tests-rc01-human-r1.txt','a-r4-receipt.json','b-dbf2858-review.json',
+                 'a-cf949f2-review.json','a-1219851-review.json',
                  'a-85f4967-review.json','a-85f4967-driver-review.json',
                  'a-1cddd52-continuous-review.json','a-1cddd52-driver-review.json',
                  'b-handoff-review.json','rc01-input-review.json',
@@ -280,16 +283,17 @@ def assemble_sprint(out, assets, model_path):
         if (evidence/name).exists():
             (out/'offline-evidence').mkdir(exist_ok=True);shutil.copy2(evidence/name,out/'offline-evidence'/name)
     manifest=dict(policy=POLICY,calculation_version=VERSION,detector_config=CONFIG,plan=SPRINT_PLAN,
+        workflow='human_only' if human_only else 'full',
         default_model=DEFAULT_MODEL,
         a_assets=A_ASSETS,
         a_file_origins=origins,
-        package_status='baseline_and_v2_continuous_ready_for_board_execution',
+        package_status='human_session_ready' if human_only else 'baseline_and_v2_continuous_ready_for_board_execution',
         source_commits={'A':A_ASSETS['commit'],
                         'B':'d033d0047542d5e50654a0333777c48ec08dce21',
                         'C':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip()},
         b_independently_reviewed_commit='6128282f2853b829768c7310e57b08f0d84c4b89',
         coefficients_sha256=qhash(q),driver_software_acceptance=acceptance,continuous_driver_software_acceptance=live_acceptance,
-        hardware_executed=False,online_growth_detection=False,continuous_60s=True,
+        hardware_executed=False,online_growth_detection=False,continuous_60s=not human_only,
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),
         hashes={str(p.relative_to(out)).replace('\\','/'):sha(p) for p in sorted(out.rglob('*'))
@@ -321,11 +325,12 @@ if __name__=='__main__':
     p.add_argument('--review-only',action='store_true')
     p.add_argument('--room-ready',action='store_true')
     p.add_argument('--sprint-ready',action='store_true')
+    p.add_argument('--sprint-human',action='store_true')
     p.add_argument('--model',type=Path)
     a=p.parse_args()
-    if a.sprint_ready:
-        if not a.assets or not a.model:p.error('--sprint-ready requires --assets and --model')
-        m=assemble_sprint(a.output,a.assets,a.model)
+    if a.sprint_ready or a.sprint_human:
+        if not a.assets or not a.model:p.error('sprint package requires --assets and --model')
+        m=assemble_sprint(a.output,a.assets,a.model,human_only=a.sprint_human)
     elif a.room_ready:
         if not a.assets:p.error('--room-ready requires --assets')
         m=assemble_room(a.output,a.assets)

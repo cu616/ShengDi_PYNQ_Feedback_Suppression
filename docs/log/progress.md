@@ -5,6 +5,14 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-25 C 收到r4完成报告并准备真人专用包
+
+A报告r4跑完15项、FIR/60秒工程通过，真人/听众未测；fetch后A=85f4967尚无r4原包，C按转述登记，R-008一次请求已有原件。
+真人5项流程保留同工作点和全部门槛，触板前拒绝PROXY，负面人耳结果记failed并停批，不重复FIR或60秒。
+证据见[接收登记](../../report/verification/audio_closed/sprint-rc0-20261025/a-r4-receipt.json)及[操作单](../../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。
+按用户要求再次核遍全部四分支，仍无r4原件；取得B=dbf2858新预测，精确原函数零系数反例应0却报+0.906dB。
+只退新预测五项必修，旧默认/候选与判据接受不变，见[独立反例](../../report/verification/audio_closed/sprint-rc0-20261025/b-dbf2858-review.json)。
+
 ## 2026-10-25 C 冻结并独立核验r4完整归档
 
 清洁源码0c6102b构建[r4完整包](../../build/packages/c-sprint-rc01-r4.zip)，357884字节，SHA256=4686557c73fae096cc136f52fc56931448b74d35df141111d72c6bd19f4f6ab1。

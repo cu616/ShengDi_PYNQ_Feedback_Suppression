@@ -1,0 +1,284 @@
+{
+  "b_commit": "dbf285807db731c8041e9b8c6a1f93b0651c50f2",
+  "source_sha256": "f15067fc7f699726ee458a9e21d77f2b37d33e04ceaac3763303514bab8138cb",
+  "hardware_access": false,
+  "production_code_modified": false,
+  "zero_model_control": {
+    "case": "zero coefficients: ON and OFF loops are identical",
+    "frequency_hz": 429.1534423828125,
+    "gain_q12": 817,
+    "expected_on_minus_off_db": 0.0,
+    "b_original_on_minus_off_db": 0.9060509397962612,
+    "passed": false
+  },
+  "heldout_references": [
+    {
+      "nfft": 8192,
+      "heldout_ids": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "b_original": [
+        {
+          "band": "300-1000",
+          "bins": 117,
+          "gated": 90,
+          "coverage": 0.7692307692307693,
+          "off_allowed_db": -7.398043330752637,
+          "on_allowed_db": 2.774898422923713,
+          "improvement_db": 10.17294175367635,
+          "off_worst_hz": 417.2325134277344,
+          "on_worst_hz": 435.11390686035156,
+          "worse_bins": 0,
+          "worse_max_db": null,
+          "off_pos_real_db": -6.460880973911873,
+          "on_pos_real_db": 6.598164435468565,
+          "pos_real_improvement_db": 13.059045409380438,
+          "on_minus_off_response_db": 0.10376767399916217,
+          "response_min_db": -0.8437086793571185,
+          "response_max_db": 0.8816943773392478
+        },
+        {
+          "band": "1000-3000",
+          "bins": 336,
+          "gated": 312,
+          "coverage": 0.9285714285714286,
+          "off_allowed_db": -5.450297468053761,
+          "on_allowed_db": 6.745838666568538,
+          "improvement_db": 12.1961361346223,
+          "off_worst_hz": 1752.3765563964844,
+          "on_worst_hz": 1591.4440155029297,
+          "worse_bins": 0,
+          "worse_max_db": null,
+          "off_pos_real_db": -2.514445134357298,
+          "on_pos_real_db": 9.955707105298988,
+          "pos_real_improvement_db": 12.470152239656286,
+          "on_minus_off_response_db": -0.0008028553424631534,
+          "response_min_db": -0.5477697866839993,
+          "response_max_db": 0.5906175552061337
+        },
+        {
+          "band": "8200-8600",
+          "bins": 67,
+          "gated": 5,
+          "coverage": 0.07462686567164178,
+          "off_allowed_db": -6.922620778986684,
+          "on_allowed_db": 12.081600100072787,
+          "improvement_db": 19.00422087905947,
+          "off_worst_hz": 8356.571197509766,
+          "on_worst_hz": 8416.175842285156,
+          "worse_bins": 0,
+          "worse_max_db": null,
+          "off_pos_real_db": null,
+          "on_pos_real_db": null,
+          "pos_real_improvement_db": null,
+          "on_minus_off_response_db": 0.0877134595026926,
+          "response_min_db": -0.07567486148285711,
+          "response_max_db": 0.2888511334729412
+        },
+        {
+          "band": "all",
+          "bins": 4046,
+          "gated": 1189,
+          "coverage": 0.2938704893722195,
+          "off_allowed_db": -7.398043330752637,
+          "on_allowed_db": 2.774898422923713,
+          "improvement_db": 10.17294175367635,
+          "off_worst_hz": 417.2325134277344,
+          "on_worst_hz": 435.11390686035156,
+          "worse_bins": 1,
+          "worse_max_db": 12.9536945870572,
+          "off_pos_real_db": -6.460880973911873,
+          "on_pos_real_db": 6.598164435468565,
+          "pos_real_improvement_db": 13.059045409380438,
+          "on_minus_off_response_db": 0.019091559648969122,
+          "response_min_db": -0.8437086793571185,
+          "response_max_db": 0.8816943773392478
+        }
+      ],
+      "c_reference": [
+        {
+          "band": "300-1000",
+          "gated_bins": 90,
+          "c_white_source_stationary_reference_db": -1.1488693773519747
+        },
+        {
+          "band": "1000-3000",
+          "gated_bins": 312,
+          "c_white_source_stationary_reference_db": -0.21892999526048473
+        },
+        {
+          "band": "8200-8600",
+          "gated_bins": 5,
+          "c_white_source_stationary_reference_db": 0.3074866609274245
+        },
+        {
+          "band": "all",
+          "gated_bins": 1189,
+          "c_white_source_stationary_reference_db": -0.4211693352219894
+        }
+      ],
+      "sampled_small_gain_headroom_db": {
+        "off": 6.604714497954541,
+        "on": 16.77765625163089
+      }
+    },
+    {
+      "nfft": 4096,
+      "heldout_ids": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "b_original": [
+        {
+          "band": "300-1000",
+          "bins": 58,
+          "gated": 40,
+          "coverage": 0.6896551724137931,
+          "off_allowed_db": -6.570644752702968,
+          "on_allowed_db": 4.55994617025652,
+          "improvement_db": 11.130590922959488,
+          "off_worst_hz": 417.2325134277344,
+          "on_worst_hz": 441.0743713378906,
+          "worse_bins": 0,
+          "worse_max_db": null,
+          "off_pos_real_db": -5.832823913187831,
+          "on_pos_real_db": 10.705488769948357,
+          "pos_real_improvement_db": 16.538312683136187,
+          "on_minus_off_response_db": 0.050452915711090784,
+          "response_min_db": -0.4915055169385257,
+          "response_max_db": 0.5547681186183409
+        },
+        {
+          "band": "1000-3000",
+          "bins": 168,
+          "gated": 149,
+          "coverage": 0.8869047619047619,
+          "off_allowed_db": -5.128741215199014,
+          "on_allowed_db": 9.474212226889621,
+          "improvement_db": 14.602953442088635,
+          "off_worst_hz": 1525.87890625,
+          "on_worst_hz": 1585.4835510253906,
+          "worse_bins": 0,
+          "worse_max_db": null,
+          "off_pos_real_db": -1.901291496528116,
+          "on_pos_real_db": 10.98342640047064,
+          "pos_real_improvement_db": 12.884717896998755,
+          "on_minus_off_response_db": 0.010572880803100622,
+          "response_min_db": -0.5100877332764274,
+          "response_max_db": 0.581805287127874
+        },
+        {
+          "band": "8200-8600",
+          "bins": 34,
+          "gated": 1,
+          "coverage": 0.029411764705882353,
+          "off_allowed_db": -4.333395495153927,
+          "on_allowed_db": 20.19504924929414,
+          "improvement_db": 24.528444744448066,
+          "off_worst_hz": 8416.175842285156,
+          "on_worst_hz": 8416.175842285156,
+          "worse_bins": 0,
+          "worse_max_db": null,
+          "off_pos_real_db": null,
+          "on_pos_real_db": null,
+          "pos_real_improvement_db": null,
+          "on_minus_off_response_db": 0.13460019383448601,
+          "response_min_db": 0.13460019383448601,
+          "response_max_db": 0.13460019383448601
+        },
+        {
+          "band": "all",
+          "bins": 2023,
+          "gated": 558,
+          "coverage": 0.27582797825012356,
+          "off_allowed_db": -6.570644752702968,
+          "on_allowed_db": 4.55994617025652,
+          "improvement_db": 11.130590922959488,
+          "off_worst_hz": 417.2325134277344,
+          "on_worst_hz": 441.0743713378906,
+          "worse_bins": 0,
+          "worse_max_db": null,
+          "off_pos_real_db": -5.832823913187831,
+          "on_pos_real_db": 10.705488769948357,
+          "pos_real_improvement_db": 16.538312683136187,
+          "on_minus_off_response_db": 0.011825819290177736,
+          "response_min_db": -0.5830848929744085,
+          "response_max_db": 0.581805287127874
+        }
+      ],
+      "c_reference": [
+        {
+          "band": "300-1000",
+          "gated_bins": 40,
+          "c_white_source_stationary_reference_db": -1.0753118646813844
+        },
+        {
+          "band": "1000-3000",
+          "gated_bins": 149,
+          "c_white_source_stationary_reference_db": -0.23755772375041104
+        },
+        {
+          "band": "8200-8600",
+          "gated_bins": 1,
+          "c_white_source_stationary_reference_db": -3.159780540252922
+        },
+        {
+          "band": "all",
+          "gated_bins": 558,
+          "c_white_source_stationary_reference_db": -0.42136454613156965
+        }
+      ],
+      "sampled_small_gain_headroom_db": {
+        "off": 7.43211307600421,
+        "on": 18.5627039989637
+      }
+    }
+  ],
+  "equation": {
+    "off": "H/(1-g*D*H)",
+    "on": "H/(1-g*D*(H-M))",
+    "pointwise_on_over_off": "(1-g*D*H)/(1-g*D*(H-M))",
+    "band_power": "sum(abs(T_on)^2*Sss)/sum(abs(T_off)^2*Sss)",
+    "reference_scope": "white stationary forcing on qualified bins only; not a finite-window board prediction"
+  },
+  "saved_allband_worse_bins": {
+    "train_nfft8192": 0,
+    "train_nfft4096": 0,
+    "heldout_nfft8192": 1,
+    "heldout_nfft4096": 0
+  },
+  "stable_magnitude_counterexample": {
+    "loop": "1.28*z^-2 - 0.4096*z^-4",
+    "closed_denominator": "(1-0.64*z^-2)^2",
+    "poles": [
+      0.8,
+      0.8,
+      -0.8,
+      -0.8
+    ],
+    "loop_abs_at_quarter_rate": 1.6896,
+    "conclusion": "magnitude above unity at a sampled frequency does not prove instability or a fixed growth time"
+  },
+  "review_status": "changes_required_new_prediction_only",
+  "unchanged_decisions": [
+    "default model",
+    "no new candidate",
+    "previous phase/Q20/input/boundary acceptance"
+  ],
+  "required_changes": [
+    "include OFF feedback and correct power weighting; zero model must predict zero",
+    "headroom is allowed_dB minus actual_gain_dB; omitted bins remain unknown",
+    "pair drift gate is not measurement resolution; remove universal 1.5dB effect threshold",
+    "protection is not howl; magnitude above unity is not sufficient for instability or guaranteed growth time",
+    "reconcile prose with nonzero worse_bins; response window is a subset of 16384-frame tail, not the full run"
+  ]
+}

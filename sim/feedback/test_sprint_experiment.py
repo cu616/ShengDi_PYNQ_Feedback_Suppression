@@ -121,7 +121,7 @@ class SprintTests(unittest.TestCase):
             self.assertFalse(any(c['bypass'] for c in runner.calls))
             self.assertFalse(state['failure_action']['automatic_bypass'])
 
-    def execute(self,base,runner,ready=True,observation='PROXY',continuous_factory=None):
+    def execute(self,base,runner,ready=True,observation='PROXY',continuous_factory=None,workflow='full',hearing='CLEAR'):
         setup(base)
         # A's mock emits all-zero coefficients; no borrowed golden detector.
         (base/'model.json').write_bytes((base/'models/candidate_512.json').read_bytes())
@@ -129,7 +129,7 @@ class SprintTests(unittest.TestCase):
         import shutil
         for name in ('audio_replay.bit','audio_replay.hwh'):
             shutil.copy2(ROOT/'board/audio_replay'/name,base/name)
-        manifest=dict(source_commits={'C':'test'},coefficients_sha256=qhash(np.zeros(512,dtype=int)),
+        manifest=dict(source_commits={'C':'test'},workflow=workflow,coefficients_sha256=qhash(np.zeros(512,dtype=int)),
                       hashes={name:sha(base/name) for name in ('audio_replay.bit','audio_replay.hwh','model.json')})
         from sprint_selftest import SoftwareContinuousRunner
         continuous=(continuous_factory or SoftwareContinuousRunner)(manifest)
@@ -140,7 +140,7 @@ class SprintTests(unittest.TestCase):
             if 'SOURCE_OFF' in prompt:return 'SOURCE_OFF'
             if '一次填写' in prompt:return 'fixed test layout; software fixture only'
             if 'START' in prompt:return 'START'
-            if 'CLEAR' in prompt:return 'CLEAR'
+            if 'CLEAR' in prompt:return hearing
             return ''
         with contextlib.redirect_stdout(io.StringIO()):
             return sprint.run_sprint(base,answer,runner,lambda _:manifest,continuous_runner=continuous)
@@ -192,6 +192,32 @@ class SprintTests(unittest.TestCase):
                 row=next(r for r in state['trials'] if r['role']=='real-voice')
                 self.assertEqual(row['hearing_reported_code'],'CLEAR')
                 self.assertEqual(row['hearing_code'],'CLEAR' if expected=='passed' else 'PROXY')
+
+    def test_human_session_stops_before_any_hardware_for_proxy(self):
+        with self.work() as d:
+            runner=Runner();state=self.execute(Path(d),runner,workflow='human_only')
+            self.assertEqual(state['status'],'stopped')
+            self.assertFalse(runner.calls)
+            self.assertIn('requires_live_speech_and_human_listening',state['stop_reason'])
+
+    def test_human_session_has_only_five_trials_and_does_not_inherit_old_passes(self):
+        with self.work() as d:
+            runner=Runner();state=self.execute(Path(d),runner,workflow='human_only',observation='HUMAN_LIVE_AND_LISTENING')
+            self.assertEqual(state['status'],'completed_with_unmeasured_requirements',state.get('stop_reason'))
+            self.assertEqual([r['role'] for r in state['trials']],['path-gate','real-voice','listener-off','path-gate','listener-on'])
+            self.assertEqual(len(runner.calls),5)
+            self.assertEqual(state['checks']['real_voice']['status'],'passed')
+            for name in ('fir_comparison','continuous_60s','listener','independent_reproduction'):
+                self.assertEqual(state['checks'][name]['status'],'not_tested',name)
+
+    def test_negative_human_outcome_is_failed_and_stops_at_voice(self):
+        for hearing in ('DISTORTED','NO_AMPLIFICATION','HOWL'):
+            with self.work() as d:
+                state=self.execute(Path(d),Runner(),workflow='human_only',observation='HUMAN_LIVE_AND_LISTENING',hearing=hearing)
+                self.assertEqual(state['status'],'stopped')
+                self.assertEqual(len(state['trials']),2)
+                self.assertEqual(state['checks']['real_voice']['status'],'failed')
+                self.assertEqual(state['checks']['real_voice']['hearing_code'],hearing)
 
     def test_reduced_point_is_fixed_without_changing_direct_gate_or_thresholds(self):
         self.assertEqual(sprint.PLAN['gain_db'],-14.)

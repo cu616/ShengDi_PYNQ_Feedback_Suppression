@@ -220,109 +220,87 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ## 2026-10-25 集中实验 RC0
 
-维护者C；本节原样进入包内OPERATIONS.md。当前入口为 **RC0.1-r4 / c-sprint-rc01-1.0.4**。
-r3在首个FIR装载前被拒是C的包缺陷：真实驱动要求预算至少比源长多2帧，旧软件夹具漏检。
-本包区分源2.50秒/运行2.52秒，直接执行冻结A入口的不触板参数检查；门禁、信号底限和保护均不变。
-同包接入已独立通过7项控制的A新连续驱动，用当前strong模型、−14dB、FIR开启运行60秒。
-历史−12dB/旁路/另一模型的连续记录保留作历史工程证据，不充当本配置结果。
+维护者C；本节原样进入OPERATIONS.md。当前包 **RC0.1-human-r1 / c-sprint-rc01-1.0.5**，只做真人和固定听众比较。
+A已报告r4完整15项跑完；C尚未取得r4原回包，复核状态以STATE为准。本包不复制历史通过标记，不重复FIR对照或60秒工程项。
+目的：确认当前工作点是否有真人可辨扩声，以及固定听众位置系统开/关的实际变化；负面结果同样有效，不能靠降增益过关。
 
-### 唯一入口与冻结身份
+### 唯一入口与身份
 
-- C电脑ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01-r4.zip`。
-- 板卡全量解压到新目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/`。
-- Notebook：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/sprint.ipynb`。
-  重启内核，从上往下**第1个代码格**（全包唯一），首行：
-  `# C sprint RC0.1-r4: source 2.50s/run 2.52s, -14 dB, v2 continuous 60s`。
-  代码格已包含完整调用，不拷代码、不单独换文件、不用In[n]定位。
-- 绑定A=`85f4967f242eed61eaa6b74041be931c2f5bc7a0`。七件A原件逐字节核对：
-  replay_trial/replay_tools/closed_tools/residual_tools/live_run来自该提交根目录；bit/hwh来自其`board/audio_replay/v2/`。
+- C电脑完整ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01-human-r1.zip`。
+- 板卡全量解压到：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-human-r1/`，使用新目录，保留r4原件。
+- Notebook绝对路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-human-r1/sprint.ipynb`。
+  重启内核，只运行从上往下**第1个代码格**（全包唯一），首行：
+  `# C sprint RC0.1-human-r1: live speech and listener only, -14 dB, v2`。
+  不用In[n]定位，不拷代码、不现场换单件。
+- 绑定A=`85f4967f242eed61eaa6b74041be931c2f5bc7a0`，五件Python来自根目录，bit/hwh来自其v2目录，逐字节核验。
   bit SHA256=`61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa`；
   hwh SHA256=`92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b`；MAX_RUN_FRAMES=3000000。
-  live_run SHA256=`a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441`。
-  A=942fd5b的确认前静音、取消真实清理回执修复均包含。C没有修改A驱动或RTL。
-- 默认模型=`calibrated_20261024`（原strong），512 taps、lag_first=1、Q20。
+  A的942fd5b修复在包内，C未改A驱动或RTL。本包虽然带完整v2资产，**不调用连续运行**。
+- 默认calibrated_20261024（原strong），512 taps、lag_first=1、Q20；
   文件SHA256=`c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a`；
   Q20 SHA256=`c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160`。
-  仅限核实过的同标定场景；candidate_512不作默认或后备。场景改变就停批交B重标定。
-- 固定48828.125Hz、Codec40、−14dB/Q12=817、EQ identity。路径门禁与listener-off是开路gain=0。
-  −14dB只是本次固定工程工作点，不能预先称正常扩声或抗啸叫通过。无自动增益阶梯或保护后继续。
-- 源码/载荷/配置/版本全绑定于`sprint-manifest.json`；A先核对preflight.all_ok和资产版本。
-  缺失/false/版本不符回PREFLIGHT_FAIL，资产不符回ASSET_MISMATCH，均不上板、不现场改包。
-  代码格也在导入PYNQ前检查这些条件；最先应出现PACKAGE_OK和DEFAULT_MODEL=calibrated_20261024。
+  固定48828.125Hz、Codec40、−14dB/Q12=817、EQ identity。路径门禁和系统关是gain=0开路，其他项FIR开启。
+  candidate_512不作默认或后备；场景变化交B重标定，不在新场景套用旧系数。
+- A先读preflight.all_ok并核对版本；缺失/false/版本不符回PREFLIGHT_FAIL，资产不符回ASSET_MISMATCH。
+  均不上板、不改包。机器可读预检自动生成；唯一代码格在导入PYNQ前再次核对载荷、模型、资产及预检哈希。
 
-### 发送方自检与观测窗
+### 发送方自检
 
-包内`sprint_selftest.py`空跑完整编排，`preflight.json`由构建脚本计算生成，附实际源/预算/余量/驱动哈希、
-捕获窗、分析窗和−12/−6/0三点ref/mic映射。可选在解压目录静默执行`python3 sprint_selftest.py`；不覆盖冻结preflight。
-固定输出：`SELFTEST ok | trials=15 | window_frames min=14408 | gate=passed | 预计板端 1.687分钟（另加配置和人工等待）`。
-夹具只证明流程、窗口及Q20算术；合成人声、恢复、时间线均不构成上板或声学验收。
-真实A参数前缀会拒绝源长=运行预算及仅1帧余量，接受至少2帧；本包FIR实际余量976帧。
+`SELFTEST ok | trials=5 | window_frames min=14920 | gate=passed | 预计板端 0.434分钟（另加配置和人工等待）`
 
-| 项 | 源/运行 | 捕获与有效窗 |
-|---|---|---|
-| path-gate | 1.00/1.02秒，包内1000Hz定音 | 末尾16384帧；源内14920帧，gate_status与声学category分别报告 |
-| 真实人声/听众 | 1帧静音数字源/8秒，外部真人或固定声源 | 末尾16384帧，不能代指整个8秒 |
-| FIR OFF/ON | 同一−24dBFS源2.50秒/运行2.52秒 | 捕获[106662,123046)；比较[107174,121582)，14408帧 |
-| continuous-60s | 1帧静音数字源/单次60秒 | 请求2929687帧；寄存器时间线+末尾16384帧，PCM覆盖约0.559% |
+可选在解压目录执行`python3 sprint_selftest.py`，静默使用真实Q20及A原件纯参数前缀，不导入PYNQ、不覆盖preflight。
+软件夹具的HUMAN/CLEAR确认是合成分支控制，preflight明确标synthetic_human_confirmation，不能算真人或硬件验收。
+模型taps/lag_first/Q20和−12/−6/0三点ref/mic映射都在preflight中；旧等源/预算及1帧余量拒绝控制保留。
+本包门禁运行1.02秒、定音1秒，源内14920帧；人声/听众每项8秒、1帧静音数字源，保存末尾16384帧。
+全程波形未覆盖的区间仍未知，不能把8秒人耳报告和0.336秒PCM混成全程波形证据。
 
-FIR窗排除512帧未知FIR历史和488帧末端渐弱。相同全局帧索引成对比较，仍要求8个20ms块、
-噪底−37.8+6=−31.8dBFS及原频带底限。更长等待不能增加环形缓存；2.7/2.8秒会缩短源内窗，不这样改。
-源后窗约束只适用于源后观测；path-gate与FIR明确采用源内窗，不把source-on改称源后稳定尾段。
-原捕获区间保留在每项analysis.original_metadata；FIR区间另列source_response。
-source_response.valid表示测量资格；声学category=unknown保留，不自动判FIR改善或稳定。
+### 一次真人现场会话
 
-### 编号现场操作单
-
-1. **准备和确认**：A核实单人占板，把完整ZIP解压到新目录并重启内核；音响可立即断电，不戴耳机。
-   核对资产、自检和版本后运行唯一代码格。仅依赖板端已有Python/NumPy/PYNQ，不临场安装库。
-   一次输入READY、SAME_SCENE和完整布局：源到麦距离、麦克风/音响/听众及测量位置、固定源文件与音量、
-   测量增益及AGC状态。真人现场讲话且有人耳评价才能选HUMAN_LIVE_AND_LISTENING；SSH预填/仪表代判选PROXY。
-   每项配置完成且仍静音后才出现START；非START取消、保存证据并停批。
-2. **路径与真人**：每次path-gate前停止手机、外部播放及讲话，只播包内定音。首个门禁通过后运行8秒真实人声。
-   在START时才讲话，不移动夹具；结束后如实填CLEAR/DISTORTED/NO_AMPLIFICATION/HOWL/UNKNOWN。
-   PROXY的CLEAR保存原报告但人声仍未测。听感异常立即停批，不为跑完补填CLEAR。
-3. **固定听众比较**：同一录制人声由同一外部设备在固定声源位置、固定音量播放，经现有麦克风拾音。
-   系统关/开各8秒；听众、测量设备位置和测量增益固定，关闭AGC。中间path-gate时先停外部源。
-   可选四份录音放到本轮打印的listener目录：off-speech.wav、off-noise.wav、on-speech.wav、on-noise.wav。
-   均单声道未压缩PCM16、同采样率、至少1秒，人声两份同长度且无削顶；分别在对应系统状态下录背景。
-   可在每个8秒状态内先录6秒固定人声、后2秒停源背景，再导出上述文件；输入确认前放齐即可。
-   四份齐全且同源/同增益/无AGC才填FIXED_SOURCE_FIXED_GAIN_NO_AGC，否则回车记未测。
-   程序做背景功率扣除且要求人声高于背景6dB；不以总RMS充当语音改善，未校准不报绝对SPL。
-4. **FIR同配置配对**：输入SOURCE_OFF前关闭全部外部源和讲话，此后持续保持。固定数字源完成OFF/ON、ON/OFF两组。
-   每项前有路径门禁；源2.50秒/运行2.52秒。配对只变bypass，实际Q12/Codec/bit/模型/Q20/源/EQ/场景一致。
-   运行漂移5dB、配对mic/ref漂移1.5dB及全部信号门槛保留。不足即停，不自动降低门槛或改窗口。
-   报总功率及300–1000/1000–3000/8200–8600Hz三带ON−OFF差，有恶化照实报。
-   fir_comparison通过只表示两组有效对照完成；不生成MSG/ASG，on_minus_off_tail_rms_db保持空。
-5. **当前配置连续60秒**：两组完成后再过一次同一门禁，然后同一模型、−14dB、bypass=false单次装载/单次arm运行。
-   外部源继续关闭。程序把同包bit/hwh原样复制到结果目录，供A冻结live_run按其约定读取；不更换资产。
-   控制台打印本轮绝对停止文件路径：
-   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/results/sprint-<id>/STOP`。
-   可以用当前内核中断，或在该结果目录创建名为STOP的空文件停止；程序保存时间线、尾PCM及清理回执。
-   无故障且帧数完整、配置/算术/时间线/保存/静音回执一致才将continuous_60s工程检查列passed。
-   正常流程不另重复历史5秒或−12dB旁路60秒。当前包的60秒未跑之前就是未测。
-   该项只验运行/保护/停止；声学结果与全程稳定性保持未测/unknown，不能写全程音质或抗啸叫通过。
-6. **所有停止分支**：保护、削顶、听感异常、门禁失败、观测不足、通信/落盘/配置错误和恢复未知均停止本轮。
-   A原驱动执行disarm/mute与其恢复流程。持续尖叫、严重失真或异常发热立即切断音响电源并中断；
-   恢复未知/失败时保持音响断电，交A按已核实基线处置。不自动重试、升档或在原增益旁路；不装旧场系数。
-   缺少清理回执写未核实，不能凭缺失断言恢复机构失效；有明确失败回执才判failed，但两者都不继续。
-7. **汇总和一次回包**：最终RETURN_PACKAGE打印唯一结果包：
-   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/results/sprint-<id>/return-results.zip`。
-   A只返这个ZIP；其中含汇总、原始状态/完整寄存器时间线、全部已执行/失败项、NPZ哈希和本地绝对路径。
-   NPZ/WAV/复制bit/hwh留板，不进入返回ZIP；不自动上传人声。summary-v3.json/CSV保留原schema3，FIR在fir_switch_pairs。
-   如果内核被强杀，先保留现场；在上述解压目录Terminal执行以下完整恢复命令只封存既有证据，不重播：
+1. **先备齐人和测量条件**：A为唯一操板者，安排实际讲话者和听众；确认音响可立即断电，不戴耳机。
+   麦克风、音响、前放及位置与strong标定一致。准备同一个固定录制人声源，固定外部播放设备、位置和音量；
+   听众/测量设备位置及测量增益固定，关闭AGC。用于定量比较的录音设备必须能确认固定增益且无AGC。
+   如果不具备录音条件，可完成真人报告，但听众定量结果仍未测；不能将手机自动增益录音冒充固定增益。
+2. **启动唯一代码格**：出现PACKAGE_OK、DEFAULT_MODEL和HUMAN_SESSION_ONLY_5_TRIALS后，输入READY、SAME_SCENE。
+   一次写清声源到麦距离、设备/听众位置、固定文件及音量、测量增益和AGC状态。
+   确有真人讲话和人耳评价才输入HUMAN_LIVE_AND_LISTENING；PROXY或未核实会在发声前结束本轮，避免无效再跑。
+3. **第1项路径门禁**：停止手机和全部外部声源/讲话，配置完成且仍静音后输入START，只播放包内定音。
+   既有定音/噪底/漂移门槛保留，失败立即静音停批，不改时长或阈值。
+4. **第2项真人8秒**：按提示在START时才讲话，不移动夹具。人耳如实选择CLEAR/DISTORTED/NO_AMPLIFICATION/HOWL/UNKNOWN。
+   **只有可辨扩声且清晰才选CLEAR；仅听见原声选NO_AMPLIFICATION。** 不能以低音量不啸叫代替扩声效果。
+   三类负面报告记failed并停批；UNKNOWN记未测，不虚填通过。保护、削顶或恢复未知也立即停批。
+5. **第3项系统关8秒**：外部设备播放固定录制人声，系统为gain=0开路。固定听众位置记录声音。
+   测量录音可用前6秒播放人声、后2秒停源背景；分别导出off-speech.wav和off-noise.wav。
+   准备好在同一8秒状态内完成这两段，不把驱动结束后已静音的背景当作运行中的噪声。
+6. **第4项门禁与第5项系统开8秒**：先停止外部声源，完成同一门禁；再按START播放完全相同的人声和音量。
+   −14dB、FIR开启；位置、模拟配置、测量增益不变。按相同6+2秒方式录出on-speech.wav和on-noise.wav，并如实填人耳报告。
+   路径门禁运行漂移5dB及所有保护门槛保持；不因真人或录音困难放宽。异常不继续第二种配置。
+7. **录音与听众报告一次填齐**：程序提前打印本轮绝对目录
+   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-human-r1/results/sprint-<id>/listener/`。
+   在确认提示前把四份固定名称WAV拷入：均单声道未压缩PCM16、同采样率、各至少1秒，人声两份同长度且无削顶。
+   四份确实同源/同位置/同增益/无AGC才填FIXED_SOURCE_FIXED_GAIN_NO_AGC，否则回车记未测。
+   程序做背景功率扣除并要求人声高于背景6dB；结果可为负值，不预设改善，未校准不输出绝对SPL。
+   最后一次填写听众位置开/关的可辨扩声、清晰度、底噪、音色和失真；不确定写未知。
+   listener passed表示定量测量资格通过，不自动表示扩声收益为正。人耳报告另列human_listener_report。
+8. **停止、恢复、回包**：非START取消；保护/削顶/听感异常/门禁失败/通信落盘错误/恢复未知均停止。
+   持续尖叫、严重失真或异常发热立即断音响电源并中断。A原驱动执行静音/清理，未知或失败时保持断电并交A处置。
+   不自动重试、升档、换旧场系数或在原增益旁路。缺少清理回执记未核实，有明确失败才记failed，均不继续。
+   最终RETURN_PACKAGE给唯一结果包：
+   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-human-r1/results/sprint-<id>/return-results.zip`。
+   A只返此ZIP；包含状态、汇总、原音频哈希和板端绝对路径，NPZ/WAV留板，不自动上传人声。
+   若内核被强杀，保留现场，在上述解压目录Terminal运行以下完整命令只封存既有记录，不重播：
    `python3 -c "from pathlib import Path; import json; from sprint_experiment import collect; [collect(p.parent,json.loads(p.read_text())) for p in Path('results').glob('sprint-*/summary.json')]"`。
-   未进汇总的原文件保留交C静默检查，不删除、不据此填通过。
 
-完整正常流程共15项：7次门禁、3次人声/听众、4次FIR、1次连续60秒，纯采集101.22秒。
-另加配置、人工确认及可选录音等待；遇到停止就保留部分结果，不要求凑齐项目。
-EQ固定identity，均衡贡献未测，与FIR贡献分开；不接入B已否定的EQ或新参考取点。
-保护、削顶和尖峰不等于啸叫。历史748帧/15.3ms强保护记录不能作数秒尾段或精确阈值。
+顺利完成仅5项：2门禁、1真人、2听众，纯采集26.04秒；加配置、START、人耳报告及拷录音时间。
+fir_comparison/continuous_60s本会话均记not_tested及not scheduled，不借用旧r4填本次通过；历史证据由C另行关联。
+EQ identity，均衡贡献未测；不产生MSG/ASG，不以保护、削顶或尖峰直接判啸叫。
+另一队友按冻结操作单的独立复现仍是单独验收，不能把A再次执行或C软件自测算作完成。
 
-### 收包与冻结
+### r4原件交付要求
 
-10/26 C一次核对身份、实际配置、覆盖、保护、恢复与配对，交有效性及必修项。
-10/27 20:00功能冻结；10/28由另一位有资格队友按本操作单冷启动复现，不能以C自测替代。
-冻结源码提交/归档、bit/hwh、模型/Q20、配置/EQ/源、依赖及逐文件哈希；通过、未通过和未测分列。
-B=6128282的正实轴/缺口/Q20/边界与输入资格独立验收已闭合，默认和不交新候选决定不变。
-4096/8192离线估计分表、全16段与留出分开；未过门控频段未知，不把预测区间或保护档位写成实测稳定增益。
-v2实际原时序WNS/WHS=0.801/0.015ns，1输入/3输出缺外部延迟约束，不能称完整I/O签核。
+不重跑r4。只将现有c-sprint-rc01-r4-return.zip提交并给固定提交；目前C同步到的A=85f4967尚无该文件。
+一次附同一轮现有07-fir-off.npz、09-fir-on.npz、11-fir-on.npz、13-fir-off.npz、15-continuous-60s.npz，
+用于C独立复算FIR与当前配置60秒尾部算术。无需人声/听众PCM，无需补采；保持原文件字节，按原返回清单核哈希。
+可以将原返回ZIP与这5个NPZ合成一个r4-review-return.zip提交，明确仓库位置；它与真人会话返回包分别留证。
+FIR是4项/2组配对，r4前14项为有界试次；不写“14项FIR配对”。
+60秒工程观测仅寄存器时间线+尾PCM约0.559%，不认证全程音质、话筒无削顶或全程无啸叫。
+v2实际时序WNS/WHS=0.801/0.015ns，1输入/3输出缺外部延迟约束，不称完整I/O签核。

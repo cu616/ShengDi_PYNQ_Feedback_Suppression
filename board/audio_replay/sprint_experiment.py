@@ -18,7 +18,7 @@ from model_comparison import protection_evidence, qhash, flat_trial, export_csv
 from room_experiment import gate_metrics, sources, write_json
 from tail_metrics import BANDS, TAIL_CONFIG
 
-POLICY = 'c-sprint-rc01-1.0.4'
+POLICY = 'c-sprint-rc01-1.0.5'
 A_ASSETS = dict(commit='85f4967f242eed61eaa6b74041be931c2f5bc7a0', contract='audio-replay-v2+audio-closed-v2',
     bit_sha256='61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa',
     hwh_sha256='92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b',
@@ -107,14 +107,16 @@ def validate_preflight(manifest, preflight):
     payload = {k:v for k,v in manifest['hashes'].items() if k!='preflight.json'}
     rows = preflight.get('trials', [])
     required = ('seconds','source_frames','transition_frames','capture_frames','window_frames')
+    human = manifest.get('workflow','full')=='human_only'
     if ('preflight.json' not in manifest['hashes'] or preflight.get('all_ok') is not True or
             preflight.get('policy') != POLICY or
             preflight.get('evidence_kind') != 'software_fixture' or
             preflight.get('a_assets') != manifest.get('a_assets') or
             preflight.get('source_commits') != manifest['source_commits'] or
-            preflight.get('payload_hashes') != payload or len(rows)!=15 or
+            preflight.get('workflow','full')!=manifest.get('workflow','full') or
+            preflight.get('payload_hashes') != payload or len(rows)!=(5 if human else 15) or
             preflight.get('checks',{}).get('real_driver_rejects_equal_source_budget') is not True or
-            preflight.get('checks',{}).get('continuous_workflow_passed') is not True or
+            preflight.get('checks',{}).get('human_scope_preserved' if human else 'continuous_workflow_passed') is not True or
             any(r.get('driver_input_ok') is not True for r in rows) or
             any(r.get('ok') is not True or any(not isinstance(r.get(k),(int,float)) or
                 not np.isfinite(r[k]) or r[k]<=0 for k in required) or
@@ -125,6 +127,8 @@ def validate_preflight(manifest, preflight):
 def check_package(base, require_preflight=True):
     base = Path(base).resolve()
     manifest = json.loads((base/'sprint-manifest.json').read_text(encoding='utf8'))
+    if manifest.get('workflow','full') not in ('full','human_only'):
+        raise ValueError('unsupported sprint workflow')
     if (manifest['policy'] != POLICY or manifest['plan'] != PLAN or
             manifest['calculation_version'] != VERSION or manifest['detector_config'] != CONFIG or
             manifest.get('default_model') != DEFAULT_MODEL):
@@ -292,6 +296,8 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package, conti
     previous_gate = None
     try:
         manifest = validator(base)
+        human_only=manifest.get('workflow','full')=='human_only'
+        state['workflow']=manifest.get('workflow','full')
         state['package_source'] = manifest['source_commits'];state['package_hashes'] = manifest['hashes']
         state['default_model'] = DEFAULT_MODEL
         state['a_assets'] = A_ASSETS
@@ -301,10 +307,13 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package, conti
             coefficients_sha256=manifest['coefficients_sha256'],padded_512_sha256=manifest['coefficients_sha256'])}
         state['checks']['package'] = dict(status='passed', level='local_hash_and_compatibility')
         state['checks']['continuous_60s'] = dict(status='not_tested',
-            reason='await one 60-second arm with this package model/gain/assets; historical bypass record is separate',
+            reason=('not scheduled in human session; r4 evidence reviewed separately' if human_only else
+                    'await one 60-second arm with this package model/gain/assets; historical bypass record is separate'),
             scope='register timeline plus tail PCM; engineering only')
         state['eq_contribution'] = dict(status='not_tested', reason='identity EQ baseline; no B candidate supplied')
-        print('PACKAGE_OK; DEFAULT_MODEL=calibrated_20261024 (strong); v2 single-arm 60s; fixed gain -14 dB / Q12=817, no escalation')
+        print('PACKAGE_OK; DEFAULT_MODEL=calibrated_20261024 (strong); '+
+              ('HUMAN_SESSION_ONLY_5_TRIALS' if human_only else 'v2 single-arm 60s')+
+              '; fixed gain -14 dB / Q12=817, no escalation')
         if ask('确认现场值守、可立即切断音响电源、不戴耳机、允许本地保存音频；输入 READY：').strip()!='READY':
             raise RuntimeError('operator_cancel')
         if ask('确认麦克风/音响/前放与 strong 标定一致，Codec40；输入 SAME_SCENE，变化则停止交B重标定：').strip()!='SAME_SCENE':
@@ -314,6 +323,8 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package, conti
         observation = ask('真人现场讲话且有人耳评价才输入 HUMAN_LIVE_AND_LISTENING；代理/预填/仪表代判输入 PROXY；其他输入记未核实：').strip()
         state['observation_kind'] = ('human_live_and_listening' if observation=='HUMAN_LIVE_AND_LISTENING'
                                      else 'proxy' if observation=='PROXY' else 'unverified')
+        if human_only and state['observation_kind']!='human_live_and_listening':
+            raise RuntimeError('human_session_requires_live_speech_and_human_listening; no proxy board run')
         state['scene'] = dict(layout=layout, fixture_id=PLAN['fixture_id'], model_sha256=manifest['hashes']['model.json'])
         scene_hash = hashlib.sha256(json.dumps(state['scene'],sort_keys=True).encode()).hexdigest()
         if runner is None:
@@ -379,10 +390,15 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package, conti
             collect(folder,state)
             if reasons: raise RuntimeError(';'.join(reasons))
             if hear:
-                code = ask('此项现场听感：CLEAR / DISTORTED / NO_AMPLIFICATION / HOWL / UNKNOWN：').strip()
+                hearing_prompt=('扩声可辨且清晰才选CLEAR；仅听见原声选NO_AMPLIFICATION。' if human_only else '')
+                code = ask(hearing_prompt+'此项现场听感：CLEAR / DISTORTED / NO_AMPLIFICATION / HOWL / UNKNOWN：').strip()
                 row['hearing_reported_code'] = code
                 row['hearing_basis'] = state['observation_kind']
                 row['hearing_code'] = code if state['observation_kind']=='human_live_and_listening' else 'PROXY'
+                if state['observation_kind']=='human_live_and_listening' and code in ('DISTORTED','NO_AMPLIFICATION','HOWL'):
+                    check='real_voice' if role=='real-voice' else 'listener'
+                    state['checks'][check]=dict(status='failed',basis=state['observation_kind'],
+                        reason='human_hearing_stop',hearing_code=code,scope='reported human outcome, not measured onset threshold')
                 if code not in ('CLEAR','UNKNOWN','PROXY'):raise RuntimeError('hearing_stop:'+code)
             return row
 
@@ -413,6 +429,11 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package, conti
         g = gate();trial('listener-on',gate=g,hear=True)
         confirmation = ask('四份听众录音齐全且同源/同增益/无AGC时输入 FIXED_SOURCE_FIXED_GAIN_NO_AGC；否则回车标未测：').strip()
         state['checks']['listener'] = listener_metrics(folder/'listener',confirmation)
+        if human_only:
+            state['human_listener_report']=ask('填写固定听众位置开/关差别：可辨扩声、清晰度、底噪、音色、失真；不确定写未知：').strip() or 'unknown'
+            state['checks']['fir_comparison']=dict(status='not_tested',reason='not scheduled in human session; r4 evidence reviewed separately')
+            state['status']='completed_with_unmeasured_requirements'
+            return state
         if ask('FIR对照前停止所有外部声源和讲话，确认后输入 SOURCE_OFF：').strip()!='SOURCE_OFF':
             raise RuntimeError('external_source_off_unverified')
         state['external_source_off_verified']=True

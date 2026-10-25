@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import shutil
 import tempfile
+import wave
 
 import numpy as np
 
@@ -117,12 +118,22 @@ class SoftwareContinuousRunner:
 def run_selftest(base=None, require_preflight=True):
     base = Path(base or Path(__file__).resolve().parent).resolve()
     manifest = check_package(base, require_preflight=require_preflight)
+    human = manifest.get('workflow','full')=='human_only'
     runner = SoftwareRunner(manifest,base)
     continuous = SoftwareContinuousRunner(manifest,base)
 
     def answer(prompt):
+        if human and '四份听众录音' in prompt:
+            listener=next(work.glob('results/sprint-*/listener'))
+            t=np.arange(8000)/8000
+            for mode,amplitude in (('off',1000),('on',2000)):
+                for kind in ('speech','noise'):
+                    samples=(np.rint(amplitude*np.sin(2*np.pi*1000*t)).astype('<i2') if kind=='speech' else np.zeros(8000,dtype='<i2'))
+                    with wave.open(str(listener/(mode+'-'+kind+'.wav')),'wb') as stream:
+                        stream.setnchannels(1);stream.setsampwidth(2);stream.setframerate(8000);stream.writeframes(samples.tobytes())
+            return 'FIXED_SOURCE_FIXED_GAIN_NO_AGC'
         if 'HUMAN_LIVE_AND_LISTENING' in prompt:
-            return 'PROXY'
+            return 'HUMAN_LIVE_AND_LISTENING' if human else 'PROXY'
         for token in ('READY','SAME_SCENE','SOURCE_OFF','START','CLEAR'):
             if token in prompt:
                 return token
@@ -172,27 +183,35 @@ def run_selftest(base=None, require_preflight=True):
             window_frames=frames, ok=bool(ok), category=row['category']))
     gates = [row['path_gate'] for row in state['trials'] if row.get('path_gate')]
     checks = dict(schedule_completed=state['status']=='completed_with_unmeasured_requirements',
-        trials_complete=len(trials)==15 and len(runner.calls)==14 and len(continuous.calls)==1,
-        gates_passed=len(gates)==7 and all(g['passed'] for g in gates),
-        fir_pairs_valid=len(state['fir_pairs'])==2 and all(p['window_comparison_valid'] for p in state['fir_pairs']),
-        continuous_workflow_passed=state['checks']['continuous_60s']['status']=='passed',
+        trials_complete=(len(trials)==5 and len(runner.calls)==5 and not continuous.calls if human else
+                         len(trials)==15 and len(runner.calls)==14 and len(continuous.calls)==1),
+        gates_passed=len(gates)==(2 if human else 7) and all(g['passed'] for g in gates),
+        fir_pairs_valid=(not state['fir_pairs'] if human else len(state['fir_pairs'])==2 and all(p['window_comparison_valid'] for p in state['fir_pairs'])),
+        continuous_workflow_passed=human or state['checks']['continuous_60s']['status']=='passed',
+        human_scope_preserved=(not human or state['checks']['continuous_60s']['status']=='not_tested' and not state['fir_pairs'] and
+            state['checks']['real_voice']['status']=='passed'),
         real_driver_rejects_equal_source_budget=equal_source_budget_rejected,
         listener_left_untested=state['checks']['listener']['status']=='not_tested',
-        proxy_voice_left_untested=state['checks']['real_voice']['status']=='not_tested',
+        proxy_voice_left_untested=human or state['checks']['real_voice']['status']=='not_tested',
         source_on_not_called_stable=all(r['category']=='unknown' and r['tail_valid'] is False
             for r in state['trials'] if r['role'].startswith('fir-')),
         gain_mapping_passed=all(c['ok'] for c in mapping))
+    if human:
+        del checks['continuous_workflow_passed'],checks['proxy_voice_left_untested'],checks['listener_left_untested']
+        listener=state['checks']['listener']
+        checks['listener_fixture_passed']=bool(listener['status']=='passed' and abs(listener['relative_speech_change_db']-20*np.log10(2))<.01)
     checks['source_buffer_fits']=all(c['source_frames']<=MAX_SOURCE_FRAMES for c in runner.calls)
     checks['actual_driver_inputs_passed']=all(t['driver_input_ok'] for t in trials)
     model = json.loads((base/'model.json').read_text(encoding='utf8'))
     report = dict(schema_version=1, policy=POLICY, all_ok=all(checks.values()) and all(t['ok'] for t in trials),
         evidence_kind='software_fixture', scope='package workflow, windows and deployed Q20 arithmetic only; no acoustic or board acceptance',
-        source_commits=manifest['source_commits'], a_assets=manifest['a_assets'],
+        source_commits=manifest['source_commits'], a_assets=manifest['a_assets'],workflow=manifest.get('workflow','full'),
         gain_mapping_controls=mapping, gain_mapping_scope='software bypass control with deployed Q20; routing/arithmetic only',
         payload_hashes={k:v for k,v in manifest['hashes'].items() if k!='preflight.json'},
         model=dict(taps=model['taps'], lag_first=model['lag_first'], coefficients_sha256=qhash(model['coefficients_q20'])),
         checks=checks, trials=trials, stop_reason=state.get('stop_reason'), hardware_test='not_tested',
-        continuous_60s='software_workflow_only_hardware_not_tested', acoustic_effect='not_evaluated', estimated_board_active_minutes=sum(t['seconds'] for t in trials)/60,
+        continuous_60s='not_scheduled' if human else 'software_workflow_only_hardware_not_tested',
+        synthetic_human_confirmation=human,acoustic_effect='not_evaluated', estimated_board_active_minutes=sum(t['seconds'] for t in trials)/60,
         estimate_scope='audio/observation time only; configuration, operator and optional recording waits additional')
     return report
 
