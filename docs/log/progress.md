@@ -1249,3 +1249,27 @@ A 判 b 无效（降耦 5.72 dB 只换来 0.85-1.6 dB），要我给 a（8x 抽�
 manifest 状态改为 rc0_1_default_baseline_closed_by_C 并附离线参考数字，新清单 SHA256 8799f321。
 10-24 会话修正那三个数（-7.42/+6.74/余量预算）用的是旧相位判据，STATE 里标为口径作废、仅存档。
 见 report/verification/b-screening-2026-10-25/。
+
+## RC0.1-r4 事前预测（2026-10-25，B）
+
+C 的下一项任务：现场结果到达前先固定一份可核对的预测。工作在 r4 协议常量上（Q12=817／−14 dB／
+Codec40／EQ identity／source −24 dBFS／pair 2.52 s／delay 2 拍），用低带 16 段和部署 Q20 复算。
+
+核心结论：−14 dB 下 OFF 允许增益 −7.40 dB、ON +2.77 dB（留出 8192 全带），
+即工作点余量 OFF −21.4 dB、ON −11.2 dB，两者都远在稳定区。而 r4 测得到的量是
+mic/source = H/(1−gL) 的 ON/OFF 比，预测只有 +0.02 dB（单 bin −0.84…+0.88），
+比配对门禁 1.5 dB 小一个量级 → **这一档只能否证，不能证明收益**；"跑完/未触发保护/60 s 通过"
+在 OFF 臂也成立，零信息量。这条与 C 自己写的"不能单独写成抗啸叫成功"同向，但给了定量理由。
+
+分带（留出 8192）：300–1000 90/117 bin、+10.17 dB；1000–3000 312/336、+12.20；
+8200–8600 只 5/67、+19.00 但只代表 5 个边沿 bin——8368 Hz 峰顶（+6.64，相干 0.770）被门控挡掉，
+所以这一带**记未知**。训练段能过 10 个 bin 且全带最差点就在 8368，说明同一峰顶在两种划分里
+一个进门控一个没门，结论不稳。四个表（训练/留出 × 4096/8192）方向完全一致，无 worse_bin。
+
+修正一处实现缺陷：预测段里写了 glob=rows[-1]，把模块 glob 变成 main 的局部名，
+导致带 --cross-session-dir 时 [6] 段 UnboundLocalError（常规复算走不到那行）。改名 gtot，
+补 ast 级回归（main 不得遮蔽模块名）+ 3 项预测表回归。全量 113 项通过。
+
+统一脚本新增 band_switch_table / gated_bin_map / [7] 段 / --work-gain-q12，
+输出 run/prediction.json。Part 二等 C 的 summary-v3.json（fir_switch_pairs）回包再判。
+见 report/verification/rc01-r4-2026-10-25/。

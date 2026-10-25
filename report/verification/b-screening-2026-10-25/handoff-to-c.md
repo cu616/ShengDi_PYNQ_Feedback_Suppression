@@ -14,6 +14,7 @@
 | SOS / biquad | 不交付。`scripts/eval_forward_eq.py` 只做**幅度筛选**，不含因果 SOS 复频响 |
 | 分析实现（唯一） | `scripts/diagnose_peak_margin.py`、`scripts/eval_forward_eq.py`、`scripts/reproduce_b_screening.py` |
 | 证据 | `report/verification/b-screening-2026-10-25/repro/{repro.txt,repro.json}` |
+| r4 事前预测 | `report/verification/rc01-r4-2026-10-25/README.md`（含否定条件与覆盖限制） |
 
 ## 2 系数与哈希
 

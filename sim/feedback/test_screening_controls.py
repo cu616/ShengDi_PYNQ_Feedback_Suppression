@@ -6,6 +6,7 @@
   3. manifest 哈希不符只打警告，仍继续产出数字；
   4. manifest 缺失或解析失败时把 sha_match 写成 True（"未核对"被当成"一致"）。
 """
+import ast
 import hashlib
 import json
 import subprocess
@@ -146,6 +147,91 @@ class SplitPairingMixedTest(unittest.TestCase):
         self.assertEqual(out["frames"]["paired"], 4)
         self.assertEqual(out["max_abs_diff"], 0.0)
         self.assertAlmostEqual(out["rms_delta_db"], 0.0, places=9)
+
+
+class PredictionTableTest(unittest.TestCase):
+    """事前预测表的两个口径，用可解析的合成 H 检验，不依赖真实数据。"""
+
+    def _setup(self, nfft=4096):
+        freqs = np.arange(nfft // 2 + 1) * 48828.125 / nfft
+        H = np.full(len(freqs), 0.1 + 0.0j)          # 平直 −20 dB
+        coh = np.ones(len(freqs))
+        return freqs, H, coh, nfft
+
+    def test_perfect_model_gives_zero_loop_and_unit_response(self):
+        """Ĥ≡H 时 L≡0：允许增益应为 inf、ON−OFF 受迫响应应为 0 dB。"""
+        freqs, H, coh, nfft = self._setup()
+        h = np.fft.irfft(H, nfft)                     # 与 H 完全一致的冲激响应
+        h = np.roll(h, -1)                            # 抵消 model_response 的 lag_first=1
+        rows = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2,
+                                     817 / 4096.0, [(300, 1000)])
+        row = rows[0]
+        self.assertGreater(row["gated"], 0)
+        self.assertAlmostEqual(row["on_minus_off_response_db"], 0.0, places=6)
+        self.assertEqual(row["worse_bins"], 0)
+        self.assertGreater(row["improvement_db"], 50.0)   # L→0 时下界极大
+
+    def test_worse_bins_are_counted(self):
+        """模型把某个 bin 放大 2 倍时，该 bin 必须计入更差，且改善为负。"""
+        freqs, H, coh, nfft = self._setup()
+        h = np.zeros(16)
+        h[0] = 0.2                                    # 故意比 H(=0.1) 大一倍
+        rows = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2,
+                                     817 / 4096.0, [(300, 1000)])
+        row = rows[0]
+        self.assertGreater(row["worse_bins"], 0)
+        self.assertLess(row["improvement_db"], 0)
+
+    def test_response_ratio_scales_with_gain(self):
+        """受迫响应差随 g 线性展开：g→0 归零；g 翻倍，量级也翻倍，符号随 L 的相位可正可负。"""
+        freqs, H, coh, nfft = self._setup()
+        h = np.zeros(16)
+        h[0] = 0.2                                    # Ĥ 带 lag_first 的相位，L 随频率转
+        lo = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2, 1e-9,
+                                   [(300, 1000)])[0]
+        mid = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2, 0.25,
+                                    [(300, 1000)])[0]
+        hi = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2, 0.5,
+                                   [(300, 1000)])[0]
+        self.assertAlmostEqual(lo["on_minus_off_response_db"], 0.0, places=6)
+        # 一阶线性：g 翻倍则 dB 翻倍，二阶项只在 g|L|~5% 时给出 1% 偏差，故用 0.02 dB 容差
+        self.assertAlmostEqual(hi["on_minus_off_response_db"],
+                               2 * mid["on_minus_off_response_db"], delta=0.02)
+        self.assertGreater(abs(hi["on_minus_off_response_db"]), 0.2)
+        # 量级仍是一个 dB 以内：在 g|L| << 1 时这个指标本来就分辨不出什么
+        self.assertLess(max(abs(hi["response_min_db"]), abs(hi["response_max_db"])), 1.0)
+        # 符号由 Re(g·L) 决定，与 |L| 大小无关：把模型换成正的 H−Ĥ 就翻到另一侧
+        h2 = h.copy()
+        h2[0] = 0.0                                   # Ĥ≡0 相当于 FIR-off，比值应回到 0 dB
+        off = rbs.band_switch_table(nfft, freqs, H, coh, h2, 1, 48828.125, 2, 0.5,
+                                    [(300, 1000)])[0]
+        self.assertAlmostEqual(off["improvement_db"], 0.0, places=6)
+
+
+class NoModuleShadowingTest(unittest.TestCase):
+    """main() 里不能给模块名（glob/json/np/Path）赋局部变量。
+
+    这条来自一个真实缺陷：预测段里写了 `glob = rows[-1]`，把模块 glob 变成 main 的局部名，
+    于是后面 [6] 段的 glob.glob(...) 直接 UnboundLocalError——而只有带 --cross-session-dir
+    才会走到那行，常规复算发现不了。
+    """
+
+    MODULES = {"glob", "json", "np", "Path", "hashlib", "sys", "argparse"}
+
+    def test_main_does_not_shadow_module_names(self):
+        tree = ast.parse((REPO / "scripts" / "reproduce_b_screening.py").read_text(encoding="utf-8"))
+        mains = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main"]
+        self.assertEqual(len(mains), 1)
+        assigned = set()
+        for node in ast.walk(mains[0]):
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                assigned.add(node.id)
+            elif isinstance(node, ast.arg):
+                assigned.add(node.arg)
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node is not mains[0]:
+                assigned.add(node.name)
+        clash = assigned & self.MODULES
+        self.assertFalse(clash, "main() 里遮蔽了模块名：%s" % sorted(clash))
 
 
 REPO = Path(__file__).resolve().parents[2]

@@ -44,6 +44,8 @@ TAPS = 512
 RIDGE = 1e-9
 BANDS = [(300, 1000), (1000, 2000), (2000, 3400), (3400, 6000),
          (6000, 8200), (8200, 8600), (8600, 10250)]
+# C 的 RC0.1-r4 协议用的是这三带（tail_metrics.BANDS），预测与配对汇总必须同口径
+BANDS_R4 = [(300, 1000), (1000, 3000), (8200, 8600)]
 
 
 # ---------------------------------------------------------------- 基础工具
@@ -279,6 +281,74 @@ def split_pairing_control(coef, u, m, taps=TAPS, pieces=8):
     return out
 
 
+def band_switch_table(nfft, freqs, H, coh, coef, lag_first, fs, delay_frames,
+                      g_lin, bands, coherence=0.8):
+    """FIR OFF vs ON 的分带对照，两种口径分开给。
+
+    口径一（稳定裕度）：某带允许的最大线性增益。OFF = 1/max|H|；ON = 1/max|L|，
+        L = (H − Ĥ)·e^{−jω·delay}。这是"还能再拧多少 dB 才可能起振"，是 Nyquist 近似，
+        不是实测阈值，也不保证未覆盖频段。
+    口径二（受迫响应）：源一直开着时，麦克风电平 ON/OFF 之比。稳态下
+        mic/source = H / (1 − g·L)，所以比值 = 1/(1 − g·L)，按 |H|² 加权的带内 rms。
+        这是 r4 协议 `on_minus_off_response_rms_db` 会被测到的量，**不是抵消深度**。
+    """
+    H_hat = model_response(coef, nfft, lag_first=lag_first)
+    shift = np.exp(-1j * 2 * np.pi * delay_frames * freqs / fs)
+    L = (H - H_hat) * shift
+    L_off = H * shift                      # 同一延迟下，没有 FIR 时的环路
+    rows = []
+    for lo, hi in list(bands) + [("all", None)]:
+        if hi is None:
+            sel = freqs >= FMIN_HZ
+            name = "all"
+        else:
+            sel = (freqs >= lo) & (freqs < hi)
+            name = "%d-%d" % (lo, hi)
+        g = sel & (coh >= coherence) & (freqs >= FMIN_HZ)
+        n_bins = int(sel.sum())
+        n_gate = int(g.sum())
+        row = {"band": name, "bins": n_bins, "gated": n_gate,
+               "coverage": (n_gate / n_bins if n_bins else 0.0)}
+        if n_gate:
+            off_abs, on_abs = np.abs(H[g]), np.abs(L[g])
+            row["off_allowed_db"] = float(-20 * np.log10(off_abs.max()))
+            row["on_allowed_db"] = float(-20 * np.log10(on_abs.max()))
+            row["improvement_db"] = row["on_allowed_db"] - row["off_allowed_db"]
+            row["off_worst_hz"] = float(freqs[g][int(np.argmax(off_abs))])
+            row["on_worst_hz"] = float(freqs[g][int(np.argmax(on_abs))])
+            worse = on_abs > off_abs            # 该 bin 上 FIR 让环路更接近起振
+            row["worse_bins"] = int(worse.sum())
+            row["worse_max_db"] = (float(-20 * np.log10(off_abs[worse].max()))
+                                   if worse.any() else None)
+            # 第二套估计：正实轴穿越（同一门控、同一延迟）
+            off_pr, _ = positive_real_crossing(L_off, freqs, g, fmin=FMIN_HZ)
+            on_pr, _ = positive_real_crossing(L, freqs, g, fmin=FMIN_HZ)
+            row["off_pos_real_db"] = None if not np.isfinite(off_pr) else float(off_pr)
+            row["on_pos_real_db"] = None if not np.isfinite(on_pr) else float(on_pr)
+            row["pos_real_improvement_db"] = (
+                None if (row["off_pos_real_db"] is None or row["on_pos_real_db"] is None)
+                else row["on_pos_real_db"] - row["off_pos_real_db"])
+            ratio = np.abs(1.0 / (1.0 - g_lin * L[g]))
+            w = off_abs ** 2
+            row["on_minus_off_response_db"] = float(
+                20 * np.log10(np.sqrt(np.sum(w * ratio ** 2) / np.sum(w))))
+            row["response_min_db"] = float(20 * np.log10(ratio.min()))
+            row["response_max_db"] = float(20 * np.log10(ratio.max()))
+        rows.append(row)
+    return rows
+
+
+def gated_bin_map(freqs, coh, lo, hi, coherence=0.8):
+    """列出某带内哪些 bin 过了门控、哪些被挡（用于说明 8.4 kHz 缺口）。"""
+    sel = (freqs >= lo) & (freqs < hi)
+    idx = np.where(sel)[0]
+    out = []
+    for k in idx:
+        out.append({"hz": float(freqs[k]), "coherence": float(coh[k]),
+                    "gated": bool(coh[k] >= coherence)})
+    return out
+
+
 def biquad_notch_mag(f, f0, depth_db, q):
     """二阶陷波的**幅度**响应（筛选参考；不含真实 SOS 的相位与延迟）。"""
     w = f / f0
@@ -304,6 +374,8 @@ def main():
                     help="第二个窗长，用来展示窗长敏感性（两个窗长分开报）")
     ap.add_argument("--compare-model", default=None,
                     help="同门控下再评一个模型，用来做「模型 vs FIR-off」的对照（不改变默认选择）")
+    ap.add_argument("--work-gain-q12", type=int, default=817,
+                    help="r4 固定工作点：Q12 增益（817 = 请求 −14 dB）")
     ap.add_argument("--stop-after-inputs", action="store_true",
                     help="只跑输入资格检查（供入口级回归与现场预检），不进入数值计算")
     ap.add_argument("--coherence", type=float, default=0.8)
@@ -665,6 +737,63 @@ def main():
     else:
         say("  未提供 --cross-session-dir，跳过跨场次压力测试。")
     result["session_20261023"] = xs
+
+    # ---- [7] 事前预测：FIR OFF vs ON ----------------------------------
+    g_lin = args.work_gain_q12 / 4096.0
+    g_db = 20 * np.log10(g_lin)
+    say("\n[7] 事前预测：FIR OFF vs ON（工作点 g = %.2f dB，Q12=%d，delay=%d 拍）"
+        % (g_db, args.work_gain_q12, args.delay_frames))
+    say("  两个口径分开：允许增益（稳定裕度，Nyquist 近似）／ON−OFF 受迫响应（协议实测得到的就是这个）")
+    pred = {}
+    for dname, files in (("train", tr), ("heldout", va)):
+        for nfft in (args.nfft, args.nfft_sens):
+            key = "%s_nfft%d" % (dname, nfft)
+            fr, HH, cc, _S, _n, fsx = estimate_H(files, nperseg=nfft)
+            rows = band_switch_table(nfft, fr, HH, cc, coef, info["lag_first"], fsx,
+                                     args.delay_frames, g_lin, BANDS_R4, args.coherence)
+            pred[key] = rows
+            gtot = rows[-1]
+            say("\n  [%s] %d 段，门控 %d/%d bin"
+                % (key, len(files), gtot["gated"], gtot["bins"]))
+            say("    全带允许增益：OFF %+.2f dB / ON %+.2f dB（改善 %+.2f dB）"
+                % (gtot["off_allowed_db"], gtot["on_allowed_db"], gtot["improvement_db"]))
+            say("    工作点余量（g + 允许增益）：OFF %+.2f dB / ON %+.2f dB"
+                % (g_db + gtot["off_allowed_db"], g_db + gtot["on_allowed_db"]))
+            say("    全带 ON−OFF 受迫响应：%+.2f dB（单 bin 范围 %+.2f … %+.2f）"
+                % (gtot["on_minus_off_response_db"], gtot["response_min_db"],
+                   gtot["response_max_db"]))
+            say("    %-10s %9s %10s %10s %8s %10s %10s %9s %7s"
+                % ("频带", "门控/总", "下界OFF", "下界ON", "改善", "穿越OFF", "穿越ON", "ON−OFF", "更差"))
+            for r in rows[:-1]:
+                if r.get("gated", 0) == 0:
+                    say("    %-10s %3d/%-5d 无过门控 bin（未知）"
+                        % (r["band"], 0, r["bins"]))
+                    continue
+                off_pr = r.get("off_pos_real_db")
+                on_pr = r.get("on_pos_real_db")
+                say("    %-10s %3d/%-5d %+10.2f %+10.2f %+8.2f %+10s %+10s %+9.2f %7d"
+                    % (r["band"], r["gated"], r["bins"], r["off_allowed_db"],
+                       r["on_allowed_db"], r["improvement_db"],
+                       "inf" if off_pr is None else "%.2f" % off_pr,
+                       "inf" if on_pr is None else "%.2f" % on_pr,
+                       r["on_minus_off_response_db"], r["worse_bins"]))
+    # 8.4 kHz 缺口的逐 bin 门控图
+    fr8, H8, c8, _S8, _n8, _fs8 = estimate_H(va, nperseg=args.nfft)
+    gap = gated_bin_map(fr8, c8, 8200, 8600, args.coherence)
+    blocked = [g for g in gap if not g["gated"]]
+    say("\n  [8200–8600 Hz 门控图]（nfft=%d，bin 宽 %.2f Hz）共 %d bin，过门控 %d、被挡 %d"
+        % (args.nfft, args.nfft / 2 / _fs8 * _fs8 / args.nfft if False else fr8[1] - fr8[0],
+           len(gap), len(gap) - len(blocked), len(blocked)))
+    say("    过门控：%s" % ", ".join("%.0f(%.2f)" % (g["hz"], g["coherence"]) for g in gap if g["gated"]))
+    say("    被挡  ：%s" % ", ".join("%.0f(%.2f)" % (g["hz"], g["coherence"]) for g in blocked))
+    result["prediction"] = {"work_point": {"gain_q12": args.work_gain_q12, "gain_db": float(g_db),
+                                           "delay_frames": args.delay_frames},
+                            "tables": pred,
+                            "band_8200_8600_bins": gap,
+                            "note": "允许增益是 Nyquist 近似；ON−OFF 受迫响应不是抵消深度"}
+    if out:
+        (out / "prediction.json").write_text(
+            json.dumps(result["prediction"], indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
     # ---- 收尾 ---------------------------------------------------------
     say("\n" + "=" * 78)
