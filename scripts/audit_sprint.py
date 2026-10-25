@@ -184,7 +184,7 @@ def audit_return(a_commit, out, revision='r1'):
     """Inspect this sprint's metadata return and declared assets, without PCM or board access."""
     a_commit=subprocess.check_output(
         ['git','rev-parse',a_commit],cwd=ROOT).decode().strip()
-    packet=blob(a_commit,'report/verification/audio-replay/c-sprint-rc01'+('-r2' if revision=='r2' else '')+'-return.zip')
+    packet=blob(a_commit,'report/verification/audio-replay/c-sprint-rc01'+('-'+revision if revision!='r1' else '')+'-return.zip')
     with zipfile.ZipFile(io.BytesIO(packet)) as archive:
         manifest=json.loads(archive.read('return-manifest.json'))
         checks={n:digest(archive.read(n))==h for n,h in manifest['hashes'].items()}
@@ -197,15 +197,18 @@ def audit_return(a_commit, out, revision='r1'):
         if not all(package_identity.values()):raise ValueError('returned package identity mismatch')
         trials=[]
         for row in state['trials']:
-            side=json.loads(archive.read('%02d-%s.status.json'%(row['id'],row['role'])))
+            name='%02d-%s.status.json'%(row['id'],row['role'])
+            side=json.loads(archive.read(name)) if name in archive.namelist() else None
+            packed=None if side is None else side.get('clip_counts_raw')
+            completed=row.get('completed_frames')
             trials.append(dict(id=row['id'],role=row['role'],category=row['category'],
                 acoustic_reasons=row['analysis']['reasons'],path_gate=row.get('path_gate'),
-                completed_frames=row['completed_frames'],duration_seconds=row['completed_frames']/48828.125,
-                frames=row['frames'],first_frame=row['first_frame'],stop_reasons=row['stop_reasons'],
+                completed_frames=completed,duration_seconds=None if completed is None else completed/48828.125,
+                frames=row.get('frames'),first_frame=row.get('first_frame'),stop_reasons=row['stop_reasons'],
                 tail_statistics=row['analysis'].get('tail_statistics'),observation_kind=state.get('observation_kind'),
                 capture_window=row['analysis'].get('capture_window'),mic_rms_dbfs=row.get('mic_rms_dbfs'),
-                sidecar=side,counts_from_raw=dict(prediction=side['clip_counts_raw'][0]&65535,
-                    residual=side['clip_counts_raw'][0]>>16,gain=side['clip_counts_raw'][1],mix=side['clip_counts_raw'][2])))
+                sidecar=side,counts_from_raw=None if packed is None else dict(prediction=packed[0]&65535,
+                    residual=packed[0]>>16,gain=packed[1],mix=packed[2])))
     assets=[]
     for path in subprocess.check_output(['git','ls-tree','-r','--name-only',a_commit],cwd=ROOT).decode().splitlines():
         if path.endswith(('.bit','.hwh')):
@@ -258,6 +261,13 @@ def audit_return(a_commit, out, revision='r1'):
             r3='same -14 dB v1 assets; sustained fixed forcing and same-frame source-on response pairs; no lower floors',
             v2='actual bit/hwh hashes matched; inspect later raw evidence and patched driver separately')
         result['missing_for_v2']=['raw evidence and driver acceptance tracked by later fixed commit 1cddd52']
+    if revision=='r3':
+        result['decisions']=dict(r3='C package input defect: first FIR trial, row 7, failed before driver hardware access; no FIR capture or cleanup sidecar',
+            recovery='missing receipt is unverified, not proof that recovery hardware failed; earlier six cleanup receipts passed',
+            r4='source 2.50s/run 2.52s, real A validation prefix in selftest, same gates; 14408 source-on frames',
+            v2='942fd5b fixed both remaining callback/cancel controls; independent 7/7 passed; integrate exact v2 assets and current-model -14dB 60s')
+        result['missing_for_v2']=[]
+        result['continuous_acceptance']='historical raw records independently reviewed separately at 1cddd52; current-model run still untested'
     target=Path(out);target.parent.mkdir(parents=True,exist_ok=True)
     target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     return result
@@ -320,7 +330,7 @@ if __name__=='__main__':
     p.add_argument('--a-commit',default='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6')
     p.add_argument('--b-commit',default='d033d0047542d5e50654a0333777c48ec08dce21')
     p.add_argument('--return-only',action='store_true')
-    p.add_argument('--return-revision',choices=('r1','r2'),default='r1')
+    p.add_argument('--return-revision',choices=('r1','r2','r3'),default='r1')
     p.add_argument('--continuous-records',action='store_true')
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     result=(audit_continuous_records(a.a_commit,a.output) if a.continuous_records else

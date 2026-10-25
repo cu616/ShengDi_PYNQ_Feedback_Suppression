@@ -50,12 +50,13 @@ class Runner(RoomRunner):
 class SprintTests(unittest.TestCase):
     def test_preflight_rejects_failure_stale_payload_and_missing_trial_fields(self):
         manifest=dict(source_commits={'C':'fixture'},a_assets=sprint.A_ASSETS,hashes={'model.json':'m','preflight.json':'p'})
-        row=dict(seconds=1.02,source_frames=48828,transition_frames=2442,
+        row=dict(seconds=1.02,source_frames=48828,transition_frames=2442,driver_input_ok=True,
                  capture_frames=16384,window_frames=14920,ok=True)
         valid=dict(all_ok=True,policy=sprint.POLICY,evidence_kind='software_fixture',
                    a_assets=sprint.A_ASSETS,
                    source_commits=manifest['source_commits'],payload_hashes={'model.json':'m'},
-                   trials=[dict(row) for _ in range(13)])
+                   checks=dict(real_driver_rejects_equal_source_budget=True,continuous_workflow_passed=True),
+                   trials=[dict(row) for _ in range(15)])
         sprint.validate_preflight(manifest,valid)
         for patch_value in ({'all_ok':False},{'payload_hashes':{'model.json':'stale'}},
                             {'source_commits':{'C':'old'}},{'a_assets':{'contract':'v2'}},{'trials':[]}):
@@ -120,13 +121,18 @@ class SprintTests(unittest.TestCase):
             self.assertFalse(any(c['bypass'] for c in runner.calls))
             self.assertFalse(state['failure_action']['automatic_bypass'])
 
-    def execute(self,base,runner,ready=True,observation='PROXY'):
+    def execute(self,base,runner,ready=True,observation='PROXY',continuous_factory=None):
         setup(base)
         # A's mock emits all-zero coefficients; no borrowed golden detector.
         (base/'model.json').write_bytes((base/'models/candidate_512.json').read_bytes())
         (base/'eq.json').write_text('{"type":"identity"}')
+        import shutil
+        for name in ('audio_replay.bit','audio_replay.hwh'):
+            shutil.copy2(ROOT/'board/audio_replay'/name,base/name)
         manifest=dict(source_commits={'C':'test'},coefficients_sha256=qhash(np.zeros(512,dtype=int)),
-                      hashes={'audio_replay.bit':BIT,'model.json':sha(base/'model.json')})
+                      hashes={name:sha(base/name) for name in ('audio_replay.bit','audio_replay.hwh','model.json')})
+        from sprint_selftest import SoftwareContinuousRunner
+        continuous=(continuous_factory or SoftwareContinuousRunner)(manifest)
         def answer(prompt):
             if 'HUMAN_LIVE_AND_LISTENING' in prompt:return observation
             if 'READY' in prompt:return 'READY' if ready else 'CANCEL'
@@ -137,16 +143,19 @@ class SprintTests(unittest.TestCase):
             if 'CLEAR' in prompt:return 'CLEAR'
             return ''
         with contextlib.redirect_stdout(io.StringIO()):
-            return sprint.run_sprint(base,answer,runner,lambda _:manifest)
+            return sprint.run_sprint(base,answer,runner,lambda _:manifest,continuous_runner=continuous)
 
-    def test_complete_bounded_schedule_preserves_unmeasured_60s_and_private_audio(self):
+    def test_complete_schedule_separates_continuous_engineering_from_acoustics(self):
         with self.work() as d:
             base=Path(d);runner=Runner();state=self.execute(base,runner)
             self.assertEqual(state['status'],'completed_with_unmeasured_requirements',state.get('stop_reason'))
-            self.assertEqual(len(runner.calls),13)
+            self.assertEqual(len(runner.calls),14)
+            self.assertEqual(len(state['trials']),15)
             self.assertEqual(len(state['fir_pairs']),2)
             self.assertTrue(all(p['window_comparison_valid'] for p in state['fir_pairs']))
-            self.assertEqual(state['checks']['continuous_60s']['status'],'not_tested')
+            self.assertEqual(state['checks']['continuous_60s']['status'],'passed')
+            self.assertEqual(state['checks']['continuous_60s']['acoustic_status'],'not_tested')
+            self.assertEqual(state['full_trial_stability'],'unknown')
             self.assertEqual(state['checks']['listener']['status'],'not_tested')
             self.assertEqual(state['checks']['real_voice']['status'],'not_tested')
             self.assertEqual(state['observation_kind'],'proxy')
@@ -155,7 +164,7 @@ class SprintTests(unittest.TestCase):
                 original=row['analysis']['original_metadata']
                 self.assertEqual(row['frames'],16384)
                 self.assertEqual(row['first_frame'],original['first_frame'])
-                self.assertEqual(row['completed_frames'],original['completed_frames'])
+                self.assertEqual(row['completed_frames'],original['frames_completed'] if row['role']=='continuous-60s' else original['completed_frames'])
                 if row['role']=='path-gate':
                     self.assertEqual(row['gate_status'],'passed')
                     gate=row['path_gate']
@@ -164,14 +173,14 @@ class SprintTests(unittest.TestCase):
                 if row['role'] in ('fir-off','fir-on'):
                     window=row['source_response']
                     self.assertEqual(row['source_frames'],122070)
-                    self.assertEqual(window['frames'],15384)
+                    self.assertEqual(window['frames'],14408)
                     self.assertEqual(window['first_frame'],row['first_frame']+512)
                     self.assertEqual(window['end_frame'],row['source_frames']-488)
                     self.assertTrue(window['valid'])
                     self.assertFalse(row['tail_valid'])
                     self.assertEqual(row['category'],'unknown')
             with zipfile.ZipFile(next(base.rglob('return-results.zip'))) as archive:
-                self.assertFalse(any(n.endswith(('.npz','.wav')) for n in archive.namelist()))
+                self.assertFalse(any(n.endswith(('.npz','.wav','.bit','.hwh')) for n in archive.namelist()))
                 self.assertIn('return-manifest.json',archive.namelist())
 
     def test_proxy_clear_cannot_pass_voice_but_explicit_human_fixture_can(self):
@@ -261,7 +270,7 @@ class SprintTests(unittest.TestCase):
             model=base/'models/candidate_512.json';source=sprint.comparison_source();path=base/'response.npz'
             runner=SoftwareRunner({'hashes':{'audio_replay.bit':BIT}})
             runner(path,sprint.PLAN['fixture_id'],model,source,direct_only=False,bypass=True,
-                   gain_db=-14.,seconds=2.5,hp_volume=40,before_start=lambda:True)
+                   gain_db=-14.,seconds=2.52,hp_volume=40,before_start=lambda:True)
             self.assertTrue(sprint.source_response(path,source,True)['valid'])
             self.assertEqual(sprint.source_response(path,source,False)['reasons'],['external_source_off_unverified'])
             self.assertEqual(sprint.source_response(path,source[:-1],True)['reasons'],['forcing_source_mismatch'])
@@ -312,8 +321,44 @@ class SprintTests(unittest.TestCase):
                 state=self.execute(Path(d),failing)
                 self.assertEqual(state['status'],'stopped')
                 self.assertEqual(len(state['trials']),1)
-                self.assertEqual(state['checks']['stop_recovery']['status'],'failed')
+                self.assertEqual(state['checks']['stop_recovery']['status'],'not_tested')
+                self.assertEqual(state['checks']['stop_recovery']['unverified_trials'],[1])
                 self.assertTrue(list(Path(d).rglob('return-results.zip')))
+
+    def test_exact_a_entry_rejects_equal_budget_and_one_frame_headroom(self):
+        from sprint_continuous import driver_request
+        base=ROOT/'board/audio_replay';n=int(2.5*sprint.RATE)
+        for headroom in (0,1,2):
+            source=np.zeros(n-headroom,dtype='<i2')
+            if headroom<2:
+                with self.assertRaisesRegex(ValueError,'invalid source PCM16 or insufficient duration'):
+                    driver_request(base,'replay_trial','unused.npz','unused','unused',source,seconds=2.5,
+                        speaker_confirmed=True,local_capture_confirmed=True)
+            else:
+                result=driver_request(base,'replay_trial','unused.npz','unused','unused',source,seconds=2.5,
+                    speaker_confirmed=True,local_capture_confirmed=True)
+                self.assertEqual(result['headroom_frames'],2)
+        result=driver_request(base,'replay_trial','unused.npz','unused','unused',sprint.comparison_source(),seconds=2.52,
+            speaker_confirmed=True,local_capture_confirmed=True)
+        self.assertEqual(result['headroom_frames'],976)
+        self.assertNotIn('pynq',sys.modules)
+
+    def test_continuous_protection_early_stop_hash_and_cleanup_fail_closed(self):
+        from sprint_selftest import SoftwareContinuousRunner
+        changes=({'counts':dict(prediction=1,residual=0,gain=0,mix=0)},
+                 {'stop_reason':'operator_stop_file'}, {'model_sha256':'wrong'}, {'mute_ok':False,'recovered':False})
+        for change in changes:
+            class Changed(SoftwareContinuousRunner):
+                def __call__(self,path,*args,**kwargs):
+                    out=super().__call__(path,*args,**kwargs)
+                    out.update(change)
+                    path.with_suffix('.status.json').write_text(json.dumps(out),encoding='utf8')
+                    return out
+            with self.work() as d:
+                state=self.execute(Path(d),Runner(),continuous_factory=Changed)
+                self.assertEqual(state['status'],'stopped')
+                self.assertEqual(state['checks']['continuous_60s']['status'],'failed')
+                self.assertEqual(state['full_trial_stability'],'unknown')
 
     def test_listener_analytic_gain_and_agc_refusal(self):
         with self.work() as d:

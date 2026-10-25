@@ -230,21 +230,25 @@ def assemble_sprint(out, assets, model_path):
     from sprint_experiment import POLICY, PLAN as SPRINT_PLAN, DEFAULT_MODEL, A_ASSETS
     from model_comparison import qhash
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False);assets=Path(assets)
-    for name in ('sprint_experiment.py','sprint_selftest.py','evaluation.py','growth_monitor.py','tail_metrics.py',
+    for name in ('sprint_experiment.py','sprint_selftest.py','sprint_continuous.py','evaluation.py','growth_monitor.py','tail_metrics.py',
                  'model_comparison.py','room_experiment.py'):
         shutil.copy2(ROOT/'board/audio_replay'/name,out/name)
-    for name in ('replay_trial.py','replay_tools.py','closed_tools.py','residual_tools.py',
-                 'audio_replay.bit','audio_replay.hwh'):
-        shutil.copy2(assets/name,out/name)
-    expected={'audio_replay.bit':'8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339',
-              'audio_replay.hwh':'3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb'}
+    origins={name:'board/audio_replay/'+name for name in
+             ('replay_trial.py','replay_tools.py','closed_tools.py','residual_tools.py','live_run.py')}
+    origins.update({name:'board/audio_replay/v2/'+name for name in ('audio_replay.bit','audio_replay.hwh')})
+    for name,origin in origins.items():
+        shutil.copy2(assets/Path(origin).relative_to('board/audio_replay'),out/name)
+    expected={'audio_replay.bit':A_ASSETS['bit_sha256'],'audio_replay.hwh':A_ASSETS['hwh_sha256']}
     for name,digest in expected.items():
         if sha(out/name)!=digest:raise ValueError('RC0 bit/hwh mismatch: '+name)
-    for name in ('replay_trial.py','replay_tools.py','closed_tools.py','residual_tools.py','audio_replay.bit','audio_replay.hwh'):
-        frozen=subprocess.check_output(['git','show',A_ASSETS['commit']+':board/audio_replay/'+name],cwd=ROOT)
+    for name,origin in origins.items():
+        frozen=subprocess.check_output(['git','show',A_ASSETS['commit']+':'+origin],cwd=ROOT)
         if (out/name).read_bytes()!=frozen:raise ValueError('ASSET_MISMATCH: '+name+' differs from bound A commit')
     acceptance=check(out,out/'a-driver-acceptance.json')
     if not acceptance['accepted']:raise ValueError('A driver software acceptance failed')
+    from check_a_driver import check_continuous
+    live_acceptance=check_continuous(assets,out/'a-continuous-acceptance.json')
+    if not live_acceptance['accepted']:raise ValueError('A continuous driver software acceptance failed')
     model,q=load_candidate(model_path,SPRINT_PLAN['fixture_id'],40,48828.125)
     if len(q)!=512:raise ValueError('RC0 requires a 512-tap model')
     if sha(model_path)!=DEFAULT_MODEL['file_sha256'] or qhash(q)!=DEFAULT_MODEL['coefficients_sha256']:
@@ -260,7 +264,7 @@ def assemble_sprint(out, assets, model_path):
     guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
     marker='## 2026-10-25 集中实验 RC0'
     (out/'OPERATIONS.md').write_text(guide[guide.index(marker):],encoding='utf8')
-    source='# C sprint RC0.1-r3: forced-source FIR comparison, -14 dB, v1\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
+    source='# C sprint RC0.1-r4: source 2.50s/run 2.52s, -14 dB, v2 continuous 60s\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
     notebook=dict(nbformat=4,nbformat_minor=5,
         metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
         cells=[dict(cell_type='markdown',metadata={},source=['只运行从上往下第1个代码格；先读 OPERATIONS.md。']),
@@ -268,7 +272,8 @@ def assemble_sprint(out, assets, model_path):
     (out/'sprint.ipynb').write_text(json.dumps(notebook,ensure_ascii=False,indent=2),encoding='utf8')
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
     for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt','tests-rc01-r1.txt','tests-rc01-r2.txt',
-                 'tests-rc01-r3.txt','a-cf949f2-review.json','a-1219851-review.json',
+                 'tests-rc01-r3.txt','tests-rc01-r4.txt','a-cf949f2-review.json','a-1219851-review.json',
+                 'a-85f4967-review.json','a-85f4967-driver-review.json',
                  'a-1cddd52-continuous-review.json','a-1cddd52-driver-review.json',
                  'b-handoff-review.json','rc01-input-review.json',
                  'b-6128282-review.json','b-6128282-tests.txt','b-6128282-repro.txt'):
@@ -277,13 +282,14 @@ def assemble_sprint(out, assets, model_path):
     manifest=dict(policy=POLICY,calculation_version=VERSION,detector_config=CONFIG,plan=SPRINT_PLAN,
         default_model=DEFAULT_MODEL,
         a_assets=A_ASSETS,
-        package_status='bounded_baseline_ready_continuous_not_implemented',
-        source_commits={'A':'bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6',
+        a_file_origins=origins,
+        package_status='baseline_and_v2_continuous_ready_for_board_execution',
+        source_commits={'A':A_ASSETS['commit'],
                         'B':'d033d0047542d5e50654a0333777c48ec08dce21',
                         'C':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip()},
         b_independently_reviewed_commit='6128282f2853b829768c7310e57b08f0d84c4b89',
-        coefficients_sha256=qhash(q),driver_software_acceptance=acceptance,
-        hardware_executed=False,online_growth_detection=False,continuous_60s=False,
+        coefficients_sha256=qhash(q),driver_software_acceptance=acceptance,continuous_driver_software_acceptance=live_acceptance,
+        hardware_executed=False,online_growth_detection=False,continuous_60s=True,
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),
         hashes={str(p.relative_to(out)).replace('\\','/'):sha(p) for p in sorted(out.rglob('*'))

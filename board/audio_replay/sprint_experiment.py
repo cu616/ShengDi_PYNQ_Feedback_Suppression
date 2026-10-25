@@ -1,7 +1,7 @@
 """Project-only RC0 orchestration. Hardware remains owned by A's frozen driver.
 
-No import-time hardware actions. The shipped driver has a 10 s ceiling and a tail
-ring: a 60 s test is explicitly NOT implemented by joining bounded trials.
+No import-time hardware actions. The v2 continuous entry arms once for 60 s;
+its register timeline and tail ring support engineering acceptance only.
 """
 import csv
 import hashlib
@@ -18,18 +18,18 @@ from model_comparison import protection_evidence, qhash, flat_trial, export_csv
 from room_experiment import gate_metrics, sources, write_json
 from tail_metrics import BANDS, TAIL_CONFIG
 
-POLICY = 'c-sprint-rc01-1.0.3'
-A_ASSETS = dict(commit='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6', contract='audio-replay-v1',
-    bit_sha256='8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339',
-    hwh_sha256='3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb',
-    max_run_frames=488281)
+POLICY = 'c-sprint-rc01-1.0.4'
+A_ASSETS = dict(commit='85f4967f242eed61eaa6b74041be931c2f5bc7a0', contract='audio-replay-v2+audio-closed-v2',
+    bit_sha256='61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa',
+    hwh_sha256='92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b',
+    max_run_frames=3000000)
 DEFAULT_MODEL = dict(name='calibrated_20261024',source_file='models/room_v1/calibrated_20261024.json',
     file_sha256='c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a',
     coefficients_sha256='c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160',
     validity='same verified calibration scene only; no cross-session fallback')
 RATE = 48828.125
 PLAN = dict(gain_db=-14., gain_q12=817, hp_volume=40, sample_rate_hz=RATE,
-            fixture_id='room_v1_20261021', speech_seconds=8., pair_seconds=2.5,
+            fixture_id='room_v1_20261021', speech_seconds=8., pair_seconds=2.52, source_seconds=2.50,
             repeats=2, continuous_target_seconds=60., eq='identity',
             gate_drift_db=5., pair_gate_drift_db=1.5,
             fir_observation='forced_source_response', source_rms_dbfs=-24.,
@@ -42,7 +42,7 @@ PAIR_FIELDS += ('comparison_id','repeat_id','comparison_first_frame','comparison
 
 def comparison_source():
     """Same -24 dBFS forcing level, sustained through the saved capture window."""
-    x=np.random.default_rng(20261024).normal(size=int(PLAN['pair_seconds']*RATE))
+    x=np.random.default_rng(20261024).normal(size=int(PLAN['source_seconds']*RATE))
     fade=int(.01*RATE)
     x[:fade]*=np.linspace(0,1,fade);x[-fade:]*=np.linspace(1,0,fade)
     x*=10**(PLAN['source_rms_dbfs']/20)/np.sqrt(np.mean(x*x))
@@ -112,7 +112,10 @@ def validate_preflight(manifest, preflight):
             preflight.get('evidence_kind') != 'software_fixture' or
             preflight.get('a_assets') != manifest.get('a_assets') or
             preflight.get('source_commits') != manifest['source_commits'] or
-            preflight.get('payload_hashes') != payload or len(rows)!=13 or
+            preflight.get('payload_hashes') != payload or len(rows)!=15 or
+            preflight.get('checks',{}).get('real_driver_rejects_equal_source_budget') is not True or
+            preflight.get('checks',{}).get('continuous_workflow_passed') is not True or
+            any(r.get('driver_input_ok') is not True for r in rows) or
             any(r.get('ok') is not True or any(not isinstance(r.get(k),(int,float)) or
                 not np.isfinite(r[k]) or r[k]<=0 for k in required) or
                 r['window_frames']>r['capture_frames'] for r in rows)):
@@ -268,7 +271,7 @@ def collect(folder, state):
         for row in state['trials']:
             writer.writerow({k:json.dumps(row[k]) if isinstance(row.get(k),(list,dict)) else row.get(k) for k in fields})
     hashes = {str(p.relative_to(folder)).replace('\\','/'):sha(p) for p in folder.rglob('*')
-              if p.is_file() and p.suffix not in ('.npz','.wav','.zip') and p.name!='return-manifest.json'}
+              if p.is_file() and p.suffix not in ('.npz','.wav','.zip','.bit','.hwh') and p.name!='return-manifest.json'}
     write_json(folder/'return-manifest.json', dict(hashes=hashes, raw_audio_included=False))
     target = folder/'return-results.zip'
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as archive:
@@ -276,7 +279,7 @@ def collect(folder, state):
     print('RETURN_PACKAGE', str(target.resolve()), flush=True)
 
 
-def run_sprint(base=None, ask=input, runner=None, validator=check_package):
+def run_sprint(base=None, ask=input, runner=None, validator=check_package, continuous_runner=None):
     base = Path(base or Path(__file__).resolve().parent).resolve()
     folder = base/'results'/('sprint-'+uuid.uuid4().hex[:12]);folder.mkdir(parents=True)
     (folder/'listener').mkdir()
@@ -298,10 +301,10 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             coefficients_sha256=manifest['coefficients_sha256'],padded_512_sha256=manifest['coefficients_sha256'])}
         state['checks']['package'] = dict(status='passed', level='local_hash_and_compatibility')
         state['checks']['continuous_60s'] = dict(status='not_tested',
-            reason='frozen A driver has 10 s ceiling and tail-only PCM; no stitched-window substitute',
-            owner='A', request='OPERATIONS.md: A minimal observation and continuous-run request')
+            reason='await one 60-second arm with this package model/gain/assets; historical bypass record is separate',
+            scope='register timeline plus tail PCM; engineering only')
         state['eq_contribution'] = dict(status='not_tested', reason='identity EQ baseline; no B candidate supplied')
-        print('PACKAGE_OK; DEFAULT_MODEL=calibrated_20261024 (strong); 60s_CONTINUOUS_NOT_AVAILABLE; fixed gain -14 dB / Q12=817, no escalation')
+        print('PACKAGE_OK; DEFAULT_MODEL=calibrated_20261024 (strong); v2 single-arm 60s; fixed gain -14 dB / Q12=817, no escalation')
         if ask('确认现场值守、可立即切断音响电源、不戴耳机、允许本地保存音频；输入 READY：').strip()!='READY':
             raise RuntimeError('operator_cancel')
         if ask('确认麦克风/音响/前放与 strong 标定一致，Codec40；输入 SAME_SCENE，变化则停止交B重标定：').strip()!='SAME_SCENE':
@@ -429,6 +432,21 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             if not result['window_comparison_valid']:raise RuntimeError('pair_not_valid')
         state['checks']['fir_comparison'] = dict(status='passed',effect_claimed=False,
             scope='two same-config forced-source response pairs completed; no stability/MSG/ASG claim')
+        gate()
+        from sprint_continuous import continuous_trial
+        state['pending_trial']=dict(id=15,role='continuous-60s',status='prepared_or_running')
+        collect(folder,state)
+        path,result=continuous_trial(base,folder,manifest,PLAN,ask,continuous_runner)
+        analysis=result.pop('analysis');status=result.pop('driver_status')
+        state['checks']['continuous_60s']=result
+        m=analysis['evaluation_metadata']
+        state['trials'].append(dict(m,id=15,role='continuous-60s',local_capture=path.name,analysis=analysis,
+            driver_status=status,category=analysis['category'],recovery_ok=status.get('recovered'),
+            protection=analysis['event_flags']['protection'],stop_reasons=result['reasons'],
+            session_id=state['run_id'],scene_sha256=scene_hash,eq_sha256=sha(base/'eq.json'),
+            waveform_coverage_fraction=analysis['capture_window']['waveform_coverage_fraction']))
+        state.pop('pending_trial',None)
+        if result['status']!='passed':raise RuntimeError('continuous_not_passed:'+','.join(result['reasons']))
         state['status']='completed_with_unmeasured_requirements'
     except (Exception, KeyboardInterrupt) as exc:
         state['status']='stopped';state['stop_reason']=type(exc).__name__+':'+str(exc)
@@ -436,7 +454,8 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
     finally:
         recoveries = [r.get('recovery_ok') for r in state['trials']]
         state['checks']['stop_recovery'] = dict(status='passed' if recoveries and all(v is True for v in recoveries)
-                                              else 'failed' if recoveries else 'not_tested',
+                                              else 'failed' if any(v is False for v in recoveries) else 'not_tested',
+            unverified_trials=[r['id'] for r in state['trials'] if r.get('recovery_ok') is None],
             scope='A driver sidecar reports per-trial cleanup; emergency/abnormal recovery still requires A acceptance')
         collect(folder,state)
     return state
