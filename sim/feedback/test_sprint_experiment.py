@@ -59,7 +59,7 @@ class SprintTests(unittest.TestCase):
                    trials=[dict(row) for _ in range(15)])
         sprint.validate_preflight(manifest,valid)
         for patch_value in ({'all_ok':False},{'payload_hashes':{'model.json':'stale'}},
-                            {'source_commits':{'C':'old'}},{'a_assets':{'contract':'v2'}},{'trials':[]}):
+                            {'source_commits':{'C':'old'}},{'a_assets':{'contract':'v2'}},{'assets':{}},{'trials':[]}):
             with self.assertRaisesRegex(ValueError,'PREFLIGHT_FAIL'):
                 sprint.validate_preflight(manifest,dict(valid,**patch_value))
         for field,value in [('ok',False),('window_frames',0),('window_frames',20000),('seconds',float('nan'))]:

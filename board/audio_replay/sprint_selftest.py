@@ -203,9 +203,9 @@ def run_selftest(base=None, require_preflight=True):
     checks['source_buffer_fits']=all(c['source_frames']<=MAX_SOURCE_FRAMES for c in runner.calls)
     checks['actual_driver_inputs_passed']=all(t['driver_input_ok'] for t in trials)
     model = json.loads((base/'model.json').read_text(encoding='utf8'))
-    report = dict(schema_version=1, policy=POLICY, all_ok=all(checks.values()) and all(t['ok'] for t in trials),
+    report = dict(schema_version=2, policy=POLICY, all_ok=all(checks.values()) and all(t['ok'] for t in trials),
         evidence_kind='software_fixture', scope='package workflow, windows and deployed Q20 arithmetic only; no acoustic or board acceptance',
-        source_commits=manifest['source_commits'], a_assets=manifest['a_assets'],workflow=manifest.get('workflow','full'),
+        source_commits=manifest['source_commits'], a_assets=manifest['a_assets'],assets=dict(manifest['a_assets']),workflow=manifest.get('workflow','full'),
         gain_mapping_controls=mapping, gain_mapping_scope='software bypass control with deployed Q20; routing/arithmetic only',
         payload_hashes={k:v for k,v in manifest['hashes'].items() if k!='preflight.json'},
         model=dict(taps=model['taps'], lag_first=model['lag_first'], coefficients_sha256=qhash(model['coefficients_q20'])),

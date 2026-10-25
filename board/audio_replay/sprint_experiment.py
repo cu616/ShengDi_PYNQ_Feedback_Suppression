@@ -9,7 +9,6 @@ import json
 import platform
 from pathlib import Path
 import uuid
-import wave
 import zipfile
 
 import numpy as np
@@ -17,6 +16,7 @@ from evaluation import VERSION, CONFIG, analyze_npz, sha
 from model_comparison import protection_evidence, qhash, flat_trial, export_csv
 from room_experiment import gate_metrics, sources, write_json
 from tail_metrics import BANDS, TAIL_CONFIG
+from listener_metrics import listener_metrics
 
 POLICY = 'c-sprint-rc01-1.0.5'
 A_ASSETS = dict(commit='85f4967f242eed61eaa6b74041be931c2f5bc7a0', contract='audio-replay-v2+audio-closed-v2',
@@ -112,6 +112,7 @@ def validate_preflight(manifest, preflight):
             preflight.get('policy') != POLICY or
             preflight.get('evidence_kind') != 'software_fixture' or
             preflight.get('a_assets') != manifest.get('a_assets') or
+            ('assets' in preflight and preflight['assets'] != manifest.get('a_assets')) or
             preflight.get('source_commits') != manifest['source_commits'] or
             preflight.get('workflow','full')!=manifest.get('workflow','full') or
             preflight.get('payload_hashes') != payload or len(rows)!=(5 if human else 15) or
@@ -200,42 +201,6 @@ def stop_reasons(analysis, status, error=None):
     if status.get('recovery_ok') is not True: reasons.append('recovery_not_verified')
     if status.get('save_error'): reasons.append('save_error')
     return reasons
-
-
-def listener_metrics(folder, confirmation):
-    """Fixed-gain PCM16 recorder; noise subtraction is power subtraction.
-
-    No calibrated SPL, no AGC correction, no total-RMS speech improvement claim.
-    Only statistics and hashes enter the return ZIP; WAVs stay local.
-    """
-    if confirmation != 'FIXED_SOURCE_FIXED_GAIN_NO_AGC':
-        return dict(status='not_tested', reason='fixed_source_and_measurement_gain_not_confirmed')
-    levels = {}; rates = set(); durations = set(); hashes = {}
-    try:
-        for mode in ('off', 'on'):
-            for kind in ('speech', 'noise'):
-                key = mode+'-'+kind; path = Path(folder)/(key+'.wav')
-                with wave.open(str(path), 'rb') as stream:
-                    if stream.getnchannels()!=1 or stream.getsampwidth()!=2 or stream.getcomptype()!='NONE':
-                        raise ValueError('mono uncompressed PCM16 required: '+key)
-                    rate = stream.getframerate(); rates.add(rate)
-                    x = np.frombuffer(stream.readframes(stream.getnframes()), dtype='<i2').astype(float)
-                if len(x) < rate or np.any(x <= -32768) or np.any(x >= 32767):
-                    raise ValueError('short or clipped listener recording: '+key)
-                if kind=='speech': durations.add((len(x), rate))
-                levels[key] = float(np.mean((x-x.mean())**2)/32768**2)
-                hashes[key] = sha(path)
-        if len(rates)!=1 or len(durations)!=1: raise ValueError('listener rates/durations differ')
-        speech = {m:levels[m+'-speech']-levels[m+'-noise'] for m in ('off','on')}
-        snr = {m:10*np.log10(levels[m+'-speech']/max(levels[m+'-noise'], 1e-24)) for m in speech}
-        if any(speech[m]<=0 or snr[m]<6 for m in speech):
-            raise ValueError('speech power not separated from background by 6 dB')
-        return dict(status='passed', relative_speech_change_db=float(10*np.log10(speech['on']/speech['off'])),
-                    snr_db=snr, input_sha256=hashes, absolute_spl=None,
-                    scope='fixed listener, source and recorder gain; descriptive relative result, no universal quality pass')
-    except (OSError, ValueError, wave.Error) as exc:
-        return dict(status='not_tested' if isinstance(exc, FileNotFoundError) else 'failed', reason=str(exc),
-                    absolute_spl=None)
 
 
 def collect(folder, state):

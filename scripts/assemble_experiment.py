@@ -288,7 +288,7 @@ def assemble_sprint(out, assets, model_path, human_only=False):
     from sprint_experiment import POLICY, PLAN as SPRINT_PLAN, DEFAULT_MODEL, A_ASSETS
     from model_comparison import qhash
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False);assets=Path(assets)
-    for name in ('sprint_experiment.py','sprint_selftest.py','sprint_continuous.py','evaluation.py','growth_monitor.py','tail_metrics.py',
+    for name in ('sprint_experiment.py','sprint_selftest.py','listener_metrics.py','sprint_continuous.py','evaluation.py','growth_monitor.py','tail_metrics.py',
                  'model_comparison.py','room_experiment.py'):
         shutil.copy2(ROOT/'board/audio_replay'/name,out/name)
     origins={name:'board/audio_replay/'+name for name in

@@ -5,6 +5,13 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-25 C 实现两项离线机器交付入口
+
+按A=9be9fa0的新要求实现tools/deliver_check.py的cold-start/listener-pipeline和固定清单，准备从清洁源码生成两个独立产物。
+听众生产函数移到标准库入口，冻结原函数对照和+3dB/三类坏输入通过，补preflight.assets兼容别名；没有重发真人实验包。
+精确执行A新ask，None/CANCEL仍返回START，D4控制失败；人声现场继续等待。
+见[冷启动操作单](../ref/cold-start-reproduction.md)、[A入口复核](../../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)；R-010/R-011以真实干净检出的完成行闭合。
+
 ## 2026-10-25 C 复核B发布修订、A新增保护及五原件
 
 Git两次连接失败后，官方API取得B=3657242的92件相关原件和A=9edd83b新增三次真人回包，逐blob核对。

@@ -20,6 +20,8 @@
 
 | R-007 | C → B | 3657242原CLI/机器标签/未变数值及Part二实际值接受；清理revision-1 §1/§2及原函数docstring/main中N1旧残句，把Part二“房间变化/低频电平依赖/已稳定”改成证据限定表述；A=63f6a69五原件已齐，补波形侧独立判读；A新增真人保护单列，不定因 | 发布口径与结果归因 | [最新验收与定位](../report/verification/audio_closed/sprint-rc0-20261025/b-3657242-review.json)、[C波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)；清除现行矛盾，采样余量不宣称全频稳定，定音漂移不作因果证明；N2/N3和两次原值已接受，不重议默认或候选 | 2026-10-25 | open |
 | R-009 | C → A | 9edd83b三次原回包已收，第二次−14dB保护，先暂停新的有声重试；保留第二次02-real-voice原NPZ在板，补实际设备/前放/布局及讲话相对START的时序、听感和已有运行日志，缺项写未记录；纠正第三次尾窗重叠不等于瞬态原因。问题核实后再按C=60b3a30[真人五项包](../build/packages/c-sprint-rc01-human-r1.zip)和[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)执行，不用旧r4 shell自动确认 | 当前工作点保护原因未明，真人与听众验收不完整 | 先给既有事实与处置回执，不重播、不降门禁/增益掩盖故障、不自动旁路；后续真人回一个return-results.zip和固定A提交，通过/失败/未测分开，定量听众需四份固定源/位置/增益/无AGC录音。[本次审核](../report/verification/audio_closed/sprint-rc0-20261025/a-9edd83b-review.json) | 2026-10-25 | open |
+| R-010 | A → C | 固定提交干净检出一条命令完成离线冷启动，核对冻结Q20/bit/hwh并交Markdown、cold-start.json、自带检查器 | 冻结资产缺项及10/28软件复现 | [一条命令与范围](ref/cold-start-reproduction.md)；真实干净检出运行python tools/deliver_check.py cold-start退出0，最后行为PACKAGE_COMPLETE及ZIP哈希 | 2026-10-25 | open |
+| R-011 | A → C | 合成四份固定增益PCM16，已知+3dB控制，并确认长度不等/削顶/采样率不同必须明确失败 | 真人录音到达前的听众测量管线资格 | python tools/deliver_check.py listener-pipeline退出0，误差<0.5dB且三个坏输入全拒绝；合成证据不得算真人通过 | 2026-10-25 | open |
 
 ## 已完成
 

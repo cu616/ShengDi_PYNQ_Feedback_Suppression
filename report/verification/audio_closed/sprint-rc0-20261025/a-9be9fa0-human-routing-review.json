@@ -1,0 +1,43 @@
+{
+  "a_commit": "9be9fa047e23ee41c1d5074f15741e9c0b93a341",
+  "file": "board/audio_replay/run_human_r1.sh",
+  "source_sha256": "51a57180f3f3e7f87297c93e284ad4450aed39f7a495427186e574c030c039ff",
+  "controls": [
+    {
+      "wait_result": null,
+      "returned": "START",
+      "events": [
+        {
+          "step": "start",
+          "trial": 1,
+          "real_voice": true
+        }
+      ]
+    },
+    {
+      "wait_result": "CANCEL",
+      "returned": "START",
+      "events": [
+        {
+          "step": "start",
+          "trial": 1,
+          "real_voice": true
+        }
+      ]
+    },
+    {
+      "wait_result": "GO",
+      "returned": "START",
+      "events": [
+        {
+          "step": "start",
+          "trial": 1,
+          "real_voice": true
+        }
+      ]
+    }
+  ],
+  "contract_passed": false,
+  "defect": "D4",
+  "reason": "GO wait timeout/cancellation is ignored; ask still returns START. Before scheduling a live session, return a non-START cancellation and retain actual human/scene confirmation."
+}
