@@ -220,7 +220,7 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ## 2026-10-25 集中实验 RC0
 
-维护者 C；本节就是包内 OPERATIONS.md。仅适用 `c-sprint-rc0-1.0.1`，不要执行上方历史包。
+维护者 C；本节就是包内 OPERATIONS.md。当前发布 **RC0.1**，仅适用 `c-sprint-rc01-1.0.0`，不要执行上方历史包。
 **默认系数＝calibrated_20261024（A 原名 strong）**。B=d033d00 与原包逐字节相同；RC0实际系数没有变化。
 根目录和包内 select_model 均选择这套已登记基线；旧 candidate_512 只留历史分析，不作缺失时的后备。
 标定/定音/门禁/源关闭核验失败：静音、停批、保留证据，不自动切到原增益旁路，不装另一场旧系数。
@@ -232,10 +232,10 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ### 唯一入口与固定身份
 
-- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc0-r1.zip`。
-- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0-r1/`。用新目录，保留现役基线供恢复。
-- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0-r1/sprint.ipynb`。
-  重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0: fixed baseline, single entry`，
+- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01.zip`。
+- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01/`。用新目录，保留现役基线供恢复。
+- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01/sprint.ipynb`。
+  重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0.1: fixed baseline, single entry`，
   下一行为 `from sprint_experiment import run_sprint`。全包只有一个代码格，不以 In[n] 定位。
 - 使用 A=bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6 的原驱动/bit/hwh，
   strong 模型 c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a；
@@ -245,14 +245,23 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
   0 dB 仅来自同场历史短运行，不是保证安全或正常扩声的认证；不执行 +3 dB 重试。
   模型/现场几何不符就停止交 B，不自行把同一模型挪到新场景。
 
+RC0.1按用户确认仅修C包内分析区间、汇总和定音前提示；驱动/bit/hwh、模型、EQ、源与门禁原值不变。
+路径门禁测源内1000Hz定音，运行1.02秒、定音1秒，正常保留14920帧有效源内样本；
+不能改成1.6秒运行配1秒定音，否则最后16384帧中没有定音。FIR运行2.5秒、宽带源1.87秒，
+源末后排除2442帧过渡，仍保留完整16384帧源后窗。源内/源后窗口分别判断，不套用同一等待时长。
+`summary.json`每项顶层帧区间为实际原捕获；门禁区间见`path_gate`，FIR分析区间见`analysis.tail_analysis_window`。
+A=8c7c49c原回包门禁定音占比11.6%，因此仍判未通过；空源后窗不是实际门禁停止原因。
+本包不替实测失败改判；若安静条件下仍定音不足，停止并保留已有定音NPZ供C复算，不重跑后续项。
+
 ### 编号现场操作单
 
 1. **准备与静默核验**：A 核实单人占板，把 ZIP 全量解压到上述新目录；运行唯一代码格。
-   预期 `PACKAGE_OK; 60s_CONTINUOUS_NOT_AVAILABLE`。此时尚未导入板卡驱动、尚未发声。
+   预期先出现 `PACKAGE_OK`、`DEFAULT_MODEL=calibrated_20261024`、`60s_CONTINUOUS_NOT_AVAILABLE`。此时尚未导入板卡驱动、尚未发声。
    缺文件/哈希错误直接生成停止结果。Python 依赖仅标准库、NumPy、板端既有 PYNQ；不现场安装新库。
 2. **一次冻结场景**：固定麦克风、音响、前放和 Codec，与 strong 标定一致；音箱可立即断电，不戴耳机。
    在提示内输入 READY、SAME_SCENE，并一次写清声源到麦距离、设备位置、听众/测量位置、固定源及音量、
-   测量增益/AGC 状态。外部声源先停播。不能核实就取消，不能用沉默代表同意。
+   测量增益/AGC 状态。**每次path-gate前停止手机/外部人声及讲话，只播包内定音**；START提示会再次说明。
+   不能核实就取消，不能用沉默代表同意。听众关项结束后先停外部播放，再执行下一次门禁。
 3. **先真实人声**：路径门禁后，程序完成配置并静音才提示 START。现场此时靠近现有麦克风讲话；
    不移动麦克风或音响。8 秒限时结束后填 CLEAR / DISTORTED / NO_AMPLIFICATION / HOWL / UNKNOWN。
    CLEAR 只表示 A 的现场人声/听感记录；不自动证明全程无失稳。没有真实拾音不填 CLEAR。
@@ -278,7 +287,7 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
    不发下一项；由 A 按已核实基线处理，不把恢复 stock overlay 当重新标定或效果通过。
    STOP/通信中断/落盘失败的软件分支通过不等于紧急静音实物已验收。
 8. **一次回包**：最终屏幕 `RETURN_PACKAGE` 给出唯一结果 ZIP：
-   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc0-r1/results/sprint-<id>/return-results.zip`。
+   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01/results/sprint-<id>/return-results.zip`。
    包含所有已执行/失败记录、原始 NPZ 哈希、本地路径、汇总 CSV、覆盖和恢复结果；人声 NPZ/WAV 留板，
    B 可直接读 `summary-v3.json` / `summary-v3.csv`（原 schema3）；FIR 开关配对在 `fir_switch_pairs`，
    不冒充不同模型的 baseline/candidate 配对。包中 `models/manifest.json` 绑定当前 strong 基线。

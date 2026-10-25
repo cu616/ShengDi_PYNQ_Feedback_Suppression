@@ -257,14 +257,15 @@ def assemble_sprint(out, assets, model_path):
     guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
     marker='## 2026-10-25 集中实验 RC0'
     (out/'OPERATIONS.md').write_text(guide[guide.index(marker):],encoding='utf8')
-    source='# C sprint RC0: fixed baseline, single entry\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
+    source='# C sprint RC0.1: fixed baseline, single entry\nfrom sprint_experiment import run_sprint\nresult = run_sprint()\n'
     notebook=dict(nbformat=4,nbformat_minor=5,
         metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
         cells=[dict(cell_type='markdown',metadata={},source=['只运行从上往下第1个代码格；先读 OPERATIONS.md。']),
                dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=source.splitlines(True))])
     (out/'sprint.ipynb').write_text(json.dumps(notebook,ensure_ascii=False,indent=2),encoding='utf8')
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
-    for name in ('audit.json','tests.txt','tests-r1.txt','b-handoff-review.json'):
+    for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt',
+                 'b-handoff-review.json','rc01-input-review.json'):
         if (evidence/name).exists():
             (out/'offline-evidence').mkdir(exist_ok=True);shutil.copy2(evidence/name,out/'offline-evidence'/name)
     manifest=dict(policy=POLICY,calculation_version=VERSION,detector_config=CONFIG,plan=SPRINT_PLAN,

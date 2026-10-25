@@ -117,9 +117,74 @@ class SprintTests(unittest.TestCase):
             self.assertEqual(state['checks']['continuous_60s']['status'],'not_tested')
             self.assertEqual(state['checks']['listener']['status'],'not_tested')
             self.assertIsNone(state['asg_db'])
+            for row in state['trials']:
+                original=row['analysis']['original_metadata']
+                self.assertEqual(row['frames'],16384)
+                self.assertEqual(row['first_frame'],original['first_frame'])
+                self.assertEqual(row['completed_frames'],original['completed_frames'])
+                if row['role']=='path-gate':
+                    gate=row['path_gate']
+                    self.assertEqual(gate['end_frame']-gate['first_frame'],14920)
+                    self.assertEqual(row['analysis']['tail_analysis_window']['frames'],16384)
+                if row['role'] in ('fir-off','fir-on'):
+                    window=row['analysis']['tail_analysis_window']
+                    self.assertEqual(row['source_frames'],91308)
+                    self.assertEqual(window['frames'],16384)
+                    self.assertGreaterEqual(window['first_frame'],row['source_frames']+2442)
             with zipfile.ZipFile(next(base.rglob('return-results.zip'))) as archive:
                 self.assertFalse(any(n.endswith(('.npz','.wav')) for n in archive.namelist()))
                 self.assertIn('return-manifest.json',archive.namelist())
+
+    def test_literal_gate_source_has_samples_at_1p02s_but_none_at_1p6s(self):
+        # Use the unchanged gate function with actual source and ring geometry.
+        source=sprint.sources()[1]
+        with self.work() as d:
+            for seconds,passed in ((1.02,True),(1.6,False)):
+                count=int(seconds*sprint.RATE);first=count-16384
+                indices=np.arange(first,count);signal=np.zeros(len(indices))
+                mask=indices<len(source)
+                signal[mask]=source[indices[mask]].astype(float)/32768
+                path=Path(d)/('gate-'+str(seconds)+'.npz')
+                np.savez_compressed(path,microphone=signal,reference=signal,
+                    metadata_json=json.dumps(dict(first_frame=first,completed_frames=count,
+                                                  source_end_frame_exclusive=len(source))))
+                gate=sprint.gate_metrics(path,-37.8)
+                self.assertEqual(gate['passed'],passed)
+                if not passed:self.assertEqual(gate['reasons'],['gate_source_on_window_too_short'])
+
+    def test_low_tone_fraction_stops_without_a_second_trial_and_keeps_reason(self):
+        class Contaminated(Runner):
+            def __call__(self,path,*args,**kw):
+                result=super().__call__(path,*args,**kw)
+                with np.load(path,allow_pickle=False) as capture:
+                    data={k:np.array(capture[k]) for k in capture.files}
+                indices=np.arange(result['first_frame'],result['completed_frames'])
+                mic=data['microphone']+.2*np.sin(2*np.pi*700*indices/sprint.RATE)
+                # Direct-only: residual equals mic; do not hide arithmetic errors.
+                data['microphone']=mic
+                data['residual_pcm']=np.rint(mic*2**23).astype(np.int64)
+                np.savez_compressed(path,**data)
+                return result
+        with self.work() as d:
+            runner=Contaminated();state=self.execute(Path(d),runner)
+            self.assertEqual(len(runner.calls),1)
+            self.assertEqual(state['status'],'stopped')
+            self.assertIn('path_gate_failed:gate_tone_not_observed',state['stop_reason'])
+            self.assertLess(state['trials'][0]['path_gate']['tonal_fraction'],.8)
+            self.assertEqual(state['trials'][0]['frames'],16384)
+
+    def test_partial_fir_analysis_does_not_overwrite_original_capture_extent(self):
+        # Start of a saved ring overlaps the transition, so only analysis crops.
+        burst,tone=sprint.sources()
+        longer=np.pad(burst,(0,int(2.18*sprint.RATE)-len(burst)))
+        with self.work() as d,patch.object(sprint,'sources',return_value=(longer,tone)):
+            state=self.execute(Path(d),Runner())
+            row=next(r for r in state['trials'] if r['role']=='fir-off')
+            window=row['analysis']['tail_analysis_window']
+            self.assertEqual(row['frames'],16384)
+            self.assertEqual(row['first_frame'],row['analysis']['original_metadata']['first_frame'])
+            self.assertGreater(window['first_frame'],row['first_frame'])
+            self.assertLess(window['frames'],row['frames'])
 
     def test_clipping_stops_all_later_trials_and_cancel_does_not_call_driver(self):
         with self.work() as d:

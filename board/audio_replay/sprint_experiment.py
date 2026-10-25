@@ -17,7 +17,7 @@ from evaluation import VERSION, CONFIG, analyze_npz, sha
 from model_comparison import protection_evidence, qhash, flat_trial, export_csv
 from room_experiment import gate_metrics, sources, write_json
 
-POLICY = 'c-sprint-rc0-1.0.1'
+POLICY = 'c-sprint-rc01-1.0.0'
 DEFAULT_MODEL = dict(name='calibrated_20261024',source_file='models/room_v1/calibrated_20261024.json',
     file_sha256='c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a',
     coefficients_sha256='c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160',
@@ -223,6 +223,8 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             state['pending_trial']=dict(id=index,role=role,file=path.name,status='prepared_or_running')
             collect(folder,state)
             def start():
+                if role=='path-gate':
+                    return ask('%02d path-gate 已配置且静音；请停止手机/外部人声并保持安静，本项只播包内定音；START开始：'%index).strip()=='START'
                 return ask('%02d %s 已配置且静音。真实人声项此时就位，START才发声；其他输入停止：'%(index,role)).strip()=='START'
             try:
                 metadata = runner(path, PLAN['fixture_id'], base/'model.json', pcm,
@@ -239,13 +241,17 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             evidence = (dict(input_sha256=sha(path),provenance='frozen RC0 scene background floor; operator SOURCE_OFF',
                              metadata={'noise_floor_dbfs':-37.8}) if fir and path.exists() else None)
             analysis = analyze_npz(path,expected=expected,positive_control_valid=gate is not None,
-                external_source_active=source is None, analysis_interval='source_off_tail',
+                external_source_active=source is None, analysis_interval='source_off_tail' if fir else None,
                 external_source_off_verified=fir and state.get('external_source_off_verified') is True,
                 metadata_evidence=evidence)
             # Recovery/error status is a separate authoritative sidecar from A.
             reasons = stop_reasons(analysis,status,error)
             m = analysis.get('evaluation_metadata',analysis.get('original_metadata',metadata))
             if not isinstance(m,dict):m={}
+            m=dict(m)
+            original=analysis.get('original_metadata',{})
+            for key in ('first_frame','completed_frames','frames'):
+                if key in original:m[key]=original[key]
             row = dict(m,id=index,role=role,analysis=analysis,driver_status=status,category=analysis['category'],
                 protection=protection_evidence(m)[0],recovery_ok=status.get('recovery_ok'),
                 session_id=state['run_id'],scene_sha256=scene_hash,eq_sha256=sha(base/'eq.json'),
@@ -270,7 +276,8 @@ def run_sprint(base=None, ask=input, runner=None, validator=check_package):
             row = trial('path-gate',source=tone,seconds=1.02,direct=True)
             value = gate_metrics(folder/row['local_capture'], -37.8, previous_gate)
             row['path_gate'] = value
-            if not value['passed']: raise RuntimeError('path_gate_failed')
+            row['gate_mic_over_ref_db']=value.get('mic_over_ref_db')
+            if not value['passed']: raise RuntimeError('path_gate_failed:'+','.join(value['reasons']))
             if previous_gate is None: previous_gate=value['rms_dbfs']
             return value
 
