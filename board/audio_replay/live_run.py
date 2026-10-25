@@ -64,7 +64,7 @@ def pl_max_run_frames(hwh_path):
 def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40,
              bypass=False, zero_coeff=False, speaker_confirmed=False,
              local_capture_confirmed=False, stop_file='/home/xilinx/stop_run',
-             poll_seconds=0.02, label='run'):
+             poll_seconds=0.02, label='run', before_start=None):
     """Run one continuous session and write <output_path> plus <stem>.status.json."""
     out = Path(output_path)
     if out.suffix != '.npz':
@@ -280,6 +280,17 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
         for addr, value in ((0x401C, 0x21), (0x401E, 0x41), (0x4023, hp), (0x4024, hp)):
             write_reg(addr, [value])
 
+        # Configuration is complete and the codec is still muted here. The operator (or a
+        # batch driver) must confirm before any sound is produced; anything but True cancels.
+        if before_start is not None:
+            state['t_before_start'] = round(time.monotonic() - state.get('t_config_start',
+                                                                          time.monotonic()), 4)
+            if before_start() is not True:
+                state['stop_reason'] = 'cancelled_before_start'
+                state['cancelled'] = True
+                state['muted'] = True
+                state['recovered'] = True
+                raise RuntimeError('operator cancelled before audio start')
         start = time.monotonic()
         control.write(0, 1 | (int(bypass) << 1) | (int(gain_q12) << 16))
         armed = True
@@ -389,17 +400,26 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
     state['recovered'] = (bool(state.get('disarm_ok')) and bool(state.get('mute_ok'))
                           and (int(state.get('status', 0)) & (3 << 17)) == 0)
 
+    save_error = None
     if raw is not None:
         scale = float(2 ** 23)
         # Same channel mapping as the C-accepted replay_trial: page0-left = played (reference),
         # page0-right = microphone. Swapping these two was the live_run bug found on 2026-10-25.
-        np.savez_compressed(
-            out,
-            microphone=raw[:, 1] / scale, reference=raw[:, 0] / scale,
-            prediction_pcm=raw[:, 2].astype(np.int64), residual_pcm=raw[:, 3].astype(np.int64),
-            metadata_json=np.array(json.dumps(state, ensure_ascii=False)))
-        state['capture'] = str(out)
+        try:
+            np.savez_compressed(
+                out,
+                microphone=raw[:, 1] / scale, reference=raw[:, 0] / scale,
+                prediction_pcm=raw[:, 2].astype(np.int64),
+                residual_pcm=raw[:, 3].astype(np.int64),
+                metadata_json=np.array(json.dumps(state, ensure_ascii=False)))
+            state['capture'] = str(out)
+        except Exception as exc:
+            # the run still happened; the status file below carries the evidence and the reason
+            save_error = '%s: %s' % (type(exc).__name__, str(exc))
+            state['save_error'] = save_error
+    state['save_error'] = save_error
     side = out.with_suffix('.status.json')
-    side.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding='utf-8')
+    side.write_text(json.dumps(state, ensure_ascii=False, indent=2, default=str),
+                    encoding='utf-8')
     state['status_file'] = str(side)
     return state
