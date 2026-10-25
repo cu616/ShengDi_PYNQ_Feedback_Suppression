@@ -1200,5 +1200,40 @@ python scripts/audit_sprint.py --r4-waveform-return <A63f6a69的r4-review-return
 该入口不访问板卡；缺原件、篡改原件、错配原汇总三种控制均在生成报告前拒绝。
 B可立即取同一原件补波形侧独立判读，不能继续记“等待A导出”；新的真人保护事件仍另行核实。
 修改C审计入口后，[本轮157项软件回归](sprint-rc0-20261025/tests-b365-a63.txt)全部通过；未操板。
+
+## 2026-10-25 两项独立离线机器交付
+
+按A的新R1–R5，本轮只交离线冷启动和合成听众管线；[冷启动操作与正式报告](../../../docs/ref/cold-start-reproduction.md)。
+源码冻结be3200ecf4a5b1df8901f1111da4685c0f8fedc8，独立干净检出绝对路径为
+`D:\Flushbonading_Contest\_c_cold_be3200e`。分别实际执行：
+
+```text
+python -I -S tools/deliver_check.py cold-start
+python -I -S tools/deliver_check.py listener-pipeline
+```
+
+两次均退出0，且独立解压后从包内tools/deliver_check.py复核原ZIP也均退出0。
+[执行与包核验](sprint-rc0-20261025/delivery-r1-check.json)、[原始工具回执](sprint-rc0-20261025/delivery-r1-console.json)。
+源码与两个产物仅需Python标准库/Git，不依赖C本机tmp/NumPy；全部未访问板卡。
+
+- [冷启动完整ZIP](../../../build/packages/c-cold-start-r1.zip)与[cold-start.json](sprint-rc0-20261025/cold-start.json)：
+  SHA256=aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a。
+  原冻结包载荷、bit/hwh/模型文件与Q20哈希逐项一致；512 taps/lag_first=1，−12/−6/0三点软件映射与独立历史索引FIR算术通过。
+  只认离线软件/资产复现，另一位队友现场复现仍未测。
+- [听众管线完整ZIP](../../../build/packages/c-listener-pipeline-r1.zip)与[listener-pipeline.json](sprint-rc0-20261025/listener-pipeline.json)：
+  SHA256=e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58。
+  四份正例是合成PCM16混合信号；独立组件真值约2.999839dB，扣背景后语音变化2.999839dB，对解析+3dB误差−0.000161dB。
+  snr_db保留旧“总录音功率/背景功率”定义，其开关差2.978339dB，对+3dB误差约−0.021661dB；不偷换成扣背景后的信号SNR。
+  长度不等、削顶、采样率不同均返回failed及明确原因。检查器重算实际WAV，不以all_ok自述放行；改报告并重签清单仍被拒绝。
+
+听众生产实现移到单一标准库入口listener_metrics.py，sprint_experiment导入；与冻结原函数在相同正例和三类坏输入上对照通过。
+另加入截断PCM明确拒绝；[本轮164项回归](sprint-rc0-20261025/tests-delivery-r1.txt)通过。
+[新生成器的真实五项自检](sprint-rc0-20261025/preflight-schema2-software.json)all_ok=true，schema2的assets与a_assets同值且非空。
+旧冻结ZIP实际键为a_assets，新增同值别名进下一次完整实验包，本轮不改旧ZIP或发新真人包。
+
+[A=9be9fa0入口控制](sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)显示wait=None/CANCEL/GO都返回START，D4未通过。
+必须先修超时/取消路径，再审核现场前置条件；不把路由10/10当作超时控制通过。
+本轮接收方无需提供文件；后续真实听众定量仍需A外部录制off-speech/off-noise/on-speech/on-noise四份同源同位置固定增益无AGC的WAV。
+B继续已有R-007，本轮不新增任务。
 见[b-handoff-r1-check.json](sprint-rc0-20261025/b-handoff-r1-check.json)。入口根目录summary-v3.json的fir_switch_pairs两组，
 每项source_response在原summary.json，B无需再等人转发单独文件；原PCM与真人结果没有冒充齐全。

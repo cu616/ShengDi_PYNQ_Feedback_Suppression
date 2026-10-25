@@ -5,6 +5,13 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-25 C 从干净检出交付两个离线完整包
+
+固定源码be3200e建立独立worktree，CPython3.14 -I -S两条正式命令各退出0；两个产物独立解压后再用自带检查器通过。
+冷启动389560字节、听众管线49280字节，[真实退出码/哈希回执](../../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-check.json)与[原工具输出](../../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-console.json)留存。
+R-010/R-011关闭；164软件回归通过，原Q20五项自检及assets别名通过，未操板或重发真人包。
+见[冷启动报告](../ref/cold-start-reproduction.md)、[听众机器报告](../../report/verification/audio_closed/sprint-rc0-20261025/listener-pipeline.json)；A入口D4仍待修复，B没有新增派单。
+
 ## 2026-10-25 C 实现两项离线机器交付入口
 
 按A=9be9fa0的新要求实现tools/deliver_check.py的cold-start/listener-pipeline和固定清单，准备从清洁源码生成两个独立产物。

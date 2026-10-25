@@ -1,0 +1,52 @@
+{
+  "all_ok": true,
+  "evidence_kind": "synthetic_WAV_only",
+  "analytic_snr_delta_db": 3.0,
+  "independent_quantized_component_truth_db": 2.9998391533518043,
+  "positive": {
+    "status": "passed",
+    "relative_speech_change_db": 2.9998391533518043,
+    "snr_db": {
+      "off": 20.043335328888688,
+      "on": 23.021674071649116
+    },
+    "input_sha256": {
+      "off-speech": "c11d0882611f378a544ab46732811c169a436c0a1b28a7583d3d68b20ccbee09",
+      "off-noise": "c1f4089dfed720db8890bfda9254c364cfeb95abd598cee127f39f2e261c7016",
+      "on-speech": "f4cadc1ef64a338457ae81658201ff2a5545d7c211b58addb019cfde11042060",
+      "on-noise": "c1f4089dfed720db8890bfda9254c364cfeb95abd598cee127f39f2e261c7016"
+    },
+    "absolute_spl": null,
+    "scope": "fixed listener, source and recorder gain; descriptive relative result, no universal quality pass"
+  },
+  "relative_change_error_db": -0.0001608466481957116,
+  "total_to_background_delta_db": 2.978338742760428,
+  "total_to_background_error_db": -0.021661257239571796,
+  "tolerance_db": 0.5,
+  "negative_cases": {
+    "length-mismatch": {
+      "status": "failed",
+      "reason": "listener rates/durations differ",
+      "absolute_spl": null
+    },
+    "clipped": {
+      "status": "failed",
+      "reason": "short or clipped listener recording: on-speech",
+      "absolute_spl": null
+    },
+    "rate-mismatch": {
+      "status": "failed",
+      "reason": "listener rates/durations differ",
+      "absolute_spl": null
+    }
+  },
+  "snr_definition": "legacy snr_db=10log10(total speech-recording power/background power); speech change subtracts background power",
+  "real_listener_test": "not_tested",
+  "absolute_spl": null,
+  "repository_commit": "be3200ecf4a5b1df8901f1111da4685c0f8fedc8",
+  "clean_checkout": true,
+  "python": "3.14.4",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "dependencies": "Python standard library and Git; no NumPy, network, PYNQ or board required",
+  "kind": "listener-pipeline"
+}

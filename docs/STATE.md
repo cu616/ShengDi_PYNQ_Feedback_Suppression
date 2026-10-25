@@ -40,8 +40,8 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-25接A的新机器交付要求，完成cold-start/listener-pipeline标准库检查入口和冻结清单；+3dB合成WAV及三类坏输入、新旧函数一致性与伪造报告拒绝控制通过。资产原字段a_assets与实际Q20匹配，生成器补assets同值别名；不改已冻结真人ZIP。A=9be9fa0的新入口仍会在超时/取消后返回START，契约未通过。
-**当前卡点**：R-010/R-011待冻结清洁源码后生成正式交付；R-009等A修复超时/取消并核实旧保护事件，本轮不发真人包或安排现场。R-007继续既有发布文字与波形判读，无新增B任务；另一队友现场复现未测，旧默认与无新候选决定不变。
+**最后动作**：2026-10-25从固定源码be3200e建立独立干净检出，CPython3.14 -I -S分别运行cold-start/listener-pipeline均退出0、生成PACKAGE_COMPLETE；两个ZIP在独立解压目录再用包内检查器通过。冻结Q20/bit/hwh和三点映射一致，合成+3dB误差约−0.000161dB，三类坏输入全部failed；164项软件回归通过。R-010/R-011关闭，旧真人ZIP保持。
+**当前卡点**：R-009等A修复run_human_r1.sh超时/取消仍START的D4并核实旧保护事件，本轮不排现场。R-007继续既有发布文字与波形判读，无新增B任务；冷启动是离线软件复现，另一队友现场复现仍未测，旧默认与无新候选决定不变。
 
 - [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
 - [r4五原件独立波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)：A=63f6a69的r4-review-return.zip共2082636字节、SHA256=e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48；5/5与原清单一致。四FIR源内功率和两次差分吻合，五份环形尾部预测/残差/输出算术零失配；60秒原时间线与状态一致，声学覆盖边界不变。
@@ -54,6 +54,9 @@
 - [给B的冻结原始汇总包](../build/packages/c-r4-to-b-r1.zip)、[字节与哈希核验](../report/verification/audio_closed/sprint-rc0-20261025/b-handoff-r1-check.json)：入口summary-v3.json → fir_switch_pairs两组，含原A回包和C审核；376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367，14载荷通过，源c0af379。新增波形取固定A=63f6a69的r4-review-return.zip；C波形复算已完成，B按同一原件补独立判读。
 - 用户常设要求：每轮回应前分别检查A、B是否需要派单；有新动作就给完整可转发消息，无新动作明确写无需新增。按最新提交去重，不因等待原件重复已经通过的现场项目。
 - [冷启动一条命令](ref/cold-start-reproduction.md)只验证冻结资产与软件证据；[A新入口控制](../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)实测wait=None/CANCEL/GO均返回START，D4未闭合。当前两项离线交付不依赖A给文件，也不替代真人扩声/听众或另一队友板端复现。
+- [冷启动完整包](../build/packages/c-cold-start-r1.zip)：389560字节，SHA256=aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/cold-start.json)资产字段非空，原冻结包用a_assets，新生成器兼容assets同值别名。
+- [听众管线完整包](../build/packages/c-listener-pipeline-r1.zip)：49280字节，SHA256=e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/listener-pipeline.json)扣背景后的语音变化2.999839dB，原snr_db总录音/背景口径差2.978339dB，均距+3dB小于0.5dB；全为合成WAV，不算真人。
+- [正式退出码与独立解压复核](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-check.json)、[原工具回执](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-console.json)。每个交付只回答一个问题，首行来自其真实检查器最后一行；非0不作交付，缺陷附D1–D4和具体命令。接收方无需提供文件，后续现场四份固定增益录音仍由A外部录制。
 - C未操板或改A/B实现。10/26质检，10/27 20:00冻结，10/28另一队友复现并冻结源码/bit/hwh/模型/配置/哈希；v2外部I/O签核仍不完整。
 
 ## 已验证 / 未验证（只在这里写一次）

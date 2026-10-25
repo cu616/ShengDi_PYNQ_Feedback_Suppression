@@ -27,3 +27,22 @@ python tools/deliver_check.py build/packages/c-cold-start-r1.zip
 
 已验证环境及正式产物摘要在发布后的本文件下方记录；其他环境须以实际命令结果为准。
 完整历史与不适用范围见[集中实验验收](../../report/verification/audio_closed/batch-control.md)。
+
+## 本次干净检出实测
+
+
+固定检出：`be3200ecf4a5b1df8901f1111da4685c0f8fedc8`；clean_checkout=true。
+
+bit SHA256：`61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa`
+
+hwh SHA256：`92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b`
+
+模型文件：`c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a`；Q20：`c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160`；taps=512，lag_first=1。
+
+原包48个载荷逐项一致，三点部署算术与增益映射通过。
+
+原冻结preflight的资产字段为a_assets；本报告assets为其经实际文件哈希核验的兼容映射。
+
+仅离线资产/软件夹具复现；未操板，不完成另一位队友的现场独立复现。
+
+已在CPython 3.14隔离模式（-I -S，无site-packages）通过，另从独立解压目录使用包内检查器复核退出0。

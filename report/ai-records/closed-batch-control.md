@@ -335,3 +335,9 @@ C fetch/pull本线成功，并取得A新增9be9fa0的run_human_r1.sh与规则；
 A新包装脚本路由正常仍不等于超时/取消可靠，精确ask控制发现None/CANCEL均返回START，D4保留，不为交冷启动而批准现场。
 合成控制保留snr_db原“总录音功率/背景功率”定义，独立组件SNR真值和扣背景后语音变化分别报告，不暗改定义。
 每轮A/B派单照常检查：A只需后续修入口及现场前置事实，B本轮无新增任务。
+
+最终源码冻结be3200e；独立worktree干净检出，用CPython3.14 -I -S运行两条正式命令均退出0，排除site-packages依赖。
+冷启动PACKAGE_COMPLETE aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a；
+听众PACKAGE_COMPLETE e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58。
+二者从独立解压目录使用包内检查器再次验证原ZIP成功。R-010/R-011按实际回执关闭，保留源码提交与产物发布提交的区别。
+没有把合成HUMAN确认、冷启动软件复现或资产核对写成真人扩声/另一队友现场复现通过。

@@ -19,9 +19,7 @@
 | R-006 | C → A | 只补回已经存在的侧放20段NPZ、model_512_side.json、memory_sweep实际使用的有序文件名单及14训练/6验证身份、过滤/边界/参数和原结果；逐文件哈希/provenance，推A分支一个side-memory-return.zip。已有仓库位置可直接给提交与路径，缺项注明原因，不重采、不重新执行扫描 | 独立核对-12.83扫描及+11～+13 dB上限说法；原lowband2包只有直立16段 | 原侧放20段与模型可读，实际扫描输入/划分可复现；不以手写表格代替原材料 | 2026-10-25 | open |
 
 | R-007 | C → B | 3657242原CLI/机器标签/未变数值及Part二实际值接受；清理revision-1 §1/§2及原函数docstring/main中N1旧残句，把Part二“房间变化/低频电平依赖/已稳定”改成证据限定表述；A=63f6a69五原件已齐，补波形侧独立判读；A新增真人保护单列，不定因 | 发布口径与结果归因 | [最新验收与定位](../report/verification/audio_closed/sprint-rc0-20261025/b-3657242-review.json)、[C波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)；清除现行矛盾，采样余量不宣称全频稳定，定音漂移不作因果证明；N2/N3和两次原值已接受，不重议默认或候选 | 2026-10-25 | open |
-| R-009 | C → A | 9edd83b三次原回包已收，第二次−14dB保护，先暂停新的有声重试；保留第二次02-real-voice原NPZ在板，补实际设备/前放/布局及讲话相对START的时序、听感和已有运行日志，缺项写未记录；纠正第三次尾窗重叠不等于瞬态原因。问题核实后再按C=60b3a30[真人五项包](../build/packages/c-sprint-rc01-human-r1.zip)和[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)执行，不用旧r4 shell自动确认 | 当前工作点保护原因未明，真人与听众验收不完整 | 先给既有事实与处置回执，不重播、不降门禁/增益掩盖故障、不自动旁路；后续真人回一个return-results.zip和固定A提交，通过/失败/未测分开，定量听众需四份固定源/位置/增益/无AGC录音。[本次审核](../report/verification/audio_closed/sprint-rc0-20261025/a-9edd83b-review.json) | 2026-10-25 | open |
-| R-010 | A → C | 固定提交干净检出一条命令完成离线冷启动，核对冻结Q20/bit/hwh并交Markdown、cold-start.json、自带检查器 | 冻结资产缺项及10/28软件复现 | [一条命令与范围](ref/cold-start-reproduction.md)；真实干净检出运行python tools/deliver_check.py cold-start退出0，最后行为PACKAGE_COMPLETE及ZIP哈希 | 2026-10-25 | open |
-| R-011 | A → C | 合成四份固定增益PCM16，已知+3dB控制，并确认长度不等/削顶/采样率不同必须明确失败 | 真人录音到达前的听众测量管线资格 | python tools/deliver_check.py listener-pipeline退出0，误差<0.5dB且三个坏输入全拒绝；合成证据不得算真人通过 | 2026-10-25 | open |
+| R-009 | C → A | 9be9fa0新run_human_r1.sh仍忽略GO等待的None/CANCEL并返回START，先修超时/取消为非START并交静默控制；旧第二次−14dB保护的原件留板，补实际设备/前放/布局、讲话相对START时序和听感，缺项写未记录。本轮真人不排期，问题核实后再按[冻结五项包](../build/packages/c-sprint-rc01-human-r1.zip)及[操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)执行 | D4超时/取消控制未通过，保护原因未明，真人与听众验收不完整 | [新入口实际反例](../report/verification/audio_closed/sprint-rc0-20261025/a-9be9fa0-human-routing-review.json)：超时/取消不得arm；保留真实人工确认记录和既有保护处置回执，不重播或降门禁掩盖故障。后续真人回一个return-results.zip与固定A提交；定量需四份外部固定增益无AGC录音 | 2026-10-25 | open |
 
 ## 已完成
 
@@ -32,6 +30,8 @@
 | R-004 | C → A | 回传已有lowband2的16段、强模型、四项闭环、六次定音及修线证据，不新增采集 | A=1003728原ZIP已取得；27个NPZ及原模型/Q20哈希通过，原字段空值保留，清单不足另作资格说明。[收包与波形复核](../report/verification/audio_closed/batch-control.md#2026-10-25-lowband2-原包复核) | 2026-10-25 | done |
 | R-005 | C → B | 修正原负实轴±π误判/跨低相干缺口，按实际Q20与明确留出名单分开报告两类预测 | B=9937113原反例、Q20入口及留出基线复算通过，原诉求闭合；不代表本轮全项通过。新发现的孤立端点、5a重复加权、输入资格和表述问题集中交B修原件，见[修订独立验收](../report/verification/audio_closed/batch-control.md#2026-10-25-独立验收-b9937113) | 2026-10-25 | done |
 | R-008 | C → A | 补同轮四个FIR与60秒共5个原NPZ，不重新采集 | 固定A=63f6a69提交[r4-review-return.zip](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/63f6a69ee679f992d1e459d9447262fa1db6b403/report/verification/audio-replay/r4-review-return.zip)，原哈希5/5一致；C独立功率/两组差分/五份尾部整数算术/原时间线核对通过。[波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json) | 2026-10-25 | done |
+| R-010 | A → C | 干净检出一条命令离线冷启动，附冻结资产/报告/检查器 | 固定源码be3200e的独立干净检出用隔离Python真实退出0，独立解压包内检查器也退出0；[完整包](../build/packages/c-cold-start-r1.zip)、[报告与命令](ref/cold-start-reproduction.md)、[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/cold-start.json)、[正式回执](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-check.json)。不替代板端现场复现 | 2026-10-25 | done |
+| R-011 | A → C | 四份合成PCM16已知+3dB及三类坏输入，交检查器 | 固定源码be3200e干净检出及独立解压检查均退出0；语音变化2.999839dB、误差−0.000161dB，长度不等/削顶/采样率不同全failed；[完整包](../build/packages/c-listener-pipeline-r1.zip)、[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/listener-pipeline.json)。不冒充真人结果 | 2026-10-25 | done |
 
 ## 怎么提一条
 
