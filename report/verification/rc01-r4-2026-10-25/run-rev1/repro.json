@@ -1199,7 +1199,8 @@
   "supersedes": "dbf2858 原稿（受迫响应口径作废，见 revision-1.md）",
   "criteria_note": "max|gL|<1 为充分条件（非必要），仅在完整频率范围与相关稳定性假设成立时担保稳定；门控网格有缺口，不担保全频稳定；与正实轴穿越分别报告，不互相替代",
   "statistic_note": "全带/合格 bin 参考是过门控 bin 上的白谱稳态参考，不等于现场全带 RMS，也不覆盖整个物理频带",
-  "margin_definition": "余量=允许增益−实际增益；环路增益dB=实际−允许=−余量",
+  "margin_definition": "余量=采样网格小增益界B−实际增益g；环路增益dB=实际−B=−余量；旧式 g+B 是公式错误（负号算两次），既非余量也非环路增益",
+  "criterion_kind": "sample_grid_small_gain_bound",
   "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；受迫响应不是抵消深度，也不是 ASG"
  }
 }

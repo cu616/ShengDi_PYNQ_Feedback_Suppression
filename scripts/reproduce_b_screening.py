@@ -298,9 +298,12 @@ def band_switch_table(freqs, H, coh, coef, lag_first, fs, delay_frames,
     受迫响应差 = 带内 |T_on|² 与 |T_off|² 的功率积分之比。M≡0 时两式恒等、差必为 0 dB
     （旧版把 OFF 当开环 H 直接比，M=0 时会凭空给出 +0.9 dB，已废弃）。
 
-    稳定裕度：允许增益 OFF = 1/max|H|、ON = 1/max|L|，L = (H−M)·D；
-    **余量 = 允许增益 − 实际增益**（不是 g 加上允许增益——那是环路增益本身）。
-    这是 Nyquist 近似的必要条件式估计，不外推成全频稳定结论。
+    小增益界（只在**采样网格的过门控 bin** 上算，不是全频结论）：
+        B_off = 1/max|H|、B_on = 1/max|L|，L = (H−M)·D
+        **余量 = B − 实际增益 g**；**环路增益 dB = 实际 − B = −余量**
+    口径约束：max|gL|<1 是**充分条件**（非必要），且只在完整频率范围与相关稳定性假设下才
+    担保稳定。本网格有缺口，故这些数只说明"在这批 bin 上还能拧多少"，不担保全频稳定，
+    也不与正实轴穿越互相替代。
     """
     M = model_response_at(coef, freqs, fs, lag_first)
     D = np.exp(-1j * 2 * np.pi * delay_frames * freqs / fs)
@@ -329,7 +332,7 @@ def band_switch_table(freqs, H, coh, coef, lag_first, fs, delay_frames,
             row["improvement_db"] = row["on_allowed_db"] - row["off_allowed_db"]
             row["off_worst_hz"] = float(freqs[g][int(np.argmax(off_abs))])
             row["on_worst_hz"] = float(freqs[g][int(np.argmax(on_abs))])
-            # 余量 = 允许增益 − 实际增益
+            # 余量 = 采样网格小增益界 B − 实际增益 g
             row["off_margin_db"] = row["off_allowed_db"] - g_db
             row["on_margin_db"] = row["on_allowed_db"] - g_db
             # 环路增益本身（负值 = 线性化下不增长）
@@ -559,7 +562,8 @@ def main():
                 say("         %-12s %+7.2f dB @%5.0f Hz（相干 %.2f，%d bin）"
                     % (band, v["max_abs_E_db"], v["at_hz"], v["coherence"], v["gated"]))
     result["baseline"] = base
-    say("  注意：两个阈值是两套估计（充分条件下界 / Nyquist 估计），不能拼成一个\"可用增益\"区间；")
+    say("  注意：两个阈值是两套估计（采样网格小增益充分条件下界 / 正实轴穿越估计），"
+        "不能拼成一个\"可用增益\"区间；")
     say("        两个窗长之差是本套离线筛选的敏感性，不是通用的 ±2 dB 误差条。")
 
     if args.compare_model:
@@ -788,8 +792,8 @@ def main():
     say("  判据性质：max|gL|<1 是**充分条件**（不是必要），只在完整频率范围与相关稳定性假设成立时")
     say("            才担保稳定；本门控网格有缺口（覆盖率见下），因此**不担保全频稳定**。")
     say("            它与正实轴穿越是两套估计，分别报告，不互相替代、不拼成一个区间。")
-    say("  三个量：允许增益（Nyquist 近似）／余量(=允许−实际)／受迫响应带功率比")
-    say("  环路增益 dB = 实际 − 允许 = −余量。（旧式 g+允许 是把负号算两次的公式错误，")
+    say("  三个量：采样网格小增益界 B=1/max|·|／余量(=B−g)／受迫响应带功率比；三者互不替代。")
+    say("  环路增益 dB = g − B = −余量。（旧式 g+B 是把负号算两次的公式错误，")
     say("            既不是余量也不是环路增益，已废弃。）")
     say("  T_off = H/(1−gDH)，T_on = H/[1−gD(H−M)]，D = e^{−jω·%d}；两臂都是闭环" % args.delay_frames)
     say("  「合格 bin 参考」= 过门控 bin 上的白谱稳态参考，**不等于现场全带 RMS**，也不覆盖整个物理频带。")
@@ -805,16 +809,16 @@ def main():
             gtot = rows[-1]
             say("\n  [%s] %d 段，门控 %d/%d bin"
                 % (key, len(files), gtot["gated"], gtot["bins"]))
-            say("    允许增益：OFF %+.2f / ON %+.2f dB（改善 %+.2f）"
+            say("    小增益界 B：OFF %+.2f / ON %+.2f dB（改善 %+.2f）"
                 % (gtot["off_allowed_db"], gtot["on_allowed_db"], gtot["improvement_db"]))
-            say("    余量(允许−实际)：OFF %+.2f / ON %+.2f dB；环路增益 g·max|·|：OFF %+.2f / ON %+.2f dB"
+            say("    余量(B−g)：OFF %+.2f / ON %+.2f dB；环路增益 g·max|·|：OFF %+.2f / ON %+.2f dB"
                 % (gtot["off_margin_db"], gtot["on_margin_db"],
                    gtot["off_loop_gain_db"], gtot["on_loop_gain_db"]))
             say("    合格 bin 参考 ON−OFF：%+.2f dB（逐 bin %+.2f … %+.2f）；更差 bin %d"
                 % (gtot["on_minus_off_band_db"], gtot["band_min_db"], gtot["band_max_db"],
                    gtot["worse_bins"]))
             say("    %-10s %8s %9s %9s %8s %9s %9s %9s %6s"
-                % ("频带", "门控/总", "允许OFF", "允许ON", "余量OFF", "余量ON", "ON−OFF", "穿越ON", "更差"))
+                % ("频带", "门控/总", "B_OFF", "B_ON", "余量OFF", "余量ON", "ON−OFF", "穿越ON", "更差"))
             for r in rows[:-1]:
                 if r.get("gated", 0) == 0:
                     say("    %-10s %3d/%-4d 无过门控 bin（未知）" % (r["band"], 0, r["bins"]))
@@ -858,7 +862,9 @@ def main():
                                              "与正实轴穿越分别报告，不互相替代",
                             "statistic_note": "全带/合格 bin 参考是过门控 bin 上的白谱稳态参考，"
                                               "不等于现场全带 RMS，也不覆盖整个物理频带",
-                            "margin_definition": "余量=允许增益−实际增益；环路增益dB=实际−允许=−余量",
+                            "margin_definition": "余量=采样网格小增益界B−实际增益g；环路增益dB=实际−B=−余量；"
+                                                 "旧式 g+B 是公式错误（负号算两次），既非余量也非环路增益",
+                            "criterion_kind": "sample_grid_small_gain_bound",
                             "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；"
                                     "受迫响应不是抵消深度，也不是 ASG"}
     if out:

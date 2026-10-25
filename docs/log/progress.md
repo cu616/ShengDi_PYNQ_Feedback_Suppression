@@ -1317,3 +1317,25 @@ N1：max|gL|<1 只说充分非必要、门控有缺口就不担保全频；余�
 N2："全带"改称合格 bin 白谱稳态参考；否证降级为调查触发；repeat 散布只描述本批，不替代 1.5 dB。
 N3：入口 [7] 标题改"口径修订 1"，JSON 加 revision=1/pre_registered=false/supersedes。
 交付：revision-1.md、part2-field-pairs.md、run-rev1/{repro.txt,prediction.json}。116 项测试通过。
+
+## N1 残句清零 + Part 二归因降级 + 5 原件波形复核（2026-10-25，B）
+
+C 的 9b2424 验收：3657242 的 N2/N3、配对原值、默认模型都通过，剩三处发布修正，另要求补波形侧判读。
+
+1) N1 残句：全部改称**采样网格小增益界 B**（1/max|·|，只在过门控 bin 上，充分条件非必要、有缺口不担保全频）；
+   §1 旧表格里"其实是环路增益"改成"负号算两次的公式错误"；band_switch_table docstring、入口 [7] 标题同步；
+   JSON 增 criterion_kind=sample_grid_small_gain_bound。revision-1 加术语表，把五处旧说法逐条对照。
+2) Part 二归因降级：0.690 dB 是两次不同定音试次各自的读数，不证明房间/通路变过，也不能确定它造成
+   低频 0.807 dB 摆动；−12 vs −24 dBFS 的电平差不能证明 H 随电平变、也不能证明低频受影响更大 → 原因记未知，
+   并写明要判它需要同批重复定音或第三场同夹具标定。
+3) 撤回"OFF 臂本来就稳"：+6.605 dB 是网格上的界、71% 缺口，证明不了全频稳定；可写的只有
+   "r4 两次有效源内响应记录未触发保护"，且不提供 ASG 识别证据。A 的另一轮真人会话（−14 dB 触发保护）
+   单独登记为 §9，两个方向都不下结论（不拿参考余量否定事件，也不据保护判啸叫/模型失效）。
+4) 波形侧复核：新增 scripts/verify_r4_waveforms.py，包 5/5 哈希、4 试次 prediction/residual/output
+   全 0 失配（15872/15872/16382 帧）、60 s 尾环 prediction/residual 0 失配、响应窗 107174-121582（14408 帧）、
+   由原件重算的两组配对与 summary-v3 差 ≤7.1e-15 dB、与 C 的复核电平差 0.00e+00。
+   60 s 的 output 记为未测（包里无 source_pcm16），不并进"通过"。
+
+踩坑：第一版用 cap.get("bypass") 判臂别，而 bypass 只在 metadata_json 里，于是 bypass 臂按 FIR-on 算，
+residual 整段 15872/15872 失配——像"原件有问题"，其实是检查器错。改为从 metadata 传入，并加回归
+（test_r4_waveform.py 8 项，含"故意传错臂别必须报失配"）。全量 124 项通过，check_docs 0 错误。

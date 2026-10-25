@@ -1,0 +1,269 @@
+{
+ "pack": "D:\\Always\\QianSai\\_inbox\\2026-10-25_r4_npz",
+ "package_ok": true,
+ "package_rows": [
+  {
+   "file": "07-fir-off.npz",
+   "bytes": 464159,
+   "bytes_expected": 464159,
+   "sha256": "7f5aa465a08293a7b6b18aefb276a7877ca93cdc9b70619306c97a753d334d29",
+   "sha256_expected": "7f5aa465a08293a7b6b18aefb276a7877ca93cdc9b70619306c97a753d334d29",
+   "status": "ok"
+  },
+  {
+   "file": "09-fir-on.npz",
+   "bytes": 463531,
+   "bytes_expected": 463531,
+   "sha256": "6701db8afebd62370261e2c3bdf5a74bc42210e2b87d961fb56c409b70b81174",
+   "sha256_expected": "6701db8afebd62370261e2c3bdf5a74bc42210e2b87d961fb56c409b70b81174",
+   "status": "ok"
+  },
+  {
+   "file": "11-fir-on.npz",
+   "bytes": 463517,
+   "bytes_expected": 463517,
+   "sha256": "388aec33188f332e6ced9db4ad6e775bbe97ad5a885892cbebc7119d27881d3e",
+   "sha256_expected": "388aec33188f332e6ced9db4ad6e775bbe97ad5a885892cbebc7119d27881d3e",
+   "status": "ok"
+  },
+  {
+   "file": "13-fir-off.npz",
+   "bytes": 464295,
+   "bytes_expected": 464295,
+   "sha256": "36c05b05a5d935659c35afd75fbe017e6f9034d87b649a7285dc2bb26e4a244d",
+   "sha256_expected": "36c05b05a5d935659c35afd75fbe017e6f9034d87b649a7285dc2bb26e4a244d",
+   "status": "ok"
+  },
+  {
+   "file": "15-continuous-60s.npz",
+   "bytes": 235923,
+   "bytes_expected": 235923,
+   "sha256": "5eb60b3b244f9534559295983f4b3b579abb92780c938e30f2d5ce38b38f9f05",
+   "sha256_expected": "5eb60b3b244f9534559295983f4b3b579abb92780c938e30f2d5ce38b38f9f05",
+   "status": "ok"
+  }
+ ],
+ "model": {
+  "file": "models/room_v1/calibrated_20261024.json",
+  "q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+  "taps": 512,
+  "lag_first": 1
+ },
+ "trials": {
+  "07-fir-off.npz": {
+   "taps": 512,
+   "frames": 16384,
+   "history_excluded_frames": 512,
+   "reference_is_exact_pcm": true,
+   "prediction_mismatches": 0,
+   "prediction_evaluated_frames": 15872,
+   "residual_mismatches": 0,
+   "residual_evaluated_frames": 15872,
+   "mic_full_scale_samples": 0,
+   "output_mismatches": 0,
+   "output_evaluated_frames": 16382,
+   "gain_q12": 817,
+   "bit_exact": true,
+   "file": "07-fir-off.npz",
+   "capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+   "bypass": true,
+   "hp_volume": 40,
+   "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+   "response": {
+    "first_frame": 107174,
+    "end_frame": 121582,
+    "frames": 14408,
+    "rms_dbfs": -25.454883797568897,
+    "bands_dbfs": {
+     "300-1000": -37.20275906876831,
+     "1000-3000": -35.10727039821748,
+     "8200-8600": -33.798442818568375
+    }
+   }
+  },
+  "09-fir-on.npz": {
+   "taps": 512,
+   "frames": 16384,
+   "history_excluded_frames": 512,
+   "reference_is_exact_pcm": true,
+   "prediction_mismatches": 0,
+   "prediction_evaluated_frames": 15872,
+   "residual_mismatches": 0,
+   "residual_evaluated_frames": 15872,
+   "mic_full_scale_samples": 0,
+   "output_mismatches": 0,
+   "output_evaluated_frames": 16382,
+   "gain_q12": 817,
+   "bit_exact": true,
+   "file": "09-fir-on.npz",
+   "capture_id": "05a1c814-567e-4cdf-84df-817385174a5b",
+   "bypass": false,
+   "hp_volume": 40,
+   "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+   "response": {
+    "first_frame": 107174,
+    "end_frame": 121582,
+    "frames": 14408,
+    "rms_dbfs": -25.625936475617724,
+    "bands_dbfs": {
+     "300-1000": -37.958801800656815,
+     "1000-3000": -35.226867143492946,
+     "8200-8600": -33.41896741493571
+    }
+   }
+  },
+  "11-fir-on.npz": {
+   "taps": 512,
+   "frames": 16384,
+   "history_excluded_frames": 512,
+   "reference_is_exact_pcm": true,
+   "prediction_mismatches": 0,
+   "prediction_evaluated_frames": 15872,
+   "residual_mismatches": 0,
+   "residual_evaluated_frames": 15872,
+   "mic_full_scale_samples": 0,
+   "output_mismatches": 0,
+   "output_evaluated_frames": 16382,
+   "gain_q12": 817,
+   "bit_exact": true,
+   "file": "11-fir-on.npz",
+   "capture_id": "e1361e19-72b4-46f4-bae1-f3ff739228c4",
+   "bypass": false,
+   "hp_volume": 40,
+   "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+   "response": {
+    "first_frame": 107174,
+    "end_frame": 121582,
+    "frames": 14408,
+    "rms_dbfs": -25.586411425195543,
+    "bands_dbfs": {
+     "300-1000": -37.534247713005044,
+     "1000-3000": -35.42074866027888,
+     "8200-8600": -33.50594220382058
+    }
+   }
+  },
+  "13-fir-off.npz": {
+   "taps": 512,
+   "frames": 16384,
+   "history_excluded_frames": 512,
+   "reference_is_exact_pcm": true,
+   "prediction_mismatches": 0,
+   "prediction_evaluated_frames": 15872,
+   "residual_mismatches": 0,
+   "residual_evaluated_frames": 15872,
+   "mic_full_scale_samples": 0,
+   "output_mismatches": 0,
+   "output_evaluated_frames": 16382,
+   "gain_q12": 817,
+   "bit_exact": true,
+   "file": "13-fir-off.npz",
+   "capture_id": "841abaa2-6df2-4adc-804b-4db57c87a447",
+   "bypass": true,
+   "hp_volume": 40,
+   "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+   "response": {
+    "first_frame": 107174,
+    "end_frame": 121582,
+    "frames": 14408,
+    "rms_dbfs": -25.342266159738294,
+    "bands_dbfs": {
+     "300-1000": -37.584866993889406,
+     "1000-3000": -34.9761865083877,
+     "8200-8600": -33.759031801077334
+    }
+   }
+  }
+ },
+ "tail_60s": {
+  "taps": 512,
+  "frames": 16384,
+  "history_excluded_frames": 512,
+  "reference_is_exact_pcm": true,
+  "prediction_mismatches": 0,
+  "prediction_evaluated_frames": 15872,
+  "residual_mismatches": 0,
+  "residual_evaluated_frames": 15872,
+  "mic_full_scale_samples": 0,
+  "output_mismatches": null,
+  "output_evaluated_frames": 0,
+  "bit_exact": true,
+  "file": "15-continuous-60s.npz",
+  "capture_id": "run",
+  "bypass": false,
+  "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160"
+ },
+ "pairs_computed": [
+  {
+   "repeat": 1,
+   "off_file": "07-fir-off.npz",
+   "on_file": "09-fir-on.npz",
+   "total_db": -0.1710526780488273,
+   "bands_db": {
+    "300-1000": -0.7560427318885061,
+    "1000-3000": -0.11959674527546582,
+    "8200-8600": 0.37947540363266796
+   }
+  },
+  {
+   "repeat": 2,
+   "off_file": "13-fir-off.npz",
+   "on_file": "11-fir-on.npz",
+   "total_db": -0.24414526545724868,
+   "bands_db": {
+    "300-1000": 0.05061928088436218,
+    "1000-3000": -0.44456215189118353,
+    "8200-8600": 0.2530895972567535
+   }
+  }
+ ],
+ "pairs_reference": [
+  {
+   "comparison_id": "sprint-54b8836ae4d6-fir-1",
+   "repeat_id": 1,
+   "off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+   "on_capture_id": "05a1c814-567e-4cdf-84df-817385174a5b",
+   "gain_q12": 817,
+   "configuration_matches": true,
+   "window_comparison_valid": true,
+   "reasons": [],
+   "on_minus_off_tail_rms_db": null,
+   "on_minus_off_response_rms_db": -0.1710526780488273,
+   "on_minus_off_band_response_db": {
+    "300-1000": -0.7560427318885061,
+    "1000-3000": -0.11959674527545872,
+    "8200-8600": 0.37947540363266796
+   },
+   "measurement_kind": "forced_source_response",
+   "coverage_scope": "saved source-on response windows only; no acoustic stability claim",
+   "measured_msg_db": null,
+   "measured_asg_db": null,
+   "repeat": 1
+  },
+  {
+   "comparison_id": "sprint-54b8836ae4d6-fir-2",
+   "repeat_id": 2,
+   "off_capture_id": "841abaa2-6df2-4adc-804b-4db57c87a447",
+   "on_capture_id": "e1361e19-72b4-46f4-bae1-f3ff739228c4",
+   "gain_q12": 817,
+   "configuration_matches": true,
+   "window_comparison_valid": true,
+   "reasons": [],
+   "on_minus_off_tail_rms_db": null,
+   "on_minus_off_response_rms_db": -0.24414526545724868,
+   "on_minus_off_band_response_db": {
+    "300-1000": 0.05061928088436218,
+    "1000-3000": -0.44456215189118353,
+    "8200-8600": 0.2530895972567535
+   },
+   "measurement_kind": "forced_source_response",
+   "coverage_scope": "saved source-on response windows only; no acoustic stability claim",
+   "measured_msg_db": null,
+   "measured_asg_db": null,
+   "repeat": 2
+  }
+ ],
+ "c_review_compared": true,
+ "method": "played=reference·2^23；prediction=clip(round_shift(Σq[k]·played[n−1−k],20))；residual=mic（bypass）或 clip(mic−prediction)；output=clip(source·256+gain_q12(residual[n−2])) 只用记录 residual",
+ "scope": "整数算术与 14408 帧受迫响应窗；不含全程声学、ASG、听感；60 s 文件的 output 因缺 source 未复核"
+}
