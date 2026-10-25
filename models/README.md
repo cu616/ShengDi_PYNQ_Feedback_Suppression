@@ -1,5 +1,10 @@
 # 模型包（B 线交付 C 集成用）
 
+> **RC0.1 默认（C 2026-10-25 定案）**：`room_v1/calibrated_20261024.json`（= A 的 strong 原文件，
+> 512 抽头，file `c8be7f78…`、q20 `c9d3b1e6…`）。`candidate_512` 不作默认、不作缺失后备。
+> 该默认只在"已核实是同标定场景"时成立，**不授权跨场套用**。
+> 复算口径与数字见 [`report/verification/b-screening-2026-10-25/`](../report/verification/b-screening-2026-10-25/README.md)。
+
 > 本目录只有系数与包装说明，不含音频。系数是 **24 位补码、20 位小数的整数**
 > （`coefficients_q20` 原样照抄），与 `docs/contracts/feedback-fir-v1.md` 的加载语义一致：
 > `coeff_begin` 空闲时启动，按 `h[0]…h[TAPS−1]` 顺序传输、无地址、加载完成才接受采样。

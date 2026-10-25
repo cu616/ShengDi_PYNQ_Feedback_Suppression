@@ -136,7 +136,7 @@
    "loaded_taps": 512,
    "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
    "derived_from": "A lowband2/model_512_strong.json (lowband2-return.zip, commit bb56ef1)",
-   "status": "same_session_calibrated_baseline_pending_C_selection_change",
+   "status": "rc0_1_default_baseline_closed_by_C",
    "fitted_on": "lowband2 seg_0..9, validated seg_10..15, ridge 1e-9, injection -12 dBFS",
    "offline_holdout": {
     "nfft_4096": {
@@ -148,7 +148,23 @@
      "pos_real_db": 6.6
     }
    },
-   "selection_note": "不进 models 注册表：是否把它设为 room_v1_20261021 的默认基线由 C 与队长决定；本文件与 A 交付的原文件逐字节相同"
+   "selection_note": "C 于 2026-10-25 定案：RC0.1 默认 = 本文件；candidate_512 不作默认、不作缺失后备；该决定仅适用已核实的同标定场景，不授权跨场套用。",
+   "offline_reference": {
+    "data": "lowband2 seg_10..15 (heldout, gate coh>=0.8, f>=300Hz)",
+    "nfft_8192": {
+     "small_gain_bound_db": 2.77,
+     "positive_real_db": 6.6,
+     "fir_off_small_gain_db": -7.4,
+     "fir_off_positive_real_db": -6.46
+    },
+    "nfft_4096": {
+     "small_gain_bound_db": 4.56,
+     "positive_real_db": 10.71,
+     "fir_off_small_gain_db": -6.57,
+     "fir_off_positive_real_db": -5.83
+    },
+    "note": "两套估计分开报，不合并成可用增益区间；未覆盖频段记未知。"
+   }
   }
  ],
  "padding_convention": {
