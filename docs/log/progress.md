@@ -5,6 +5,13 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-25 C 独立通过B修订1数值并整理r4原始汇总交B
+
+普通Git连接失败后，以原账号官方API读取B=71d6a34，91件相关原件逐blob核对；原入口和24控制测试通过。
+434保存数字吻合，独立按段谱累计/FFT/Q20核对带内最大差约9e−15，零模型/完美模型控制通过。
+数值修复关闭，N1–N3发布措辞/机器标签仍待改；将已有r4原字节汇总和状态交B先判读，不等5原NPZ。
+证据见[B修订验收](../../report/verification/audio_closed/sprint-rc0-20261025/b-71d6a34-review.json)及[交接范围](../../report/verification/audio_closed/batch-control.md#2026-10-25-b71d6a34数值验收与原始汇总交接)。
+
 ## 2026-10-25 C 发布更新r4证据的真人五项完整包
 
 清洁源码59f2b2a构建[真人完整ZIP](../../build/packages/c-sprint-rc01-human-r1.zip)，365967字节，SHA256=0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e。

@@ -5,9 +5,11 @@ Expected crossing results come from the signs of the real/imaginary parts.
 """
 import argparse
 import ast
+import hashlib
 import io
 import json
 import platform
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -95,6 +97,111 @@ def audit_b_prediction(commit,out):
             'protection is not howl; magnitude above unity is not sufficient for instability or guaranteed growth time',
             'reconcile prose with nonzero worse_bins; response window is a subset of 16384-frame tail, not the full run'])
     Path(out).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    return result
+
+
+def audit_b_revision(source_dir,repro_dir,out):
+    """Check B revision 1 against a separate spectral sum and closed-form ratios."""
+    source_dir=Path(source_dir);repro_dir=Path(repro_dir)
+    provenance=json.loads((source_dir/'c-api-provenance.json').read_text(encoding='utf8'))
+    tree=json.loads((source_dir/'c-api-tree.json').read_text(encoding='utf8'))
+    assert provenance['b_commit']==tree['commit']
+    hashes={e['path']:e['sha'] for e in tree['entries'] if e['type']=='blob'}
+    used=['scripts/reproduce_b_screening.py','scripts/diagnose_peak_margin.py',
+          'models/room_v1/calibrated_20261024.json',
+          'report/verification/rc01-r4-2026-10-25/run-rev1/prediction.json',
+          'report/verification/rc01-r4-2026-10-25/revision-1.md']
+    source_hashes={}
+    for name in used:
+        data=(source_dir/name).read_bytes()
+        assert hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()==hashes[name],name
+        source_hashes[name]=digest(data)
+    scope={'np':np,'FMIN_HZ':300.}
+    diag=(source_dir/used[1]).read_bytes();code=(source_dir/used[0]).read_bytes()
+    nodes=[n for n in ast.parse(diag).body if isinstance(n,ast.FunctionDef) and n.name=='positive_real_crossing']
+    nodes += [n for n in ast.parse(code).body if isinstance(n,ast.FunctionDef) and n.name in
+              ('model_response_at','band_switch_table','switch_controls')]
+    exec(compile(ast.Module(body=nodes,type_ignores=[]),'B revision exact AST functions','exec'),scope)
+    fs=48828.125;gain=817/4096;f=np.array([429.1534423828125]);coh=np.ones(1);H=np.array([.5+0j])
+    zero=scope['band_switch_table'](f,H,coh,np.zeros(1),1,fs,2,gain,[])[0]['on_minus_off_band_db']
+    assert abs(zero)<1e-12
+    q=np.array([.5]);hp=.5*np.exp(-2j*np.pi*f/fs);D=np.exp(-4j*np.pi*f/fs)
+    with np.errstate(divide='ignore',invalid='ignore'):
+        perfect=scope['band_switch_table'](f,hp,coh,q,1,fs,2,gain,[])[0]['on_minus_off_band_db']
+    perfect_expected=float(20*np.log10(abs(1-gain*D*hp)[0]))
+    assert abs(perfect-perfect_expected)<1e-12
+    packet=blob('bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6','report/verification/audio-replay/lowband2-return.zip')
+    data,manifest,model,_inventory,_unbound=inspect_packet(io.BytesIO(packet))
+    coef=np.asarray(model['coefficients_q20'],float)/2**20
+    saved=json.loads((source_dir/used[3]).read_text(encoding='utf8'))
+    actual=json.loads((repro_dir/'prediction.json').read_text(encoding='utf8'))
+    numeric_errors=[];numeric_count=[0]
+    def compare(a,b,path='prediction'):
+        if isinstance(a,dict):
+            assert set(a)==set(b),path
+            for k in a:compare(a[k],b[k],path+'.'+k)
+        elif isinstance(a,list):
+            assert len(a)==len(b),path
+            for i,(x,y) in enumerate(zip(a,b)):compare(x,y,path+'[%d]'%i)
+        elif isinstance(a,(float,int)) and not isinstance(a,bool):
+            numeric_count[0]+=1;numeric_errors.append(abs(a-b));assert abs(a-b)<1e-10,path
+        else:assert a==b,path
+    compare(saved,actual)
+    inputs=json.loads((repro_dir/'repro.json').read_text(encoding='utf8'))['inputs']
+    assert len(inputs)==16 and all(r['sha_match'] is True for r in inputs)
+    assert [r['seg_id'] for r in inputs if r['role']=='heldout']==list(range(10,16))
+    tables=[];max_model_error=0.;band_errors=[]
+    for cohort,ids in (('train',range(10)),('heldout',range(10,16))):
+        for nfft in (8192,4096):
+            uu=np.zeros(nfft//2+1);mm=uu.copy();um=np.zeros_like(uu,dtype=complex)
+            window=np.hanning(nfft);windows=0
+            for i in ids:
+                with np.load(io.BytesIO(data['lowband2/seg_%d.npz'%i]),allow_pickle=False) as cap:
+                    u=np.asarray(cap['reference'],float);m=np.asarray(cap['microphone'],float)
+                # Every segment starts a separate set of windows; no concatenation.
+                for start in range(0,len(u)-nfft+1,nfft//2):
+                    U=np.fft.rfft(u[start:start+nfft]*window);M=np.fft.rfft(m[start:start+nfft]*window)
+                    uu+=abs(U)**2;mm+=abs(M)**2;um+=U.conj()*M;windows+=1
+            H=um/uu;coherence=abs(um)**2/(uu*mm);freq=np.fft.rfftfreq(nfft,1/fs)
+            w=2*np.pi*freq/fs;model_response=np.fft.rfft(coef,nfft)*np.exp(-1j*w);delay=np.exp(-2j*w)
+            b_model=scope['model_response_at'](coef,freq,fs,1)
+            max_model_error=max(max_model_error,float(np.max(abs(b_model-model_response))))
+            off=H/(1-gain*delay*H);on=H/(1-gain*delay*(H-model_response))
+            key='%s_nfft%d'%(cohort,nfft);references=[]
+            for row,(lo,hi) in zip(saved['tables'][key],((300,1000),(1000,3000),(8200,8600),(300,fs/2+1))):
+                eligible=(freq>=lo)&(freq<hi)&(coherence>=.8)
+                delta=float(10*np.log10(np.sum(abs(on[eligible])**2)/np.sum(abs(off[eligible])**2)))
+                error=abs(delta-row['on_minus_off_band_db']);band_errors.append(error)
+                assert error<1e-10 and int(eligible.sum())==row['gated'],key+':'+row['band']
+                off_headroom=float(-20*np.log10(np.max(abs(gain*H[eligible]))))
+                on_headroom=float(-20*np.log10(np.max(abs(gain*(H-model_response)[eligible]))))
+                assert abs(off_headroom-row['off_margin_db'])<1e-10 and abs(on_headroom-row['on_margin_db'])<1e-10
+                references.append(dict(band=row['band'],gated_bins=int(eligible.sum()),on_minus_off_db=delta,
+                    off_sampled_headroom_db=off_headroom,on_sampled_headroom_db=on_headroom))
+            controls=saved['controls'][key]
+            assert controls['zero_model_ok'] and controls['perfect_model_ok'] and abs(controls['zero_model_db'])<1e-12
+            tables.append(dict(cohort=cohort,nfft=nfft,independent_windows=windows,values=references))
+    assert max_model_error<1e-10
+    test_text=(ROOT/'report/verification/audio_closed/sprint-rc0-20261025/b-71d6a34-tests.txt').read_text(encoding='utf8')
+    test_count=int(re.search(r'Ran (\d+) tests',test_text).group(1))
+    assert re.search(r'^OK\s*$',test_text,re.MULTILINE) and 'FAILED' not in test_text
+    issues=[dict(id='N1',scope='revision-1.md §2/§5; band_switch_table docstring',
+        action='Separate sampled small-gain sufficient-bound reference from positive-real-crossing approximation; remove necessary-condition label and the retained 385dB/s/0.1s assertion, which fails even for linear fixed stable counterexamples. Loop gain dB is actual minus allowed; the old actual-plus-allowed expression was wrong, not merely a loop-gain label.'),
+        dict(id='N2',scope='revision-1.md §4/§5',
+        action='All-band means qualified bins only. Treat +1dB/two nonnegative repeats as investigation triggers, not calibrated falsification; two-repeat spread is descriptive, not a new resolution cutoff. Protection alone cannot contradict a prediction that omits frequency regions.'),
+        dict(id='N3',scope='reproduce_b_screening.py [7], repro.txt and prediction.json',
+        action='Machine entry still prints preregistered prediction; label revision 1 and pre_registered=false in emitted text/JSON, retaining the original dbf artifact.')]
+    result=dict(b_commit=provenance['b_commit'],source_hashes=source_hashes,source_transport=provenance['source'],
+        numerical_checks_passed=True,zero_model_control_db=zero,perfect_model_control_db=perfect,
+        perfect_model_expected_db=perfect_expected,original_cli_completed=True,verified_input_files=16,
+        original_control_tests=test_count,saved_prediction_numbers_compared=numeric_count[0],
+        max_saved_prediction_difference=max(numeric_errors,default=0.),
+        max_model_matrix_vs_fft_error=max_model_error,max_independent_band_difference=max(band_errors),
+        phase_and_q20_entry_unchanged=diag==blob('6128282f2853b829768c7310e57b08f0d84c4b89','scripts/diagnose_peak_margin.py'),
+        tables=tables,publication_changes_required=issues,raw_board_waveform_review='pending five existing NPZ files',
+        interpretation='Numerical revision accepted on qualified bins under white stationary linear approximation; publication wording/labels remain open. No preregistered validation or measured MSG/ASG.',
+        hardware_access=False,production_B_code_modified=False)
+    Path(out).write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+'\n',encoding='utf8')
     return result
 
 
@@ -501,11 +608,15 @@ if __name__=='__main__':
     p.add_argument('--return-revision',choices=('r1','r2','r3','r4'),default='r1')
     p.add_argument('--continuous-records',action='store_true')
     p.add_argument('--b-prediction',action='store_true')
+    p.add_argument('--b-revision-dir',type=Path)
+    p.add_argument('--b-repro-dir',type=Path)
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    result=(audit_b_prediction(a.b_commit,a.output) if a.b_prediction else
+    result=(audit_b_revision(a.b_revision_dir,a.b_repro_dir,a.output) if a.b_revision_dir else
+        audit_b_prediction(a.b_commit,a.output) if a.b_prediction else
         audit_continuous_records(a.a_commit,a.output) if a.continuous_records else
         audit_return(a.a_commit,a.output,a.return_revision) if a.return_only else audit(a.a_commit,a.b_commit,a.output))
-    keys=(('b_commit','zero_model_control','review_status') if a.b_prediction else
+    keys=(('b_commit','numerical_checks_passed','saved_prediction_numbers_compared','max_independent_band_difference') if a.b_revision_dir else
+        ('b_commit','zero_model_control','review_status') if a.b_prediction else
         ('a_commit','all_record_checks','scope') if a.continuous_records else
         ('a_commit','declared_v2_found','decisions') if a.return_only else ('a_commit','b_commit','npz_count','b_counterexamples','deployment'))
     print(json.dumps({k:result[k] for k in keys},ensure_ascii=False))

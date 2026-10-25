@@ -221,6 +221,62 @@ def assemble_room(out,assets):
     return manifest
 
 
+def assemble_r4_b_handoff(out):
+    """One data-only handoff: original r4 summaries plus C's bounded review."""
+    out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
+    a_commit='d013930f0624c35101c92cc8b62d985f10e21e0c'
+    packet=subprocess.check_output(['git','show',a_commit+':report/verification/audio-replay/c-sprint-rc01-r4-return.zip'],cwd=ROOT)
+    evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
+    review=json.loads((evidence/'a-d013930-review.json').read_text(encoding='utf8'))
+    assert review['metadata_review_passed'] and hashlib.sha256(packet).hexdigest()==review['return_zip_sha256']
+    (out/'a-original-return.zip').write_bytes(packet)
+    import io
+    with zipfile.ZipFile(io.BytesIO(packet)) as original:
+        original_manifest=json.loads(original.read('return-manifest.json'))
+        assert all(hashlib.sha256(original.read(n)).hexdigest()==h for n,h in original_manifest['hashes'].items())
+        for name in ('summary-v3.json','summary-v3.csv','summary.json','summary.csv',
+                     '07-fir-off.status.json','09-fir-on.status.json','11-fir-on.status.json',
+                     '13-fir-off.status.json','15-continuous-60s.status.json'):
+            (out/name).write_bytes(original.read(name))
+    assert len(json.loads((out/'summary-v3.json').read_text(encoding='utf8'))['fir_switch_pairs'])==2
+    for source,target in (('a-d013930-review.json','c-validity-review.json'),
+        ('b-71d6a34-review.json','c-b-revision-review.json'),('b-71d6a34-tests.txt','b-control-tests.txt')):
+        shutil.copy2(evidence/source,out/target)
+    (out/'README.md').write_text('''# r4 → B：汇总判读输入
+
+唯一数据入口：summary-v3.json → fir_switch_pairs（2组）。每项源内响应见summary.json → trials → source_response。
+原返回ZIP、汇总和状态保持字节原样；逐文件哈希在handoff-manifest.json，来源A=d013930。
+C配置/配对区间/差分算术/寄存器时间线审核通过，详见c-validity-review.json。
+
+现在即可完成Part二的元数据限定判读；原PCM独立复算仍等5个既有NPZ，不因此搁置汇总分析。
+列两次repeat的原值和方向，repeat散布只作描述；不以1.5dB门禁或两次散布设通用分辨率。
+区分实际全频带测量与只覆盖门控bin的白谱稳态参考，低频方向不一致和高频增大照实列出。
+不生成MSG/ASG，不写全程音质或抗啸叫通过；PROXY真人/听众仍未测。
+
+B=71d6a34闭环/余量/控制数值已由C独立通过；N1–N3发布措辞与机器标签仍待修，详见c-b-revision-review.json。
+修订在现场结果到达后发生，不追认为事前预测。默认模型和无新候选决定保持。
+本包为离线数据交接，无板端执行步骤；真人现场继续使用已发布的c-sprint-rc01-human-r1完整包。
+''',encoding='utf8')
+    manifest=dict(kind='r4_to_b_metadata_handoff',entry='summary-v3.json',array='fir_switch_pairs',
+        a_result_commit=a_commit,a_asset_commit='85f4967f242eed61eaa6b74041be931c2f5bc7a0',
+        b_revision_commit='71d6a349af3af2675e5be95b583180902ab9a090',
+        c_source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
+        original_return_sha256=hashlib.sha256(packet).hexdigest(),metadata_validity='passed',
+        raw_waveform_independent_review='not_tested_missing_five_existing_npz',raw_audio_included=False,
+        missing_raw_files=review['missing_raw_once'],
+        hashes={p.name:sha(p) for p in sorted(out.iterdir()) if p.is_file()})
+    (out/'handoff-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as archive:
+        for p in sorted(out.iterdir()):archive.write(p,p.name)
+    with zipfile.ZipFile(out.with_suffix('.zip')) as archive:
+        assert not any(n.endswith(('.npz','.wav','.bit','.hwh')) for n in archive.namelist())
+        assert all(hashlib.sha256(archive.read(n)).hexdigest()==h for n,h in manifest['hashes'].items())
+        assert archive.read('a-original-return.zip')==packet
+    print(json.dumps(dict(artifact=str(out.with_suffix('.zip')),size_bytes=out.with_suffix('.zip').stat().st_size,
+        sha256=sha(out.with_suffix('.zip')),pairs=2,metadata_validity='passed'),ensure_ascii=False))
+    return dict(package_status='r4_b_metadata_ready')
+
+
 def assemble_sprint(out, assets, model_path, human_only=False):
     """RC0 with the strong historical baseline and byte-identical A drivers.
 
@@ -326,9 +382,12 @@ if __name__=='__main__':
     p.add_argument('--room-ready',action='store_true')
     p.add_argument('--sprint-ready',action='store_true')
     p.add_argument('--sprint-human',action='store_true')
+    p.add_argument('--r4-b-handoff',action='store_true')
     p.add_argument('--model',type=Path)
     a=p.parse_args()
-    if a.sprint_ready or a.sprint_human:
+    if a.r4_b_handoff:
+        m=assemble_r4_b_handoff(a.output)
+    elif a.sprint_ready or a.sprint_human:
         if not a.assets or not a.model:p.error('sprint package requires --assets and --model')
         m=assemble_sprint(a.output,a.assets,a.model,human_only=a.sprint_human)
     elif a.room_ready:

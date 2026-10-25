@@ -1,0 +1,186 @@
+{
+  "b_commit": "71d6a349af3af2675e5be95b583180902ab9a090",
+  "source_hashes": {
+    "scripts/reproduce_b_screening.py": "2bbc123983d30deac619bcc54e43a98acb9422f38d00c56862198f77d9070a64",
+    "scripts/diagnose_peak_margin.py": "5f2b57418f15a4e28922c50549c7d1bf2ede5f9c5b84bb8b466850d8bb225472",
+    "models/room_v1/calibrated_20261024.json": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "report/verification/rc01-r4-2026-10-25/run-rev1/prediction.json": "0890f94239f8031b45c93705346edf635b5d3dfdf3c43fd7bc0abb0d0a81a3c2",
+    "report/verification/rc01-r4-2026-10-25/revision-1.md": "83c977211db4d814696d82afbe9f4ffa42647988b9aca5b04225326d77be878a"
+  },
+  "source_transport": "authenticated official GitHub Git data API; content blob IDs verified",
+  "numerical_checks_passed": true,
+  "zero_model_control_db": 0.0,
+  "perfect_model_control_db": -0.8979488785812574,
+  "perfect_model_expected_db": -0.8979488785812596,
+  "original_cli_completed": true,
+  "verified_input_files": 16,
+  "original_control_tests": 24,
+  "saved_prediction_numbers_compared": 434,
+  "max_saved_prediction_difference": 0,
+  "max_model_matrix_vs_fft_error": 6.164309441007474e-14,
+  "max_independent_band_difference": 8.881784197001252e-15,
+  "phase_and_q20_entry_unchanged": true,
+  "tables": [
+    {
+      "cohort": "train",
+      "nfft": 8192,
+      "independent_windows": 30,
+      "values": [
+        {
+          "band": "300-1000",
+          "gated_bins": 100,
+          "on_minus_off_db": -0.9940044427708238,
+          "off_sampled_headroom_db": 7.4401625615840175,
+          "on_sampled_headroom_db": 19.98733117629737
+        },
+        {
+          "band": "1000-3000",
+          "gated_bins": 311,
+          "on_minus_off_db": -0.21060419426219837,
+          "off_sampled_headroom_db": 8.559359846911887,
+          "on_sampled_headroom_db": 22.22108764381528
+        },
+        {
+          "band": "8200-8600",
+          "gated_bins": 10,
+          "on_minus_off_db": 1.176586508264721,
+          "off_sampled_headroom_db": 7.078676708038371,
+          "on_sampled_headroom_db": 23.686450444064157
+        },
+        {
+          "band": "all",
+          "gated_bins": 1240,
+          "on_minus_off_db": -0.4756922802607101,
+          "off_sampled_headroom_db": 7.078676708038371,
+          "on_sampled_headroom_db": 19.98733117629737
+        }
+      ]
+    },
+    {
+      "cohort": "train",
+      "nfft": 4096,
+      "independent_windows": 70,
+      "values": [
+        {
+          "band": "300-1000",
+          "gated_bins": 43,
+          "on_minus_off_db": -1.0209656331188586,
+          "off_sampled_headroom_db": 8.065525792349467,
+          "on_sampled_headroom_db": 22.99614928247525
+        },
+        {
+          "band": "1000-3000",
+          "gated_bins": 150,
+          "on_minus_off_db": -0.20968156541605054,
+          "off_sampled_headroom_db": 9.110042428884533,
+          "on_sampled_headroom_db": 24.215214840790857
+        },
+        {
+          "band": "8200-8600",
+          "gated_bins": 1,
+          "on_minus_off_db": 2.8014077184198776,
+          "off_sampled_headroom_db": 8.656827817993166,
+          "on_sampled_headroom_db": 36.90563457160701
+        },
+        {
+          "band": "all",
+          "gated_bins": 577,
+          "on_minus_off_db": -0.4688834474235548,
+          "off_sampled_headroom_db": 8.065525792349467,
+          "on_sampled_headroom_db": 22.99614928247525
+        }
+      ]
+    },
+    {
+      "cohort": "heldout",
+      "nfft": 8192,
+      "independent_windows": 18,
+      "values": [
+        {
+          "band": "300-1000",
+          "gated_bins": 90,
+          "on_minus_off_db": -1.1488693773519758,
+          "off_sampled_headroom_db": 6.60471449795454,
+          "on_sampled_headroom_db": 16.77765625163089
+        },
+        {
+          "band": "1000-3000",
+          "gated_bins": 312,
+          "on_minus_off_db": -0.21892999526048368,
+          "off_sampled_headroom_db": 8.552460360653413,
+          "on_sampled_headroom_db": 20.748596495275716
+        },
+        {
+          "band": "8200-8600",
+          "gated_bins": 5,
+          "on_minus_off_db": 0.3074866609274254,
+          "off_sampled_headroom_db": 7.080137049720493,
+          "on_sampled_headroom_db": 26.084357928779973
+        },
+        {
+          "band": "all",
+          "gated_bins": 1189,
+          "on_minus_off_db": -0.4211693352219883,
+          "off_sampled_headroom_db": 6.60471449795454,
+          "on_sampled_headroom_db": 16.77765625163089
+        }
+      ]
+    },
+    {
+      "cohort": "heldout",
+      "nfft": 4096,
+      "independent_windows": 42,
+      "values": [
+        {
+          "band": "300-1000",
+          "gated_bins": 40,
+          "on_minus_off_db": -1.075311864681384,
+          "off_sampled_headroom_db": 7.4321130760042085,
+          "on_sampled_headroom_db": 18.56270399896369
+        },
+        {
+          "band": "1000-3000",
+          "gated_bins": 149,
+          "on_minus_off_db": -0.23755772375041104,
+          "off_sampled_headroom_db": 8.874016613508166,
+          "on_sampled_headroom_db": 23.476970055596794
+        },
+        {
+          "band": "8200-8600",
+          "gated_bins": 1,
+          "on_minus_off_db": -3.1597805402529247,
+          "off_sampled_headroom_db": 9.669362333553252,
+          "on_sampled_headroom_db": 34.19780707800133
+        },
+        {
+          "band": "all",
+          "gated_bins": 558,
+          "on_minus_off_db": -0.42136454613156965,
+          "off_sampled_headroom_db": 7.4321130760042085,
+          "on_sampled_headroom_db": 18.56270399896369
+        }
+      ]
+    }
+  ],
+  "publication_changes_required": [
+    {
+      "id": "N1",
+      "scope": "revision-1.md §2/§5; band_switch_table docstring",
+      "action": "Separate sampled small-gain sufficient-bound reference from positive-real-crossing approximation; remove necessary-condition label and the retained 385dB/s/0.1s assertion, which fails even for linear fixed stable counterexamples. Loop gain dB is actual minus allowed; the old actual-plus-allowed expression was wrong, not merely a loop-gain label."
+    },
+    {
+      "id": "N2",
+      "scope": "revision-1.md §4/§5",
+      "action": "All-band means qualified bins only. Treat +1dB/two nonnegative repeats as investigation triggers, not calibrated falsification; two-repeat spread is descriptive, not a new resolution cutoff. Protection alone cannot contradict a prediction that omits frequency regions."
+    },
+    {
+      "id": "N3",
+      "scope": "reproduce_b_screening.py [7], repro.txt and prediction.json",
+      "action": "Machine entry still prints preregistered prediction; label revision 1 and pre_registered=false in emitted text/JSON, retaining the original dbf artifact."
+    }
+  ],
+  "raw_board_waveform_review": "pending five existing NPZ files",
+  "interpretation": "Numerical revision accepted on qualified bins under white stationary linear approximation; publication wording/labels remain open. No preregistered validation or measured MSG/ASG.",
+  "hardware_access": false,
+  "production_B_code_modified": false
+}

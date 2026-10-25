@@ -40,15 +40,15 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-25多次刷新后取得A=d013930的r4原回包，独立成员/冻结身份/实际配置/两组差分/寄存器时间线/清理审核通过；15项完成，实际FIR两次总响应ON−OFF=−0.171/−0.244dB。当前配置60秒2929687帧、2951时间线点、计数0、清理成功；原PCM独立算术待5原件。真人专用5项包保留同工作点及门槛，避免重复工程项；157回归与合成四WAV正例通过。
-**当前卡点**：R-008只待同轮4个FIR及60秒共5个非人声NPZ，不再索要已收ZIP。真人/听众效果及另一队友复现未测。B=dbf2858新预测漏OFF闭环，零系数应0却报+0.906dB，R-007退五项必修；旧默认/候选和既有判据验收保持。
+**最后动作**：2026-10-25独立接受B=71d6a34的闭环/余量/控制数值修订，原入口与24项控制测试通过，434保存数字吻合，C独立谱累计/FFT核对带内最大差约9e−15。原phase/Q20入口未改。把A=d013930已有原字节汇总和状态整理给B，先做两组元数据限定判读，不等待波形原件；真人五项包及模型/资产保持。
+**当前卡点**：R-007只余N1–N3发布口径/机器标签，数值修复关闭；原dbf保留，不追认事前预测。API确认A仍d013930，R-008仍待同轮4个FIR及60秒共5个非人声NPZ。真人/固定听众效果和另一队友复现未测；旧默认与无新候选决定不变。
 
 - [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
 - [真人完整ZIP](../build/packages/c-sprint-rc01-human-r1.zip)、[归档验收](../report/verification/audio_closed/sprint-rc0-20261025/sprint-package-check-human-r1.json)：源码59f2b2a，365967字节，SHA256=0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e；48载荷/A七件/C八件身份与实际归档5项自检原样复现通过，8类负例拒绝。SELFTEST min14920/gate passed/0.434分钟，现场未测。
 - 绑定资产仍A=85f4967/v2 bit61bb71aa…/hwh92b499a3…；d013930是结果提交。strong、EQ identity、−14dB/Q12=817、Codec40不变。失败静音停批，不升档、不自动旁路、不装旧场系数。
 - 真人包只做2门禁、真人、听众关/开5项；PROXY触板前拒绝，明确人耳负面记failed，四份固定增益/无AGC录音缺失记未测。A新增shell的5秒讲话在START返回前、Codec仍静音，本次使用C唯一Notebook在START开始后讲话；听众用同一固定录制源。
 - 两组总/中带响应均减小，高带均增大，低带方向不一致；只描述14408帧源内窗，不推出整体抑制或ASG。60秒PCM覆盖约0.559%，全程声学未知，真人/听众不能以PROXY填通过。
-- [B新预测反例](../report/verification/audio_closed/sprint-rc0-20261025/b-dbf2858-review.json)：完整ON/OFF闭环都要计算；1.5dB漂移门禁不是分辨率，保护或幅值越1不能直接证明失稳。原dbf保留，结果到达后的修正不能追认为事前预测。
+- [B修订独立验收](../report/verification/audio_closed/sprint-rc0-20261025/b-71d6a34-review.json)、[三项发布必修](../report/verification/audio_closed/batch-control.md#2026-10-25-b71d6a34数值验收与原始汇总交接)：小增益充分界与穿越估计分开，完整ON/OFF闭环已修正；1.5dB或两次散布都不是通用分辨率，保护不能否定遗漏频段的预测，机器输出要标口径修订。旧dbf反例保留。
 - C未操板或改A/B实现。10/26质检，10/27 20:00冻结，10/28另一队友复现并冻结源码/bit/hwh/模型/配置/哈希；v2外部I/O签核仍不完整。
 
 ## 已验证 / 未验证（只在这里写一次）
