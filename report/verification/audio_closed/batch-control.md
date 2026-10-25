@@ -624,3 +624,8 @@ C用部署Q20复算全16段4096/8192四个数，与B修正穿越函数逐个吻�
 本轮交付网络结果：本地交付提交7db5408、完整ZIP与最终解压核验已完成。
 推送C分支遇Recv failure/Connection was reset，重试后仍为Failed to connect to github.com port 443，
 新提交尚未推送；没有强推、改origin或绕过主机验证。可直接交付本地ZIP，不声称B/A已从远端取得。
+
+
+2026-10-25按用户要求重新同步：Git HTTPS通道仍超时，改用GitHub官方Git Data API逐个核验并上传
+原始Git对象，force=false更新C分支，回读确认为62e1124；1601350/7db5408/62e1124原提交哈希均保留。
+此前网络失败记录保留作历史证据。同步包含上述完整RC0 r1包，不增加实物验收声明。
