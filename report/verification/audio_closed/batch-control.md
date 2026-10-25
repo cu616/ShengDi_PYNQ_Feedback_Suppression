@@ -858,3 +858,17 @@ A计划的源后等待约束只用于源后窗，不套到源内定音。原A定
 
 本轮源码提交信息：`[C] 关闭B末轮验收并加入整包软件自检`。
 修改范围：C编排/自检/打包及对应回归、唯一操作单、独立证据、C状态/日志/AI记录。源码冻结后重建r1归档。
+
+最终r1完整包已从清洁源码75f95a1985bdb59bc5718e00fab6a0783fb673f1构建：
+[c-sprint-rc01-r1.zip](../../../build/packages/c-sprint-rc01-r1.zip)，313904字节，
+SHA256=c2ee0a2d76cb2569ecdebab1928e389b9b8d6dc38cc79cd82c799d201a3d45f2。
+[实际归档检查](sprint-rc0-20261025/sprint-package-check-rc01-r1.json)核对32载荷、A六件/C七件原件，
+实际唯一代码格取消不导入硬件；实际包内自检完整复现冻结preflight，五类负控制被拒绝。
+旧RC0.1归档不覆盖。构建/归档自检输出：
+
+```text
+SELFTEST ok | trials=13 | window_frames min=14920 | gate=passed | 预计板端 0.669分钟（另加配置和人工等待）
+```
+
+这是约40.12秒发声/观察时间，非完整现场耗时承诺；人工与配置等待另计。
+冻结发布提交信息：`[C] 交付带自动preflight的RC0.1-r1完整包`。
