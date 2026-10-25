@@ -1,0 +1,70 @@
+{
+  "b_commit": "365724202597cb7e8b55369f7a7ec77f4ca9d4b2",
+  "source": "authenticated official GitHub Git data API; content blob IDs verified",
+  "source_hashes": {
+    "scripts/reproduce_b_screening.py": "21ecfd8aa66300557272ec8ee99916b849c62b745861709b34db650b02b44f49",
+    "scripts/diagnose_peak_margin.py": "5f2b57418f15a4e28922c50549c7d1bf2ede5f9c5b84bb8b466850d8bb225472",
+    "models/room_v1/calibrated_20261024.json": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "report/verification/rc01-r4-2026-10-25/revision-1.md": "c635b4ac88bd8daf84ac535b365591d32963737721155428e97f80f58ef4e58d",
+    "report/verification/rc01-r4-2026-10-25/part2-field-pairs.md": "4caa84c9c05512f692e299cad7970b801fd64a1c0f4579588068bb0f1efa905a",
+    "report/verification/rc01-r4-2026-10-25/run-rev1/prediction.json": "45dd0b82774895f7052e1a32f053675b9d5065d29e8ff6a84c8be2a778d9fc60"
+  },
+  "verified_source_files": 92,
+  "original_cli_exit_code": 0,
+  "changed_functions": [
+    "main"
+  ],
+  "mathematical_functions_and_phase_model_unchanged": true,
+  "saved_machine_output_exact": true,
+  "revision": 1,
+  "pre_registered": false,
+  "numerical_tables_and_controls_unchanged": true,
+  "historical_artifacts_unchanged": true,
+  "n2_n3_accepted": true,
+  "n1_partially_closed": true,
+  "actual_pair_values_accepted": true,
+  "source_pairs": [
+    {
+      "repeat": 1,
+      "total_db": -0.1710526780488273,
+      "bands_db": {
+        "300-1000": -0.7560427318885061,
+        "1000-3000": -0.11959674527545872,
+        "8200-8600": 0.37947540363266796
+      },
+      "pair_gate_difference_db": 0.08579400734760512
+    },
+    {
+      "repeat": 2,
+      "total_db": -0.24414526545724868,
+      "bands_db": {
+        "300-1000": 0.05061928088436218,
+        "1000-3000": -0.44456215189118353,
+        "8200-8600": 0.2530895972567535
+      },
+      "pair_gate_difference_db": 0.11540442846275312
+    }
+  ],
+  "gate_tone_cross_repeat_delta_db": 0.690377003551891,
+  "low_band_cross_repeat_delta_db": 0.8066620127728683,
+  "publication_changes_required": [
+    {
+      "id": "N1-residual",
+      "file": "revision-1.md §1 table / §2; reproduce_b_screening.py band_switch_table docstring and main labels",
+      "detail": "The new sufficient-condition paragraph is correct, but the old necessary-condition sentence and actual-plus-allowed-is-loop-gain statement remain. Delete the conflicting live descriptions; keep historical dbf artifacts."
+    },
+    {
+      "id": "P2-attribution",
+      "file": "part2-field-pairs.md §4.3 / §4.5",
+      "detail": "A 0.690 dB change in separate gate tone readings is descriptive, not a broadband path measurement or proof of room change causing the 0.807 dB low-band difference. Different digital excitation levels alone do not establish level-dependent H or a stronger low-frequency effect. State these as unverified hypotheses."
+    },
+    {
+      "id": "P2-stability",
+      "file": "part2-field-pairs.md §5",
+      "detail": "The OFF sampled headroom +6.605 dB cannot establish that the physical OFF loop was stable. Say the records show no protection in these two forced-response windows, with global acoustic stability unknown. Keep the measured high-band increase descriptive; missing prediction bins cannot erase it or identify a peak/mechanism."
+    }
+  ],
+  "hardware_access": false,
+  "waveform_review_at_B_commit": "pending five existing nonvoice NPZ files",
+  "waveform_review_current": "C independently completed five original NPZ at A=63f6a69; see a-63f6a69-waveform-review.json. B independent waveform interpretation remains requested."
+}

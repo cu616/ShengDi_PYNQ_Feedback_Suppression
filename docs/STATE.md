@@ -40,16 +40,18 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-25重新fetch全部分支并同步C，确认A=d013930、B=71d6a34未新增交付；统一派单A的R-008原件补交与R-009真人五项会话、B的R-007发布口径和汇总判读。两个既有完整包哈希复核一致，不改包、不重复FIR或60秒。
-**当前卡点**：R-008仍待同轮5个非人声NPZ，R-009真人/固定听众效果未测；R-007只余N1–N3发布口径/机器标签及两次实际配对判读，数值修复关闭。另一队友复现未测；旧默认与无新候选决定不变。
+**最后动作**：2026-10-25官方API取得B=3657242及A=9edd83b新增三次旧r4真人尝试，逐blob核验；接受B机器标签/未变数值/两次原值，N1残句与过强归因退修。随后取得A=63f6a69五个原NPZ，原哈希、独立FIR功率和逐样本算术复算通过，R-008关闭；第二次真人−14dB保护事件单列。
+**当前卡点**：R-009先核实新保护事件及实际START/讲话时序，暂停新的有声重试，真人/固定听众验收未完成。R-007机器标签与数值关闭，只余残留判据性质/归因/全频稳定措辞及B波形侧独立判读，5原件已可取，不再等A补交。另一队友复现未测；旧默认与无新候选决定不变。
 
 - [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
+- [r4五原件独立波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)：A=63f6a69的r4-review-return.zip共2082636字节、SHA256=e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48；5/5与原清单一致。四FIR源内功率和两次差分吻合，五份环形尾部预测/残差/输出算术零失配；60秒原时间线与状态一致，声学覆盖边界不变。
 - [真人完整ZIP](../build/packages/c-sprint-rc01-human-r1.zip)、[归档验收](../report/verification/audio_closed/sprint-rc0-20261025/sprint-package-check-human-r1.json)：源码59f2b2a，365967字节，SHA256=0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e；48载荷/A七件/C八件身份与实际归档5项自检原样复现通过，8类负例拒绝。SELFTEST min14920/gate passed/0.434分钟，现场未测。
 - 绑定资产仍A=85f4967/v2 bit61bb71aa…/hwh92b499a3…；d013930是结果提交。strong、EQ identity、−14dB/Q12=817、Codec40不变。失败静音停批，不升档、不自动旁路、不装旧场系数。
-- 真人包只做2门禁、真人、听众关/开5项；PROXY触板前拒绝，明确人耳负面记failed，四份固定增益/无AGC录音缺失记未测。A新增shell的5秒讲话在START返回前、Codec仍静音，本次使用C唯一Notebook在START开始后讲话；听众用同一固定录制源。
+- 真人包只做2门禁、真人、听众关/开5项；PROXY触板前拒绝，明确人耳负面记failed，四份固定增益/无AGC录音缺失记未测。A的run_rc4_human2.sh仍在START回调返回前倒计时讲话、自动填人工确认；原脚本控制复现通过。待本次保护问题核实后，使用C唯一Notebook在实际START后讲话，听众用同一固定录制源。
+- [A新增三次回包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-9edd83b-review.json)：均是旧r4 1.0.4，不是human-only 1.0.5。首次听感OTHER；第二次约3.568秒保护，原回包记录prediction/residual=0/2、保存窗麦克风满幅13样本，原因未知；第三次14920帧定音窗存在、tonal_fraction=0.746<0.8。三次清理回执通过，不据此证明声学可用或已排除故障。
 - 两组总/中带响应均减小，高带均增大，低带方向不一致；只描述14408帧源内窗，不推出整体抑制或ASG。60秒PCM覆盖约0.559%，全程声学未知，真人/听众不能以PROXY填通过。
-- [B修订独立验收](../report/verification/audio_closed/sprint-rc0-20261025/b-71d6a34-review.json)、[三项发布必修](../report/verification/audio_closed/batch-control.md#2026-10-25-b71d6a34数值验收与原始汇总交接)：小增益充分界与穿越估计分开，完整ON/OFF闭环已修正；1.5dB或两次散布都不是通用分辨率，保护不能否定遗漏频段的预测，机器输出要标口径修订。旧dbf反例保留。
-- [给B的完整原始汇总包](../build/packages/c-r4-to-b-r1.zip)、[字节与哈希核验](../report/verification/audio_closed/sprint-rc0-20261025/b-handoff-r1-check.json)：入口summary-v3.json → fir_switch_pairs两组，含原A回包和C审核；376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367，14载荷通过，源c0af379。B先做元数据限定判读，raw PCM独立复算仍待5原件。
+- [B最新发布复核](../report/verification/audio_closed/sprint-rc0-20261025/b-3657242-review.json)、[接受项与余项](../report/verification/audio_closed/batch-control.md#2026-10-25-b3657242发布复核与a新增真人回包)：原CLI退出0，revision=1/pre_registered=false及保存结果完全吻合；数学函数、phase/Q20入口和旧dbf原件未改，N2/N3接受。N1旧必要条件式/旧加法标签残句仍在；0.690dB定音差不能证明0.807dB低带差的原因，采样余量不能证明OFF本来就稳。
+- [给B的冻结原始汇总包](../build/packages/c-r4-to-b-r1.zip)、[字节与哈希核验](../report/verification/audio_closed/sprint-rc0-20261025/b-handoff-r1-check.json)：入口summary-v3.json → fir_switch_pairs两组，含原A回包和C审核；376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367，14载荷通过，源c0af379。新增波形取固定A=63f6a69的r4-review-return.zip；C波形复算已完成，B按同一原件补独立判读。
 - 用户常设要求：每轮回应前分别检查A、B是否需要派单；有新动作就给完整可转发消息，无新动作明确写无需新增。按最新提交去重，不因等待原件重复已经通过的现场项目。
 - C未操板或改A/B实现。10/26质检，10/27 20:00冻结，10/28另一队友复现并冻结源码/bit/hwh/模型/配置/哈希；v2外部I/O签核仍不完整。
 

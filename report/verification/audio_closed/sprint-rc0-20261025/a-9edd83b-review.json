@@ -1,0 +1,401 @@
+{
+  "a_commit": "9edd83bdaaa91fb51219e03de31caba2f9b8aae9",
+  "source": "authenticated official GitHub API; every downloaded blob ID verified",
+  "source_files": [
+    {
+      "path": "board/audio_replay/run_rc4_human2.sh",
+      "blob": "8a80ab204512b27402616e053c75db6636cf827f",
+      "bytes": 3567,
+      "sha256": "e816d37450416dee59897b3453b5d331c71dd5fc73ff5ce77faacedfae11f9ff"
+    },
+    {
+      "path": "docs/STATE.md",
+      "blob": "091ac7118c6ccf439694cb621f8a328cd432d002",
+      "bytes": 9416,
+      "sha256": "40726a099046f1da33e7b84077662a59ca45f3146de119fbf29f1c770962ac5e"
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r4-live-session-1.zip",
+      "blob": "a2ed699b5a73fee5c6bd847106fdb840ce650521",
+      "bytes": 12024,
+      "sha256": "ffed44e0edfcc66c308bcaed574b6fdc9c9714beed1121b543ff2d57ae968c70"
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r4-live-session-2.zip",
+      "blob": "d28735c0e75e8619e545da3ea9dd5188383c2af4",
+      "bytes": 12527,
+      "sha256": "5e3b3af65c55f63b4ef356d980590bb795155ea74372559760664c359653748c"
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r4-live-session-3.zip",
+      "blob": "f07cec27d174cd00ccab78441b0f3071f91db566",
+      "bytes": 10268,
+      "sha256": "33e850468de46314ea96e514b200bbf0445476b43ac2f0b08c81090488ce166d"
+    }
+  ],
+  "sessions": [
+    {
+      "zip": "c-sprint-rc01-r4-live-session-1.zip",
+      "sha256": "ffed44e0edfcc66c308bcaed574b6fdc9c9714beed1121b543ff2d57ae968c70",
+      "run_id": "sprint-f7cf2a8f261b",
+      "policy": "c-sprint-rc01-1.0.4",
+      "status": "stopped",
+      "checks": {
+        "package": {
+          "status": "passed",
+          "level": "local_hash_and_compatibility"
+        },
+        "real_voice": {
+          "status": "not_tested"
+        },
+        "fir_comparison": {
+          "status": "not_tested"
+        },
+        "listener": {
+          "status": "not_tested"
+        },
+        "continuous_60s": {
+          "status": "not_tested",
+          "reason": "await one 60-second arm with this package model/gain/assets; historical bypass record is separate",
+          "scope": "register timeline plus tail PCM; engineering only"
+        },
+        "stop_recovery": {
+          "status": "passed",
+          "unverified_trials": [],
+          "scope": "A driver sidecar reports per-trial cleanup; emergency/abnormal recovery still requires A acceptance"
+        },
+        "independent_reproduction": {
+          "status": "not_tested"
+        },
+        "path_gate": {
+          "status": "passed",
+          "source_on_frames": 14920,
+          "scope": "source-on tone path check; acoustic stability category is separate"
+        }
+      },
+      "trials": [
+        {
+          "id": 1,
+          "role": "path-gate",
+          "category": "unknown",
+          "protection": false,
+          "completed_frames": 49804,
+          "frames": 16384,
+          "first_frame": 33420,
+          "gain_q12": 0,
+          "mic_rms_dbfs": -24.674634910961963,
+          "mic_peak_dbfs": -16.73764957272525,
+          "mic_full_scale_samples": 0,
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "hearing_code": null,
+          "hearing_reported_code": null,
+          "recovery_ok": true,
+          "path_gate": {
+            "passed": true,
+            "baseline_dbfs": null,
+            "capture_sha256": "2c2f06b2cc07d4d6f96491a715860a599ce3efb22036175278a88431a21a824a",
+            "first_frame": 33420,
+            "end_frame": 48340,
+            "reasons": [],
+            "rms_dbfs": -24.382687885197704,
+            "tonal_fraction": 0.9473783841674498,
+            "drift_db": null,
+            "reference_rms_dbfs": -23.011081979678153,
+            "mic_over_ref_db": -1.3716059055195515,
+            "operational_drift_limit_db": 5.0
+          },
+          "stop_reasons": []
+        },
+        {
+          "id": 2,
+          "role": "real-voice",
+          "category": "unknown",
+          "protection": false,
+          "completed_frames": 390625,
+          "frames": 16384,
+          "first_frame": 374241,
+          "gain_q12": 817,
+          "mic_rms_dbfs": -35.86846462952317,
+          "mic_peak_dbfs": -21.42234403954967,
+          "mic_full_scale_samples": 0,
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "hearing_code": "OTHER",
+          "hearing_reported_code": "OTHER",
+          "recovery_ok": true,
+          "path_gate": null,
+          "stop_reasons": []
+        }
+      ],
+      "member_hashes_verified": true,
+      "package_identity": "exact frozen r4 1.0.4; not human-only 1.0.5",
+      "gate_window_independent_of_peak_control": true
+    },
+    {
+      "zip": "c-sprint-rc01-r4-live-session-2.zip",
+      "sha256": "5e3b3af65c55f63b4ef356d980590bb795155ea74372559760664c359653748c",
+      "run_id": "sprint-5aa68dee5a1f",
+      "policy": "c-sprint-rc01-1.0.4",
+      "status": "stopped",
+      "checks": {
+        "package": {
+          "status": "passed",
+          "level": "local_hash_and_compatibility"
+        },
+        "real_voice": {
+          "status": "not_tested"
+        },
+        "fir_comparison": {
+          "status": "not_tested"
+        },
+        "listener": {
+          "status": "not_tested"
+        },
+        "continuous_60s": {
+          "status": "not_tested",
+          "reason": "await one 60-second arm with this package model/gain/assets; historical bypass record is separate",
+          "scope": "register timeline plus tail PCM; engineering only"
+        },
+        "stop_recovery": {
+          "status": "passed",
+          "unverified_trials": [],
+          "scope": "A driver sidecar reports per-trial cleanup; emergency/abnormal recovery still requires A acceptance"
+        },
+        "independent_reproduction": {
+          "status": "not_tested"
+        },
+        "path_gate": {
+          "status": "passed",
+          "source_on_frames": 14920,
+          "scope": "source-on tone path check; acoustic stability category is separate"
+        }
+      },
+      "trials": [
+        {
+          "id": 1,
+          "role": "path-gate",
+          "category": "unknown",
+          "protection": false,
+          "completed_frames": 49804,
+          "frames": 16384,
+          "first_frame": 33420,
+          "gain_q12": 0,
+          "mic_rms_dbfs": -24.369618911416463,
+          "mic_peak_dbfs": -17.262590906447404,
+          "mic_full_scale_samples": 0,
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "hearing_code": null,
+          "hearing_reported_code": null,
+          "recovery_ok": true,
+          "path_gate": {
+            "passed": true,
+            "baseline_dbfs": null,
+            "capture_sha256": "7aac45493cec67f675f4606a78f9e3a3581ec3e013968212c7b05d87b9a46d93",
+            "first_frame": 33420,
+            "end_frame": 48340,
+            "reasons": [],
+            "rms_dbfs": -24.089724672537294,
+            "tonal_fraction": 0.9432007180137404,
+            "drift_db": null,
+            "reference_rms_dbfs": -23.011081979678153,
+            "mic_over_ref_db": -1.078642692859141,
+            "operational_drift_limit_db": 5.0
+          },
+          "stop_reasons": []
+        },
+        {
+          "id": 2,
+          "role": "real-voice",
+          "category": "invalid",
+          "protection": true,
+          "completed_frames": 174210,
+          "frames": 16384,
+          "first_frame": 157826,
+          "gain_q12": 817,
+          "mic_rms_dbfs": -15.661961437546514,
+          "mic_peak_dbfs": -1.0354387945871882e-06,
+          "mic_full_scale_samples": 13,
+          "prediction_saturations": 0,
+          "residual_saturations": 2,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "hearing_code": null,
+          "hearing_reported_code": null,
+          "recovery_ok": true,
+          "path_gate": null,
+          "stop_reasons": [
+            "execution_error:RuntimeError:runtime saturation guard stopped playback; packed_prediction_residual=131072 gain=0 mix=0; no further gain authorized",
+            "invalid_capture",
+            "protection",
+            "early_stop",
+            "clipping_or_numeric_event"
+          ]
+        }
+      ],
+      "member_hashes_verified": true,
+      "package_identity": "exact frozen r4 1.0.4; not human-only 1.0.5",
+      "gate_window_independent_of_peak_control": true
+    },
+    {
+      "zip": "c-sprint-rc01-r4-live-session-3.zip",
+      "sha256": "33e850468de46314ea96e514b200bbf0445476b43ac2f0b08c81090488ce166d",
+      "run_id": "sprint-0c9f92eb59a8",
+      "policy": "c-sprint-rc01-1.0.4",
+      "status": "stopped",
+      "checks": {
+        "package": {
+          "status": "passed",
+          "level": "local_hash_and_compatibility"
+        },
+        "real_voice": {
+          "status": "not_tested"
+        },
+        "fir_comparison": {
+          "status": "not_tested"
+        },
+        "listener": {
+          "status": "not_tested"
+        },
+        "continuous_60s": {
+          "status": "not_tested",
+          "reason": "await one 60-second arm with this package model/gain/assets; historical bypass record is separate",
+          "scope": "register timeline plus tail PCM; engineering only"
+        },
+        "stop_recovery": {
+          "status": "passed",
+          "unverified_trials": [],
+          "scope": "A driver sidecar reports per-trial cleanup; emergency/abnormal recovery still requires A acceptance"
+        },
+        "independent_reproduction": {
+          "status": "not_tested"
+        },
+        "path_gate": {
+          "status": "failed",
+          "source_on_frames": 14920,
+          "scope": "source-on tone path check; acoustic stability category is separate"
+        }
+      },
+      "trials": [
+        {
+          "id": 1,
+          "role": "path-gate",
+          "category": "unknown",
+          "protection": false,
+          "completed_frames": 49804,
+          "frames": 16384,
+          "first_frame": 33420,
+          "gain_q12": 0,
+          "mic_rms_dbfs": -24.21920267540227,
+          "mic_peak_dbfs": -11.682034647750365,
+          "mic_full_scale_samples": 0,
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "hearing_code": null,
+          "hearing_reported_code": null,
+          "recovery_ok": true,
+          "path_gate": {
+            "passed": false,
+            "baseline_dbfs": null,
+            "capture_sha256": "bfee465700f390221cdc9e5fc2feede190a15455c750ab9853d9cad95df75f2d",
+            "first_frame": 33420,
+            "end_frame": 48340,
+            "reasons": [
+              "gate_tone_not_observed"
+            ],
+            "rms_dbfs": -23.983097168040324,
+            "tonal_fraction": 0.7460698379757265,
+            "drift_db": null,
+            "reference_rms_dbfs": -23.011081979678153,
+            "mic_over_ref_db": -0.972015188362171,
+            "operational_drift_limit_db": 5.0
+          },
+          "stop_reasons": []
+        }
+      ],
+      "member_hashes_verified": true,
+      "package_identity": "exact frozen r4 1.0.4; not human-only 1.0.5",
+      "gate_window_independent_of_peak_control": true
+    }
+  ],
+  "protected_run_seconds": 3.5678208,
+  "protected_capture_first_seconds": 3.23227648,
+  "protected_tail_seconds": 0.33554432,
+  "packed_counts": 131072,
+  "decoded_counts": {
+    "prediction": 0,
+    "residual": 2,
+    "gain": 0,
+    "mix": 0
+  },
+  "wrapper_control": {
+    "events": [
+      {
+        "t": 0.0,
+        "need": null,
+        "step": "speaking",
+        "cue": 1
+      },
+      {
+        "t": 0.0,
+        "need": null,
+        "step": "speaking",
+        "cue": 1,
+        "countdown": 5
+      },
+      {
+        "t": 1.0,
+        "need": null,
+        "step": "speaking",
+        "cue": 1,
+        "countdown": 4
+      },
+      {
+        "t": 2.0,
+        "need": null,
+        "step": "speaking",
+        "cue": 1,
+        "countdown": 3
+      },
+      {
+        "t": 3.0,
+        "need": null,
+        "step": "speaking",
+        "cue": 1,
+        "countdown": 2
+      },
+      {
+        "t": 4.0,
+        "need": null,
+        "step": "speaking",
+        "cue": 1,
+        "countdown": 1
+      },
+      {
+        "t": 5.0,
+        "need": null,
+        "step": "start"
+      }
+    ],
+    "callback_return_seconds": 5.0,
+    "all_speech_countdown_before_unmute": true,
+    "automatic_ready_scene_human_confirmation": true
+  },
+  "interpretation": [
+    "Second attempt is a protection stop at -14 dB with 13 saved microphone full-scale samples; no howl causality or precise threshold inferred.",
+    "Third gate failed because tonal_fraction=0.7460698379757265 < 0.8, not an empty source-on window. Peak/RMS and the independent tail-overlap label do not establish transient cause.",
+    "All three used old r4 and the new wrapper still cues speech before START returns. Human/listener acceptance is incomplete.",
+    "Suspend new audible retries; preserve fault evidence and verify actual scene, gain and event timing. Five existing r4 nonvoice NPZ files remain absent from these new return ZIPs."
+  ],
+  "raw_pcm_independently_read": false,
+  "hardware_access": false
+}

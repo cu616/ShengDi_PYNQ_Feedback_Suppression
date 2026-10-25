@@ -1146,5 +1146,59 @@ B现在先列两次实际值与方向、解释覆盖与不确定性；5原件到
 最终[原始汇总交接包](../../../build/packages/c-r4-to-b-r1.zip)从源码c0af3796569f621a3c4c48e91e5958796809058a生成，
 376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367。
 14载荷哈希、原A返回ZIP和解出的汇总/状态逐字节一致；C审核直接从固定Git对象读取，避免Windows工作区换行转换。
+
+## 2026-10-25 B=3657242发布复核与A新增真人回包
+
+这是一次独立接收审核，不修改A/B原件或已冻结实验包。原Git连接两次失败，改用同一授权账号的官方API；
+B固定提交365724202597cb7e8b55369f7a7ec77f4ca9d4b2，92件相关源码/模型/报告逐blob核对。
+原入口在同一16段数据上退出0，[本轮原CLI输出](sprint-rc0-20261025/b-3657242-repro.txt)及保存prediction.json逐值完全吻合。
+与71d6a34相比只有main函数的输出和标签变化，数学函数、phase入口、模型和旧dbf报告/结果未变；
+不重复已通过的整套回归，不把上一轮24项测试说成本轮重跑。
+
+接受revision=1、pre_registered=false及supersedes/criteria_note/statistic_note/margin_definition；
+接受N2/N3改动和Part二两次实际值，逐项由原汇总重新相减，四行三位小数均吻合。
+剩余定位见[b-3657242-review.json](sprint-rc0-20261025/b-3657242-review.json)：
+
+- N1现行残句未清：revision-1 §2仍称“Nyquist近似必要条件式”，§1旧表格和band_switch_table docstring仍把旧加法说成环路增益；
+  main仍泛称“允许增益（Nyquist近似）”。应统一为采样网格小增益界与穿越估计分别报告，保留dbf历史原件。
+- Part二把不同定音试次0.690dB的变化归因为房间/通路改变，并用来解释低带0.807dB差；
+  这只说明定音读数有变化，不能确定宽带响应变化或原因。注入电平不同也不能直接证明H电平依赖、低频更受影响。
+- “OFF臂在当前工作点本来就稳”不能由门控网格+6.605dB参考余量推出；
+  可写本轮两次源内响应记录未触发保护，全频/全程声学未知。高带两次功率增大是实际描述，缺少预测bin既不能抹掉它，也不能据此确定峰顶/机制/声学恶化。
+
+同一轮检查发现A已更新9edd83bdaaa91fb51219e03de31caba2f9b8aae9，新增三个live-session ZIP。
+C验证全部成员SHA256、冻结r4包身份和状态回执；[a-9edd83b-review.json](sprint-rc0-20261025/a-9edd83b-review.json)保存逐次结果。
+三包均为旧r4策略1.0.4，不是已交的human-only 1.0.5：首次听感OTHER、第二次保护中止、第三次路径门禁失败，真人/听众验收没有完成。
+
+第二次原回包记录：请求8秒，completed_frames=174210（约3.567821秒），原保护打包字131072，
+prediction/residual/gain/mix=0/2/0/0；末尾16384帧内mic_full_scale_samples=13，清理回执成功。
+这是保护与满幅记录，尚无原PCM独立复算；不直接判成啸叫，也不把记录时刻当精确起振阈值。
+因此暂停新的有声重试，先由A保存原件并核实现场/增益/START与讲话时序，不自动降档或旁路继续。
+
+第三次定音窗仍为14920帧，tonal_fraction=0.7460698379757265<0.8，具体失败为gate_tone_not_observed。
+RMS/peak不能证明碰桌、移动或出声。精确执行冻结C的window_gate，改变峰值和RMS仍得到完全相同的
+source_or_transition_overlap，因为它由帧位置/源结束/过渡帧计算，与声学峰值无关；不能混同定音门禁和尾窗分类。
+
+精确执行新增run_rc4_human2.sh中的ask函数，模拟5秒倒计时全部发生在返回START之前；
+冻结A驱动是在before_start返回后才解静音并arm。该脚本仍自动填HUMAN/READY/SAME_SCENE，不能代替人工核实。
+本次没有操板、播放、修改驱动/算法或重新发现场试验包。每轮A/B分别派单的要求继续执行。
+
+结束前再次核头发现A=63f6a69ee679f992d1e459d9447262fa1db6b403已补5个原NPZ，官方API下载并核对Git blob。
+[原ZIP](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/63f6a69ee679f992d1e459d9447262fa1db6b403/report/verification/audio-replay/r4-review-return.zip)
+2082636字节，SHA256=e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48。
+包内5个原SHA256逐一与旧r4 raw_files一致。C新增本项目专用审计入口，使用直接整数历史点积（不调用A卷积/舍入函数），
+独立去均值RMS及Hann频带积分复算；四FIR两组实际值吻合、5份尾部预测/残差/输出零失配。
+60秒原时间线2951点和状态/配置一致，仅最后16384帧PCM，不扩大全程声学结论。
+R-008关闭；[独立复算](sprint-rc0-20261025/a-63f6a69-waveform-review.json)、[三个拒绝控制](sprint-rc0-20261025/a-63f6a69-negative-controls.json)。
+
+从仓库根目录运行唯一复算入口（两个输入都取固定提交原ZIP，不重新采集）：
+
+```text
+python scripts/audit_sprint.py --r4-waveform-return <A63f6a69的r4-review-return.zip绝对路径> --summary-return <Ad013930的c-sprint-rc01-r4-return.zip绝对路径> --a-commit 63f6a69ee679f992d1e459d9447262fa1db6b403 --output <新审核JSON绝对路径>
+```
+
+该入口不访问板卡；缺原件、篡改原件、错配原汇总三种控制均在生成报告前拒绝。
+B可立即取同一原件补波形侧独立判读，不能继续记“等待A导出”；新的真人保护事件仍另行核实。
+修改C审计入口后，[本轮157项软件回归](sprint-rc0-20261025/tests-b365-a63.txt)全部通过；未操板。
 见[b-handoff-r1-check.json](sprint-rc0-20261025/b-handoff-r1-check.json)。入口根目录summary-v3.json的fir_switch_pairs两组，
 每项source_response在原summary.json，B无需再等人转发单独文件；原PCM与真人结果没有冒充齐全。

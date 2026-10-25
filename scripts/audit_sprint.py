@@ -600,6 +600,118 @@ def audit_continuous_records(a_commit, out):
     return result
 
 
+def audit_r4_waveforms(packet_path, summary_path, out, a_commit):
+    """Independently check the five original r4 rings; no driver/B imports."""
+    packet=Path(packet_path).read_bytes();original=Path(summary_path).read_bytes()
+    prior=json.loads((ROOT/'report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json').read_text(encoding='utf8'))
+    assert digest(original)==prior['return_zip_sha256'], 'wrong original summary return'
+    expected={r['file']:r['sha256'] for r in prior['missing_raw_once']}
+    with zipfile.ZipFile(ROOT/'build/packages/c-sprint-rc01-r4.zip') as z:
+        frozen=json.loads(z.read('sprint-manifest.json'));model=json.loads(z.read('model.json'))
+    q=np.asarray(model['coefficients_q20'],dtype=np.int64);taps=len(q);rate=48828.125
+    assert taps==512
+    qsha=digest(q.astype('<i4').tobytes())
+    assert qsha==frozen['coefficients_sha256']
+    with zipfile.ZipFile(io.BytesIO(original)) as z:
+        summary=json.loads(z.read('summary.json'));v3=json.loads(z.read('summary-v3.json'))
+    assert summary['package_hashes']==frozen['hashes']
+    rows={r['id']:r for r in summary['trials']};review=[];responses={}
+    def signed_round(x,bits):
+        # Integer division makes negative half ties explicit; do not import A's rounding helper.
+        return np.sign(x)*((np.abs(x)+(2**bits//2))//2**bits)
+    assert signed_round(np.array([-3,-1,1,3],dtype=np.int64),1).tolist()==[-2,-1,1,2]
+    with zipfile.ZipFile(io.BytesIO(packet)) as z:
+        manifest=json.loads(z.read('manifest.json'))
+        assert set(z.namelist())==set(expected)|{'manifest.json'}
+        assert set(manifest['files'])==set(expected) and manifest['missing']==[]
+        for name,expected_sha in expected.items():
+            data=z.read(name);entry=manifest['files'][name]
+            assert digest(data)==expected_sha==entry['sha256'] and len(data)==entry['bytes'],name
+            with np.load(io.BytesIO(data),allow_pickle=False) as cap:
+                m=json.loads(str(cap['metadata_json'].item()))
+                ref=np.asarray(cap['reference'])*2**23;mic=np.asarray(cap['microphone'])*2**23
+                assert ref.shape==mic.shape==(16384,) and np.isfinite(ref).all() and np.isfinite(mic).all()
+                assert np.array_equal(ref,np.rint(ref)) and np.array_equal(mic,np.rint(mic))
+                ref=ref.astype(np.int64);mic=mic.astype(np.int64)
+                pred=np.asarray(cap['prediction_pcm'],dtype=np.int64)
+                residual=np.asarray(cap['residual_pcm'],dtype=np.int64)
+                assert pred.shape==residual.shape==ref.shape
+                assert all(np.all((x>=-2**23)&(x<2**23)) for x in (ref,mic,pred,residual))
+                source=np.asarray(cap['source_pcm16'],dtype=np.int64) if 'source_pcm16' in cap else None
+                if source is not None:
+                    assert np.array_equal(cap['coefficients_q20'],q)
+                    assert float(cap['sample_rate_hz'].item())==rate
+            idx=int(name[:2]);old=rows[idx];live=idx==15
+            for k in ('gain_q12','hp_volume','bypass','bit_sha256','model_sha256','coefficients_sha256'):
+                assert m[k]==old[k],name+':'+k
+            assert m['gain_q12']==817 and m['hp_volume']==40 and m['coefficients_sha256']==qsha
+            first=m['first_frame'];end=m['frames_completed' if live else 'completed_frames']
+            assert end-first==len(ref)
+            assert int(np.max(np.abs(ref)))*int(np.sum(np.abs(q)))<2**63
+            # Each row is a direct 512-term past-sample dot product, separate from A's convolution.
+            histories=np.lib.stride_tricks.sliding_window_view(ref,taps+1)[:,:-1]
+            predicted=np.clip(signed_round(histories@q[::-1],20),-2**23,2**23-1)
+            res_expected=mic[taps:] if m['bypass'] else np.clip(mic[taps:]-predicted,-2**23,2**23-1)
+            injected=np.zeros(len(ref),dtype=np.int64)
+            if source is not None:
+                assert len(source)==m['source_frames']==m['source_end_frame_exclusive']==122070
+                assert digest(source.astype('<i2').tobytes())==m['source_pcm16_sha256']==old['source_pcm16_sha256']
+                global_frames=np.arange(first,end);valid=global_frames<len(source)
+                injected[valid]=source[global_frames[valid]]*256
+            feedback=np.clip(signed_round(residual[:-2]*817,12),-2**23,2**23-1)
+            output=np.clip(injected[2:]+feedback,-2**23,2**23-1)
+            mismatches=dict(prediction=int(np.count_nonzero(pred[taps:]!=predicted)),
+                residual=int(np.count_nonzero(residual[taps:]!=res_expected)),
+                output=int(np.count_nonzero(ref[2:]!=output)))
+            assert all(v==0 for v in mismatches.values()),(name,mismatches)
+            item=dict(file=name,sha256=expected_sha,frames=len(ref),first_frame=first,end_frame=end,
+                independent_arithmetic_mismatches=mismatches,prediction_evaluated_frames=len(ref)-taps,
+                output_evaluated_frames=len(ref)-2,microphone_full_scale_samples=int(np.count_nonzero((mic==-2**23)|(mic==2**23-1))))
+            if live:
+                old_status=old['driver_status']
+                for k in ('timeline','counts','status','first_frame','frames_completed','recovered','mute_ok','disarm_ok'):
+                    assert m[k]==old_status[k],k
+                assert end==2929687 and len(m['timeline'])==2951 and all(v==0 for v in m['counts'].values())
+                item.update(timeline_points=len(m['timeline']),max_poll_gap_s=m['max_poll_gap_s'],
+                    waveform_coverage_fraction=len(ref)/end,scope='engineering timeline and final ring arithmetic only; whole-run acoustics unknown')
+            else:
+                assert first==106662 and end==123046
+                begin=first+taps;stop=len(source)-int(.01*rate)
+                assert (begin,stop)==(107174,121582)
+                x=mic[begin-first:stop-first].astype(float)/2**23;x-=np.mean(x)
+                level=float(10*np.log10(np.mean(x*x)))
+                window=np.hanning(len(x));spectrum=np.fft.rfft(x*window)
+                frequencies=np.fft.rfftfreq(len(x),1/rate)
+                bands={}
+                for lo,hi in ((300,1000),(1000,3000),(8200,8600)):
+                    keep=(frequencies>=lo)&(frequencies<hi)
+                    power=2*float(np.sum(np.abs(spectrum[keep])**2))/(len(x)*float(np.sum(window*window)))
+                    bands[f'{lo}-{hi}']=float(10*np.log10(power))
+                saved=old['source_response'];errors=[abs(level-saved['rms_dbfs'])]
+                errors.extend(abs(v-saved['mic_band_dbfs'][k]) for k,v in bands.items())
+                assert max(errors)<1e-10,(name,errors)
+                responses[idx]=dict(total_dbfs=level,bands_dbfs=bands)
+                item.update(response_first_frame=begin,response_end_frame=stop,response_frames=len(x),
+                    response_rms_dbfs=level,response_bands_dbfs=bands,max_report_difference_db=max(errors))
+            review.append(item)
+    pairs=[]
+    for reported,(off_id,on_id) in zip(v3['fir_switch_pairs'],((7,9),(13,11))):
+        off,on=responses[off_id],responses[on_id]
+        total=on['total_dbfs']-off['total_dbfs']
+        bands={k:on['bands_dbfs'][k]-off['bands_dbfs'][k] for k in off['bands_dbfs']}
+        assert abs(total-reported['on_minus_off_response_rms_db'])<1e-10
+        assert all(abs(v-reported['on_minus_off_band_response_db'][k])<1e-10 for k,v in bands.items())
+        pairs.append(dict(repeat=reported['repeat_id'],on_minus_off_total_db=total,on_minus_off_bands_db=bands))
+    result=dict(a_commit=a_commit,source='five original nonvoice NPZ rings; prior independently verified original r4 return',
+        package_sha256=digest(packet),package_bytes=len(packet),all_raw_checks=True,
+        files=review,pairs=pairs,coefficient_q20_sha256=qsha,
+        method='direct integer history dot products; symmetric integer rounding; independent de-meaned RMS and Hann spectral band sums',
+        scope='FIR values describe 14408 source-on frames; 60-second engineering timeline plus 16384-frame tail only. No ASG or whole-run acoustic stability.',
+        hardware_access=False)
+    Path(out).write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+'\n',encoding='utf8')
+    return result
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--a-commit',default='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6')
@@ -610,12 +722,16 @@ if __name__=='__main__':
     p.add_argument('--b-prediction',action='store_true')
     p.add_argument('--b-revision-dir',type=Path)
     p.add_argument('--b-repro-dir',type=Path)
+    p.add_argument('--r4-waveform-return',type=Path)
+    p.add_argument('--summary-return',type=Path)
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    result=(audit_b_revision(a.b_revision_dir,a.b_repro_dir,a.output) if a.b_revision_dir else
+    result=(audit_r4_waveforms(a.r4_waveform_return,a.summary_return,a.output,a.a_commit) if a.r4_waveform_return else
+        audit_b_revision(a.b_revision_dir,a.b_repro_dir,a.output) if a.b_revision_dir else
         audit_b_prediction(a.b_commit,a.output) if a.b_prediction else
         audit_continuous_records(a.a_commit,a.output) if a.continuous_records else
         audit_return(a.a_commit,a.output,a.return_revision) if a.return_only else audit(a.a_commit,a.b_commit,a.output))
-    keys=(('b_commit','numerical_checks_passed','saved_prediction_numbers_compared','max_independent_band_difference') if a.b_revision_dir else
+    keys=(('a_commit','package_sha256','all_raw_checks','pairs') if a.r4_waveform_return else
+        ('b_commit','numerical_checks_passed','saved_prediction_numbers_compared','max_independent_band_difference') if a.b_revision_dir else
         ('b_commit','zero_model_control','review_status') if a.b_prediction else
         ('a_commit','all_record_checks','scope') if a.continuous_records else
         ('a_commit','declared_v2_found','decisions') if a.return_only else ('a_commit','b_commit','npz_count','b_counterexamples','deployment'))

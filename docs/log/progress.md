@@ -5,6 +5,15 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+## 2026-10-25 C 复核B发布修订、A新增保护及五原件
+
+Git两次连接失败后，官方API取得B=3657242的92件相关原件和A=9edd83b新增三次真人回包，逐blob核对。
+B原CLI退出0、保存机器结果一致，数学函数/phase/Q20入口与旧原件未变；机器修订身份和两次实际值接受，N1残句与Part二过强归因退修。
+A三个原返回包的成员和冻结r4身份通过；第二次−14dB约3.568秒保护、第三次源内定音占比不足，旧包装脚本讲话仍早于解静音。
+将R-009改为先暂停有声重试、核实既有故障事实；随后发现A=63f6a69已补五原NPZ，原哈希及C独立功率/整数算术复算通过，关闭R-008。
+三个坏输入控制拒绝，C审计入口修改后157项软件回归通过，未重跑FIR/60秒；B可直接取原件补波形侧判读。
+见[B审核](../../report/verification/audio_closed/sprint-rc0-20261025/b-3657242-review.json)、[A真人尝试审核](../../report/verification/audio_closed/sprint-rc0-20261025/a-9edd83b-review.json)、[原件复算](../../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)和[请求清单](../REQUESTS.md)。
+
 ## 2026-10-25 C 统一A与B的后续派单
 
 重新fetch并同步C，核对A=d013930、B=71d6a34未新增提交；两个已发布ZIP字节数和SHA256保持一致。
