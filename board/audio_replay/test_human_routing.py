@@ -1,26 +1,32 @@
-"""Walk every prompt of C's human package through the driver's routing table.
+"""Walk every prompt of the bound package through the driver's routing table.
 
-Pure software: no board, no audio, no overlay. This is the check that should have run before
-the last three field attempts, where the routing was wrong three times in a row.
+Pure software: no board, no audio. The package comes from SHENGDI_HUMAN_PKG and the driver from
+SHENGDI_DRIVER, so the object under test is the delivered artifact. A missing prompt is a
+FAILURE, never a skip.
 """
+import os
 import pathlib
 import re
 import sys
 
-ROOT = pathlib.Path(r'D:\OCadence_Project\Flushbonading_FPGA_Contest\_a_work')
-DRIVER = ROOT / 'run_human_r1.sh'
-PACKAGE = ROOT / 'h1' / 'sprint_experiment.py'
+HERE = pathlib.Path(__file__).resolve().parent
+DRIVER = pathlib.Path(os.environ.get('SHENGDI_DRIVER') or (HERE / 'run_human_r1.sh'))
+PKG = pathlib.Path(os.environ['SHENGDI_HUMAN_PKG']) if os.environ.get('SHENGDI_HUMAN_PKG') else None
 
-# ---------------------------------------------------------------- load the driver's ask()
-shell = DRIVER.read_text(encoding='utf-8')
-body = shell.split("<<'PY'\n", 1)[1].split("builtins.input = ask", 1)[0]
+if PKG is None or not (PKG / 'sprint_experiment.py').is_file():
+    print('BINDING_MISSING sprint_experiment.py (SHENGDI_HUMAN_PKG=%r)'
+          % os.environ.get('SHENGDI_HUMAN_PKG'))
+    sys.exit(1)
+if not DRIVER.is_file():
+    print('BINDING_MISSING driver %s' % DRIVER)
+    sys.exit(1)
 
-namespace = {'__name__': 'driver'}
+body = DRIVER.read_text(encoding='utf-8').split("<<'PY'\n", 1)[1].split("builtins.input = ask", 1)[0]
 
 
 class _Path:
     def __init__(self, *a):
-        self.args = a
+        pass
 
     def exists(self):
         return False
@@ -37,89 +43,78 @@ class _Path:
 
 import time  # noqa: E402
 
-stub = {
-    'json': __import__('json'),
-    'os': __import__('os'),
-    'pathlib': type('m', (), {'Path': _Path}),
-    'time': time,
-    'builtins': __import__('builtins'),
-}
-namespace['__builtins__'] = __import__('builtins')
-for name, module in stub.items():
-    namespace[name] = module
-exec(compile(body, str(DRIVER), 'exec'), namespace)
-ask = namespace['ask']
-
-# ------------------------------------------------- the driver's waits, captured not performed
+ns = {'__name__': 'driver', '__builtins__': __import__('builtins'),
+      'json': __import__('json'), 'os': os, 'time': time,
+      'pathlib': type('m', (), {'Path': _Path})}
+exec(compile(body, str(DRIVER), 'exec'), ns)
+ask = ns['ask']
 needs = []
 
 
-def fake_publish(**fields):
+def publish(**fields):
     if fields.get('need'):
         needs.append(fields['need'])
 
 
-def fake_wait_file(path, need, extra=None):
+def wait_none(path, need, extra=None):
     needs.append(need)
     return None
 
 
-namespace['publish'] = fake_publish
-namespace['wait_file'] = fake_wait_file
-namespace['take'] = lambda path: None
+def wait_go(path, need, extra=None):
+    needs.append(need)
+    return 'GO'
 
-# ------------------------------------------------------------------ real prompts from the package
-source = PACKAGE.read_text(encoding='utf-8')
-raw = re.findall(r"ask\('([^']*)'", source)
-prompts = []
-for text in raw:
-    rendered = text.replace('%02d', '03').replace('%s', 'real-voice').replace('%index', '03')
-    prompts.append(rendered)
 
+ns['publish'] = publish
+ns['take'] = lambda p: None
+ns['wait_file'] = wait_none
+
+prompts = [t.replace('%02d', '03').replace('%s', 'real-voice')
+           for t in re.findall(r"ask\('([^']*)'",
+                               (PKG / 'sprint_experiment.py').read_text(encoding='utf-8'))]
 prompts.append('03 real-voice 此项现场听感：CLEAR / DISTORTED / NO_AMPLIFICATION / HOWL / UNKNOWN：')
 
 EXPECT = [
     ('READY', 'READY', None),
     ('SAME_SCENE', 'SAME_SCENE', None),
-    ('一次填写声源-麦克风距离', None, None),          # layout: falls through to the queue
+    ('一次填写声源-麦克风距离', 'LAYOUT', None),
     ('HUMAN_LIVE_AND_LISTENING', 'HUMAN_LIVE_AND_LISTENING', None),
-    ('path-gate', 'START', 'no-go'),                  # gate must NOT wait for a voice go
-    ('真实人声项此时就位', 'START', 'GO_VOICE'),        # real voice waits for A's go
-    ('此项现场听感：CLEAR / DISTORTED / NO_AMPLIFICATION / HOWL / UNKNOWN', None, 'HEARING'),
-    ('FIXED_SOURCE_FIXED_GAIN_NO_AGC', '', None),     # no recordings -> untested, never a fake
-    ('开/关差别', None, 'LISTENER_REPORT'),
+    ('path-gate', 'START', 'no-go'),
+    ('真实人声项此时就位', 'START', 'GO_VOICE'),
+    ('此项现场听感', 'TIMEOUT', 'HEARING'),
+    ('FIXED_SOURCE_FIXED_GAIN_NO_AGC', '', None),
+    ('开/关差别', 'unknown', 'LISTENER_REPORT'),
     ('SOURCE_OFF', 'SOURCE_OFF', None),
 ]
 
-print('prompts found in the package:', len(prompts))
+print('bound package %s' % PKG)
+print('prompts found %d' % len(prompts))
 failures = 0
-seen = set()
 for marker, value, need in EXPECT:
     match = next((p for p in prompts if marker in p), None)
     if match is None:
-        print('SKIP    no prompt contains %r' % marker)
+        print('FAIL    prompt containing %r not found in the bound package' % marker)
+        failures += 1
         continue
-    seen.add(marker)
     needs.clear()
-    namespace['queue'] = ['LAYOUT']
-    # the real-voice item needs a valid go before it may start; other items do not
-    if marker == '\u771f\u5b9e\u4eba\u58f0\u9879\u6b64\u65f6\u5c31\u4f4d':
-        namespace['wait_file'] = lambda path, need, extra=None: (needs.append(need), 'GO')[1]
+    ns['queue'] = ['LAYOUT']
+    if marker == '真实人声项此时就位':
+        ns['wait_file'] = wait_go
+    elif marker == '此项现场听感':
+        ns['wait_file'] = wait_none
     else:
-        namespace['wait_file'] = fake_wait_file
+        ns['wait_file'] = wait_none
     got = ask(match)
     got_need = needs[0] if needs else None
-    ok_value = (value is None) or (got == value)
+    ok = got == value
     if need == 'no-go':
-        ok_need = 'GO_VOICE' not in needs
-    elif need is None:
-        ok_need = True
-    else:
-        ok_need = got_need == need
-    status = 'OK  ' if (ok_value and ok_need) else 'FAIL'
-    if status == 'FAIL':
+        ok = ok and 'GO_VOICE' not in needs
+    elif need is not None:
+        ok = ok and got_need == need
+    if not ok:
         failures += 1
-    print('%s  %-22s -> %-26r need=%-15s' % (status, marker, got, got_need))
+    print('%s  %-22s -> %-24r need=%s' % ('OK  ' if ok else 'FAIL', marker[:22], got, got_need))
 
 print('\nROUTING_RESULT', 'PASS' if failures == 0 else 'FAIL (%d)' % failures)
 sys.exit(0 if failures == 0 else 1)

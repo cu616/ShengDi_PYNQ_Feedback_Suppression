@@ -31,9 +31,11 @@
       "coupling_db": -8.0,
       "frequency_hz": 4053,
       "coherence": 0.81,
-      "max_stable_gain_db": 8.0,
-      "caveat": "based on a single spectral bin; statistically weak"
-    }
+      "max_stable_gain_db": null,
+      "caveat": "a single gated bin cannot establish a whole-band maximum stable gain; two gated bins do not establish that 4-8 kHz as a band is identified; low coherence does not by itself prove the peak is noise",
+      "max_stable_gain_status": "not measured"
+    },
+    "gated_bins_note": "2 of 4097 total bins; not a band-level identification"
   },
   "retraction": {
     "withdrawn": "peak coupling +1.73 dB at 453 Hz / +2.34 dB at 381 Hz and the derived 'about 8 dB of cancellation is required' conclusion",
