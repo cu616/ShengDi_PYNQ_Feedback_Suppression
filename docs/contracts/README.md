@@ -60,3 +60,5 @@
 | audio-replay-sweep | v2 | 未变 |
 
 v2 的差异只有运行上限，见 [audio-replay-v2](audio-replay-v2.md) 与 [audio-closed-v2](audio-closed-v2.md)。
+
+运行上限变更的批准记录见 [proposal-continuous-run](proposal-continuous-run.md)（已批准，结论并入 v2）。
