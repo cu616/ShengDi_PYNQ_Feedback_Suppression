@@ -220,7 +220,7 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ## 2026-10-25 集中实验 RC0
 
-维护者 C；本节就是包内 OPERATIONS.md。当前发布 **RC0.1**，仅适用 `c-sprint-rc01-1.0.0`，不要执行上方历史包。
+维护者 C；本节就是包内 OPERATIONS.md。当前发布 **RC0.1-r1**，仅适用 `c-sprint-rc01-1.0.1`，不要执行上方历史包。
 **默认系数＝calibrated_20261024（A 原名 strong）**。B=d033d00 与原包逐字节相同；RC0实际系数没有变化。
 根目录和包内 select_model 均选择这套已登记基线；旧 candidate_512 只留历史分析，不作缺失时的后备。
 标定/定音/门禁/源关闭核验失败：静音、停批、保留证据，不自动切到原增益旁路，不装另一场旧系数。
@@ -232,9 +232,9 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 
 ### 唯一入口与固定身份
 
-- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01.zip`。
-- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01/`。用新目录，保留现役基线供恢复。
-- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01/sprint.ipynb`。
+- C 电脑完整 ZIP：`D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\build\packages\c-sprint-rc01-r1.zip`。
+- 板卡解压目录：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r1/`。用新目录，保留现役基线供恢复。
+- Notebook 完整路径：`/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r1/sprint.ipynb`。
   重启内核；从上往下**第 1 个代码格**，标题/首行 `# C sprint RC0.1: fixed baseline, single entry`，
   下一行为 `from sprint_experiment import run_sprint`。全包只有一个代码格，不以 In[n] 定位。
 - 使用 A=bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6 的原驱动/bit/hwh，
@@ -246,6 +246,12 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
   模型/现场几何不符就停止交 B，不自行把同一模型挪到新场景。
 
 RC0.1按用户确认仅修C包内分析区间、汇总和定音前提示；驱动/bit/hwh、模型、EQ、源与门禁原值不变。
+本次r1增加包内`sprint_selftest.py`和构建时自动生成的`preflight.json`，绑定全包载荷及源码身份；
+不改变上述实验配置。A先读`all_ok=true`并核对板端版本，缺失/false/不符则回`PREFLIGHT_FAIL`原文，
+不上板、不现场改包。唯一代码格也会在导入PYNQ前验证自检记录及其哈希。
+包内可选静默复核命令`python3 sprint_selftest.py`，使用真实Q20和实际13项编排，在临时目录生成合成数据后删除，
+不导入PYNQ、不发声、不覆盖冻结preflight；打印`SELFTEST ok | trials=13 | window_frames min=14920 | gate=passed`。
+该通过只证明软件流程/算术/窗口成立；合成CLEAR及恢复回执不算真实人声、硬件恢复或抗啸叫效果通过。
 路径门禁测源内1000Hz定音，运行1.02秒、定音1秒，正常保留14920帧有效源内样本；
 不能改成1.6秒运行配1秒定音，否则最后16384帧中没有定音。FIR运行2.5秒、宽带源1.87秒，
 源末后排除2442帧过渡，仍保留完整16384帧源后窗。源内/源后窗口分别判断，不套用同一等待时长。
@@ -287,7 +293,7 @@ A=8c7c49c原回包门禁定音占比11.6%，因此仍判未通过；空源后窗
    不发下一项；由 A 按已核实基线处理，不把恢复 stock overlay 当重新标定或效果通过。
    STOP/通信中断/落盘失败的软件分支通过不等于紧急静音实物已验收。
 8. **一次回包**：最终屏幕 `RETURN_PACKAGE` 给出唯一结果 ZIP：
-   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01/results/sprint-<id>/return-results.zip`。
+   `/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r1/results/sprint-<id>/return-results.zip`。
    包含所有已执行/失败记录、原始 NPZ 哈希、本地路径、汇总 CSV、覆盖和恢复结果；人声 NPZ/WAV 留板，
    B 可直接读 `summary-v3.json` / `summary-v3.csv`（原 schema3）；FIR 开关配对在 `fir_switch_pairs`，
    不冒充不同模型的 baseline/candidate 配对。包中 `models/manifest.json` 绑定当前 strong 基线。
@@ -301,7 +307,8 @@ A=8c7c49c原回包门禁定音占比11.6%，因此仍判未通过；空源后窗
 
 ### A minimal observation and continuous-run request
 
-以下是交 A 的**待实现能力与验收要求**，不是已批准/已部署寄存器契约；C 不修改底层。
+以下是交 A 的能力与验收要求；C 不修改底层。A=1c84de9的v2契约已记载队长批准3000000帧上限、待新位流部署。
+C未收到新bit/hwh完整交付及60秒结果；本包继续绑定bb56ef1资产，不混用v2驱动与旧位流，不把批准当上板验收。
 基线文件为 A=bb56ef1 的 `board/audio_replay/replay_trial.py`、`live_pa.py`、`closed_tools.py` 和对应 RTL。
 最小建议：由 A 提供 `run_continuous(output_dir, fixture_id, model_path, bypass, gain_q12, hp_volume,
 seconds=60, before_start=..., stop_request=...)` 或说明实际等价入口；配置与静音完成后再调用 before_start。
@@ -318,9 +325,10 @@ seconds=60, before_start=..., stop_request=...)` 或说明实际等价入口；�
 若全 PCM 暂不可用，A 可先交连续主路与全程事件；C 将波形未覆盖区间保持 unknown。
 延长 watchdog 或改 ABI 由 A 提最小兼容变更表与回退，按现行流程审批，不由 C 绕过。
 
-### B=d033d00 的测量口径
+### B=6128282 独立验收后的测量口径
 
 接受正实轴相邻bin/不跨缺口的修复与本轮无候选决定；未覆盖频段保持未知。
+原109项软件测试、原16段220数值及最后两项入口/混合短片控制已由C独立通过，默认基线不变。
 4096/8192 的全16段结果含训练段；留出6段另报，不把小增益充分条件与相位穿越估计拼成可用增益区间。
 未取得同条件有效实测边界，不对外报告+3 dB、+5 dB或+2.8～+6.6 dB的实测性能。
 窗长敏感性是本套离线筛选的限制，不能据此给所有成对实测设通用±2 dB精度或最小改善门槛。

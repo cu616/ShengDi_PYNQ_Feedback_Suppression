@@ -230,7 +230,7 @@ def assemble_sprint(out, assets, model_path):
     from sprint_experiment import POLICY, PLAN as SPRINT_PLAN, DEFAULT_MODEL
     from model_comparison import qhash
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False);assets=Path(assets)
-    for name in ('sprint_experiment.py','evaluation.py','growth_monitor.py','tail_metrics.py',
+    for name in ('sprint_experiment.py','sprint_selftest.py','evaluation.py','growth_monitor.py','tail_metrics.py',
                  'model_comparison.py','room_experiment.py'):
         shutil.copy2(ROOT/'board/audio_replay'/name,out/name)
     for name in ('replay_trial.py','replay_tools.py','closed_tools.py','residual_tools.py',
@@ -264,8 +264,9 @@ def assemble_sprint(out, assets, model_path):
                dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=source.splitlines(True))])
     (out/'sprint.ipynb').write_text(json.dumps(notebook,ensure_ascii=False,indent=2),encoding='utf8')
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
-    for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt',
-                 'b-handoff-review.json','rc01-input-review.json'):
+    for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt','tests-rc01-r1.txt',
+                 'b-handoff-review.json','rc01-input-review.json',
+                 'b-6128282-review.json','b-6128282-tests.txt','b-6128282-repro.txt'):
         if (evidence/name).exists():
             (out/'offline-evidence').mkdir(exist_ok=True);shutil.copy2(evidence/name,out/'offline-evidence'/name)
     manifest=dict(policy=POLICY,calculation_version=VERSION,detector_config=CONFIG,plan=SPRINT_PLAN,
@@ -274,6 +275,7 @@ def assemble_sprint(out, assets, model_path):
         source_commits={'A':'bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6',
                         'B':'d033d0047542d5e50654a0333777c48ec08dce21',
                         'C':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip()},
+        b_independently_reviewed_commit='6128282f2853b829768c7310e57b08f0d84c4b89',
         coefficients_sha256=qhash(q),driver_software_acceptance=acceptance,
         hardware_executed=False,online_growth_detection=False,continuous_60s=False,
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
@@ -282,6 +284,13 @@ def assemble_sprint(out, assets, model_path):
                 if p.is_file() and '__pycache__' not in p.parts})
     (out/'sprint-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf8')
     from sprint_experiment import check_package
+    from sprint_selftest import run_selftest, selftest_line
+    preflight=run_selftest(out,require_preflight=False)
+    print(selftest_line(preflight))
+    if preflight['all_ok'] is not True:raise ValueError('PREFLIGHT_FAIL: '+str(preflight.get('stop_reason')))
+    (out/'preflight.json').write_text(json.dumps(preflight,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    manifest['hashes']['preflight.json']=sha(out/'preflight.json')
+    (out/'sprint-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf8')
     check_package(out)
     with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as archive:
         for p in sorted(out.rglob('*')):

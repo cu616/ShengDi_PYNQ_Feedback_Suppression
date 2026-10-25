@@ -17,7 +17,7 @@ from evaluation import VERSION, CONFIG, analyze_npz, sha
 from model_comparison import protection_evidence, qhash, flat_trial, export_csv
 from room_experiment import gate_metrics, sources, write_json
 
-POLICY = 'c-sprint-rc01-1.0.0'
+POLICY = 'c-sprint-rc01-1.0.1'
 DEFAULT_MODEL = dict(name='calibrated_20261024',source_file='models/room_v1/calibrated_20261024.json',
     file_sha256='c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a',
     coefficients_sha256='c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160',
@@ -34,7 +34,22 @@ PAIR_FIELDS = ('gain_q12', 'hp_volume', 'sample_rate_hz', 'fixture_id',
 PAIR_FIELDS += ('comparison_id','repeat_id','tail_first_frame','tail_end_frame')
 
 
-def check_package(base):
+def validate_preflight(manifest, preflight):
+    payload = {k:v for k,v in manifest['hashes'].items() if k!='preflight.json'}
+    rows = preflight.get('trials', [])
+    required = ('seconds','source_frames','transition_frames','capture_frames','window_frames')
+    if ('preflight.json' not in manifest['hashes'] or preflight.get('all_ok') is not True or
+            preflight.get('policy') != POLICY or
+            preflight.get('evidence_kind') != 'software_fixture' or
+            preflight.get('source_commits') != manifest['source_commits'] or
+            preflight.get('payload_hashes') != payload or len(rows)!=13 or
+            any(r.get('ok') is not True or any(not isinstance(r.get(k),(int,float)) or
+                not np.isfinite(r[k]) or r[k]<=0 for k in required) or
+                r['window_frames']>r['capture_frames'] for r in rows)):
+        raise ValueError('PREFLIGHT_FAIL: missing, failed or stale software preflight')
+
+
+def check_package(base, require_preflight=True):
     base = Path(base).resolve()
     manifest = json.loads((base/'sprint-manifest.json').read_text(encoding='utf8'))
     if (manifest['policy'] != POLICY or manifest['plan'] != PLAN or
@@ -52,6 +67,9 @@ def check_package(base):
     if (sha(base/'model.json')!=DEFAULT_MODEL['file_sha256'] or
             qhash(q)!=DEFAULT_MODEL['coefficients_sha256']):
         raise ValueError('default calibrated model mismatch; no candidate_512 fallback')
+    if require_preflight:
+        preflight = json.loads((base/'preflight.json').read_text(encoding='utf8'))
+        validate_preflight(manifest, preflight)
     return manifest
 
 

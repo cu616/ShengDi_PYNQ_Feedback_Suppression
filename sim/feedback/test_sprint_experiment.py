@@ -44,6 +44,27 @@ class Runner(RoomRunner):
 
 
 class SprintTests(unittest.TestCase):
+    def test_preflight_rejects_failure_stale_payload_and_missing_trial_fields(self):
+        manifest=dict(source_commits={'C':'fixture'},hashes={'model.json':'m','preflight.json':'p'})
+        row=dict(seconds=1.02,source_frames=48828,transition_frames=2442,
+                 capture_frames=16384,window_frames=14920,ok=True)
+        valid=dict(all_ok=True,policy=sprint.POLICY,evidence_kind='software_fixture',
+                   source_commits=manifest['source_commits'],payload_hashes={'model.json':'m'},
+                   trials=[dict(row) for _ in range(13)])
+        sprint.validate_preflight(manifest,valid)
+        for patch_value in ({'all_ok':False},{'payload_hashes':{'model.json':'stale'}},
+                            {'source_commits':{'C':'old'}},{'trials':[]}):
+            with self.assertRaisesRegex(ValueError,'PREFLIGHT_FAIL'):
+                sprint.validate_preflight(manifest,dict(valid,**patch_value))
+        for field,value in [('ok',False),('window_frames',0),('window_frames',20000),('seconds',float('nan'))]:
+            bad=copy.deepcopy(valid);bad['trials'][0][field]=value
+            with self.assertRaisesRegex(ValueError,'PREFLIGHT_FAIL'):
+                sprint.validate_preflight(manifest,bad)
+        for field in ('seconds','source_frames','transition_frames','capture_frames','window_frames','ok'):
+            bad=copy.deepcopy(valid);del bad['trials'][0][field]
+            with self.assertRaisesRegex(ValueError,'PREFLIGHT_FAIL'):
+                sprint.validate_preflight(manifest,bad)
+
     def work(self):
         (ROOT/'tmp').mkdir(exist_ok=True)
         return tempfile.TemporaryDirectory(dir=ROOT/'tmp')
