@@ -1,6 +1,6 @@
 // Bounded closed-loop path. Bypass and cancellation share gain and scheduling.
 // Register contract: docs/interfaces/audio-closed-v1.md.
-module audio_pl_closed #(parameter integer CAPTURE_FRAMES=16384, TAPS=256, MAX_RUN_FRAMES=488281)(
+module audio_pl_closed #(parameter integer CAPTURE_FRAMES=16384, TAPS=256, MAX_RUN_FRAMES=3000000)(
     input wire clk, resetn,
     input wire [31:0] control, capture_cmd, coefficient_cmd, frame_limit,
     input wire sdata_i,

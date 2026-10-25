@@ -1,6 +1,6 @@
 // Bounded closed-loop path. Bypass and cancellation share gain and scheduling.
 // Register contract: docs/contracts/audio-replay-v1.md.
-module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_RUN_FRAMES=488281, SOURCE_FRAMES=131072)(
+module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_RUN_FRAMES=3000000, SOURCE_FRAMES=131072)(
     input wire clk, resetn,
     input wire [31:0] control, capture_cmd, coefficient_cmd, frame_limit,
     input wire [31:0] source_cmd, source_length,
