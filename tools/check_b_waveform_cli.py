@@ -1,4 +1,4 @@
-"""Exercise B's unchanged waveform CLI on r4 originals and five bad inputs.
+"""Exercise B's unchanged waveform CLI on r4 originals and bad inputs.
 
 This is an entry-point audit, not another waveform implementation. It only
 mutates inputs, invokes the exact Git blob and inspects exits/reports. NumPy is
@@ -24,7 +24,8 @@ SUMMARY_PACK_SHA = "474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc2
 NAMES = ("07-fir-off.npz", "09-fir-on.npz", "11-fir-on.npz",
          "13-fir-off.npz", "15-continuous-60s.npz")
 CASES = ("original", "prediction_mismatch", "missing_unlisted_tail",
-         "wrong_frozen_model", "wrong_summary_value", "missing_requested_summary")
+         "wrong_frozen_model", "wrong_summary_value", "missing_requested_summary",
+         "used_file_unlisted", "model_lag_first_changed", "summary_capture_identity_changed")
 
 
 def digest(raw):
@@ -100,6 +101,20 @@ def run(b_commit, out_dir):
             summary_path.write_text(json.dumps(edited), encoding="utf8")
         elif case == "missing_requested_summary":
             summary_path = folder / "not-present.json"
+        elif case == "used_file_unlisted":
+            # The NPZ is still consumed. Omitting it must not bypass hash verification.
+            edited = json.loads(originals["manifest.json"])
+            del edited["files"]["09-fir-on.npz"]
+            (pack / "manifest.json").write_text(json.dumps(edited), encoding="utf8")
+        elif case == "model_lag_first_changed":
+            # Q20 alone is not the complete deployed model: lag_first is semantic.
+            edited = json.loads(model_raw)
+            edited["lag_first"] = 2
+            model_path.write_text(json.dumps(edited), encoding="utf8")
+        elif case == "summary_capture_identity_changed":
+            edited = json.loads(summary_raw)
+            edited["fir_switch_pairs"][0]["off_capture_id"] = "different-capture-not-the-original"
+            summary_path.write_text(json.dumps(edited), encoding="utf8")
 
         command = [sys.executable, str(script), "--pack", str(pack),
                    "--model", str(model_path), "--summary-v3", str(summary_path),
@@ -111,6 +126,8 @@ def run(b_commit, out_dir):
         row = dict(case=case, command=command, exit_code=process.returncode,
                    waveform_report_written=report is not None,
                    package_ok=report.get("package_ok") if report else None,
+                   reported_ok=report.get("ok") if report else None,
+                   reported_failures=report.get("failures") if report else None,
                    stdout=process.stdout, stderr=process.stderr)
         if case == "original":
             row["passed"] = (process.returncode == 0 and report is not None
@@ -123,6 +140,7 @@ def run(b_commit, out_dir):
             row["rejected"] = process.returncode != 0
         if report:
             row["model_q20_sha256"] = report["model"]["q20_sha256"]
+            row["model_lag_first"] = report["model"]["lag_first"]
             row["trial_q20_sha256"] = report.get("trials", {}).get("09-fir-on.npz", {}).get("coefficients_sha256")
             row["prediction_mismatches"] = report.get("trials", {}).get("09-fir-on.npz", {}).get("prediction_mismatches")
             row["manifest_entries"] = len(report.get("package_rows", []))
@@ -130,6 +148,8 @@ def run(b_commit, out_dir):
             if report.get("pairs_computed") and report.get("pairs_reference"):
                 row["first_total_difference_db"] = abs(report["pairs_computed"][0]["total_db"]
                     - report["pairs_reference"][0]["on_minus_off_response_rms_db"])
+                row["summary_first_off_capture_id"] = report["pairs_reference"][0].get("off_capture_id")
+                row["actual_first_off_capture_id"] = report.get("trials", {}).get("07-fir-off.npz", {}).get("capture_id")
         rows.append(row)
 
     rejected = sum(row["rejected"] for row in rows[1:])
@@ -151,7 +171,7 @@ def run(b_commit, out_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--b-commit", default="05657e5784d0d78eb446d752bff258a0cf21e51e")
+    parser.add_argument("--b-commit", default="12e5ce21e88bc4e17166cc327182cc10929932cf")
     parser.add_argument("--out-dir", type=Path, default=ROOT / "tmp/b-waveform-cli-review")
     arguments = parser.parse_args()
     try:

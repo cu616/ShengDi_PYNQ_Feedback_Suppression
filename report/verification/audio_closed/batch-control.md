@@ -1288,3 +1288,63 @@ R-007只保留这一处整体资格阻塞，请B修原入口及入口级回归�
 实际距离/声源待A核实；原记录保留，修正说明另附provenance即可，不为补元数据重跑。
 metadata的mic_full_scale_samples=0只覆盖保存尾窗，不能宣称全8秒输入未削顶。
 启动脚本与47367f9字节相同，D4没有关闭。只把具体事实缺项并入R-009，B本轮派单不变。
+
+## 2026-10-25 A新修复、B新修复与下一发包输入
+
+### B12e5ce2旧反例关闭，身份绑定仍需修
+
+[独立验收](sprint-rc0-20261025/b-12e5ce2-review.json)、[原130项回归](sprint-rc0-20261025/b-12e5ce2-tests.txt)确认脚本与0167e14同blob，
+实际正例加summary-v3/C-review退出0，算术与配对原值逐值不变；B未测的60秒output保持未测。
+旧五项均已正确拒绝。按原验收要求继续核查“实际使用文件、完整模型语义、配对身份”时，三项仍退出0且ok=true：
+
+| 变异 | 漏检原因 | 要求 |
+|---|---|---|
+| 09-fir-on仍在并被使用，但manifest漏列它 | 仅遍历清单已有条目，角色计数不核验每件来源 | 每件使用文件都有哈希/字节数核验，未核验不得用 |
+| 模型lag_first从1改2，Q20不变 | 只比metadata Q20，算术仍硬编码1 | taps/lag_first/实际系数与给定部署模型绑定，固定语义不支持则拒绝 |
+| summary首组off_capture_id换成其他ID | 只比较数值和两个valid布尔值 | 对照关联实际capture、repeat/臂及帧区间，不能靠复制有效标记 |
+
+[完整命令/输出](sprint-rc0-20261025/b-12e5ce2-cli-controls.json)包含原正例及八坏例。
+现用[同一C入口](../../../tools/check_b_waveform_cli.py)：
+
+```text
+python tools/check_b_waveform_cli.py --b-commit 12e5ce2 --out-dir tmp/b-waveform-cli-review
+```
+
+真实退出2，末行`B_WAVEFORM_CLI_REVIEW failed | positive=passed | bad_rejected=5/8`。
+R-007只余三项明确绑定缺口，不撤回旧五项已修结论，也不重开系数/候选或要求新采集。
+
+### Ad8ffaf0启动语义接受，原交付未复现
+
+[原命令及精确AST控制](sprint-rc0-20261025/a-d8ffaf0-review.json)确认GO/START返回START，None/CANCEL/空/非法均取消，
+C的before_start条件相应为false。该项软件语义接受，不能继续说A未修。
+原`board/audio_replay/deliver_check.py`在独立导出目录退出1，最后为`DELIVERY_INCOMPLETE routing,start_control`：
+两个测试读取旧`D:\OCadence_Project\Flushbonading_FPGA_Contest\_a_work\run_human_r1.sh`，路由测试另读未绑定h1副本。
+这既不能独立复现，也不能证明测试的就是检查器散列的交付源码。请A改相对本文件的原件/显式冻结夹具，必需提示缺失不得SKIP到通过。
+
+A更正中承认默认布局非实测、仅2项failed及尾窗统计边界，接受；
+“C不记录布局、summary.layout为None”仍不准确，实际字段为`summary.scene.layout`并原样记录A回复。
+OTHER与NO_AMPLIFICATION按原run/字段分别保留；C代码没有将OTHER自动改成NO_AMPLIFICATION。
+后续不得自动用默认LAYOUT/SAME_SCENE冒充核实。本轮只修软件及既有记录，不录新音或上传人声。
+
+### C外录交付清单与门禁判断
+
+交付消息漏列A须外部产生四WAV是C说明缺项，已补[完整清单](../../../board/audio_closed/BATCH_GUIDE.md#下一次真人发包必须随消息列全的外部输入)，
+包括固定外部人声源、录音设备/增益/AGC、off-speech/off-noise/on-speech/on-noise、格式、目录、缺失/失败分支和仅回哈希结果包。
+这些WAV不由板端NPZ自动产生；未进入听众环节时不为凑文件继续执行。
+
+[五项受控门禁及耦合反例](sprint-rc0-20261025/gate-coupling-review.json)实际调用当前gate_metrics：
+首项已是传入底噪+6dB和定音占比，非旧标定绝对电平匹配。底噪同期下降时低15dB仍可过源可观测性；
+使用旧固定底噪则失败，使用前一门禁基线则因真实漂移失败，两种用途不能混为一谈。
+下一包需绑定当前同场静默证据，不能自动重设基线或删掉成对一致性；布局变化先撤销旧模型同场适用授权。
+本轮只修说明，没有启用自适应门禁或发新现场ZIP。
+
+A报参考−40.9/麦克风−37.9dBFS，差值算术为+3dB；原校准捕获/同期底噪/完整配置未交C，独立验证状态为未知。
+即使理想白源，两条合成FIR的RMS比都为+3.0103dB，频响峰值却可为+3.0103与+21.4295dB；
+另一对合成路径1kHz幅度完全一致而宽带响应不同。因此不以单个RMS比解释所有饱和/再生/不可辨扩声，也不据此给阈值或归因为啸叫。
+这些是反例而非真实房间模型；未校准不报绝对SPL。本线[164项回归](sprint-rc0-20261025/c-handoff-b12-tests.txt)通过。
+
+发布前一次核头发现A=e4bed22/B=510f36f。A只新增耦合幅度表和模型，B只新增增益预算脚本/报告，
+本次验收的A启动/测试和B波形入口blob均未改，故上述失败与已接受项均保持，不重跑相同入口。
+A新表的broadband为−5.816dB而非原口头+3dB，缺ref/mic、相位/相干及配置，不混为同一次测量或命名最大稳定增益；新模型不接入。
+B新预算数字尚未独立复核；其中最大允许增益、旧场推新场“不能/唯一出路”须按既有N1收窄为受条件限制的采样界参考，不能作为现场放行。
+已有向A索取非人声原件的事项由B同包统筹，C不另加重复原件请求或新采集。
