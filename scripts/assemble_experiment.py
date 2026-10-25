@@ -227,7 +227,8 @@ def assemble_r4_b_handoff(out):
     a_commit='d013930f0624c35101c92cc8b62d985f10e21e0c'
     packet=subprocess.check_output(['git','show',a_commit+':report/verification/audio-replay/c-sprint-rc01-r4-return.zip'],cwd=ROOT)
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
-    review=json.loads((evidence/'a-d013930-review.json').read_text(encoding='utf8'))
+    c_source=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip()
+    review=json.loads(subprocess.check_output(['git','show',c_source+':report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json'],cwd=ROOT))
     assert review['metadata_review_passed'] and hashlib.sha256(packet).hexdigest()==review['return_zip_sha256']
     (out/'a-original-return.zip').write_bytes(packet)
     import io
@@ -241,7 +242,8 @@ def assemble_r4_b_handoff(out):
     assert len(json.loads((out/'summary-v3.json').read_text(encoding='utf8'))['fir_switch_pairs'])==2
     for source,target in (('a-d013930-review.json','c-validity-review.json'),
         ('b-71d6a34-review.json','c-b-revision-review.json'),('b-71d6a34-tests.txt','b-control-tests.txt')):
-        shutil.copy2(evidence/source,out/target)
+        frozen=subprocess.check_output(['git','show',c_source+':report/verification/audio_closed/sprint-rc0-20261025/'+source],cwd=ROOT)
+        (out/target).write_bytes(frozen)
     (out/'README.md').write_text('''# r4 → B：汇总判读输入
 
 唯一数据入口：summary-v3.json → fir_switch_pairs（2组）。每项源内响应见summary.json → trials → source_response。
@@ -260,7 +262,7 @@ B=71d6a34闭环/余量/控制数值已由C独立通过；N1–N3发布措辞与�
     manifest=dict(kind='r4_to_b_metadata_handoff',entry='summary-v3.json',array='fir_switch_pairs',
         a_result_commit=a_commit,a_asset_commit='85f4967f242eed61eaa6b74041be931c2f5bc7a0',
         b_revision_commit='71d6a349af3af2675e5be95b583180902ab9a090',
-        c_source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
+        c_source_commit=c_source,
         original_return_sha256=hashlib.sha256(packet).hexdigest(),metadata_validity='passed',
         raw_waveform_independent_review='not_tested_missing_five_existing_npz',raw_audio_included=False,
         missing_raw_files=review['missing_raw_once'],
