@@ -80,6 +80,31 @@ class PositiveRealCrossingTest(unittest.TestCase):
         self.assertAlmostEqual(hits[0][0], 0.5, places=6)      # 最大 Re 在 410 Hz
         self.assertAlmostEqual(hits[0][1], 410.0, places=6)
 
+    def test_multiple_isolated_real_bins_are_all_counted(self):
+        """C 的第二个反例：f=[400,410,420]、L=0.5·exp(j·[0°,10°,0°])、gate=[T,F,T]。
+
+        400 与 420 都是合格正实轴采样，各计一次；不需要跨缺口插值。
+        旧实现只在相邻对里判端点，两个端点都不在任何相邻对里，于是全部漏掉、返回 inf。
+        """
+        freqs = np.array([400.0, 410.0, 420.0])
+        loop = loop_from([0.0, 10.0, 0.0], [0.5, 0.5, 0.5])
+        gate = np.array([True, False, True])
+        thr, hz = dpm.positive_real_crossing(loop, freqs, gate, fmin=0.0)
+        self.assertAlmostEqual(thr, 6.0206, places=3)
+        self.assertEqual({400.0, 420.0}.__contains__(hz), True)
+        hits = dpm.positive_real_crossing(loop, freqs, gate, fmin=0.0, return_all=True)
+        self.assertEqual(len(hits), 2, "孤立端点计数应为 2，实际 %r" % (hits,))
+        self.assertAlmostEqual(max(h[0] for h in hits), 0.5, places=6)
+
+    def test_isolated_real_bin_between_gapped_neighbours(self):
+        """gate=[F,T,F]：只有中间那个 bin 过门控且恰在正实轴上，仍应计一次。"""
+        freqs = np.array([400.0, 410.0, 420.0])
+        loop = loop_from([10.0, 0.0, -10.0], [0.5, 0.4, 0.5])
+        thr, hz = dpm.positive_real_crossing(loop, freqs, np.array([False, True, False]),
+                                             fmin=0.0)
+        self.assertAlmostEqual(thr, 7.9588, places=3)      # 1/0.4
+        self.assertAlmostEqual(hz, 410.0, places=6)
+
     def test_does_not_interpolate_across_a_coherence_gap(self):
         """只有 400 与 420 过门控、410 被门控掉时，不能跨过去连成一次穿越。"""
         freqs = np.array([400.0, 410.0, 420.0])

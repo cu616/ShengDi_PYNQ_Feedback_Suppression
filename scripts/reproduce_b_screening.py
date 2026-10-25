@@ -59,6 +59,78 @@ def list_segments(dirpath):
     return sorted(glob.glob(str(Path(dirpath) / "seg_*.npz")), key=seg_sort_key)
 
 
+def parse_seg_id(path):
+    """从 seg_<id>.npz 取整数编号；编号是段的身份，不能拿列表下标代替。"""
+    tail = Path(path).stem.split("_")[-1]
+    if not tail.isdigit():
+        raise ValueError("段文件名不含整数编号：%s" % path)
+    return int(tail)
+
+
+def load_manifest_hashes(manifest_path):
+    """返回 (文件名->sha256 或 None, 状态说明)。清单缺失或不可解析时映射为 None。
+
+    None 的含义是"未核对"，调用方不得把它当成"一致"。
+    """
+    p = Path(manifest_path)
+    if not p.exists():
+        return None, "缺失（%s）：所有 sha_match 记未知" % p.name
+    try:
+        m = json.loads(p.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return None, "解析失败（%s）：所有 sha_match 记未知" % exc
+    files = m.get("files")
+    if not isinstance(files, list) or not files:
+        return None, "无 files 列表（%s）：所有 sha_match 记未知" % p.name
+    out = {}
+    for f in files:
+        if not isinstance(f, dict):
+            continue
+        name = Path(str(f.get("path", ""))).name
+        digest = f.get("sha256")
+        if name and isinstance(digest, str) and digest:
+            out[name] = digest
+    if not out:
+        return None, "files 里没有可用 (path, sha256) 对：所有 sha_match 记未知"
+    return out, "已读取 %d 条（%s）" % (len(out), p.name)
+
+
+def resolve_segment_ids(paths, train_ids, valid_ids):
+    """按**文件 ID** 绑定训练/留出。
+
+    只按 ID 取段，绝不按列表下标取——否则"缺 seg_5、补 seg_16"会把 seg_10 悄悄挪进训练集。
+    返回的 failures 非空即表示输入不合格，调用方必须停止，不产出任何复算数字。
+    """
+    by_id, duplicates = {}, []
+    for p in paths:
+        sid = parse_seg_id(p)
+        if sid in by_id:
+            duplicates.append(sid)
+        by_id[sid] = p
+    train_ids = list(train_ids)
+    valid_ids = list(valid_ids)
+    wanted = set(train_ids) | set(valid_ids)
+    overlap = sorted(set(train_ids) & set(valid_ids))
+    missing = sorted(i for i in wanted if i not in by_id)
+    unexpected = sorted(i for i in by_id if i not in wanted)
+    failures = []
+    if overlap:
+        failures.append("训练与留出 ID 重叠：seg_%s" % overlap)
+    if missing:
+        failures.append("缺号：seg_%s" % missing)
+    if duplicates:
+        failures.append("重号：seg_%s" % sorted(set(duplicates)))
+    return {
+        "by_id": by_id,
+        "train": [by_id[i] for i in train_ids if i in by_id],
+        "valid": [by_id[i] for i in valid_ids if i in by_id],
+        "missing": missing,
+        "duplicates": sorted(set(duplicates)),
+        "unexpected": unexpected,
+        "failures": failures,
+    }
+
+
 def sha256_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -171,6 +243,42 @@ def band_table(H, H_hat, freqs, gate, coh):
     return out
 
 
+def split_pairing_control(coef, u, m, taps=TAPS, pieces=8):
+    """切片后逐片复位 vs 整条一次跑，在**同一批全局帧索引**上比较。
+
+    片长 <= taps 的片没有段内历史，无法评估，两边同时剔除。
+    返回两侧样本数、配对帧数、逐样本最大差与 RMS 差；另给一个"不同样本集合"的参考差，
+    后者是选窗差，不能当最小可辨改善。
+    """
+    n_total = len(u)
+    res_whole = m - predict_stream(coef, u)
+    bounds = np.linspace(0, n_total, pieces + 1).astype(int)
+    piece_res, keep, dropped = [], [], []
+    for k in range(pieces):
+        a, b = int(bounds[k]), int(bounds[k + 1])
+        if b - a <= taps:
+            dropped.append((a, b))
+            piece_res.append(None)
+            continue
+        piece_res.append((a, b, m[a:b] - predict_stream(coef, u[a:b])))
+        keep.append(np.arange(a + taps, b))          # 片内有效帧的全局索引
+    out = {"frames": {"whole": int(n_total - taps), "piece": 0, "paired": 0},
+           "max_abs_diff": None, "rms_delta_db": None, "window_only_delta_db": None,
+           "dropped_pieces": dropped}
+    if not keep:
+        return out
+    idx = np.concatenate(keep)
+    e_piece = np.concatenate([r[taps:] for (_, _, r) in piece_res if r is not None])
+    e_whole = res_whole[idx]
+    rms = lambda x: float(np.sqrt(np.mean(np.square(x))))
+    out["frames"] = {"whole": int(n_total - taps), "piece": int(idx.size),
+                     "paired": int(idx.size)}
+    out["max_abs_diff"] = float(np.max(np.abs(e_piece - e_whole)))
+    out["rms_delta_db"] = float(20 * np.log10(rms(e_piece) / rms(e_whole)))
+    out["window_only_delta_db"] = float(20 * np.log10(rms(e_piece) / rms(res_whole[taps:])))
+    return out
+
+
 def biquad_notch_mag(f, f0, depth_db, q):
     """二阶陷波的**幅度**响应（筛选参考；不含真实 SOS 的相位与延迟）。"""
     w = f / f0
@@ -218,42 +326,62 @@ def main():
     if not all_paths:
         raise SystemExit("no seg_*.npz in %s" % args.data_dir)
     tr_idx, va_idx = span(args.train), span(args.valid)
-    tr = [all_paths[i] for i in tr_idx]
-    va = [all_paths[i] for i in va_idx]
-    if set(tr_idx) & set(va_idx):
-        raise SystemExit("训练段与留出段重叠，先改 --train/--valid")
-
-    # ---- [1] 输入清单 -------------------------------------------------
-    man = Path(args.data_dir).parent / "manifest.json"
-    man_map = {}
-    if man.exists():
-        try:
-            m = json.loads(man.read_text(encoding="utf-8"))
-            for f in m.get("files", []):
-                man_map[Path(f["path"]).name] = f.get("sha256")
-        except Exception as exc:          # 清单坏了不影响主流程
-            say("[1] manifest 解析失败：%s" % exc)
-    u0, m0, fs = load_segment(all_paths[0])
+    man_path = Path(args.data_dir).parent / "manifest.json"
+    man_map, man_status = load_manifest_hashes(man_path)
+    res = resolve_segment_ids(all_paths, tr_idx, va_idx)
+    tr, va = res["train"], res["valid"]
+    if tr:
+        u0, m0, fs = load_segment(tr[0])
+    else:
+        u0, m0, fs = load_segment(all_paths[0])
     FS_CACHE[0] = fs
 
     say("=" * 78)
-    say("[1] 输入清单（%s）" % Path(args.data_dir).name)
-    say("  fs=%.3f Hz，段数=%d，训练=%s，留出=%s，taps=%d，ridge=%g"
-        % (fs, len(all_paths), args.train, args.valid, TAPS, RIDGE))
+    say("[1] 输入资格（%s）" % Path(args.data_dir).name)
+    say("  fs=%.3f Hz，taps=%d，ridge=%g，训练 ID=%s，留出 ID=%s"
+        % (fs, TAPS, RIDGE, args.train, args.valid))
+    say("  manifest：%s" % man_status)
     inv = []
-    for i, p in enumerate(all_paths):
+    for p in all_paths:
+        sid = parse_seg_id(p)
         u, mm, _ = load_segment(p)
         h = sha256_file(p)
-        role = "train" if i in tr_idx else ("heldout" if i in va_idx else "unused")
-        declared = man_map.get(Path(p).name)
-        inv.append({"index": i, "file": Path(p).name, "role": role, "bytes": Path(p).stat().st_size,
-                    "samples": int(len(u)), "sha256": h, "manifest_sha256": declared,
-                    "sha_match": (declared is None or declared == h),
+        role = "train" if sid in tr_idx else ("heldout" if sid in va_idx else "unused")
+        declared = man_map.get(Path(p).name) if man_map else None
+        match = None if declared is None else (declared == h)
+        inv.append({"seg_id": sid, "file": Path(p).name, "role": role,
+                    "bytes": Path(p).stat().st_size, "samples": int(len(u)),
+                    "sha256": h, "manifest_sha256": declared, "sha_match": match,
                     "mic_rms_dbfs": float(dbfs(mm))})
-        say("  %-10s %-8s %6d 样本  mic %+6.2f dBFS  %s%s"
-            % (Path(p).name, role, len(u), dbfs(mm), h[:16],
-               "" if declared is None else ("  (manifest 一致)" if declared == h else "  (manifest 不符!)")))
+        note = ("  (清单无此项，未核对)" if match is None
+                else ("  (manifest 一致)" if match else "  (manifest 不符!)"))
+        say("  seg_%-3d %-8s %6d 样本  mic %+6.2f dBFS  %s%s"
+            % (sid, role, len(u), dbfs(mm), h[:16], note))
     result["inputs"] = inv
+    result["input_check"] = {"missing": res["missing"], "duplicates": res["duplicates"],
+                             "unexpected": res["unexpected"], "failures": list(res["failures"])}
+
+    if res["missing"]:
+        say("  [缺号] seg_%s：训练/留出清单要求的段不存在" % res["missing"])
+    if res["duplicates"]:
+        say("  [重号] seg_%s：同一 ID 出现多次" % res["duplicates"])
+    if res["unexpected"]:
+        say("  [意外项] seg_%s 不在训练/留出清单内，本轮不使用" % res["unexpected"])
+    bad_hash = [i["file"] for i in inv if i["sha_match"] is False]
+    if bad_hash:
+        say("  [哈希不符] %s" % bad_hash)
+        res["failures"].append("manifest 声明与文件内容不一致：%s" % bad_hash)
+    result["input_check"]["failures"] = list(res["failures"])
+    if res["failures"]:
+        for f in res["failures"]:
+            say("  [不合格] %s" % f)
+        say("  → 停止：输入不合格时不产出任何复算数字，退出码 2")
+        if out:
+            (out / "input-check.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return 2
+    say("  合格：训练 %d 段（%s）、留出 %d 段（%s）；留出段不进入训练"
+        % (len(tr), ",".join("seg_%d" % i for i in tr_idx),
+           len(va), ",".join("seg_%d" % i for i in va_idx)))
 
     # ---- [2] 基线：部署 Q20 -------------------------------------------
     model, coef, info = load_deployed_model(args.model)
@@ -383,8 +511,8 @@ def main():
     say("  判读：加权**不是严格零和**，但也给不出可交付的收益——")
     say("        最有利的一档只比等权高 %+.1f dB（小增益）/ %+.1f dB（穿越），" % (best_small, best_real))
     say("        而 ×20 时反过来恶化 %+.1f / %+.1f dB。增益随权重非单调、方向不稳，" % (g_small, g_real))
-    say("        且全部低于现场可验证门限（5 dB）；另外频域 LS 与上面的时间域等权不是同一个估计器，")
-    say("        跨估计器比较本身就要打折扣。故维持否定，不交候选。")
+    say("        且幅度都在 dB 个位数量级；另外频域 LS 与上面的时间域等权不是同一个估计器，")
+    say("        跨估计器比较本身要打折扣。故维持否定，不交候选。")
 
     ms = {"status": "untested",
           "reason": "只有 2026-10-23 与 2026-10-24 两个场次；10-23 处话筒接线松脱期，"
@@ -431,69 +559,64 @@ def main():
     say("        3898 Hz 缺口 −3 dB 宽约 488 Hz；参考取点还必须移到 EQ 之后（契约语义变更）。不交。")
 
     # ---- [5] 分段边界控制 ---------------------------------------------
-    say("\n[5] 分段边界控制")
-    # 5a 评估侧：把一条连续捕获切成 8 段，逐段复位
+    say("\n[5] 分段边界控制（所有比较按**相同全局帧索引**配对）")
+
+    # 5a 评估侧：一条连续捕获切成 8 片，逐片复位；与整条一次跑按同一批帧比较。
     probe = va[0]
     up, mp, _ = load_segment(probe)
-    whole = mp - predict_stream(coef, up)
-    whole = whole[TAPS:]
-    pieces = np.array_split(np.arange(len(up)), 8)
-    res_pieces, res_whole_slice = [], []
-    for pc in pieces:
-        seg_u, seg_m = up[pc], mp[pc]
-        r = seg_m - predict_stream(coef, seg_u)
-        if len(pc) > TAPS:
-            res_pieces.append(r[TAPS:])
-        res_whole_slice.append(whole[max(0, pc[0] - TAPS):])
-    e_piece = np.concatenate(res_pieces)
-    e_whole = np.concatenate(res_whole_slice)
-    split_delta = 20 * np.log10(np.sqrt(np.mean(e_piece ** 2)) / np.sqrt(np.mean(e_whole ** 2)))
-    say("  5a 连续捕获 %s 整条 vs 切成 8 段逐段复位：残差差 %+.2f dB"
-        % (Path(probe).name, split_delta))
-    say("     → 这是分段口径本身能造出的量级；任何小于它的收益都不该写成结论。")
+    ctl = split_pairing_control(coef, up, mp)
+    n_whole = ctl["frames"]["whole"]
+    n_piece = ctl["frames"]["piece"]
+    say("  5a %s（%d 帧）切 8 片逐片复位 vs 整条一次跑，按同一批全局帧比较："
+        % (Path(probe).name, len(up)))
+    say("     样本数：整条有效 %d、逐片有效 %d、配对 %d（取交集，两边各统计一次）"
+        % (n_whole, n_piece, ctl["frames"]["paired"]))
+    if ctl["dropped_pieces"]:
+        say("     片长 <= %d 帧的片 %s 无法评估（需要完整段内历史），两边同时剔除"
+            % (TAPS, ctl["dropped_pieces"]))
+    say("     逐样本最大差 %.3e，RMS 差 %+.2f dB" % (ctl["max_abs_diff"], ctl["rms_delta_db"]))
+    say("     结论：每片都保留 >= %d 帧段内历史时，逐片复位与整条跑在配对帧上完全相同，" % TAPS)
+    say("           分段本身不改变残差、也造不出收益。（旧版 0.53 dB 系样本配对错误，已撤回。）")
+    say("     参考：换成**不同样本集合**（逐片 %d 帧 vs 整条 %d 帧）比较，差 %+.2f dB；"
+        % (n_piece, n_whole, ctl["window_only_delta_db"]))
+    say("           这是选窗差（帧数不同），不能当最小可辨改善，也不能据它否定更小的差异。")
 
-    # 5b 拟合侧：拼段拟合 vs 逐段拟合 × 逐段评估 vs 拼段评估
+    # 5b 拟合侧：逐段拟合 vs 拼段拟合，评估落在同一组留出帧上
     Gc, bc, rows_c = concat_gram(tr)
     h_concat = solve_ridge(Gc, bc)
     h_seg = solve_ridge(G, bb)
-    say("  5b 训练法方程行数：逐段 %d / 拼段 %d（差 %d = 9 个边界 × %d，正好是跨段窗口）"
-        % (rows, rows_c, rows_c - rows, TAPS))
+    say("  5b 训练法方程行数：逐段 %d / 拼段 %d（差 %d = %d 个边界 × %d，正好是跨段窗口）"
+        % (rows, rows_c, rows_c - rows, len(tr) - 1, TAPS))
     U = np.concatenate([load_segment(p)[0] for p in va])
     M = np.concatenate([load_segment(p)[1] for p in va])
-    lens = [len(load_segment(p)[0]) for p in va]
-    say("  %-14s %18s %18s" % ("拟合方式", "逐段复位(抑制dB)", "拼段流(抑制dB)"))
+    starts, off = [], 0
+    for p in va:
+        n = len(load_segment(p)[0])
+        starts.append((off, n))
+        off += n
+    pair_idx = np.concatenate([np.arange(s + TAPS, s + n) for s, n in starts])
+    say("     %-14s %16s %14s %14s" % ("拟合方式", "抑制dB(配对帧)", "小增益dB", "穿越dB"))
     ctrl = {}
     for tag, h in (("per_segment", h_seg), ("concatenated", h_concat)):
         r = M - predict_stream(h, U)
-        e_cat = r[TAPS:]
-        e_seg, off = [], 0
-        for n in lens:
-            e_seg.append(r[off + TAPS: off + n])
-            off += n
-        e_seg = np.concatenate(e_seg)
-        # 无预测基准：同一区域内 mic 自身的 RMS
-        mic_seg, off = [], 0
-        for n in lens:
-            mic_seg.append(M[off + TAPS: off + n])
-            off += n
-        mic_seg = np.concatenate(mic_seg)
-        sup_seg = 20 * np.log10(np.sqrt(np.mean(mic_seg ** 2)) / np.sqrt(np.mean(e_seg ** 2)))
-        sup_cat = 20 * np.log10(np.sqrt(np.mean(M[TAPS:] ** 2)) / np.sqrt(np.mean(e_cat ** 2)))
-        ctrl[tag] = {"suppression_per_segment_db": float(sup_seg),
-                     "suppression_concatenated_db": float(sup_cat),
-                     "overstatement_db": float(sup_cat - sup_seg)}
-        say("  %-14s %+18.2f %+18.2f   （拼段流把抑制多报 %+.2f dB）"
-            % (tag, sup_seg, sup_cat, sup_cat - sup_seg))
-    over = max(abs(v["overstatement_db"]) for v in ctrl.values())
-    d_fit = abs(ctrl["per_segment"]["suppression_per_segment_db"]
-                - ctrl["concatenated"]["suppression_per_segment_db"])
-    say("  判读：拼段评估相对逐段复位的偏差 %.2f dB、两种拟合方式相差 %.2f dB——" % (over, d_fit))
-    say("        在本数据上拼段**没有**造出收益（边界白得的 %d 样本预热同时带进不可预测的换段跳变，" % TAPS)
-    say("        两相抵消）。所以分段口径的分辨力就是 5a 的 %.2f dB，本文件其余结论一律按逐段复位。" % split_delta)
-    say("        推论：上一轮「两级抽取 +1.0 dB」的撤回保持不变，但它不能被归因于拼段——")
-    say("        该数字来自不可比的残差口径，已整体废弃；任何 <%.2f dB 的后续收益本套口径无法分辨。" % split_delta)
-    result["boundary_control"] = {"split_probe_file": Path(probe).name,
-                                  "split_delta_db": float(split_delta), "fits": ctrl}
+        e = r[pair_idx]
+        sup = 20 * np.log10(np.sqrt(np.mean(M[pair_idx] ** 2)) / np.sqrt(np.mean(e ** 2)))
+        t = thresholds(H_va, model_response(h, args.nfft), freqs, gate, fsx, args.delay_frames)
+        ctrl[tag] = {"suppression_db": float(sup), "frames": int(pair_idx.size),
+                     "small_gain_bound_db": t["small_gain_bound_db"],
+                     "positive_real_db": t["positive_real_db"]}
+        say("     %-14s %+16.2f %+14.2f %+14.2f"
+            % (tag, sup, t["small_gain_bound_db"], t["positive_real_db"]))
+    d_fit = abs(ctrl["per_segment"]["suppression_db"] - ctrl["concatenated"]["suppression_db"])
+    say("     判读：两种拟合在**同一批 %d 帧**上相差 %.2f dB；拼段只多 %d 行（占 %.2f%%），"
+        % (int(pair_idx.size), d_fit, rows_c - rows, 100.0 * (rows_c - rows) / rows_c))
+    say("           本数据上拼段拟合没有造出收益。残差/抑制一律按逐段复位口径，并报帧数与配对方式。")
+    result["boundary_control"] = {
+        "split_probe_file": Path(probe).name,
+        "split": ctl,
+        "fits": ctrl,
+        "fit_delta_db": float(d_fit),
+    }
 
     # ---- [6] 10-23 数据的处理 -----------------------------------------
     say("\n[6] 2026-10-23 场次（话筒接线松脱期）")

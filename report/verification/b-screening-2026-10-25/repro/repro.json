@@ -14,7 +14,7 @@
  },
  "inputs": [
   {
-   "index": 0,
+   "seg_id": 0,
    "file": "seg_0.npz",
    "role": "train",
    "bytes": 245160,
@@ -25,7 +25,7 @@
    "mic_rms_dbfs": -16.211940181000134
   },
   {
-   "index": 1,
+   "seg_id": 1,
    "file": "seg_1.npz",
    "role": "train",
    "bytes": 244856,
@@ -36,7 +36,7 @@
    "mic_rms_dbfs": -16.32083612304461
   },
   {
-   "index": 2,
+   "seg_id": 2,
    "file": "seg_2.npz",
    "role": "train",
    "bytes": 244967,
@@ -47,7 +47,7 @@
    "mic_rms_dbfs": -16.226164677156476
   },
   {
-   "index": 3,
+   "seg_id": 3,
    "file": "seg_3.npz",
    "role": "train",
    "bytes": 245030,
@@ -58,7 +58,7 @@
    "mic_rms_dbfs": -16.04567630876915
   },
   {
-   "index": 4,
+   "seg_id": 4,
    "file": "seg_4.npz",
    "role": "train",
    "bytes": 245141,
@@ -69,7 +69,7 @@
    "mic_rms_dbfs": -16.26269290050778
   },
   {
-   "index": 5,
+   "seg_id": 5,
    "file": "seg_5.npz",
    "role": "train",
    "bytes": 244692,
@@ -80,7 +80,7 @@
    "mic_rms_dbfs": -16.378253682964488
   },
   {
-   "index": 6,
+   "seg_id": 6,
    "file": "seg_6.npz",
    "role": "train",
    "bytes": 244995,
@@ -91,7 +91,7 @@
    "mic_rms_dbfs": -16.234935826730357
   },
   {
-   "index": 7,
+   "seg_id": 7,
    "file": "seg_7.npz",
    "role": "train",
    "bytes": 244972,
@@ -102,7 +102,7 @@
    "mic_rms_dbfs": -16.17532711607463
   },
   {
-   "index": 8,
+   "seg_id": 8,
    "file": "seg_8.npz",
    "role": "train",
    "bytes": 244854,
@@ -113,7 +113,7 @@
    "mic_rms_dbfs": -16.29814005729337
   },
   {
-   "index": 9,
+   "seg_id": 9,
    "file": "seg_9.npz",
    "role": "train",
    "bytes": 244856,
@@ -124,7 +124,7 @@
    "mic_rms_dbfs": -16.158894984986407
   },
   {
-   "index": 10,
+   "seg_id": 10,
    "file": "seg_10.npz",
    "role": "heldout",
    "bytes": 244922,
@@ -135,7 +135,7 @@
    "mic_rms_dbfs": -16.21121466389248
   },
   {
-   "index": 11,
+   "seg_id": 11,
    "file": "seg_11.npz",
    "role": "heldout",
    "bytes": 244981,
@@ -146,7 +146,7 @@
    "mic_rms_dbfs": -16.311712024106257
   },
   {
-   "index": 12,
+   "seg_id": 12,
    "file": "seg_12.npz",
    "role": "heldout",
    "bytes": 245287,
@@ -157,7 +157,7 @@
    "mic_rms_dbfs": -15.884430798888742
   },
   {
-   "index": 13,
+   "seg_id": 13,
    "file": "seg_13.npz",
    "role": "heldout",
    "bytes": 245011,
@@ -168,7 +168,7 @@
    "mic_rms_dbfs": -16.071488097882252
   },
   {
-   "index": 14,
+   "seg_id": 14,
    "file": "seg_14.npz",
    "role": "heldout",
    "bytes": 245324,
@@ -179,7 +179,7 @@
    "mic_rms_dbfs": -16.08548047761034
   },
   {
-   "index": 15,
+   "seg_id": 15,
    "file": "seg_15.npz",
    "role": "heldout",
    "bytes": 245257,
@@ -190,6 +190,12 @@
    "mic_rms_dbfs": -16.258673973609042
   }
  ],
+ "input_check": {
+  "missing": [],
+  "duplicates": [],
+  "unexpected": [],
+  "failures": []
+ },
  "baseline": {
   "nfft_8192": {
    "small_gain_bound_db": 2.774898422923713,
@@ -428,19 +434,32 @@
  ],
  "boundary_control": {
   "split_probe_file": "seg_10.npz",
-  "split_delta_db": 0.5272483847781446,
+  "split": {
+   "frames": {
+    "whole": 15872,
+    "piece": 12288,
+    "paired": 12288
+   },
+   "max_abs_diff": 0.0,
+   "rms_delta_db": 0.0,
+   "window_only_delta_db": -0.17111671826561178,
+   "dropped_pieces": []
+  },
   "fits": {
    "per_segment": {
-    "suppression_per_segment_db": 7.562036866314415,
-    "suppression_concatenated_db": 7.361170632322879,
-    "overstatement_db": -0.20086623399153591
+    "suppression_db": 7.562036866314415,
+    "frames": 95232,
+    "small_gain_bound_db": 2.6827801185861015,
+    "positive_real_db": 6.528653769503778
    },
    "concatenated": {
-    "suppression_per_segment_db": 7.56074520143727,
-    "suppression_concatenated_db": 7.359930195199881,
-    "overstatement_db": -0.20081500623738968
+    "suppression_db": 7.56074520143727,
+    "frames": 95232,
+    "small_gain_bound_db": 2.7749819680189947,
+    "positive_real_db": 6.598200383940935
    }
-  }
+  },
+  "fit_delta_db": 0.0012916648771446049
  },
  "session_20261023": {
   "status": "excluded_from_training_and_validation",

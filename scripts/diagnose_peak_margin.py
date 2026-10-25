@@ -136,9 +136,10 @@ def positive_real_crossing(loop, freqs, gate, fmin=FMIN_HZ, return_all=False):
          不跨低相干缺口去连两个不相邻频点。
       2. **正实轴**：虚部过零处插值**复数**环路，必须 Re>0。相位 ±180° 折返对应 Re<0，
          不是穿越，绝不能计入（旧实现按折回后的相位变号判，会把 179°→−179° 误判为穿越）。
-      3. **端点也算**：虚部恰为 0 且 Re>0 的 bin，不论它是区间的左端、右端还是内部，
-         都算一次穿越；同一次穿越在相邻两对里只会被数到一次（按 bin 去重），不重复计数。
-         旧实现只判 `ya*yb<0`，右端恰落在正实轴上时收益被漏掉。
+      3. **端点独立计**：虚部恰为 0 且 Re>0 的 bin，先独立扫一遍、每处计一次，
+         与它左右邻居是否过门控无关（`gate=[T,F,T]` 时两端的合格 bin 都要算）。
+         插值只发生在相邻且两端过门控的 bin 之间，不跨缺口；端点在同一处不会被数两次。
+         旧实现只判 `ya*yb<0`，右端与孤立端点的收益都被漏掉。
       4. **小增益与穿越分开报**：max|L|<1 是稳定的充分条件，1/max|L| 是下界；
          正实轴穿越给出的是另一套估计，两者不可互相替代。
 
@@ -153,27 +154,22 @@ def positive_real_crossing(loop, freqs, gate, fmin=FMIN_HZ, return_all=False):
     idx = np.where(gate & (freqs >= fmin))[0]
 
     hits = []          # [(Re, freq_hz)]
-    counted = set()    # 已计过的 bin，防端点重复计数
 
-    def take_endpoint(k):
+    # 第一步：**独立**扫描所有过门控 bin，凡是虚部恰为 0 且 Re>0 的都计一次。
+    # 不能只在相邻对里判端点：门控可能把中间 bin 挡掉（gate=[T,F,T]），
+    # 这样两个合格端点谁都不在"相邻对"里，旧实现会把它们全漏掉。
+    for k in idx:
         k = int(k)
-        if k in counted:
-            return
-        if loop[k].imag != 0.0 or loop[k].real <= 0:
-            return
-        counted.add(k)
-        hits.append((float(loop[k].real), float(freqs[k])))
+        if loop[k].imag == 0.0 and loop[k].real > 0:
+            hits.append((float(loop[k].real), float(freqs[k])))
 
+    # 第二步：只对**原网格相邻、且两端都过门控**的 bin 做 Im=0 插值。
+    # 虚部为 0 的端点已在第一步计入，这里跳过，避免同一处被数两次。
     for a, b in zip(idx[:-1], idx[1:]):
         if b != a + 1:            # 中间有未过门控的频点，不插值
             continue
         ya, yb = loop[a].imag, loop[b].imag
         if ya == 0.0 or yb == 0.0:
-            # 端点恰落在正实轴上：左端/右端都算，去重后每处只计一次
-            if ya == 0.0:
-                take_endpoint(a)
-            if yb == 0.0:
-                take_endpoint(b)
             continue
         if ya * yb < 0:
             t = ya / (ya - yb)
@@ -183,10 +179,7 @@ def positive_real_crossing(loop, freqs, gate, fmin=FMIN_HZ, return_all=False):
             hits.append((float(z.real), float(freqs[a] + t * (freqs[b] - freqs[a]))))
         # 同号：区间内没有虚部过零，不插值
 
-    if len(idx) == 1:             # 只有一个过门控频点，退化为端点判定
-        take_endpoint(idx[0])
-
-    if return_all:                # 供回归测试检查"端点是否被重复计数"
+    if return_all:                # 供回归测试检查端点计数
         return sorted(hits, key=lambda x: -x[0])
     if not hits:
         return float("inf"), float("nan")
