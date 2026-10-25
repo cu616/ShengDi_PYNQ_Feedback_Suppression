@@ -277,20 +277,28 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
         if os.path.exists(stop_file):
             os.remove(stop_file)
         hp = (int(hp_volume) << 2) | 3
-        for addr, value in ((0x401C, 0x21), (0x401E, 0x41), (0x4023, hp), (0x4024, hp)):
-            write_reg(addr, [value])
 
-        # Configuration is complete and the codec is still muted here. The operator (or a
-        # batch driver) must confirm before any sound is produced; anything but True cancels.
+        # Configuration is complete and the codec is STILL MUTED here: nothing is audible yet.
+        # The operator (or a batch driver) must confirm before the codec is unmuted and the PL
+        # is armed; anything but True cancels with a real cleanup receipt.
         if before_start is not None:
             state['t_before_start'] = round(time.monotonic() - state.get('t_config_start',
                                                                           time.monotonic()), 4)
             if before_start() is not True:
                 state['stop_reason'] = 'cancelled_before_start'
                 state['cancelled'] = True
-                state['muted'] = True
-                state['recovered'] = True
+                cancel_disarm, cancel_mute = disarm_and_mute()
+                state['disarm_ok'] = bool(cancel_disarm)
+                state['mute_ok'] = bool(cancel_mute)
+                state['muted'] = bool(cancel_mute)
+                state['recovered'] = bool(cancel_disarm and cancel_mute)
+                state['t_cleanup_done'] = round(time.monotonic() - state.get('t_config_start',
+                                                                             time.monotonic()), 4)
                 raise RuntimeError('operator cancelled before audio start')
+
+        # Only now does the codec become audible, immediately followed by the PL arm.
+        for addr, value in ((0x401C, 0x21), (0x401E, 0x41), (0x4023, hp), (0x4024, hp)):
+            write_reg(addr, [value])
         start = time.monotonic()
         control.write(0, 1 | (int(bypass) << 1) | (int(gain_q12) << 16))
         armed = True
@@ -361,7 +369,9 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
         state['error'] = '%s: %s' % (type(exc).__name__, str(exc))
         if state['stop_reason'] is None:
             state['stop_reason'] = 'exception'
-        if armed:
+        if state.get('cancelled'):
+            pass            # the cancel branch already recorded its own cleanup receipt
+        elif armed:
             disarm_ok, mute_ok = disarm_and_mute()
             state['disarm_ok'] = bool(disarm_ok)
             state['mute_ok'] = bool(mute_ok)
