@@ -1377,3 +1377,28 @@ g_max −2.90/+2.68/+6.11，680 既装不下（512 时 BRAM 80%，上限 681）�
 边界：数据是旧布局 0.5 m 正向；A 的侧放实测已证明降耦 5.72 dB 只换来 0.85-1.6 dB（限制点移到 358、
 那里 CD 只有 8.16），所以"降耦"不能按 1:1 兑现，必须按新数据重算。要他的 2.4 s 捕获 + 曲线 + 延迟
 才能把结论收紧到新布局。
+
+## 波形入口三处身份门 + 增益预算 N1 口径（2026-10-25，B）
+
+C 又复现三个"退出 0 且 ok=true"的反例，都是身份没绑住，已修：
+
+1) 09-fir-on.npz 仍在磁盘、仍被读，只从 manifest 删掉 → 之前只遍历清单条目，这文件从未核验却照样算。
+   现在每个被读取的文件都过 verify_used_file（必须在清单内 + sha256 + 字节数），否则 unverified_file。
+2) 模型 lag_first 1→2、Q20 不变 → 之前只比 Q20 哈希，算术还写死 lag_first=1。
+   现在 lag_first 必须等于部署约定 1（model_convention），taps 与 loaded_taps 必须等于 Q20 项数
+   （model_identity），算术改为用模型声明的 lag_first。
+3) summary 首组 off_capture_id 换成别 id、数值与 valid 标记不动 → 之前只比数值。
+   现在按 capture 身份绑定：id 必须对上实际捕获，独立核对臂别（off=bypass/on=非 bypass）、
+   gain_q12、两臂响应窗逐帧相同、四试次各用一次；数值由这两个实际捕获重算；
+   configuration_matches/window_comparison_valid 只作一致性检查，不当身份依据。
+
+回归 test_r4_waveform.py 18 项（新增 4 例：文件未登记、lag_first 漂移、capture id 替换、off/on 对臂）。
+用 C 的 948f836 检查器本机复跑 8b01999：passed | positive=passed | bad_rejected=8/8，exit 0，
+脚本 sha a24e2cd6…b57。全量 134 项通过，check_docs 0 错误。真实正例数字与 12e5ce2 完全一致。
+
+另外按 C 的要求把增益预算的口径收紧：
+- 一律叫"采样网格小增益界"（充分条件上界），不再写"最大允许增益"；
+- 明确旧场（0.5 m 正向）数据**不能证明**新布局"不能"，也给不出"唯一出路"，
+  只能说"若限制点仍在 300–6000 Hz 且 CD 同量级，则差 3…8 dB"；
+- 删掉"唯一出路""唯一可能翻盘"这类断言；标注未经 C 独立复算、不参与现场放行。
+数值一个没变（9.40 / +2.77 / 12.62 / 5.6）。

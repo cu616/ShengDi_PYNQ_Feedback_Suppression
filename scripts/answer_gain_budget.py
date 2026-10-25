@@ -3,7 +3,7 @@
 口径（全部沿用 r4 修订 1，不新增定义）：
     D(f)      = e^{−jω·2}                      两帧调度延迟
     L(f)      = (H(f) − Ĥ(f)) · D(f)           抵消后的环路（Ĥ 含 lag_first=1）
-    允许数字增益 = −20·log10 max|L|             超过它环路就 ≥1（采样网格小增益界）
+    采样网格小增益界 = −20·log10 max|L|        充分条件下的上界，不是"最大允许增益"
     该 bin 的抑制 CD = 20·log10(|H|/|H−Ĥ|)
     工作点是否安全: g_dB + |H−Ĥ|_dB < 0
 
@@ -142,7 +142,7 @@ def main() -> int:
 
     say("\n[2] 最差频段：512 抽头在这批数据上的实际抑制深度")
     say("  %-10s %6s %10s %9s %9s %8s %10s %8s"
-        % ("频带", "门控", "绑定Hz", "|H|dB", "|H-Ĥ|dB", "CD dB", "允许g dB", "余量dB"))
+        % ("频带", "门控", "绑定Hz", "|H|dB", "|H-Ĥ|dB", "CD dB", "小增益界", "余量dB"))
     rows = per_band(freqs, H, E, L, gate, 6.0)
     for r in rows:
         if r.get("note"):
@@ -155,7 +155,7 @@ def main() -> int:
     # 2b 逐频查表：A 拿到自己的 |H(f)| 后，直接查这一列就知道该点 512 能给多少 CD
     say("\n[2b] 逐频查表（最近邻 bin；未过门控记未知）—— A 用自己曲线的峰值频点查这一列")
     say("  %8s %9s %9s %9s %10s %10s"
-        % ("f Hz", "|H|dB", "|H−Ĥ|dB", "CD dB", "该点g_max", "g=+6时差"))
+        % ("f Hz", "|H|dB", "|H−Ĥ|dB", "CD dB", "该点小增益界", "g=+6时差"))
     grid = []
     for fc in (300, 350, 400, 435, 500, 600, 700, 850, 1000, 1200, 1500, 1800, 2000,
                2500, 3000, 3500, 3900, 4500, 5000, 6000, 7000, 8000, 8300, 8400, 8800,
@@ -181,7 +181,7 @@ def main() -> int:
     gmax = -log_db(float(np.abs(L[k0])))
     say("\n[3] 全局绑定 bin：%.1f Hz（相干 %.3f）" % (freqs[k0], coh[k0]))
     say("  |H| = %+.2f dB，|H−Ĥ| = %+.2f dB，抑制 CD = %.2f dB" % (log_db(h0), log_db(e0), cd0))
-    say("  → 512 抽头在这份数据上支持的最大数字增益 = %+.2f dB" % gmax)
+    say("  → 512 抽头在这份数据上的采样网格小增益界 = %+.2f dB（上界估计，不是最大允许增益）" % gmax)
     say("\n  预算（同一个 bin）：")
     say("  %-12s %12s %12s %10s %10s" % ("数字增益", "需要 CD", "现有 CD", "差", "结果"))
     budget = []
@@ -197,7 +197,7 @@ def main() -> int:
 
     say("\n[4] 抽头数能不能补上：逐段重拟合（训练 seg_%s，评估留出 seg_%s）"
         % (args.train, args.valid))
-    say("  %6s %12s %12s %12s %10s" % ("抽头", "全局绑定Hz", "|H−Ĥ|dB", "CD@绑定", "允许g dB"))
+    say("  %6s %12s %12s %12s %10s" % ("抽头", "全局绑定Hz", "|H−Ĥ|dB", "CD@绑定", "小增益界"))
     sweep = []
     for taps in (256, 512, 680):
         h = fit_segmentwise(tr, taps)
@@ -213,16 +213,17 @@ def main() -> int:
     say("  硬件上限 681 抽头（单 MAC 每抽头 3 拍 + 3 收尾，帧预算 2048），且 512 时 BRAM 已 80%%。")
 
     say("\n[5] 结论")
-    say("  · 512 抽头在最差 bin 上的抑制是 **%.1f dB**，允许数字增益 **%+.2f dB**；"
+    say("  · 512 抽头在最差 bin 上的抑制是 **%.1f dB**，该点采样网格小增益界 **%+.2f dB**；"
         % (cd0, gmax))
     say("  · 要 +6 dB 数字增益，需要该 bin 的 CD ≥ **%.1f dB**；差 **%.1f dB**。"
         % (6.0 + log_db(h0), 6.0 + log_db(h0) - cd0))
     say("  · 因此\"512 抽头在最差频段给 15 dB\"在本批数据上**不成立**（差 %.1f dB）。"
         % (15.0 - cd0))
     say("  · 加抽头也补不上：%s。" % "、".join(
-        "%d→CD %.1f/允许 %+.1f" % (s["taps"], s["cd_db"], s["allowed_gain_db"]) for s in sweep))
+        "%d→CD %.1f/界 %+.1f" % (s["taps"], s["cd_db"], s["allowed_gain_db"]) for s in sweep))
     say("  · 这些数只在 300–10250 Hz、过门控 %.1f%% 的 bin 上成立；其余频段未知。"
         % (100.0 * gate.sum() / len(freqs)))
+    say("  · 边界：本批是旧布局；小增益界不是\"最大允许增益\"，也不能证明别的布局做不到。")
 
     payload = {"data": str(args.data_dir), "model": args.model, "q20_sha256": info["q20_sha256"],
                "nfft": nfft, "coherence": args.coherence, "delay_frames": args.delay_frames,

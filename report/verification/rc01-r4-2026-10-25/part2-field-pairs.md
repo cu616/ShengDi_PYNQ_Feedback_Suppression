@@ -165,29 +165,29 @@
 不合格时会打印"判定：**不合格**（N 项）"并逐条列代码，`waveform.json` 里 `ok=false` + `failures`——
 **这份产物不能当合格测量结果**。容差 1e−3 dB 的依据：同口径下本侧与汇总/复核只差浮点末位（实测 ≤7.1e−15）。
 
-C 的六个用例（`tools/check_b_waveform_cli.py`）本侧都有对应的 subprocess 回归
-（`test_r4_waveform.py::CliVerdictTest`，6 项）：整包正例必须 0；改一帧 prediction、删 60 s 件并漏列、
-模型 Q20 首项 +1、汇总差分 +1 dB、显式指定不存在的汇总——五种坏输入必须全部非 0。
+C 的八个用例（`tools/check_b_waveform_cli.py`）本侧都有对应的 subprocess 回归
+（`test_r4_waveform.py::CliVerdictTest`，10 项）：正例必须 0，八种坏输入必须全非 0。
 
-用 C 的检查器（`fd27038` 的 `tools/check_b_waveform_cli.py`）在本机对 `0167e14` 跑了一遍：
+用 C 的检查器（`948f836` 的 `tools/check_b_waveform_cli.py`）在本机对 `8b01999` 跑：
 
 ```
-B_WAVEFORM_CLI_REVIEW passed | positive=passed | bad_rejected=5/5
-exit 0   脚本 sha256 723e595d…aaa9c
+B_WAVEFORM_CLI_REVIEW passed | positive=passed | bad_rejected=8/8
+exit 0   脚本 sha256 a24e2cd6…b57
 ```
-
-逐例退出码与首条诊断：
 
 | 用例 | 退出 | 首条诊断 |
 |---|---|---|
 | original | **0** | 判定合格 |
-| prediction_mismatch | **2** | `arithmetic`：`09-fir-on.npz` prediction 1 帧失配 |
-| missing_unlisted_tail | **2** | `missing_file` + `package_incomplete`（角色件数 2/2/0） |
+| prediction_mismatch | **2** | `arithmetic`：prediction 1 帧失配 |
+| missing_unlisted_tail | **2** | `missing_file` + `package_incomplete`（角色 2/2/0） |
 | wrong_frozen_model | **2** | `model_binding` ×5 + 60 s `arithmetic` 250 帧 |
-| wrong_summary_value | **2** | `summary_mismatch`：差 1.000e+00 dB > 容差 1e−3 |
+| wrong_summary_value | **2** | `summary_mismatch`：1.000e+00 dB > 1e−3 |
 | missing_requested_summary | **2** | `summary_missing` |
+| **used_file_unlisted** | **2** | `unverified_file`：`09-fir-on.npz` 不在 manifest 内（未经哈希核验） |
+| **model_lag_first_changed** | **2** | `model_convention`：模型声明 `lag_first=2`，部署约定是 1 |
+| **summary_capture_identity_changed** | **2** | `pair_identity`：汇总里的 capture id 在本包找不到 |
 
-正例的数字与 `05657e5` 完全一致——本轮只改判定，没碰任何测量。
+正例的数字与 `05657e5`/`12e5ce2` 完全一致——只改判定与身份绑定，没碰任何测量。
 
 ### 8.2 发现并修掉的一处实现错误
 
