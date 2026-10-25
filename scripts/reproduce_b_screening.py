@@ -281,21 +281,33 @@ def split_pairing_control(coef, u, m, taps=TAPS, pieces=8):
     return out
 
 
-def band_switch_table(nfft, freqs, H, coh, coef, lag_first, fs, delay_frames,
-                      g_lin, bands, coherence=0.8):
-    """FIR OFF vs ON 的分带对照，两种口径分开给。
+def model_response_at(coefficients, freqs, fs, lag_first=1):
+    """在任意频率网格上算模型响应：Σ h[k]·e^{−j2πf(lag_first+k)/fs}。"""
+    h = np.asarray(coefficients, dtype=float)
+    k = lag_first + np.arange(len(h))
+    return np.exp(-1j * 2 * np.pi * np.outer(freqs, k) / fs) @ h
 
-    口径一（稳定裕度）：某带允许的最大线性增益。OFF = 1/max|H|；ON = 1/max|L|，
-        L = (H − Ĥ)·e^{−jω·delay}。这是"还能再拧多少 dB 才可能起振"，是 Nyquist 近似，
-        不是实测阈值，也不保证未覆盖频段。
-    口径二（受迫响应）：源一直开着时，麦克风电平 ON/OFF 之比。稳态下
-        mic/source = H / (1 − g·L)，所以比值 = 1/(1 − g·L)，按 |H|² 加权的带内 rms。
-        这是 r4 协议 `on_minus_off_response_rms_db` 会被测到的量，**不是抵消深度**。
+
+def band_switch_table(freqs, H, coh, coef, lag_first, fs, delay_frames,
+                      g_lin, bands, coherence=0.8):
+    """FIR OFF vs ON 的分带对照，三个量分开给，互不替代。
+
+    闭环（两臂都是闭合回路，只是预测器不同；D = e^{−jω·delay}）：
+        T_off = H / (1 − g·D·H)                 预测恒零（bypass 臂）
+        T_on  = H / (1 − g·D·(H − M))           M 为模型响应（含 lag_first）
+    受迫响应差 = 带内 |T_on|² 与 |T_off|² 的功率积分之比。M≡0 时两式恒等、差必为 0 dB
+    （旧版把 OFF 当开环 H 直接比，M=0 时会凭空给出 +0.9 dB，已废弃）。
+
+    稳定裕度：允许增益 OFF = 1/max|H|、ON = 1/max|L|，L = (H−M)·D；
+    **余量 = 允许增益 − 实际增益**（不是 g 加上允许增益——那是环路增益本身）。
+    这是 Nyquist 近似的必要条件式估计，不外推成全频稳定结论。
     """
-    H_hat = model_response(coef, nfft, lag_first=lag_first)
-    shift = np.exp(-1j * 2 * np.pi * delay_frames * freqs / fs)
-    L = (H - H_hat) * shift
-    L_off = H * shift                      # 同一延迟下，没有 FIR 时的环路
+    M = model_response_at(coef, freqs, fs, lag_first)
+    D = np.exp(-1j * 2 * np.pi * delay_frames * freqs / fs)
+    T_off = H / (1.0 - g_lin * D * H)
+    T_on = H / (1.0 - g_lin * D * (H - M))
+    L = (H - M) * D
+    L_off = H * D
     rows = []
     for lo, hi in list(bands) + [("all", None)]:
         if hi is None:
@@ -311,31 +323,60 @@ def band_switch_table(nfft, freqs, H, coh, coef, lag_first, fs, delay_frames,
                "coverage": (n_gate / n_bins if n_bins else 0.0)}
         if n_gate:
             off_abs, on_abs = np.abs(H[g]), np.abs(L[g])
+            g_db = 20 * np.log10(g_lin)
             row["off_allowed_db"] = float(-20 * np.log10(off_abs.max()))
             row["on_allowed_db"] = float(-20 * np.log10(on_abs.max()))
             row["improvement_db"] = row["on_allowed_db"] - row["off_allowed_db"]
             row["off_worst_hz"] = float(freqs[g][int(np.argmax(off_abs))])
             row["on_worst_hz"] = float(freqs[g][int(np.argmax(on_abs))])
-            worse = on_abs > off_abs            # 该 bin 上 FIR 让环路更接近起振
+            # 余量 = 允许增益 − 实际增益
+            row["off_margin_db"] = row["off_allowed_db"] - g_db
+            row["on_margin_db"] = row["on_allowed_db"] - g_db
+            # 环路增益本身（负值 = 线性化下不增长）
+            row["off_loop_gain_db"] = float(20 * np.log10(off_abs.max()) + g_db)
+            row["on_loop_gain_db"] = float(20 * np.log10(on_abs.max()) + g_db)
+            worse = on_abs > off_abs
             row["worse_bins"] = int(worse.sum())
-            row["worse_max_db"] = (float(-20 * np.log10(off_abs[worse].max()))
-                                   if worse.any() else None)
-            # 第二套估计：正实轴穿越（同一门控、同一延迟）
+            row["worse_hz"] = [float(x) for x in freqs[g][worse]]
+            # 受迫响应：带内功率积分，两臂都是闭环
+            p_off = float(np.sum(np.abs(T_off[g]) ** 2))
+            p_on = float(np.sum(np.abs(T_on[g]) ** 2))
+            row["on_minus_off_band_db"] = float(10 * np.log10(p_on / p_off))
+            per_bin = np.abs(T_on[g]) ** 2 / np.abs(T_off[g]) ** 2
+            row["band_min_db"] = float(10 * np.log10(per_bin.min()))
+            row["band_max_db"] = float(10 * np.log10(per_bin.max()))
             off_pr, _ = positive_real_crossing(L_off, freqs, g, fmin=FMIN_HZ)
             on_pr, _ = positive_real_crossing(L, freqs, g, fmin=FMIN_HZ)
             row["off_pos_real_db"] = None if not np.isfinite(off_pr) else float(off_pr)
             row["on_pos_real_db"] = None if not np.isfinite(on_pr) else float(on_pr)
-            row["pos_real_improvement_db"] = (
-                None if (row["off_pos_real_db"] is None or row["on_pos_real_db"] is None)
-                else row["on_pos_real_db"] - row["off_pos_real_db"])
-            ratio = np.abs(1.0 / (1.0 - g_lin * L[g]))
-            w = off_abs ** 2
-            row["on_minus_off_response_db"] = float(
-                20 * np.log10(np.sqrt(np.sum(w * ratio ** 2) / np.sum(w))))
-            row["response_min_db"] = float(20 * np.log10(ratio.min()))
-            row["response_max_db"] = float(20 * np.log10(ratio.max()))
         rows.append(row)
     return rows
+
+
+def switch_controls(freqs, H, coh, coef, lag_first, fs, delay_frames, g_lin,
+                    band, coherence=0.8):
+    """两个控制：M≡0 必须 0 dB；M≡H 必须等于 |1−g·D·H| 的功率比。"""
+    D = np.exp(-1j * 2 * np.pi * delay_frames * freqs / fs)
+    g = (freqs >= band[0]) & (freqs < band[1]) & (coh >= coherence) & (freqs >= FMIN_HZ)
+
+    def delta(m_resp):
+        t_off = H / (1.0 - g_lin * D * H)
+        t_on = H / (1.0 - g_lin * D * (H - m_resp))
+        return float(10 * np.log10(np.sum(np.abs(t_on[g]) ** 2)
+                                   / np.sum(np.abs(t_off[g]) ** 2)))
+
+    zero = delta(np.zeros_like(H))
+    perfect = delta(H)
+    denom = np.abs(1.0 - g_lin * D[g] * H[g])
+    expect = float(10 * np.log10(np.sum(np.abs(H[g]) ** 2)
+                                 / np.sum((np.abs(H[g]) / denom) ** 2)))
+    return {"band": "%d-%d" % band,
+            "zero_model_db": zero,
+            "perfect_model_db": perfect,
+            "perfect_model_expected_db": expect,
+            "zero_model_ok": abs(zero) < 1e-9,
+            "perfect_model_ok": abs(perfect - expect) < 1e-9,
+            "model_taps": int(len(np.asarray(coef)))}
 
 
 def gated_bin_map(freqs, coh, lo, hi, coherence=0.8):
@@ -741,56 +782,69 @@ def main():
     # ---- [7] 事前预测：FIR OFF vs ON ----------------------------------
     g_lin = args.work_gain_q12 / 4096.0
     g_db = 20 * np.log10(g_lin)
-    say("\n[7] 事前预测：FIR OFF vs ON（工作点 g = %.2f dB，Q12=%d，delay=%d 拍）"
+    say("\n[7] 事前预测：FIR OFF vs ON（工作点 g = %.3f dB，Q12=%d，delay=%d 拍）"
         % (g_db, args.work_gain_q12, args.delay_frames))
-    say("  两个口径分开：允许增益（稳定裕度，Nyquist 近似）／ON−OFF 受迫响应（协议实测得到的就是这个）")
+    say("  三样东西分开：允许增益（Nyquist 近似）／余量(=允许−实际)／受迫响应带功率比")
+    say("  T_off = H/(1−gDH)，T_on = H/[1−gD(H−M)]，D = e^{−jω·%d}；两臂都是闭环" % args.delay_frames)
     pred = {}
+    ctrl = {}
     for dname, files in (("train", tr), ("heldout", va)):
         for nfft in (args.nfft, args.nfft_sens):
             key = "%s_nfft%d" % (dname, nfft)
             fr, HH, cc, _S, _n, fsx = estimate_H(files, nperseg=nfft)
-            rows = band_switch_table(nfft, fr, HH, cc, coef, info["lag_first"], fsx,
+            rows = band_switch_table(fr, HH, cc, coef, info["lag_first"], fsx,
                                      args.delay_frames, g_lin, BANDS_R4, args.coherence)
             pred[key] = rows
             gtot = rows[-1]
             say("\n  [%s] %d 段，门控 %d/%d bin"
                 % (key, len(files), gtot["gated"], gtot["bins"]))
-            say("    全带允许增益：OFF %+.2f dB / ON %+.2f dB（改善 %+.2f dB）"
+            say("    允许增益：OFF %+.2f / ON %+.2f dB（改善 %+.2f）"
                 % (gtot["off_allowed_db"], gtot["on_allowed_db"], gtot["improvement_db"]))
-            say("    工作点余量（g + 允许增益）：OFF %+.2f dB / ON %+.2f dB"
-                % (g_db + gtot["off_allowed_db"], g_db + gtot["on_allowed_db"]))
-            say("    全带 ON−OFF 受迫响应：%+.2f dB（单 bin 范围 %+.2f … %+.2f）"
-                % (gtot["on_minus_off_response_db"], gtot["response_min_db"],
-                   gtot["response_max_db"]))
-            say("    %-10s %9s %10s %10s %8s %10s %10s %9s %7s"
-                % ("频带", "门控/总", "下界OFF", "下界ON", "改善", "穿越OFF", "穿越ON", "ON−OFF", "更差"))
+            say("    余量(允许−实际)：OFF %+.2f / ON %+.2f dB；环路增益 g·max|·|：OFF %+.2f / ON %+.2f dB"
+                % (gtot["off_margin_db"], gtot["on_margin_db"],
+                   gtot["off_loop_gain_db"], gtot["on_loop_gain_db"]))
+            say("    全带受迫响应 ON−OFF：%+.2f dB（逐 bin %+.2f … %+.2f）；更差 bin %d"
+                % (gtot["on_minus_off_band_db"], gtot["band_min_db"], gtot["band_max_db"],
+                   gtot["worse_bins"]))
+            say("    %-10s %8s %9s %9s %8s %9s %9s %9s %6s"
+                % ("频带", "门控/总", "允许OFF", "允许ON", "余量OFF", "余量ON", "ON−OFF", "穿越ON", "更差"))
             for r in rows[:-1]:
                 if r.get("gated", 0) == 0:
-                    say("    %-10s %3d/%-5d 无过门控 bin（未知）"
-                        % (r["band"], 0, r["bins"]))
+                    say("    %-10s %3d/%-4d 无过门控 bin（未知）" % (r["band"], 0, r["bins"]))
                     continue
-                off_pr = r.get("off_pos_real_db")
                 on_pr = r.get("on_pos_real_db")
-                say("    %-10s %3d/%-5d %+10.2f %+10.2f %+8.2f %+10s %+10s %+9.2f %7d"
+                say("    %-10s %3d/%-4d %+9.2f %+9.2f %+8.2f %+9.2f %+9.2f %+9s %6d"
                     % (r["band"], r["gated"], r["bins"], r["off_allowed_db"],
-                       r["on_allowed_db"], r["improvement_db"],
-                       "inf" if off_pr is None else "%.2f" % off_pr,
-                       "inf" if on_pr is None else "%.2f" % on_pr,
-                       r["on_minus_off_response_db"], r["worse_bins"]))
+                       r["on_allowed_db"], r["off_margin_db"], r["on_margin_db"],
+                       r["on_minus_off_band_db"],
+                       "inf" if on_pr is None else "%.2f" % on_pr, r["worse_bins"]))
+            ctrl[key] = switch_controls(fr, HH, cc, coef, info["lag_first"], fsx,
+                                        args.delay_frames, g_lin, BANDS_R4[0], args.coherence)
+    say("\n  [控制] 同一门控网格上的两个闭式检查（300–1000 Hz）")
+    for key, c in ctrl.items():
+        say("    %-18s M≡0 → %+.3e dB（应为 0）｜M≡H → %+.3f dB（闭式 %+.3f，差 %.1e）"
+            % (key, c["zero_model_db"], c["perfect_model_db"],
+               c["perfect_model_expected_db"],
+               abs(c["perfect_model_db"] - c["perfect_model_expected_db"])))
+    cok = all(c["zero_model_ok"] and c["perfect_model_ok"] for c in ctrl.values())
+    say("    控制结论：%s" % ("通过" if cok else "**未通过**"))
+
     # 8.4 kHz 缺口的逐 bin 门控图
     fr8, H8, c8, _S8, _n8, _fs8 = estimate_H(va, nperseg=args.nfft)
     gap = gated_bin_map(fr8, c8, 8200, 8600, args.coherence)
-    blocked = [g for g in gap if not g["gated"]]
+    blocked = [x for x in gap if not x["gated"]]
     say("\n  [8200–8600 Hz 门控图]（nfft=%d，bin 宽 %.2f Hz）共 %d bin，过门控 %d、被挡 %d"
-        % (args.nfft, args.nfft / 2 / _fs8 * _fs8 / args.nfft if False else fr8[1] - fr8[0],
-           len(gap), len(gap) - len(blocked), len(blocked)))
-    say("    过门控：%s" % ", ".join("%.0f(%.2f)" % (g["hz"], g["coherence"]) for g in gap if g["gated"]))
-    say("    被挡  ：%s" % ", ".join("%.0f(%.2f)" % (g["hz"], g["coherence"]) for g in blocked))
-    result["prediction"] = {"work_point": {"gain_q12": args.work_gain_q12, "gain_db": float(g_db),
+        % (args.nfft, fr8[1] - fr8[0], len(gap), len(gap) - len(blocked), len(blocked)))
+    say("    过门控：%s" % ", ".join("%.0f(%.2f)" % (x["hz"], x["coherence"]) for x in gap if x["gated"]))
+    say("    被挡  ：%s" % ", ".join("%.0f(%.2f)" % (x["hz"], x["coherence"]) for x in blocked))
+    result["prediction"] = {"work_point": {"gain_q12": args.work_gain_q12,
+                                           "gain_db": float(g_db),
                                            "delay_frames": args.delay_frames},
                             "tables": pred,
+                            "controls": ctrl,
                             "band_8200_8600_bins": gap,
-                            "note": "允许增益是 Nyquist 近似；ON−OFF 受迫响应不是抵消深度"}
+                            "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；"
+                                    "允许增益是 Nyquist 近似，余量=允许−实际；受迫响应不是抵消深度"}
     if out:
         (out / "prediction.json").write_text(
             json.dumps(result["prediction"], indent=1, ensure_ascii=False) + "\n", encoding="utf-8")

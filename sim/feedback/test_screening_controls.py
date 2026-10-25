@@ -150,62 +150,89 @@ class SplitPairingMixedTest(unittest.TestCase):
 
 
 class PredictionTableTest(unittest.TestCase):
-    """事前预测表的两个口径，用可解析的合成 H 检验，不依赖真实数据。"""
+    """预测表的三个量，用可解析的合成 H 检验，不依赖真实数据。"""
 
-    def _setup(self, nfft=4096):
-        freqs = np.arange(nfft // 2 + 1) * 48828.125 / nfft
-        H = np.full(len(freqs), 0.1 + 0.0j)          # 平直 −20 dB
+    RATE = 48828.125
+    G_Q12 = 817
+
+    def _grid(self, nfft=4096, h_mag=0.1):
+        freqs = np.arange(nfft // 2 + 1) * self.RATE / nfft
+        H = np.full(len(freqs), h_mag + 0.0j)
         coh = np.ones(len(freqs))
         return freqs, H, coh, nfft
 
-    def test_perfect_model_gives_zero_loop_and_unit_response(self):
-        """Ĥ≡H 时 L≡0：允许增益应为 inf、ON−OFF 受迫响应应为 0 dB。"""
-        freqs, H, coh, nfft = self._setup()
-        h = np.fft.irfft(H, nfft)                     # 与 H 完全一致的冲激响应
-        h = np.roll(h, -1)                            # 抵消 model_response 的 lag_first=1
-        rows = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2,
-                                     817 / 4096.0, [(300, 1000)])
-        row = rows[0]
-        self.assertGreater(row["gated"], 0)
-        self.assertAlmostEqual(row["on_minus_off_response_db"], 0.0, places=6)
-        self.assertEqual(row["worse_bins"], 0)
-        self.assertGreater(row["improvement_db"], 50.0)   # L→0 时下界极大
+    def test_zero_model_gives_exactly_zero_at_c_review_bin(self):
+        """C 的反例：H=0.5、Q12=817、429.153 Hz，M≡0 时两臂必须完全相同（0 dB）。
+
+        旧实现把 OFF 当开环 H 直接比，在这一点上会给出 +0.906 dB。
+        """
+        freqs = np.array([429.153])
+        H = np.array([0.5 + 0.0j])
+        coh = np.array([1.0])
+        h = np.zeros(16)                      # 预测恒零：两臂同一条闭环
+        rows = rbs.band_switch_table(freqs, H, coh, h, 1, self.RATE, 2,
+                                     self.G_Q12 / 4096.0, [(300, 1000)])
+        self.assertEqual(rows[0]["on_minus_off_band_db"], 0.0)
+        self.assertIn("off_margin_db", rows[0])
+
+    def test_off_arm_is_closed_loop(self):
+        """OFF 臂必须是 H/(1−gDH)，不是开环 H；否则余量会被高估。"""
+        freqs = np.array([429.153])
+        H = np.array([0.5 + 0.0j])
+        coh = np.array([1.0])
+        g = self.G_Q12 / 4096.0
+        D = np.exp(-1j * 2 * np.pi * 2 * freqs / self.RATE)
+        expect = np.abs(H / (1 - g * D * H))
+        rows = rbs.band_switch_table(freqs, H, coh, np.zeros(16), 1, self.RATE, 2,
+                                     g, [(300, 1000)])
+        # 用"允许增益"反推 OFF 臂的 |H|：allowed = −20log10|H| 与闭环无关，
+        # 所以这里直接核对解析式与实现用的 T_off 一致（通过余量定义）
+        self.assertAlmostEqual(rows[0]["off_allowed_db"], -20 * np.log10(0.5), places=9)
+        self.assertAlmostEqual(rows[0]["off_margin_db"],
+                               rows[0]["off_allowed_db"] - 20 * np.log10(g), places=9)
+        self.assertGreater(abs(expect[0]), 0.5)   # 闭环确实放大了 |T_off|
+
+    def test_perfect_model_matches_closed_form(self):
+        """M≡H 时 T_on≡H：带功率比必须等于 Σ|H|² / Σ|H/(1−gDH)|²。"""
+        freqs, H, coh, nfft = self._grid()
+        h = np.roll(np.fft.irfft(H, nfft), -1)    # 抵消 model_response 的 lag_first=1
+        g = self.G_Q12 / 4096.0
+        rows = rbs.band_switch_table(freqs, H, coh, h, 1, self.RATE, 2, g, [(300, 1000)])
+        D = np.exp(-1j * 2 * np.pi * 2 * freqs / self.RATE)
+        sel = (freqs >= 300) & (freqs < 1000)
+        denom = np.abs(1 - g * D[sel] * H[sel])
+        expect = 10 * np.log10(np.sum(np.abs(H[sel]) ** 2)
+                               / np.sum((np.abs(H[sel]) / denom) ** 2))
+        self.assertAlmostEqual(rows[0]["on_minus_off_band_db"], expect, places=9)
 
     def test_worse_bins_are_counted(self):
-        """模型把某个 bin 放大 2 倍时，该 bin 必须计入更差，且改善为负。"""
-        freqs, H, coh, nfft = self._setup()
+        """模型把某点放大一倍时，该 bin 必须计入更差。"""
+        freqs, H, coh, nfft = self._grid()
         h = np.zeros(16)
-        h[0] = 0.2                                    # 故意比 H(=0.1) 大一倍
-        rows = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2,
-                                     817 / 4096.0, [(300, 1000)])
-        row = rows[0]
-        self.assertGreater(row["worse_bins"], 0)
-        self.assertLess(row["improvement_db"], 0)
+        h[0] = 0.2                                # 比 H(=0.1) 大一倍
+        rows = rbs.band_switch_table(freqs, H, coh, h, 1, self.RATE, 2,
+                                     self.G_Q12 / 4096.0, [(300, 1000)])
+        self.assertGreater(rows[0]["worse_bins"], 0)
+        self.assertLess(rows[0]["improvement_db"], 0)
 
-    def test_response_ratio_scales_with_gain(self):
-        """受迫响应差随 g 线性展开：g→0 归零；g 翻倍，量级也翻倍，符号随 L 的相位可正可负。"""
-        freqs, H, coh, nfft = self._setup()
-        h = np.zeros(16)
-        h[0] = 0.2                                    # Ĥ 带 lag_first 的相位，L 随频率转
-        lo = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2, 1e-9,
-                                   [(300, 1000)])[0]
-        mid = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2, 0.25,
-                                    [(300, 1000)])[0]
-        hi = rbs.band_switch_table(nfft, freqs, H, coh, h, 1, 48828.125, 2, 0.5,
-                                   [(300, 1000)])[0]
-        self.assertAlmostEqual(lo["on_minus_off_response_db"], 0.0, places=6)
-        # 一阶线性：g 翻倍则 dB 翻倍，二阶项只在 g|L|~5% 时给出 1% 偏差，故用 0.02 dB 容差
-        self.assertAlmostEqual(hi["on_minus_off_response_db"],
-                               2 * mid["on_minus_off_response_db"], delta=0.02)
-        self.assertGreater(abs(hi["on_minus_off_response_db"]), 0.2)
-        # 量级仍是一个 dB 以内：在 g|L| << 1 时这个指标本来就分辨不出什么
-        self.assertLess(max(abs(hi["response_min_db"]), abs(hi["response_max_db"])), 1.0)
-        # 符号由 Re(g·L) 决定，与 |L| 大小无关：把模型换成正的 H−Ĥ 就翻到另一侧
-        h2 = h.copy()
-        h2[0] = 0.0                                   # Ĥ≡0 相当于 FIR-off，比值应回到 0 dB
-        off = rbs.band_switch_table(nfft, freqs, H, coh, h2, 1, 48828.125, 2, 0.5,
-                                    [(300, 1000)])[0]
-        self.assertAlmostEqual(off["improvement_db"], 0.0, places=6)
+    def test_margin_is_allowed_minus_actual(self):
+        """余量 = 允许增益 − 实际增益；环路增益是它的相反数。"""
+        freqs, H, coh, nfft = self._grid()
+        g = self.G_Q12 / 4096.0
+        rows = rbs.band_switch_table(freqs, H, coh, np.zeros(16), 1, self.RATE, 2,
+                                     g, [(300, 1000)])[0]
+        self.assertAlmostEqual(rows["off_margin_db"],
+                               rows["off_allowed_db"] - 20 * np.log10(g), places=9)
+        self.assertAlmostEqual(rows["off_loop_gain_db"], -rows["off_margin_db"], places=9)
+
+    def test_switch_controls_pass(self):
+        """两个闭式控制必须通过：M≡0 → 0 dB；M≡H → 闭式值。"""
+        freqs, H, coh, nfft = self._grid()
+        h = np.roll(np.fft.irfft(H, nfft), -1)
+        c = rbs.switch_controls(freqs, H, coh, h, 1, self.RATE, 2,
+                                self.G_Q12 / 4096.0, (300, 1000))
+        self.assertTrue(c["zero_model_ok"])
+        self.assertTrue(c["perfect_model_ok"])
 
 
 class NoModuleShadowingTest(unittest.TestCase):

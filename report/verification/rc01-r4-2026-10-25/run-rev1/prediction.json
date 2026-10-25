@@ -1,0 +1,747 @@
+{
+ "work_point": {
+  "gain_q12": 817,
+  "gain_db": -14.002757828707178,
+  "delay_frames": 2
+ },
+ "tables": {
+  "train_nfft8192": [
+   {
+    "band": "300-1000",
+    "bins": 117,
+    "gated": 100,
+    "coverage": 0.8547008547008547,
+    "off_allowed_db": -6.56259526712316,
+    "on_allowed_db": 5.984573347590189,
+    "improvement_db": 12.54716861471335,
+    "off_worst_hz": 429.1534423828125,
+    "on_worst_hz": 447.0348358154297,
+    "off_margin_db": 7.440162561584018,
+    "on_margin_db": 19.987331176297367,
+    "off_loop_gain_db": -7.440162561584018,
+    "on_loop_gain_db": -19.987331176297367,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -0.9940044427708238,
+    "band_min_db": -3.971560991705716,
+    "band_max_db": 1.8519340457893143,
+    "off_pos_real_db": -6.309726251341483,
+    "on_pos_real_db": 8.069873078791579
+   },
+   {
+    "band": "1000-3000",
+    "bins": 336,
+    "gated": 311,
+    "coverage": 0.9255952380952381,
+    "off_allowed_db": -5.443397981795295,
+    "on_allowed_db": 8.218329815108131,
+    "improvement_db": 13.661727796903426,
+    "off_worst_hz": 1525.87890625,
+    "on_worst_hz": 1579.5230865478516,
+    "off_margin_db": 8.559359846911883,
+    "on_margin_db": 22.22108764381531,
+    "off_loop_gain_db": -8.559359846911883,
+    "on_loop_gain_db": -22.22108764381531,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -0.21060419426219837,
+    "band_min_db": -2.9931528749493146,
+    "band_max_db": 2.524884933157054,
+    "off_pos_real_db": -3.0391660044661872,
+    "on_pos_real_db": 11.100866869890112
+   },
+   {
+    "band": "8200-8600",
+    "bins": 67,
+    "gated": 10,
+    "coverage": 0.14925373134328357,
+    "off_allowed_db": -6.924081120668807,
+    "on_allowed_db": 9.683692615356676,
+    "improvement_db": 16.607773736025482,
+    "off_worst_hz": 8368.492126464844,
+    "on_worst_hz": 8368.492126464844,
+    "off_margin_db": 7.078676708038372,
+    "on_margin_db": 23.686450444063855,
+    "off_loop_gain_db": -7.078676708038372,
+    "on_loop_gain_db": -23.686450444063855,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": 1.1765865082647249,
+    "band_min_db": -2.8454626608452758,
+    "band_max_db": 2.767233747429907,
+    "off_pos_real_db": null,
+    "on_pos_real_db": null
+   },
+   {
+    "band": "all",
+    "bins": 4046,
+    "gated": 1240,
+    "coverage": 0.3064755313890262,
+    "off_allowed_db": -6.924081120668807,
+    "on_allowed_db": 5.984573347590189,
+    "improvement_db": 12.908654468258995,
+    "off_worst_hz": 8368.492126464844,
+    "on_worst_hz": 447.0348358154297,
+    "off_margin_db": 7.078676708038372,
+    "on_margin_db": 19.987331176297367,
+    "off_loop_gain_db": -7.078676708038372,
+    "on_loop_gain_db": -19.987331176297367,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -0.47569228026070953,
+    "band_min_db": -3.971560991705716,
+    "band_max_db": 2.767233747429907,
+    "off_pos_real_db": -6.309726251341483,
+    "on_pos_real_db": 8.069873078791579
+   }
+  ],
+  "train_nfft4096": [
+   {
+    "band": "300-1000",
+    "bins": 58,
+    "gated": 43,
+    "coverage": 0.7413793103448276,
+    "off_allowed_db": -5.9372320363577025,
+    "on_allowed_db": 8.993391453768067,
+    "improvement_db": 14.93062349012577,
+    "off_worst_hz": 417.2325134277344,
+    "on_worst_hz": 774.8603820800781,
+    "off_margin_db": 8.065525792349476,
+    "on_margin_db": 22.996149282475244,
+    "off_loop_gain_db": -8.065525792349476,
+    "on_loop_gain_db": -22.996149282475244,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -1.0209656331188586,
+    "band_min_db": -3.842727950163807,
+    "band_max_db": 1.876324874639932,
+    "off_pos_real_db": -5.472009479487992,
+    "on_pos_real_db": 9.97170860360185
+   },
+   {
+    "band": "1000-3000",
+    "bins": 168,
+    "gated": 150,
+    "coverage": 0.8928571428571429,
+    "off_allowed_db": -4.892715399822641,
+    "on_allowed_db": 10.21245701208368,
+    "improvement_db": 15.10517241190632,
+    "off_worst_hz": 1525.87890625,
+    "on_worst_hz": 1585.4835510253906,
+    "off_margin_db": 9.110042428884537,
+    "on_margin_db": 24.215214840790857,
+    "off_loop_gain_db": -9.110042428884537,
+    "on_loop_gain_db": -24.215214840790857,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -0.20968156541605054,
+    "band_min_db": -2.946243512807947,
+    "band_max_db": 2.517141956675126,
+    "off_pos_real_db": -2.404729580207126,
+    "on_pos_real_db": 15.033461111279633
+   },
+   {
+    "band": "8200-8600",
+    "bins": 34,
+    "gated": 1,
+    "coverage": 0.029411764705882353,
+    "off_allowed_db": -5.34593001071401,
+    "on_allowed_db": 22.90287674289971,
+    "improvement_db": 28.24880675361372,
+    "off_worst_hz": 8261.20376586914,
+    "on_worst_hz": 8261.20376586914,
+    "off_margin_db": 8.656827817993168,
+    "on_margin_db": 36.90563457160689,
+    "off_loop_gain_db": -8.656827817993168,
+    "on_loop_gain_db": -36.90563457160689,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": 2.8014077184198714,
+    "band_min_db": 2.8014077184198714,
+    "band_max_db": 2.8014077184198714,
+    "off_pos_real_db": null,
+    "on_pos_real_db": null
+   },
+   {
+    "band": "all",
+    "bins": 2023,
+    "gated": 577,
+    "coverage": 0.2852199703410776,
+    "off_allowed_db": -5.9372320363577025,
+    "on_allowed_db": 8.993391453768067,
+    "improvement_db": 14.93062349012577,
+    "off_worst_hz": 417.2325134277344,
+    "on_worst_hz": 774.8603820800781,
+    "off_margin_db": 8.065525792349476,
+    "on_margin_db": 22.996149282475244,
+    "off_loop_gain_db": -8.065525792349476,
+    "on_loop_gain_db": -22.996149282475244,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -0.4688834474235548,
+    "band_min_db": -3.842727950163807,
+    "band_max_db": 2.8014077184198714,
+    "off_pos_real_db": -5.472009479487992,
+    "on_pos_real_db": 9.97170860360185
+   }
+  ],
+  "heldout_nfft8192": [
+   {
+    "band": "300-1000",
+    "bins": 117,
+    "gated": 90,
+    "coverage": 0.7692307692307693,
+    "off_allowed_db": -7.398043330752637,
+    "on_allowed_db": 2.7748984229237035,
+    "improvement_db": 10.17294175367634,
+    "off_worst_hz": 417.2325134277344,
+    "on_worst_hz": 435.11390686035156,
+    "off_margin_db": 6.604714497954541,
+    "on_margin_db": 16.77765625163088,
+    "off_loop_gain_db": -6.604714497954541,
+    "on_loop_gain_db": -16.77765625163088,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -1.1488693773519754,
+    "band_min_db": -4.060740855156285,
+    "band_max_db": 1.9243065516903533,
+    "off_pos_real_db": -6.460880973911873,
+    "on_pos_real_db": 6.5981644354685525
+   },
+   {
+    "band": "1000-3000",
+    "bins": 336,
+    "gated": 312,
+    "coverage": 0.9285714285714286,
+    "off_allowed_db": -5.450297468053761,
+    "on_allowed_db": 6.745838666568535,
+    "improvement_db": 12.196136134622297,
+    "off_worst_hz": 1752.3765563964844,
+    "on_worst_hz": 1591.4440155029297,
+    "off_margin_db": 8.552460360653416,
+    "on_margin_db": 20.748596495275713,
+    "off_loop_gain_db": -8.552460360653416,
+    "on_loop_gain_db": -20.748596495275713,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -0.21892999526048368,
+    "band_min_db": -2.912983068330261,
+    "band_max_db": 2.4588814750413235,
+    "off_pos_real_db": -2.514445134357298,
+    "on_pos_real_db": 9.955707105298986
+   },
+   {
+    "band": "8200-8600",
+    "bins": 67,
+    "gated": 5,
+    "coverage": 0.07462686567164178,
+    "off_allowed_db": -6.922620778986684,
+    "on_allowed_db": 12.081600100072745,
+    "improvement_db": 19.004220879059428,
+    "off_worst_hz": 8356.571197509766,
+    "on_worst_hz": 8416.175842285156,
+    "off_margin_db": 7.080137049720494,
+    "on_margin_db": 26.084357928779923,
+    "off_loop_gain_db": -7.080137049720494,
+    "on_loop_gain_db": -26.084357928779923,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": 0.30748666092743165,
+    "band_min_db": -3.25896080784268,
+    "band_max_db": 2.1809363041343346,
+    "off_pos_real_db": null,
+    "on_pos_real_db": null
+   },
+   {
+    "band": "all",
+    "bins": 4046,
+    "gated": 1189,
+    "coverage": 0.2938704893722195,
+    "off_allowed_db": -7.398043330752637,
+    "on_allowed_db": 2.7748984229237035,
+    "improvement_db": 10.17294175367634,
+    "off_worst_hz": 417.2325134277344,
+    "on_worst_hz": 435.11390686035156,
+    "off_margin_db": 6.604714497954541,
+    "on_margin_db": 16.77765625163088,
+    "off_loop_gain_db": -6.604714497954541,
+    "on_loop_gain_db": -16.77765625163088,
+    "worse_bins": 1,
+    "worse_hz": [
+     3516.674041748047
+    ],
+    "on_minus_off_band_db": -0.4211693352219894,
+    "band_min_db": -4.060740855156285,
+    "band_max_db": 2.4588814750413235,
+    "off_pos_real_db": -6.460880973911873,
+    "on_pos_real_db": 6.5981644354685525
+   }
+  ],
+  "heldout_nfft4096": [
+   {
+    "band": "300-1000",
+    "bins": 58,
+    "gated": 40,
+    "coverage": 0.6896551724137931,
+    "off_allowed_db": -6.570644752702968,
+    "on_allowed_db": 4.559946170256508,
+    "improvement_db": 11.130590922959476,
+    "off_worst_hz": 417.2325134277344,
+    "on_worst_hz": 441.0743713378906,
+    "off_margin_db": 7.43211307600421,
+    "on_margin_db": 18.562703998963684,
+    "off_loop_gain_db": -7.43211307600421,
+    "on_loop_gain_db": -18.562703998963684,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -1.0753118646813833,
+    "band_min_db": -3.926775496816784,
+    "band_max_db": 1.8567555154246023,
+    "off_pos_real_db": -5.832823913187831,
+    "on_pos_real_db": 10.705488769948335
+   },
+   {
+    "band": "1000-3000",
+    "bins": 168,
+    "gated": 149,
+    "coverage": 0.8869047619047619,
+    "off_allowed_db": -5.128741215199014,
+    "on_allowed_db": 9.474212226889616,
+    "improvement_db": 14.60295344208863,
+    "off_worst_hz": 1525.87890625,
+    "on_worst_hz": 1585.4835510253906,
+    "off_margin_db": 8.874016613508164,
+    "on_margin_db": 23.476970055596794,
+    "off_loop_gain_db": -8.874016613508164,
+    "on_loop_gain_db": -23.476970055596794,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -0.23755772375041004,
+    "band_min_db": -2.9125279524628485,
+    "band_max_db": 2.4867987831393927,
+    "off_pos_real_db": -1.901291496528116,
+    "on_pos_real_db": 10.98342640047062
+   },
+   {
+    "band": "8200-8600",
+    "bins": 34,
+    "gated": 1,
+    "coverage": 0.029411764705882353,
+    "off_allowed_db": -4.333395495153927,
+    "on_allowed_db": 20.19504924929398,
+    "improvement_db": 24.528444744447906,
+    "off_worst_hz": 8416.175842285156,
+    "on_worst_hz": 8416.175842285156,
+    "off_margin_db": 9.669362333553252,
+    "on_margin_db": 34.19780707800116,
+    "off_loop_gain_db": -9.669362333553252,
+    "on_loop_gain_db": -34.19780707800116,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -3.1597805402529158,
+    "band_min_db": -3.1597805402529158,
+    "band_max_db": -3.1597805402529158,
+    "off_pos_real_db": null,
+    "on_pos_real_db": null
+   },
+   {
+    "band": "all",
+    "bins": 2023,
+    "gated": 558,
+    "coverage": 0.27582797825012356,
+    "off_allowed_db": -6.570644752702968,
+    "on_allowed_db": 4.559946170256508,
+    "improvement_db": 11.130590922959476,
+    "off_worst_hz": 417.2325134277344,
+    "on_worst_hz": 441.0743713378906,
+    "off_margin_db": 7.43211307600421,
+    "on_margin_db": 18.562703998963684,
+    "off_loop_gain_db": -7.43211307600421,
+    "on_loop_gain_db": -18.562703998963684,
+    "worse_bins": 0,
+    "worse_hz": [],
+    "on_minus_off_band_db": -0.42136454613156965,
+    "band_min_db": -3.926775496816784,
+    "band_max_db": 2.4867987831393927,
+    "off_pos_real_db": -5.832823913187831,
+    "on_pos_real_db": 10.705488769948335
+   }
+  ]
+ },
+ "controls": {
+  "train_nfft8192": {
+   "band": "300-1000",
+   "zero_model_db": 0.0,
+   "perfect_model_db": -1.045710307444447,
+   "perfect_model_expected_db": -1.045710307444447,
+   "zero_model_ok": true,
+   "perfect_model_ok": true,
+   "model_taps": 512
+  },
+  "train_nfft4096": {
+   "band": "300-1000",
+   "zero_model_db": 0.0,
+   "perfect_model_db": -1.0539114120244537,
+   "perfect_model_expected_db": -1.0539114120244537,
+   "zero_model_ok": true,
+   "perfect_model_ok": true,
+   "model_taps": 512
+  },
+  "heldout_nfft8192": {
+   "band": "300-1000",
+   "zero_model_db": 0.0,
+   "perfect_model_db": -1.2526370513511378,
+   "perfect_model_expected_db": -1.2526370513511378,
+   "zero_model_ok": true,
+   "perfect_model_ok": true,
+   "model_taps": 512
+  },
+  "heldout_nfft4096": {
+   "band": "300-1000",
+   "zero_model_db": 0.0,
+   "perfect_model_db": -1.1257647803924757,
+   "perfect_model_expected_db": -1.1257647803924746,
+   "zero_model_ok": true,
+   "perfect_model_ok": true,
+   "model_taps": 512
+  }
+ },
+ "band_8200_8600_bins": [
+  {
+   "hz": 8201.59912109375,
+   "coherence": 0.7363105957052317,
+   "gated": false
+  },
+  {
+   "hz": 8207.559585571289,
+   "coherence": 0.7345648715522347,
+   "gated": false
+  },
+  {
+   "hz": 8213.520050048828,
+   "coherence": 0.7282121778015087,
+   "gated": false
+  },
+  {
+   "hz": 8219.480514526367,
+   "coherence": 0.7240218816578095,
+   "gated": false
+  },
+  {
+   "hz": 8225.440979003906,
+   "coherence": 0.7382240966907679,
+   "gated": false
+  },
+  {
+   "hz": 8231.401443481445,
+   "coherence": 0.7378456244200061,
+   "gated": false
+  },
+  {
+   "hz": 8237.361907958984,
+   "coherence": 0.7309228916338542,
+   "gated": false
+  },
+  {
+   "hz": 8243.322372436523,
+   "coherence": 0.7757409904842713,
+   "gated": false
+  },
+  {
+   "hz": 8249.282836914062,
+   "coherence": 0.7653089426301308,
+   "gated": false
+  },
+  {
+   "hz": 8255.243301391602,
+   "coherence": 0.7859257485268284,
+   "gated": false
+  },
+  {
+   "hz": 8261.20376586914,
+   "coherence": 0.7468110476071675,
+   "gated": false
+  },
+  {
+   "hz": 8267.16423034668,
+   "coherence": 0.7479222956929359,
+   "gated": false
+  },
+  {
+   "hz": 8273.124694824219,
+   "coherence": 0.7441211359920087,
+   "gated": false
+  },
+  {
+   "hz": 8279.085159301758,
+   "coherence": 0.7485956554175432,
+   "gated": false
+  },
+  {
+   "hz": 8285.045623779297,
+   "coherence": 0.7377681241759068,
+   "gated": false
+  },
+  {
+   "hz": 8291.006088256836,
+   "coherence": 0.7338499646900865,
+   "gated": false
+  },
+  {
+   "hz": 8296.966552734375,
+   "coherence": 0.7573493262658381,
+   "gated": false
+  },
+  {
+   "hz": 8302.927017211914,
+   "coherence": 0.7719673585905926,
+   "gated": false
+  },
+  {
+   "hz": 8308.887481689453,
+   "coherence": 0.7537608503826165,
+   "gated": false
+  },
+  {
+   "hz": 8314.847946166992,
+   "coherence": 0.7660274400542116,
+   "gated": false
+  },
+  {
+   "hz": 8320.808410644531,
+   "coherence": 0.8234499829265186,
+   "gated": true
+  },
+  {
+   "hz": 8326.76887512207,
+   "coherence": 0.8519766480756285,
+   "gated": true
+  },
+  {
+   "hz": 8332.72933959961,
+   "coherence": 0.7655521608679439,
+   "gated": false
+  },
+  {
+   "hz": 8338.689804077148,
+   "coherence": 0.7426141022192382,
+   "gated": false
+  },
+  {
+   "hz": 8344.650268554688,
+   "coherence": 0.7361238481829896,
+   "gated": false
+  },
+  {
+   "hz": 8350.610733032227,
+   "coherence": 0.8089847069894828,
+   "gated": true
+  },
+  {
+   "hz": 8356.571197509766,
+   "coherence": 0.802755991786158,
+   "gated": true
+  },
+  {
+   "hz": 8362.531661987305,
+   "coherence": 0.7632076150221028,
+   "gated": false
+  },
+  {
+   "hz": 8368.492126464844,
+   "coherence": 0.7703244819118686,
+   "gated": false
+  },
+  {
+   "hz": 8374.452590942383,
+   "coherence": 0.7313045483729425,
+   "gated": false
+  },
+  {
+   "hz": 8380.413055419922,
+   "coherence": 0.7573614150562177,
+   "gated": false
+  },
+  {
+   "hz": 8386.373519897461,
+   "coherence": 0.7496238929177608,
+   "gated": false
+  },
+  {
+   "hz": 8392.333984375,
+   "coherence": 0.7491144222770048,
+   "gated": false
+  },
+  {
+   "hz": 8398.294448852539,
+   "coherence": 0.7761533013453668,
+   "gated": false
+  },
+  {
+   "hz": 8404.254913330078,
+   "coherence": 0.765296561680728,
+   "gated": false
+  },
+  {
+   "hz": 8410.215377807617,
+   "coherence": 0.7891558608696979,
+   "gated": false
+  },
+  {
+   "hz": 8416.175842285156,
+   "coherence": 0.8294381598610058,
+   "gated": true
+  },
+  {
+   "hz": 8422.136306762695,
+   "coherence": 0.7746601626400765,
+   "gated": false
+  },
+  {
+   "hz": 8428.096771240234,
+   "coherence": 0.7546646019420054,
+   "gated": false
+  },
+  {
+   "hz": 8434.057235717773,
+   "coherence": 0.7398771501292093,
+   "gated": false
+  },
+  {
+   "hz": 8440.017700195312,
+   "coherence": 0.7393497854783828,
+   "gated": false
+  },
+  {
+   "hz": 8445.978164672852,
+   "coherence": 0.7556257909920926,
+   "gated": false
+  },
+  {
+   "hz": 8451.93862915039,
+   "coherence": 0.7899835516723788,
+   "gated": false
+  },
+  {
+   "hz": 8457.89909362793,
+   "coherence": 0.7624986716565985,
+   "gated": false
+  },
+  {
+   "hz": 8463.859558105469,
+   "coherence": 0.7541392291478607,
+   "gated": false
+  },
+  {
+   "hz": 8469.820022583008,
+   "coherence": 0.7550618089386769,
+   "gated": false
+  },
+  {
+   "hz": 8475.780487060547,
+   "coherence": 0.7327615525804848,
+   "gated": false
+  },
+  {
+   "hz": 8481.740951538086,
+   "coherence": 0.7220332652825054,
+   "gated": false
+  },
+  {
+   "hz": 8487.701416015625,
+   "coherence": 0.7116504295701087,
+   "gated": false
+  },
+  {
+   "hz": 8493.661880493164,
+   "coherence": 0.7026902263022541,
+   "gated": false
+  },
+  {
+   "hz": 8499.622344970703,
+   "coherence": 0.7011056428149486,
+   "gated": false
+  },
+  {
+   "hz": 8505.582809448242,
+   "coherence": 0.70143296134094,
+   "gated": false
+  },
+  {
+   "hz": 8511.543273925781,
+   "coherence": 0.7167606868092482,
+   "gated": false
+  },
+  {
+   "hz": 8517.50373840332,
+   "coherence": 0.7299265137240993,
+   "gated": false
+  },
+  {
+   "hz": 8523.46420288086,
+   "coherence": 0.7740288823020888,
+   "gated": false
+  },
+  {
+   "hz": 8529.424667358398,
+   "coherence": 0.7183283855899555,
+   "gated": false
+  },
+  {
+   "hz": 8535.385131835938,
+   "coherence": 0.7561173606754342,
+   "gated": false
+  },
+  {
+   "hz": 8541.345596313477,
+   "coherence": 0.7804801518008851,
+   "gated": false
+  },
+  {
+   "hz": 8547.306060791016,
+   "coherence": 0.7674198667338701,
+   "gated": false
+  },
+  {
+   "hz": 8553.266525268555,
+   "coherence": 0.733034304514295,
+   "gated": false
+  },
+  {
+   "hz": 8559.226989746094,
+   "coherence": 0.7504291135715246,
+   "gated": false
+  },
+  {
+   "hz": 8565.187454223633,
+   "coherence": 0.7434364235651807,
+   "gated": false
+  },
+  {
+   "hz": 8571.147918701172,
+   "coherence": 0.7396342829589371,
+   "gated": false
+  },
+  {
+   "hz": 8577.108383178711,
+   "coherence": 0.7560983885241442,
+   "gated": false
+  },
+  {
+   "hz": 8583.06884765625,
+   "coherence": 0.7358594723183799,
+   "gated": false
+  },
+  {
+   "hz": 8589.029312133789,
+   "coherence": 0.7959600601000574,
+   "gated": false
+  },
+  {
+   "hz": 8594.989776611328,
+   "coherence": 0.7763448753481158,
+   "gated": false
+  }
+ ],
+ "note": "T_off=H/(1−gDH)、T_on=H/[1−gD(H−M)]，两臂皆闭环；允许增益是 Nyquist 近似，余量=允许−实际；受迫响应不是抵消深度"
+}
