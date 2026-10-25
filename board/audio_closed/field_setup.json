@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "fixture_id": "box_v1_20261016",
+  "calibration_match_original": false,
+  "operator_verified": false,
+  "codec_hp_volume": 40,
+  "sample_rate_hz": 48828.125,
+  "calibration_excitation": "audio_calibrate PL-generated known noise; external phone source stopped",
+  "wiring": {
+    "microphone_route": "MAX4466 -> LINE_IN",
+    "speaker_route": "PYNQ-Z2 HP+MIC -> powered speaker",
+    "channel_mapping_verified": null,
+    "max4466_supply_v": null,
+    "max4466_gain_setting": null
+  },
+  "box": {
+    "dimensions_cm": null,
+    "lid_state": null,
+    "notes": null
+  },
+  "microphone": {
+    "position_xyz_cm": null,
+    "orientation": null
+  },
+  "speaker": {
+    "position_xyz_cm": null,
+    "orientation": null,
+    "external_volume_control": "none documented; verify on site",
+    "external_volume_control_verified": false
+  },
+  "normal_speech_source": {
+    "device": "phone",
+    "position_xyz_cm": null,
+    "orientation": null,
+    "playback_volume_setting": null,
+    "loop_or_clip_id": null
+  },
+  "operator_notes": null
+}

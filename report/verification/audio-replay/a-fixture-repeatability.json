@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "topic": "level repeatability of the current fixture; why a 1.5 dB gate cannot pass",
+  "recorded_at": "2026-10-24",
+  "recorded_by": "A",
+  "method": "six consecutive identical gate tones (1 kHz, -20 dBFS peak, 1.02 s), loop open, direct playback, hp_volume 40; microphone RMS measured over the tone body",
+  "mic_rms_dbfs": [
+    -32.85,
+    -34.07,
+    -30.91,
+    -29.36,
+    -31.37,
+    -33.27
+  ],
+  "spread_db": 4.71,
+  "std_db": 1.59,
+  "consequence": "two consecutive gate tones differ by up to 4.7 dB, so any protocol that requires the amplifier baseline to repeat within 1.5 dB cannot pass on this fixture. This is also the most likely cause of the session-to-session differences previously attributed to 'session transfer'.",
+  "affected_results": [
+    "C's c-room-ready-v1 run 1 stopped at amplifier_gate_failed:gate_drift_exceeds_1p5_db",
+    "C's c-room-ready-v1 run 2 stopped at the same gate after a power cycle",
+    "C's SPEECH runs 1 and 2 stopped at gate_tone_not_observed and gate_drift respectively, so no external-speech trial has been captured yet"
+  ],
+  "operator_observation": "the operator reported 'pure howling, no speech' during both SPEECH attempts. The batch had already aborted inside the gate phase, so what was audible was the 1 kHz gate tone itself, not loop oscillation. This is recorded as the operator's impression, not as a measurement.",
+  "options": [
+    "relax the gate to the measured spread (about 5 dB) and rely on paired same-window ratios",
+    "replace the speaker with one whose output is level-stable",
+    "judge every comparison on mic/ref in the same window instead of absolute mic levels"
+  ],
+  "verdict": "the fixture's own repeatability (4.7 dB) is larger than every effect being measured (<3 dB), so no absolute-level gate below 5 dB can pass and no ASG number from this fixture is meaningful without pairing"
+}

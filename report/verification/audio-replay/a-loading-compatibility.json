@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "topic": "256-tap model loaded on the 512-tap bitstream",
+  "recorded_at": "2026-10-23",
+  "recorded_by": "A",
+  "hardware": {
+    "bit": "audio_replay.bit",
+    "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+    "hwh_sha256": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb",
+    "hardware_taps": 512,
+    "rtl_constraint": "feedback_fir with TAPS=512 sets `fresh` only after exactly 512 coefficients; 256 coefficients leave fresh=0 and the run faults (capture_status bit18)"
+  },
+  "scheme": {
+    "chosen": "zero-pad the logical model to the hardware tap count at load time",
+    "why_not_bitstream": "no verified 256-tap bitstream exists for the current RTL; rebuilding and re-verifying one costs a Vivado run plus a full regression for no mathematical difference",
+    "equivalence": "the padded coefficients beyond the logical taps are exactly 0, so the convolution is identical to the 256-tap model",
+    "labelling_rule": "a padded 256 model is NEVER described as a trained 512 model; the evidence records logical_taps and loaded_taps separately",
+    "requires": "B written confirmation that zero-padding is the agreed equivalence (requested, not yet received)"
+  },
+  "measured_on_board": {
+    "note": "one direct-mode trial, gain 0 dB, white-noise source, 1.8 s",
+    "logical_taps": 256,
+    "loaded_taps": 512,
+    "zero_padded": true,
+    "coefficient_status": 8202,
+    "coefficient_status_decoded": {
+      "loaded_count": 512,
+      "fresh": 1,
+      "fir_ready": 1,
+      "fir_error": 0,
+      "coeff_ready": 0
+    },
+    "model_sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+    "loaded_coefficients_sha256": "12c723ad4010ba09c9aea3692c451a192b61284652daf98c4664cc1f904058bf",
+    "source_end_frame_exclusive": 73242,
+    "source_schedule_verified": true,
+    "frames": 16384,
+    "completed_frames": 87890,
+    "first_frame": 71506,
+    "stop_reason": "completed",
+    "early_stop": false,
+    "verification": {
+      "bit_exact": true,
+      "prediction_mismatches": 0,
+      "residual_mismatches": 0,
+      "output_mismatches": 0,
+      "history_excluded_frames": 512,
+      "evaluated_frames": 15872
+    }
+  },
+  "driver_evidence_version": "a-replay-evidence-v2",
+  "verdict": "zero-padded loading verified on hardware: loaded_count=512, fresh set, and the replay arithmetic is bit-exact against the padded coefficients"
+}

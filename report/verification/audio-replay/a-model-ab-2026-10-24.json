@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "topic": "A's on-site refit vs B's session-masked coefficients, same gated session protocol",
+  "recorded_at": "2026-10-23",
+  "recorded_by": "A",
+  "models": {
+    "A_refit": {
+      "path": "/home/xilinx/recal2/model_512.json",
+      "file_sha256": "98d0956813720f4a",
+      "fit": "512 taps fitted on 6 fresh segments of the current on-site H"
+    },
+    "B_masked": {
+      "path": "/home/xilinx/session_20261024/candidate_512_session_20261024.json",
+      "q20_sha256": "e353c10e5ac646e281b5174fe03352ae688220720904b05adc5497db17a24dd5",
+      "file_sha256_on_disk": "22d898b4a91bd78d",
+      "note": "B published file sha 2c971a33...; the Q20 payload matches exactly e353c10e..., the file hash differs only by serialisation"
+    }
+  },
+  "protocol": "external source off; before every trial a fixed -20 dBFS tone is played with the loop open and the trial is skipped unless the microphone settles within 1.5 dB of the session baseline (baseline taken after 8 s settle, last 3 gates within 1.2 dB)",
+  "results": {
+    "A_refit": {
+      "-9 dB": "held, mic -37.2 dBFS",
+      "-6 dB": "GATE_FAIL",
+      "-3 dB": "howled, main 8357 Hz, mic -12.5 dBFS",
+      "0 dB": "howled, main 8344 Hz, mic -13.1 dBFS"
+    },
+    "B_masked": {
+      "-9 dB": "howled, main 405 Hz, mic -23.8 dBFS at the rail",
+      "-6 dB": "howled, main 8357 Hz, mic -12.8 dBFS",
+      "-3 dB": "howled, main 8351 Hz, mic -14.6 dBFS",
+      "0 dB": "GATE_FAIL"
+    }
+  },
+  "b_prediction": {
+    "predicted_threshold_db": 6.74,
+    "predicted_limiting_hz": 381,
+    "measured": "B's model howls already at -9 dB and there the limiting point is 405 Hz, so the predicted low-frequency limit is real, but the predicted +6.74 dB is not realised on this fixture"
+  },
+  "delay": {
+    "white_noise_ref_to_mic": [
+      125,
+      124,
+      124
+    ],
+    "warning": "a 1 kHz tone cannot measure the delay: correlation peaks repeat every ~48.8 samples, so tones reported 70/118/21 - all the same true delay modulo the tone period. Only the white-noise figure is usable."
+  },
+  "trap_found": "with a drift-checked gate the same A_refit model that had 'held at 0 dB' in an earlier session now howls at -3 dB, so the fixture sits within about 1-2 dB of its boundary and single-session 'held' results must not be quoted as margins",
+  "verdict": "B's session correction is worse than A's on-site refit on this fixture: it howls at -9 dB where the refit holds. The limiting band moves between 8.35 kHz and about 400 Hz depending on the model. Refit from the npz is the indicated next step."
+}

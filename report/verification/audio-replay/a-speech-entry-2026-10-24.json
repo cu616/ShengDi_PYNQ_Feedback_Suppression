@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "topic": "real usage entry attempt: external speech -> microphone -> system -> speaker",
+  "recorded_at": "2026-10-24",
+  "recorded_by": "A",
+  "result": "blocked by a microphone hardware fault; no speech amplification could be observed",
+  "attempts": [
+    {
+      "gain_db": -15.0,
+      "seconds": 9.0,
+      "mode": "bypass",
+      "guard_tripped": false,
+      "mic_rms_dbfs": -35.6,
+      "mic_peak_dbfs": -23.1,
+      "ref_peak_dbfs": -38.1,
+      "envelope_dbfs": [
+        -35.6,
+        -34.7,
+        -36.4,
+        -35.9
+      ],
+      "note": "ref = mic - 15 dB confirms the system did play the microphone signal"
+    },
+    {
+      "gain_db": -9.0,
+      "seconds": 9.0,
+      "mode": "bypass",
+      "guard_tripped": false,
+      "mic_rms_dbfs": -37.0,
+      "mic_peak_dbfs": -23.1,
+      "ref_peak_dbfs": -32.1,
+      "envelope_dbfs": [
+        -37.3,
+        -36.7,
+        -36.6,
+        -37.2
+      ],
+      "note": "operator reported pure white noise plus faint howling: the loop was amplifying its own noise floor because no voice reached the microphone"
+    }
+  ],
+  "microphone_check": {
+    "command": "direct capture, gain 0, loop open, 1-frame silent source, 8 s",
+    "operator_action": "spoke loudly within about 10-20 cm of the microphone for 8 s",
+    "mic_rms_dbfs": -37.7,
+    "mic_peak_dbfs": -25.3,
+    "envelope_dbfs": [
+      -38.1,
+      -36.9,
+      -37.5,
+      -37.7,
+      -38.0,
+      -37.5,
+      -37.7,
+      -38.5
+    ],
+    "floor_dbfs": -37.8,
+    "verdict": "MIC_DEAD: the microphone level did not move while the operator spoke"
+  },
+  "timeline": "the microphone worked at 2026-10-24 during the recalibration (mic -18.1 dBFS) and during the gate-drift test (-29 to -34 dBFS for the tones). It failed afterwards, around the 0 dB candidate saturation event.",
+  "explains": [
+    "C's c-room-ready-v1 speech runs stopped at gate_tone_not_observed: the gate tone could not be seen by a microphone that was no longer working",
+    "both speech attempts heard only amplified noise and a faint howl, never the operator's voice"
+  ],
+  "next": "operator reseats VCC / GND / LINE_IN or swaps the MAX4466 module, then the same 8 s microphone check decides whether it is serviceable",
+  "consequence_for_results": "no conclusion about speech amplification can be drawn from this round; the earlier closed-loop trials that the package accepted are unaffected because they used digital injection",
+  "microphone_status": "recovered. The module was not damaged: the VCC/GND/LINE_IN wiring was loose. After reseating, an 8 s speech check read mic -11.9 dBFS with 14 full-scale samples, i.e. alive and very hot.",
+  "speech_trials_after_repair": [
+    {
+      "gain_db": -9.0,
+      "mic_rms_dbfs": -35.0,
+      "mic_peak_dbfs": -17.8,
+      "ref_peak_dbfs": -26.8,
+      "guard_tripped": false,
+      "envelope_dbfs": [
+        -38.2,
+        -37.6,
+        -37.9,
+        -31.1
+      ],
+      "operator": "white noise dominated plus faint sharp howling"
+    },
+    {
+      "gain_db": -15.0,
+      "mic_rms_dbfs": -30.3,
+      "mic_peak_dbfs": -11.8,
+      "ref_peak_dbfs": -26.8,
+      "guard_tripped": false,
+      "envelope_dbfs": [
+        -25.0,
+        -36.8,
+        -38.8,
+        -37.3
+      ],
+      "operator": "quieter than before, only hiss, no voice"
+    }
+  ],
+  "root_cause_of_the_audible_noise": "with bypass the played signal is gain*microphone. At -9 dB the loop gain is |H|-9 dB and the fixture's |H| reaches +5..+11 dB near 8.4 kHz, so the loop sits at the edge: the microphone noise floor is boosted by 1/(1-gH) (audible hiss) and individual bins cross unity (the sharp howl).",
+  "why_no_amplification_is_audible": "bypass at a negative gain plays the voice quieter than the voice itself, so it can never sound amplified. Audible amplification requires gain at or above 0 dB, and at 0 dB bypass is unstable on this fixture because |H| exceeds 0 dB near 8.4 kHz. Cancellation is what has to buy that range, and the current model only holds to about -3 dB.",
+  "conclusion": "the real usage entry (external speech -> microphone -> system -> speaker) is NOT yet demonstrated. The hardware path works end to end (the system plays the microphone signal, verified by ref = mic - gain at both gains), but no gain that would be audible as amplification is stable.",
+  "gap": "at least 3 dB and up to 9 dB of loop-gain margin at the 8.4 kHz resonance, depending on which session's H applies; the fixture's own 4.7 dB repeatability is the same size as the gap, so the margin cannot be closed by measurement alone."
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "topic": "per-band cancellation penalty of the model used for the live tests",
+  "recorded_at": "2026-10-23",
+  "recorded_by": "A",
+  "model": {
+    "file": "candidate_room_v1_512.json",
+    "sha256": "07fae6af19b1825044b194672d2f9d1ab4d1897981817d48e36916a7e30bfddb",
+    "taps": 512,
+    "note": "the exact coefficients loaded on the board during the three-arm live test"
+  },
+  "definition": "penalty_dB = 20log10(|H-Hhat|) - 20log10(|H|); positive means the loop gain with cancellation exceeds the loop gain without it in that bin",
+  "calibration": "six white-noise segments, 2 s total, coherence-gated at 0.7, n=8192",
+  "bands": {
+    "300-1000": {
+      "bins": 23,
+      "H_median_db": 4.83,
+      "Hhat_median_db": 3.76,
+      "penalty_median_db": -11.16,
+      "penalty_worst_db": -6.55
+    },
+    "1000-3000": {
+      "bins": 208,
+      "H_median_db": -0.93,
+      "Hhat_median_db": -1.23,
+      "penalty_median_db": -10.77,
+      "penalty_worst_db": 0.51
+    },
+    "3000-6000": {
+      "bins": 484,
+      "H_median_db": 1.66,
+      "Hhat_median_db": 1.45,
+      "penalty_median_db": -4.47,
+      "penalty_worst_db": 0.21
+    },
+    "8200-8600": {
+      "bins": 67,
+      "H_median_db": 9.14,
+      "Hhat_median_db": 9.17,
+      "penalty_median_db": 0.29,
+      "penalty_worst_db": 1.06,
+      "phase_H_median_deg": -2.3,
+      "phase_Hhat_median_deg": 31.2,
+      "H_minus_Hhat_median_db": 9.52,
+      "worst_bin_hz": 8493.7
+    },
+    "6000-12000": {
+      "bins": 728,
+      "H_median_db": 1.66,
+      "Hhat_median_db": 1.84,
+      "penalty_median_db": 0.07,
+      "penalty_worst_db": 4.65
+    }
+  },
+  "at_8285_hz": {
+    "H_db": 8.14,
+    "Hhat_db": 8.43,
+    "H_minus_Hhat_db": 8.34,
+    "penalty_db": 0.2,
+    "coherence": 0.98,
+    "note": "8285 Hz is the frequency the live loop oscillated at"
+  },
+  "verdict": "the model's magnitude is right at 8.4 kHz (9.17 vs 9.14 dB) but its phase is about 33 degrees off, so |H-Hhat| is as large as |H|: cancellation achieves nothing there and slightly raises the loop gain. That band carries the largest |H| of the fixture (about +9 dB), so it is exactly where the usable gain is capped. Below 3 kHz the same model cancels by 10-11 dB.",
+  "implication": "fixing the 8.4 kHz phase, not the magnitude, is what would let cancel exceed the gain that bypass already tolerates"
+}

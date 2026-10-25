@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "package": "rollback-v1",
+  "note": "v1 bitstream (MAX_RUN_FRAMES=488281) with matching drivers; deploy by copying these files into the board audio_live directory",
+  "files": {
+    "audio_replay.bit": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+    "audio_replay.hwh": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb",
+    "replay_trial.py": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+    "live_pa.py": "dc1c60bee9a3d0562c2fb14382a834799dcfa6a63e4543885af833080dc08d94",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54"
+  }
+}

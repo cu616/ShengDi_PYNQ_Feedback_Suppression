@@ -1,0 +1,13 @@
+{
+  "purpose": "binds every software test to the exact artifact it is supposed to test",
+  "note": "if a binding target is missing or its hash does not match, the test must FAIL - never SKIP",
+  "human_package": {
+    "zip_sha256": "0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e",
+    "zip_name": "c-sprint-rc01-human-r1.zip",
+    "extracted_dir": "h1",
+    "prompt_source": "sprint_experiment.py"
+  },
+  "driver": {
+    "file": "run_human_r1.sh"
+  }
+}

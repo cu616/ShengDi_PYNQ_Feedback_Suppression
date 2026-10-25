@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-23",
+  "recorded_by": "A",
+  "fixture_id": "room_v1_20261021",
+  "fixture_kind": "free_field",
+  "geometry_mic_speaker_m": 0.5,
+  "microphone": {
+    "module": "MAX4466 spare module",
+    "input": "LINE_IN",
+    "supply": "VCC 3.3 V, GND",
+    "notes": "VCC and LINE_IN both came loose once; symptom was -100 dBFS at the microphone"
+  },
+  "speakers": {
+    "count": 1,
+    "model": "HP NS1 Pro",
+    "socket": "HP+MIC",
+    "powered": true,
+    "volume_control": "none on the speaker; Codec hp_volume=40 in software",
+    "power_cut": "operator can cut power immediately"
+  },
+  "lid": "not applicable (no enclosure in use)",
+  "desk": "both devices on the same desk, facing each other",
+  "ordering": "tablet/phone playing a looped recording about 10-20 cm from the microphone",
+  "ref_to_mic_delay_frames": 125,
+  "ref_to_mic_delay_measured_with": "white noise only; speech cross-correlation is ambiguous (tone gave 117, voice 177 at the same geometry)",
+  "noise_floor_dbfs": -37.8,
+  "sample_rate_hz": 48828.125,
+  "hp_volume": 40,
+  "bitstream": {
+    "file": "audio_replay.bit",
+    "taps": 512,
+    "sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+  },
+  "hwh": {
+    "file": "audio_replay.hwh",
+    "sha256": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb"
+  },
+  "approved_model": {
+    "file": "model_256.json (local stand-in used for loading-compatibility evidence)",
+    "taps": 256,
+    "sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+    "note": "the approved model must come from C's frozen package (B room_v1/baseline_256); A re-verifies its sha256 at execution time and refuses to run on a mismatch"
+  },
+  "matches_calibration": true,
+  "model_selection_note": "box models must not be applied to this fixture; the box has been disconnected and its |H| is about 21 dB higher",
+  "prior_fixture": {
+    "fixture_id": "box_v1_20261016",
+    "state": "disconnected"
+  }
+}

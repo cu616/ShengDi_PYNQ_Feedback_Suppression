@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "topic": "amplifier-state-gated, interleaved three-arm test after recalibration",
+  "recorded_at": "2026-10-23",
+  "recorded_by": "A",
+  "why_gated": "an earlier interleaved run showed bypass and cancel_zero - mathematically the same arm - 15 dB apart at the same gain. Both satisfied reference = gain*microphone internally, so the difference was the amplifier's own limiter engaging after a howl. A fixed -20 dBFS tone with the loop open now precedes every trial and the trial is skipped unless the microphone returns within 1.5 dB of the session baseline.",
+  "model": {
+    "file": "/home/xilinx/recal2/model_512.json",
+    "note": "refitted on the current on-site H (6 segments, mic -18.1 dBFS, delay 124/125)"
+  },
+  "results": {
+    "-6 dB": {
+      "bypass": "GATE_FAIL",
+      "cancel": "held, mic -37.0 dBFS",
+      "cancel_zero": "held by guard but at the rail: mic -2.7 dBFS, peak 0.0"
+    },
+    "-3 dB": {
+      "bypass": "GATE_FAIL",
+      "cancel": "GATE_FAIL",
+      "cancel_zero": "GATE_FAIL"
+    },
+    "0 dB": {
+      "bypass": "howled at 955 frames",
+      "cancel": "held, mic -35.4 dBFS",
+      "cancel_zero": "held by guard but at the rail: mic -1.17 dBFS, peak 0.0"
+    }
+  },
+  "gate_fail_explanation": "the -3 dB row failed its gates because the cancel_zero rail event at -6 dB pushed the amplifier into limiting; the next trials then read a lower baseline and were skipped. That is the gate doing its job.",
+  "verdict": "within one gated session the refitted model keeps the cancel arm stable at 0 dB (mic -35.4 dBFS) while the zero-coefficient arm is already at full scale at -6 dB (mic -2.7 dBFS). Cancellation now buys at least 6 dB of usable gain. The earlier 'cancel howls at -6 dB' result came from the mismatched calibration batch.",
+  "caveats": [
+    "the guard does not trip on microphone clipping, so 'held' must be read together with the microphone level; a rail-level capture is instability, not stability",
+    "the -3 dB column has no valid row in this session",
+    "amplifier state must be re-gated after any run that reaches the rail"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "topic": "physical coupling reduction by microphone orientation, and why it does not become usable gain",
+  "recorded_at": "2026-10-24",
+  "recorded_by": "A",
+  "constraint_from_operator": "the deployment cannot use strict 1.0 or 1.5 m spacing; usable range is about 0.5-1.0 m, so the distance sweep B asked for was replaced by an orientation change at the same distance",
+  "method": {
+    "injection": "digital white noise, -12 dBFS RMS, direct mode (loop open), hp_volume 40",
+    "segments": {
+      "upright": "16 segments in /home/xilinx/lowband2",
+      "sideways": "20 segments in /home/xilinx/pos_side and /home/xilinx/pos_side16"
+    },
+    "fit": "512 taps, 70/30 split, then B's scripts/diagnose_peak_margin.py --delay-frames 2"
+  },
+  "measured": {
+    "upright": {
+      "broadband_H_db": 0.38,
+      "max_H_db": 6.11,
+      "max_H_at_hz": 417,
+      "necessary_threshold_db": 7.01,
+      "necessary_at_hz": 441,
+      "phase_threshold_db": 9.53,
+      "phase_at_hz": 460,
+      "mic_level_dbfs": -17.7
+    },
+    "sideways": {
+      "broadband_H_db": -5.34,
+      "max_H_db": 4.19,
+      "max_H_at_hz": 429,
+      "necessary_threshold_db": 8.63,
+      "necessary_at_hz": 358,
+      "phase_threshold_db": 10.38,
+      "phase_at_hz": 337,
+      "mic_level_dbfs": -26.08,
+      "delay_samples": "127-128",
+      "cd_at_limiter_db": 8.16
+    }
+  },
+  "coupling_reduction_db": 5.72,
+  "usable_gain_gain_db": {
+    "necessary": 1.62,
+    "phase_consistent": 0.85
+  },
+  "why_the_gain_did_not_transfer": "the limiter moved from 441 Hz to 358 Hz, where the model's relative accuracy is 4.2 dB worse (CD +8.16 versus +12.32). A relative error scales with the coupling, so a coupling drop only becomes usable gain if the fit quality at the new limiter stays the same. It did not.",
+  "verdict": "physical decoupling (distance or orientation) is not a solution with a 512-tap canceller: 5.7 dB of coupling reduction bought under 2 dB of usable gain. The binding constraint is low-frequency memory, not coupling.",
+  "consequence": "B's option (a), an 8x decimation stage with a 384-tap FIR (about 60 ms of equivalent memory), is the only remaining route that attacks the 337-358 Hz limiter directly.",
+  "side_note": "the sideways placement does make the system quieter at the microphone by 8.4 dB, which is useful for comfort even though it does not raise the stable gain"
+}

@@ -1,8 +1,243 @@
+## 2026-10-25　A　交付判据 R1–R5 与驱动路由走查
+
+- 冻结计划新增"交付判据 R1–R5"：禁止过程性回复、检查器退出码即交付判据、
+  消息首行必须是 `PACKAGE_COMPLETE <sha256>`、分叉一次列完给默认值、一包一问题。
+- 新增 board/audio_replay/test_human_routing.py：把 C 的真人包 10 条提示逐个过驱动路由表，
+  不发声、不碰板卡。首次运行 ROUTING_RESULT PASS，同时暴露并修掉了三处路由错误
+  （讲话时机在 Codec 静音期内、"听众"误匹配布局提示、无录音时谎称 FIXED_SOURCE 齐全）。
+
+## 2026-10-25　A　v2 位流与连续 60 秒、条件 4 注入、C 的 r1/r2 执行
+
+- 队长批准运行上限 v2；契约 v2 + v1 保留 + 索引更新；RTL 两处参数 488281 → 3000000（仅 2 行）。
+- 由 A 分支导出到 D:\a 短路径构建（worktree 路径 108 字符会让 Vivado 报 BD 41-1690）；
+  bit 61bb71aa…、hwh 92b499a3…、时序全过、资源与 v1 相同；原件入库 board/audio_replay/v2/。
+- 上板跑通连续 60 秒（2929687/2929687 帧、无保护）与停止测试（1.672 s 停止、stop_latency 0.001 s）；
+  原始 npz 与时间线导出到 report/verification/audio-replay/v2-runs/。
+- 条件 4 用模拟寄存器注入通过：饱和独立停止、保护不被 completed 覆盖、gain 32 位、
+  静音失败不谎报。无板卡、无声、无失控。
+- live_run 补 before_start 接点与保存失败留证；驱动从 HWH 判定位流能力（pl_contract v1/v2）。
+- 执行 C 的 RC0.1-r1：0 dB 第 2 项真实人声 9835 帧（约 0.201 s）保护中止（计数 3/1）。
+- 执行 C 的 RC0.1-r2：−14 dB 下 7 项跑通、无一次保护，停在 fir_observation_insufficient。
+  回包入库；−14 dB 工作点可用。
+- 发布检查新增"发送方自检"与资产绑定规则；C 指出的"v2 原件未入库"已补齐（83ed775）。
+
+## 2026-10-25　A　连续运行入口、live_run 修正、RC0 执行与自检规则
+
+- 新增 `live_run.py`（a-continuous-v1）并上板验证：9.5 s 跑满、时间线 469 点、停止 0.773 s 响应、
+  异常 disarm+mute。60 s 只差 `MAX_RUN_FRAMES`（提案已提，待批）。
+- 修 `live_run` 的 microphone/reference 通道标签写反；三点与 `replay_trial` 对齐（≤0.004 dB）。
+- 成对对照（同增益只改 bypass）：−12 dB 无差别；−8 dB cancel 低 5.5 dB。
+- 录音→关麦→回放：操作者确认"比较清楚"，麦克风与音响均正常；干净放音拐点在 −14 与 −8 dB 之间。
+- 执行 C 的 c-sprint-rc0 两次，均在 path-gate 失败：捕获窗 0 帧（seconds=1.02 < 1.42 的约束），
+  回包入库。据此在冻结计划新增"发送方自检"规则。
+
+## 2026-10-25　A　发布检查新增"发送方自检"规则
+
+- C 的 RC0 两次在同一点失败（path-gate 捕获窗 0 帧，参数可纸笔算），验证成本转移到了板卡与现场。
+- 在 docs/ref/development-plan.md 的发布检查里新增：发送方软件夹具自检 + preflight.json + A 只读 all_ok
+  + 缺陷分类累计三次上报；A 不新建工具。
+- 细节见该计划"发送方自检"小节。
+
+## 2026-10-25　统筹　修正跨设备交接并准备 GitHub A 分支交付
+
+- 按队长纠正，将上一轮复核、冻结计划、长期角色说明和证据纳入 A 分支交付；本机路径不能作为其他设备唯一入口。
+- 在 [冻结计划](../ref/development-plan.md#跨设备获取本轮材料) 增加仓库/分支/提交取得方式、相对路径索引和已有 ZIP 获取步骤；B/C 可保持本线分支读取 A 的材料。
+- 保存复核所用相位函数片段，使反例不依赖未提交临时目录；不上传新增原始录音、凭据或临时工作树。
+- 已执行 git pull --rebase --autostash origin A，远端同步无冲突；本轮无算法、接口或现场变更。最终提交和推送结果在发布消息核验。
+
+## 2026-10-25　统筹　归档独立复核并压缩至 10 月 28 日代码冻结
+
+- 按用户期限重排四天并行交付：A 硬件与连续使用，B 分析纠错及有限候选，C 判据与完整实验包；候选、功能和代码冻结节点见 [计划](../ref/development-plan.md)。旧排期完整保存在 archive。
+- 保存此前一轮只读复核的 [六问答复](../../report/analysis/2026-10-24-situation-and-limits.md#独立复核答复2026-10-25) 和 [数值证据](../../report/verification/audio-replay/independent-review-2026-10-25.json)，保留送审原文；纠正离线估计冒充实物上限、相位穿越、相干地板及声学增益推断。
+- 覆盖 STATE 的争议口径并标记各线执行未在本会话发生；保留板卡占用为上次登记、待现场核实。长期角色提示词不混入一次性任务，启动提示词在聊天交付供人工转发。
+- 本次只改文档与证据索引，未改算法/驱动/契约、未上板或发声。文档检查结果在交付时报告；不把计划交付记为代码或声学效果完成。
+
+## 2026-10-24　A　记忆扫描判死抽取方案；C 要的 lowband2-return.zip 已入库
+
+- 8×/16× 抽取 + 384…3072 抽头：300–1000 Hz 残差稳定在 −12.8 dB（63–250 ms），超过 250 ms 变差。
+  地板由相干 0.87–0.89 决定，不是抽头 → B 的抽取方案也到不了 −18 dB；天花板 +11…+13 dB。
+- 真正可行：近讲麦克风（头戴/领夹），抬语音、降耦合，不需改 RTL。
+- C 的 lowband2-return.zip（5.61 MB，39 项，manifest 逐文件 sha256）已放
+  report/verification/audio-replay/lowband2-return.zip。
+- 证据：`a-memory-sweep-2026-10-24.json`、512 报告 §24。
+
+## 2026-10-24　A　指向测试判死物理解耦：降耦 5.7 dB 只换来 <2 dB 可用增益
+
+- 现场约束：不能严格 1.0/1.5 m，故用同距离的麦克风侧放替代距离扫描。
+- 直立 16 段 vs 侧放 20 段（均 -12 dBFS 注入、直通、hp40，B 的脚本出阈值）：
+  宽带 |H| +0.38 → -5.34 dB（降 5.72）；必要阈值 +7.01 → +8.63；相位一致 +9.53 → +10.38。
+- 原因：限制点从 441 Hz 移到 358 Hz，该处 CD 由 +12.32 掉到 +8.16，把降耦收益吃掉。
+- 结论：物理解耦不是解法，瓶颈是低频记忆长度 → 只剩 B 的 8× 抽取 + 384 抽头。
+- 证据：`a-orientation-2026-10-24.json`。
+
+## 2026-10-24　A　分带补到 12 kHz：9131 Hz 不是限制点，435 Hz 才是
+
+- 用 lowband2 的 16 段重算：300-1000 -5.42 dB；3400-6000 -6.77；8600-10250 -11.42；
+  9131 Hz 处 -17.39 dB（相干 0.75）。
+- 9131 Hz 峰在稳定试次与开环标定段（8744 Hz、Q≈293）里都出现 → 是音响/房间共振，不是环路自激。
+- 相位拟合延迟按频段 135/124/126/111 样本，残差 24–108 度 → 相位不是纯延迟，模型必须 FIR。
+- B 的 diagnose_peak_margin.py 在同样 16 段上：必要 +7.01 dB @441 Hz、相位一致 +9.53 dB @460 Hz。
+- 证据：`a-band-12k-2026-10-24.json`；给 B 的 16 段包 `for_b_lowband.zip`（3.72 MB）。
+
+## 2026-10-24　A　带限无效，低频标定加强得 +5.42 dB
+
+- 带通 300–3400（6 阶）：8.2–8.6 kHz 环路项降到 −35.75 dB，但限制点在 381 Hz，
+  cancel 可稳增益只从 +3.65 → +3.89 dB。带限不是出路。
+- 低频标定加强（16 段、−12 dBFS、相干 0.81→0.93）重拟合：300–1000 dB 的
+  max|H−Ĥ| = −5.42 dB @435 Hz → 预测可稳 +5.42 dB。
+- 上板：0 dB 稳 2/2，+3 dB 稳 1/2，主频 9131 Hz / 457 Hz。预测与实测吻合。
+- 距"当扩音器用"（约 +20 dB）仍差约 15 dB。
+- 证据：`a-lowband-2026-10-24.json`、512 报告 §23。
+
+## 2026-10-24　A　麦克风是线松脱（已修）+ 外部讲话扩声仍未做成
+
+- 重插 VCC/GND/LINE_IN 后麦克风恢复：8 s 讲话 −11.9 dBFS、14 个满幅样本，MIC_DEAD 作废。
+- 修复后两次扩声测量（bypass 9 s，各无保护无饱和）：
+  −9 dB mic −35.0/峰值 −17.8、ref 峰值 −26.8，操作者「白噪声为主 + 轻微尖啸」；
+  −15 dB mic −30.3/峰值 −11.8、ref 峰值 −26.8，操作者「只有沙沙声，比之前更小」。
+- 结论：bypass 负增益不可能听起来像扩音；≥0 dB 才可听，而 0 dB 因 |H|>0 dB 必自激。
+  差距 3–9 dB，与夹具 4.7 dB 重复性同量级。
+- 证据：`a-speech-entry-2026-10-24.json`。
+
+## 2026-10-24　A　人声入口被麦克风硬故障阻断
+
+- 外部讲话→扩声两次尝试（−15 / −9 dB bypass，各 9 s）：无保护、无饱和、包络平稳，
+  ref 比 mic 低对应增益，说明系统确实在放麦克风信号；但麦克风只有底噪，没有语音。
+- 8 s 纯麦克风检查（贴合讲话、不播放）：mic −37.7 dBFS、包络八段不动 → `MIC_DEAD`。
+- 回溯：重标定时 mic −18.1 正常，门禁漂移测试时 −29…−34 正常；故障出现在 0 dB candidate 饱和之后。
+- 证据：`a-speech-entry-2026-10-24.json`。
+
+## 2026-10-24　A　夹具电平重复性 4.7 dB，C 的门禁无法通过
+
+- 6 次相同 1 kHz −20 dBFS 定音：麦克风 −32.85…−29.36 dBFS，极差 4.71、σ 1.59。
+- C 的 c-room-ready-v1 两次 RUN 均停在同一门禁；两次 SPEECH 分别停 gate_tone_not_observed 与 gate_drift，
+  人声项一次都没采到。
+- 结论：本夹具绝对 ASG 不可引用；1.5 dB 门禁不可满足；跨场次差异不能排除是同一因素。
+- 证据：`a-fixture-repeatability.json`、512 报告 §22。
+
+## 2026-10-24　A　门禁版对照：B 掩模系数不如现场重拟合
+
+- 验证 B 的 `candidate_512_session_20261024.json`：Q20 sha256 `e353c10e…` 一致，文件 sha 因序列化不同。
+- 同一门禁场次对照：A 重拟合 −9 dB 稳（−37.2）、−3/0 啸叫（8.35 kHz）；
+  B 掩模 −9 dB 即啸叫（405 Hz 顶满幅）、−6/−3 啸叫（8.36/8.35 kHz）。
+- 发现门禁基线会漂（两次差 10 dB），改为静置 8 s + 连续 3 次 1.2 dB 内取中位数。
+- 发现纯音测延迟是周期模糊（70/118/21），只认白噪声 124/125。
+- 证据：`a-model-ab-2026-10-24.json`、512 报告 §21。
+
+## 2026-10-23　A　驱动证据层按 C 规格升级 + 8.4 kHz 相位定位
+
+- 按 C 的 a-replay-evidence-v2 规格重写 `replay_trial.py` 证据段：计数解包、唯一保存路径、
+  `source_pcm16` 入库、`source_end_frame_exclusive`/`source_schedule_verified`、`.status.json` 边车。
+- C 的 `check_a_driver.py` 官方验收 **8/8、accepted=true**（驱动 sha256 `2127663…`，
+  由用户在宿主 PowerShell 执行；沙箱内因工作区继承 `Everyone:(DENY)(DC)` 无法删临时目录）。
+- 256 模型补零加载实证：`logical_taps=256 / loaded_taps=512 / coefficient_status=0x200A /
+  bit_exact 0 处不符`。证据：`a-loading-compatibility.json`。
+- 抵消惩罚逐频段：300–1000 −11.16 dB、1000–3000 −10.77、3000–6000 −4.47、
+  8200–8600 **+0.29（最差 +1.06）**、6000–12000 +0.07（最差 +4.65）。
+  8.4 kHz 幅度准（9.17 vs 9.14 dB）但相位差约 33°，`|H−Ĥ| ≈ |H|`。
+  证据：`a-cancellation-penalty.json`、512 报告 §17。
+
+## 2026-10-23　A　实时扩声入口 + 板端版本核对（新分工）
+
+- 新增 oard/audio_replay/live_pa.py：一次装载 overlay、一次装载模型，连续跑 N 段（每段 ≤9.5 s），
+  话筒→PL→音响；ypass=1 普通扩声、ypass=0 带抵消扩声。导入不发声。
+- 新增 oard/audio_replay/live_pa.ipynb：4 个代码格（1 核对哈希/2 设参数/3 发声/4 汇总），只有格 3 发声。
+- 部署到板卡 /home/xilinx/jupyter_notebooks/base/audio/audio_live/（512 位流 8b2426f4…、
+  模型 model_room_512.json  7fae6af…、live_pa.py 531ffe5…）。
+- 连通性自检（不发人声，−18 dB 旁路 3 s）：completed_frames=146484、status  x00008001、
+  三路饱和计数全 0、捕获 plumb_01_b1_g516.npz 已存。
+- 核对接口位段：captured 是 **16 位**，所以 capture_status[16:1]=captured；
+   x00008001 = done + captured=16384（**不是削顶**）， x00020000 = 配置被拒（bit17）。
+- 更正：本轮早先怀疑"gain_clip 标志与计数不一致"是我数错位宽，RTL 与读数自洽，无缺陷。
+- STATE 覆盖 A 段（新职责、实时扩声现状、接口位段、夹具=0.5 m 房间）。
+## 2026-10-23　A　按队长要求更新三线分工与人工交接
+
+- 明确 A 维护底层驱动、硬件集成及现场，B 维护算法与事前预测，C 维护测量/复算并整合完整实验包；按功能划定混合目录的文件边界。
+- 重写三份可全文转发的 AI 提示词，加入第一轮任务、准确文件/代码格定位、批次停止分支和结果包交付；统一人工消息转发，不使用 REQUESTS 待办表。
+- 同步 AGENTS、WORKFLOW、开发规范和导航，消除旧分支/权限及角色归属冲突。按用户指定交 A 分支，供队长后续合并 main。
+- 验证：`python scripts/check_docs.py` 与 `git diff --check`；本次仅文档与规则修改，未执行算法测试、综合或实物实验，未改变契约语义。
+- 依据：[用户授权摘录](../../report/ai-records/README.md#2026-10-23-队长要求的新分工授权摘录与采用说明)；交付：[分工及提示词入口](../lines/README.md)。
+
+## 2026-10-22　A　512 抽头改建与箱体复测
+
+- 修 src/rtl/audio_pl_replay.v 的三处前向引用（scheduled/u_ready/rm 声明前使用）——
+  仓库里这版源码原本重建不出已发布的位流，xvlog 直接报错。
+- TAPS 256→512，驱动去掉硬编码 256（
+esidual_tools、
+eplay_tools、
+eplay_trial）。
+  重建后 WNS +0.287 ns、WHS +0.034 ns、LUT 6.61 %、BRAM 80 %，位流 sha256 8b2426f4…。
+  沙箱内 BD 解析失败（BD 41-1690），宿主 PowerShell 一次通过——环境限制，非设计问题。
+- 回归：512 位流 + 256 模型补零 → 控制项 −18.1 dBFS、延迟 114 帧、bit-exact，与 256 基线一致。
+- 箱体 512 标定改用按 RMS 定标的合成白噪声（记录噪声分段峰值归一化后实际太小，采集被底噪主导）：
+  256/384/512 验证集降低 6.22/6.34/6.49 dB，max|H| 26.45 dB @417 Hz 与独立实测 26.3 dB 吻合。
+- 箱体起振点：旁路 −24、抵消 −13.5 仍起振，**512 没有改善**（ASG 仍约 10.8 dB）。
+  证据：[512 报告](../../report/verification/audio-replay/2026-10-22-512-taps.md)。
 # 项目进度（时间线，只追加）
 
 > **本文件是只追加的日志，不是现状。** 每条记录是"当时"的状态，越往下越旧，
 > 其中"未上传/未验证"等字样只描述当日。**当前状态一律看 [STATE.md](../STATE.md)。**
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
+
+## 2026-10-21 A首次实测ASG：两种激励符号相反，并证实audio_closed输出不通
+
+用 `audio_replay`（先以 −36 dBFS 直放标定出 +23 dB 播放→麦克风耦合）在关盖箱体做逐档成对
+对照，2.05 s/项、同增益只改 bypass。**噪声源**：旁路起振 ≈ −19 dB、抵消 ≈ −13.5 dB，ASG ≈ +5.5 dB，
+由 −24 dB 旁路再增量反推 `|H|max ≈ +23 dB`（模型 ℓ1 为 +28.5 dB）。**人声源**（`girl_voice`
+截 2 s 数字注入）：抵消 −18 dB 起振、旁路 −13.5 dB 起振，ASG ≈ −4.5 dB。两种源给出相反符号；
+关掉保护单跑一次，麦克风峰值达 −3.0 dBFS，确认是声学啸叫而非数字自激。
+
+按频点分析解释了差异：噪声源起振在 **232 Hz（抵消）/423 Hz（旁路）**，人声源抵消起振在
+**274 Hz**——正好落在 `girl_voice` 基频上，所以真实人声更容易把抵消回路推起来；
+B 预测的 381 Hz 共振两次都没成为起振点。
+
+同轮证实 `audio_closed` 的 DAC 输出无效：同批配对（−60/−26/−60 dB）中 −26 dB 环路对麦克风的
+贡献只有 **+0.06 dB**（应 +5 dB），而其 ADC 正常（手机近距离播放 −26.7 dBFS）；已排除 RTL 顶层、
+驱动与 Codec 配置差异，指向 bitstream。按用户决定退役该 overlay，历史"闭环"结果只证明算术。
+另：板卡既有 `source.wav` 实为噪声（平坦度 0.55、帧起伏 3.1 dB）。
+
+证据：[本轮报告](../../report/verification/audio-replay/2026-10-21-asg-field.md)。
+未执行：10 s 长窗口、端到端延迟。
+
+## 2026-10-21 A修复PYNQ后台线程事件循环
+
+现场初始化报No current event loop。读取板卡pynq/uio.py确认UIO注册依赖调用线程事件循环；将每次新建线程改为持久单音频工作线程，初始化并保留同一事件循环，启动预检实际工作线程，并记录完整异常栈。部署后重启空闲服务；未触发录音播放。[证据](../../report/verification/audio-replay/README.md)。
+
+## 2026-10-21 A修复SSH服务XRT设备注册
+
+根据现场No Devices Found错误，读取板卡PYNQ源码确认设备注册依赖XILINX_XRT；加载板卡官方环境后枚举到EmbeddedDevice。加入启动脚本、启动设备检查并部署；未加载overlay或发声。[证据](../../report/verification/audio-replay/README.md)。
+
+## 2026-10-21 A修复按钮页录音环境与失败提示
+
+用户报告录音后无后续按钮；读取状态确认多次录音均在导入pynq时失败，未生成录音。切换PYNQ虚拟环境并加入启动导入检查、页面错误直显；保留计划和原链接，仅重启已确认空闲的A服务。[证据](../../report/verification/audio-replay/README.md)。
+
+## 2026-10-21 A通过SSH部署并完成静默选档
+
+获用户授权后直接SSH/SFTP调试，确认板卡旧包并备份更新，逐文件核对15项。真实数据静默选档通过，仅回传JSON，未发声。新增按钮页并核对HTTP待机状态。接口变更：[逐档v2](../contracts/audio-replay-sweep-v2.md)保留原保护上限，追加有间隔的末档并提供按钮交互；硬件不变。[证据](../../report/verification/audio-replay/README.md)。
+
+## 2026-10-21 A修复Notebook保存导致的哈希拒绝
+
+用户返回package阶段停止摘要，无试验项、零发声。将Notebook校验从整文件改为代码格内容摘要，保留其他程序和bit/hwh字节校验，更新完整包及两文件恢复步骤。未拿到板卡Notebook，不能断言此次只改了输出；本次未上板。[修复证据](../../report/verification/audio-replay/README.md)。
+
+## 2026-10-21 A补齐逐档增益批次
+
+根据用户一次性交付要求，新增已有标定数据静默选档和逐档抵消→旁路运行器，固定整批声源电平并自动保存配对/停止原因；完整包从10项更新为13项。接口变更：新增[audio-replay-sweep-v1](../contracts/audio-replay-sweep-v1.md)，旧硬件/接口保留。执行语法、打包与文档检查，未运行本版回归或上板，真实档位留待板卡数据计算。[实现记录](../../report/verification/audio-replay/README.md)。
+
+## 2026-10-21 A同步微信协调规范并保留交付
+
+按用户授权处理REQUESTS删除/修改及STATE冲突，将远端main `18681fc`变基合入A。保留A程序和证据，撤掉旧诉求表；历史条目仅移除已删除文件的失效链接，事实内容保留。代码与交付ZIP未改，未操作板卡。B/C分支已取回，C代码未合入A。见[交付记录](../../report/verification/audio-replay/README.md)；协调采用用户微信转发，仓库保存全局记忆。
+
+## 2026-10-20 A线交付预录语音程序与独立接口
+
+用户要求手机录好后停止外放、音响播放同时实时采样。A交付独立audio_replay RTL、bit/hwh、驱动与三格Notebook完整包；70项软件检查、RTL仿真及最终构建通过。首次构建时序失败已修复并保留证据。未操作板卡，真实听感仍待一次现场执行。接口变更：新增[audio-replay-v1](../contracts/audio-replay-v1.md)，旧接口保持不变；数字源加入实际输出，B/C消费注意事项见REQUESTS的R-005/R-006。[交付与检查证据](../../report/verification/audio-replay/README.md)。
+
+## 2026-10-20 A线澄清二次确认并修正文案
+
+用户提供第二次摘要：模型范围已正常生成 `−35 dB` 单档，第一次 `READY` 已通过；脚本第二次提示要求 `START`，用户再次输入 `READY`，触发 `operator_cancel_before_start`。`trials=[]`、发声0秒，没有现场效果证据。已将第二次提示改为明确的“第二次确认：输入 START 才开始旁路/抵消配对”，并同步Notebook预检SHA和操作包；最新版尚未上传板卡。详见[现场记录](../../report/verification/field-validation/model-bound-zero-playback-2026-10-20.md)。
+
+## 2026-10-20 A线现场批次因模型增益上限零播放
+
+用户提供的 `field_651b97b20f6d/summary.json` 显示配置核验通过，候选模型 `L1=26.744`，估算小增益上限 `−28.545 dB`，扣除6 dB保护量后运行上限为 `−34.545 dB`。原计划从 `−30 dB` 开始，故 `gain_levels_db=[]`、`trials=[]`、`sound_seconds_completed=0`，脚本安全停止；无现场音频结论。A 已在本地将起点改为 `−35 dB`，该候选模型可生成一组成对档位，预计总发声4秒。新版尚未上传板卡，需下次现场前完成静音核验。具体证据和给B/C的事项见[现场记录](../../report/verification/field-validation/model-bound-zero-playback-2026-10-20.md)。
 
 
 ## 2026-10-21 真实箱体分析：381 Hz 的共振决定了全部
@@ -41,6 +276,35 @@ A 交出三个标定文件，第一次在真实数据上跑通逐频点分析。
 - `docs/INDEX.md`、`README.md` 的入口链路同步去掉诉求一环。
 
 没做什么：不改任何技术结论、不改 STATE 的现状与关键数字。
+## 2026-10-20 A 线补齐现场配置字段说明并识别夹具不匹配风险
+
+用户贴出field_setup.json后澄清固定硬件是两个扬声器模块、一个MAX4466麦克风；此前把注释误读为双麦克风。操作包已修正为两组扬声器坐标，并区分麦克风增益与扬声器外置音量控制字段。配置仍有channel_mapping_verified空值与JSON注释等语法错误；operator_notes类型不符，音箱控制备注与确认标志矛盾。原标定资料没有完整记录扬声器布置，需先确认两只扬声器是否与标定条件相同，再决定夹具匹配标志。审查依据见[配置审查记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。
+
+## 2026-10-20 A 线处理现场配置JSON解析失败
+
+用户返回的summary为 `status=stopped`、`trials=[]`、`pairs=[]`、`sound_seconds_completed=0`，错误指向板卡 `field_setup.json` 第12行第33列的 `JSONDecodeError`。据此确认该次没有进入READY交互或播放项；由于板卡编辑版配置未提供，未猜测非法字符。操作包新增按行列定位、JSON语法核对和先重跑静音代码格1的恢复步骤，见[恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。
+
+## 2026-10-20 A 线澄清现场Notebook的READY输入位置
+
+用户反馈执行代码格2后找不到 `READY` 输入框。截图里执行编号已经返回，且输出 `summary.json` 路径，说明调用已退出而非等待输入。脚本在异常退出时同样保存摘要；具体停止原因需打开板卡 `field_results/field_<id>/summary.json` 查看 `status` 和 `stop_reason`。已把这一判别写入[操作包](../experiments/field-validation/README.md)与[恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。在停止原因明确前不重跑代码格2。
+
+## 2026-10-20 A 线记录现场配置文件缺失的静音恢复步骤
+
+用户补传运行器后报告代码格1缺少板卡 `field_setup.json`。该检查在静音核验中，尚未运行批次。操作包补充单文件上传步骤：电脑本地配置模板上传至板卡 `base → audio → audio_closed`，确认列表出现后只重跑代码格1；模板须等现场条件确认后填写，不能为通过核验臆填。操作依据见[现场操作包](../experiments/field-validation/README.md)和[预检恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。没有播放音频。
+
+## 2026-10-20 A 线修正现场运行器SHA256大小写误判
+
+用户补传 `field_validation.py` 后，代码格1报告实值与预期哈希仅十六进制大小写不同，却因字符串区分大小写而拒绝文件。已把Notebook比较改为大小写归一，并在[操作包](../experiments/field-validation/README.md)说明：电脑本地运行器无需重传；只需覆盖上传新版 `field_trial.ipynb`，然后重跑代码格1。证据与恢复步骤见[预检恢复记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。尚未运行代码格2或播放音频。
+
+## 2026-10-20 A 线修复现场Notebook缺少运行器时的静音预检指引
+
+用户执行 `field_trial.ipynb` 代码格1时报告 `field_validation.py` 的 `FileNotFoundError`。回溯显示清单和闭环包哈希检查已通过，异常发生在运行器文件读取，代码格2尚未执行。已在Notebook中增加明确的缺文件/哈希不匹配提示，并在[操作包](../experiments/field-validation/README.md)写明只需把电脑本地 `board/audio_closed/field_validation.py` 上传到板卡 `base → audio → audio_closed`，确认文件出现后只重跑静音核验格。恢复记录见[静音预检记录](../../report/verification/field-validation/notebook-preflight-recovery-2026-10-20.md)。没有启动声源或运行批次。
+
+## 2026-10-20 A 线审查 B 线分析交付并提出修订请求
+
+审查 `src/feedback/path_analysis.py`、对应测试及 [B 线合成报告](../../report/verification/algorithm-2026-10-20/README.md)。`recommend_field_range` 当前以 `msg_bypass_conservative_db + 2 dB` 生成对照点，并注释称旁路应起振；报告交叉核对的旁路阈值为保守 −2.02 dB、相位口径约 +2.12 dB、整数闭环模拟约 +2.11 dB，因此代码给出的约 −0.02 dB 不能据此称为预测旁路起振点。要求 B 重新定义可行区间和保护裕量，无安全区间时明确不推荐现场点。
+
+另发现加权候选在报告 ASG 等评分时使用浮点系数，JSON 同时附带 Q20 整数系数；要求用实际量化系数重算验证指标，避免浮点结果被当作可部署候选收益。测试文件有两份同名 `ModelArtifactTests` 定义；要求去重并保留覆盖。R-001/交接把“不含人声”作为可传输依据，与用户原始 PCM 未经同意不得传出的要求冲突；请求改为优先板上静默分析、仅回传统计 JSON，原始数据须获授权。上述事项记录于 R-004（当时的诉求编号），尚未修复或复验；没有运行板卡或播放音频。
 
 ## 2026-10-20 补上第三个通道：线间诉求
 
