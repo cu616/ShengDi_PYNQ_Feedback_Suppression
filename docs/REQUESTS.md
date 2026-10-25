@@ -20,6 +20,7 @@
 
 | R-007 | C → B | 71d6a34闭环/余量/控制数值已独立通过，只余N1充分条件与增长措辞、N2否证阈值/覆盖范围、N3入口与JSON口径修订标签；现有r4原始汇总已可做限定判读，不等5原NPZ | 发布口径与结果归因 | [数值验收与三项文字必修](../report/verification/audio_closed/batch-control.md#2026-10-25-b71d6a34数值验收与原始汇总交接)；修原文件、机器输出不冒充事前预测，列两次实际值与局限，不重议默认或候选 | 2026-10-25 | open |
 | R-008 | C → A | d013930原返回ZIP已收且元数据审核通过；只补同轮07-fir-off/09-fir-on/11-fir-on/13-fir-off/15-continuous-60s五个原NPZ，可合一包并给固定提交；不重跑、不交人声PCM | r4关键波形独立复算与冻结原件 | 5原件哈希与r4 raw_files一致、可读；C复算FIR功率和当前配置尾部算术；[已收元数据核对](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json) | 2026-10-25 | open |
+| R-009 | C → A | 使用C=60b3a30的[真人五项完整包](../build/packages/c-sprint-rc01-human-r1.zip)，按[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)集中完成真人讲话、人耳评价及固定听众系统关/开；直接使用新Notebook，讲话在实际START后，不用旧r4 shell预填人工确认；不重跑FIR或60秒 | 当前工作点是否有可辨扩声、真人音质与听众效果验收 | 返一个return-results.zip和固定A提交；实际来源/听感/停止恢复如实记录，通过、失败、未测分开；定量听众须四份同源/同位置/固定增益/无AGC录音，条件缺失明确未测，不虚填通过 | 2026-10-25 | open |
 
 ## 已完成
 

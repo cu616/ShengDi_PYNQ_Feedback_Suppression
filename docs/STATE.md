@@ -40,8 +40,8 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-25独立接受B=71d6a34的闭环/余量/控制数值修订，原入口与24项控制测试通过，434保存数字吻合，C独立谱累计/FFT核对带内最大差约9e−15。原phase/Q20入口未改。把A=d013930已有原字节汇总和状态整理给B，先做两组元数据限定判读，不等待波形原件；真人五项包及模型/资产保持。
-**当前卡点**：R-007只余N1–N3发布口径/机器标签，数值修复关闭；原dbf保留，不追认事前预测。API确认A仍d013930，R-008仍待同轮4个FIR及60秒共5个非人声NPZ。真人/固定听众效果和另一队友复现未测；旧默认与无新候选决定不变。
+**最后动作**：2026-10-25重新fetch全部分支并同步C，确认A=d013930、B=71d6a34未新增交付；统一派单A的R-008原件补交与R-009真人五项会话、B的R-007发布口径和汇总判读。两个既有完整包哈希复核一致，不改包、不重复FIR或60秒。
+**当前卡点**：R-008仍待同轮5个非人声NPZ，R-009真人/固定听众效果未测；R-007只余N1–N3发布口径/机器标签及两次实际配对判读，数值修复关闭。另一队友复现未测；旧默认与无新候选决定不变。
 
 - [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
 - [真人完整ZIP](../build/packages/c-sprint-rc01-human-r1.zip)、[归档验收](../report/verification/audio_closed/sprint-rc0-20261025/sprint-package-check-human-r1.json)：源码59f2b2a，365967字节，SHA256=0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e；48载荷/A七件/C八件身份与实际归档5项自检原样复现通过，8类负例拒绝。SELFTEST min14920/gate passed/0.434分钟，现场未测。
@@ -50,6 +50,7 @@
 - 两组总/中带响应均减小，高带均增大，低带方向不一致；只描述14408帧源内窗，不推出整体抑制或ASG。60秒PCM覆盖约0.559%，全程声学未知，真人/听众不能以PROXY填通过。
 - [B修订独立验收](../report/verification/audio_closed/sprint-rc0-20261025/b-71d6a34-review.json)、[三项发布必修](../report/verification/audio_closed/batch-control.md#2026-10-25-b71d6a34数值验收与原始汇总交接)：小增益充分界与穿越估计分开，完整ON/OFF闭环已修正；1.5dB或两次散布都不是通用分辨率，保护不能否定遗漏频段的预测，机器输出要标口径修订。旧dbf反例保留。
 - [给B的完整原始汇总包](../build/packages/c-r4-to-b-r1.zip)、[字节与哈希核验](../report/verification/audio_closed/sprint-rc0-20261025/b-handoff-r1-check.json)：入口summary-v3.json → fir_switch_pairs两组，含原A回包和C审核；376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367，14载荷通过，源c0af379。B先做元数据限定判读，raw PCM独立复算仍待5原件。
+- 用户常设要求：每轮回应前分别检查A、B是否需要派单；有新动作就给完整可转发消息，无新动作明确写无需新增。按最新提交去重，不因等待原件重复已经通过的现场项目。
 - C未操板或改A/B实现。10/26质检，10/27 20:00冻结，10/28另一队友复现并冻结源码/bit/hwh/模型/配置/哈希；v2外部I/O签核仍不完整。
 
 ## 已验证 / 未验证（只在这里写一次）
