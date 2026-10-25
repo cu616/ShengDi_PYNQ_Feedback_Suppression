@@ -1142,3 +1142,9 @@ API同时确认A仍d013930，尚无所需5个原NPZ；已存在的原返回汇�
 交接包含原A返回ZIP、两份原汇总、5个相关状态、C有效性/数值验收和逐文件哈希，数据不含原PCM。
 B现在先列两次实际值与方向、解释覆盖与不确定性；5原件到达后C另补波形复算，不阻塞这一步。
 这不将−0.171/−0.244dB或60秒工程通过改称ASG、全程音质或抗啸叫成功。
+
+最终[原始汇总交接包](../../../build/packages/c-r4-to-b-r1.zip)从源码c0af3796569f621a3c4c48e91e5958796809058a生成，
+376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367。
+14载荷哈希、原A返回ZIP和解出的汇总/状态逐字节一致；C审核直接从固定Git对象读取，避免Windows工作区换行转换。
+见[b-handoff-r1-check.json](sprint-rc0-20261025/b-handoff-r1-check.json)。入口根目录summary-v3.json的fir_switch_pairs两组，
+每项source_response在原summary.json，B无需再等人转发单独文件；原PCM与真人结果没有冒充齐全。

@@ -49,6 +49,7 @@
 - 真人包只做2门禁、真人、听众关/开5项；PROXY触板前拒绝，明确人耳负面记failed，四份固定增益/无AGC录音缺失记未测。A新增shell的5秒讲话在START返回前、Codec仍静音，本次使用C唯一Notebook在START开始后讲话；听众用同一固定录制源。
 - 两组总/中带响应均减小，高带均增大，低带方向不一致；只描述14408帧源内窗，不推出整体抑制或ASG。60秒PCM覆盖约0.559%，全程声学未知，真人/听众不能以PROXY填通过。
 - [B修订独立验收](../report/verification/audio_closed/sprint-rc0-20261025/b-71d6a34-review.json)、[三项发布必修](../report/verification/audio_closed/batch-control.md#2026-10-25-b71d6a34数值验收与原始汇总交接)：小增益充分界与穿越估计分开，完整ON/OFF闭环已修正；1.5dB或两次散布都不是通用分辨率，保护不能否定遗漏频段的预测，机器输出要标口径修订。旧dbf反例保留。
+- [给B的完整原始汇总包](../build/packages/c-r4-to-b-r1.zip)、[字节与哈希核验](../report/verification/audio_closed/sprint-rc0-20261025/b-handoff-r1-check.json)：入口summary-v3.json → fir_switch_pairs两组，含原A回包和C审核；376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367，14载荷通过，源c0af379。B先做元数据限定判读，raw PCM独立复算仍待5原件。
 - C未操板或改A/B实现。10/26质检，10/27 20:00冻结，10/28另一队友复现并冻结源码/bit/hwh/模型/配置/哈希；v2外部I/O签核仍不完整。
 
 ## 已验证 / 未验证（只在这里写一次）
