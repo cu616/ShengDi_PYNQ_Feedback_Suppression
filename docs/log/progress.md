@@ -1,3 +1,13 @@
+## 2026-10-25　A　连续运行入口、live_run 修正、RC0 执行与自检规则
+
+- 新增 `live_run.py`（a-continuous-v1）并上板验证：9.5 s 跑满、时间线 469 点、停止 0.773 s 响应、
+  异常 disarm+mute。60 s 只差 `MAX_RUN_FRAMES`（提案已提，待批）。
+- 修 `live_run` 的 microphone/reference 通道标签写反；三点与 `replay_trial` 对齐（≤0.004 dB）。
+- 成对对照（同增益只改 bypass）：−12 dB 无差别；−8 dB cancel 低 5.5 dB。
+- 录音→关麦→回放：操作者确认"比较清楚"，麦克风与音响均正常；干净放音拐点在 −14 与 −8 dB 之间。
+- 执行 C 的 c-sprint-rc0 两次，均在 path-gate 失败：捕获窗 0 帧（seconds=1.02 < 1.42 的约束），
+  回包入库。据此在冻结计划新增"发送方自检"规则。
+
 ## 2026-10-25　A　发布检查新增"发送方自检"规则
 
 - C 的 RC0 两次在同一点失败（path-gate 捕获窗 0 帧，参数可纸笔算），验证成本转移到了板卡与现场。
