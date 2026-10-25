@@ -24,7 +24,8 @@ from pynq import MMIO, Overlay
 RATE = 48828.125
 FRAMES = 16384
 HARDWARE_TAPS = 512
-PL_MAX_RUN_FRAMES = 488281          # from the deployed HWH; the RTL parameter does not exceed it
+PL_MAX_RUN_FRAMES = 3000000         # v2 contract ceiling; the actual limit is read from the HWH
+PL_MAX_RUN_FRAMES_V1 = 488281       # v1 bitstreams reject anything larger
 PLL_PAYLOAD = "000000002801"
 PLL_EXPECTED = "000000002803"
 
@@ -34,8 +35,30 @@ def _sha256(path):
 
 
 def decode_counts(packed, gain_word, mix_word):
+    """prediction and residual share one 32-bit word as two 16-bit fields.
+
+    gain and mix are each a full 32-bit counter and must NOT be masked to 16 bits.
+    """
     return [int(packed) & 0xFFFF, (int(packed) >> 16) & 0xFFFF,
-            int(gain_word) & 0xFFFF, int(mix_word) & 0xFFFF]
+            int(gain_word) & 0xFFFFFFFF, int(mix_word) & 0xFFFFFFFF]
+
+
+def pl_max_run_frames(hwh_path):
+    """Read the MAX_RUN_FRAMES parameter of the bitstream that is actually configured."""
+    try:
+        blob = Path(hwh_path).read_text(encoding='utf-8', errors='replace')
+    except OSError:
+        return None
+    marker = 'NAME="MAX_RUN_FRAMES" VALUE="'
+    index = blob.find(marker)
+    if index < 0:
+        return None
+    start = index + len(marker)
+    end = blob.find('"', start)
+    try:
+        return int(blob[start:end])
+    except ValueError:
+        return None
 
 
 def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40,
@@ -50,14 +73,18 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
         raise ValueError('choose a NEW .npz path in an existing board directory')
     if not out.parent.is_dir():
         raise ValueError('output directory does not exist')
-    if not math.isfinite(seconds) or not 0.2 <= seconds <= PL_MAX_RUN_FRAMES / RATE:
-        raise ValueError('seconds must be in 0.2..%.3f on this bitstream; %.1f s needs the '
-                         'MAX_RUN_FRAMES contract change'
-                         % (PL_MAX_RUN_FRAMES / RATE, seconds))
+    bit = out.parent / 'audio_replay.bit'
+    hwh = out.parent / 'audio_replay.hwh'
+    limit = pl_max_run_frames(hwh)
+    if limit is None:
+        raise ValueError('cannot read MAX_RUN_FRAMES from %s; refusing to guess the PL limit' % hwh)
+    if not math.isfinite(seconds) or not 0.2 <= seconds <= limit / RATE:
+        raise ValueError('seconds must be in 0.2..%.3f on this bitstream (MAX_RUN_FRAMES=%d); '
+                         '%.1f s needs a v2 bitstream' % (limit / RATE, limit, seconds))
     frames_requested = int(seconds * RATE)
-    if frames_requested > PL_MAX_RUN_FRAMES:
-        raise ValueError('requested %d frames exceeds the PL limit %d'
-                         % (frames_requested, PL_MAX_RUN_FRAMES))
+    if frames_requested > limit:
+        raise ValueError('requested %d frames exceeds this bitstream limit %d'
+                         % (frames_requested, limit))
     gain_q12 = int(math.floor(4096 * 10 ** (gain_db / 20) + 0.5))
     if not 0 <= gain_q12 <= 32768:
         raise ValueError('gain out of range')
@@ -81,7 +108,8 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
         fixture_id=fixture_id, label=label, bypass=bool(bypass), zero_coeff=bool(zero_coeff),
         gain_db=float(gain_db), gain_q12=int(gain_q12), hp_volume=int(hp_volume),
         sample_rate_hz=RATE, frames_requested=int(frames_requested),
-        seconds_requested=float(seconds), pl_max_run_frames=PL_MAX_RUN_FRAMES,
+        seconds_requested=float(seconds), pl_max_run_frames=int(limit),
+        pl_contract=('v2' if int(limit) > PL_MAX_RUN_FRAMES_V1 else 'v1'),
         model_file=Path(model_path).name, model_sha256=_sha256(model_path),
         logical_taps=logical_taps, loaded_taps=HARDWARE_TAPS,
         coefficients_sha256=hashlib.sha256(
@@ -166,11 +194,30 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
             state['cleanup_errors'].append('%s: %s' % (name, str(exc)))
 
     def disarm_and_mute():
-        """Stop the sound first; every recovery step is attempted even if one fails."""
+        """Stop the sound; every step is attempted even if a preceding one fails.
+
+        Returns (disarm_ok, mute_ok). Neither is assumed: a failure is recorded and the
+        caller must not report muted/recovered when the step did not succeed.
+        """
+        t0 = time.monotonic()
+        disarm_ok = False
+        mute_ok = False
         if control is not None:
-            cleanup('PL disarm', lambda: control.write(0, 0))
+            try:
+                control.write(0, 0)
+                disarm_ok = True
+            except Exception as exc:
+                state['cleanup_errors'].append('PL disarm: %s' % exc)
+        state['t_disarm_ok'] = round(time.monotonic() - t0, 4)
+        t1 = time.monotonic()
         if fd is not None:
-            cleanup('Codec mute', mute_codec)
+            try:
+                mute_codec()
+                mute_ok = True
+            except Exception as exc:
+                state['cleanup_errors'].append('Codec mute: %s' % exc)
+        state['t_mute_ok'] = round(time.monotonic() - t1, 4)
+        return disarm_ok, mute_ok
 
     import fcntl
     try:
@@ -245,6 +292,11 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
             word, gain_word, mix_word = int(clips.read(0)), int(clips.read(8)), int(source_len.read(8))
             counts = decode_counts(word, gain_word, mix_word)
             now = time.monotonic()
+            if state.get('_last_loop') is not None:
+                gap = now - state['_last_loop']
+                if gap > state.get('max_poll_gap_s', 0.0):
+                    state['max_poll_gap_s'] = round(gap, 4)
+            state['_last_loop'] = now
             if now >= next_sample or completed != last_completed:
                 state['timeline'].append([round(now - start, 3), completed,
                                           status_word, counts[0], counts[1], counts[2], counts[3]])
@@ -258,23 +310,36 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
                 break
             if interruption['raised']:
                 state['stop_reason'] = 'operator_signal'
+                state['t_stop_request'] = round(now - start, 4)
+                state['t_stop_detected'] = round(now - start, 4)
                 break
             if stop_file and os.path.exists(stop_file):
                 state['stop_reason'] = 'operator_stop_file'
+                state['t_stop_request'] = round(now - start, 4)
+                state['t_stop_detected'] = round(now - start, 4)
                 break
             if now - start > seconds + 5:
                 state['stop_reason'] = 'timeout'
                 break
             time.sleep(max(poll_seconds, 0.002))
 
-        disarm_and_mute()
-        state['muted'] = True
+        disarm_ok, mute_ok = disarm_and_mute()
+        state['t_cleanup_done'] = round(time.monotonic() - start, 4)
+        state['disarm_ok'] = bool(disarm_ok)
+        state['mute_ok'] = bool(mute_ok)
+        state['muted'] = bool(mute_ok)
+        if state.get('t_stop_request') is not None and state.get('t_disarm_ok') is not None:
+            state['stop_latency_s'] = round(
+                (state['t_cleanup_done'] - state['t_stop_request']), 4)
         elapsed = time.monotonic() - start
         state['elapsed_s'] = round(elapsed, 3)
         status_word = int(command.read(8))
         completed = int(runtime.read(8))
         word, gain_word, mix_word = int(clips.read(0)), int(clips.read(8)), int(source_len.read(8))
         counts = decode_counts(word, gain_word, mix_word)
+        # a protection event is a fact even when the run also reached its frame count
+        if any(counts) and state['stop_reason'] == 'completed':
+            state['stop_reason'] = 'completed_with_protection'
         count = min(FRAMES, completed)
         first = completed - count
         raw = read_ring(first, count) if count > 0 else None
@@ -286,8 +351,10 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
         if state['stop_reason'] is None:
             state['stop_reason'] = 'exception'
         if armed:
-            disarm_and_mute()
-            state['muted'] = True
+            disarm_ok, mute_ok = disarm_and_mute()
+            state['disarm_ok'] = bool(disarm_ok)
+            state['mute_ok'] = bool(mute_ok)
+            state['muted'] = bool(mute_ok)
             try:
                 status_word = int(command.read(8))
                 completed = int(runtime.read(8))
@@ -319,7 +386,8 @@ def live_run(output_path, fixture_id, model_path, gain_db, seconds, hp_volume=40
         gain_clip_seen=bool(int(state.get('status', 0)) & (1 << 21)))
     state['counts'] = dict(prediction=counts[0], residual=counts[1],
                            gain=counts[2], mix=counts[3])
-    state['recovered'] = (int(state.get('status', 0)) & (3 << 17)) == 0
+    state['recovered'] = (bool(state.get('disarm_ok')) and bool(state.get('mute_ok'))
+                          and (int(state.get('status', 0)) & (3 << 17)) == 0)
 
     if raw is not None:
         scale = float(2 ** 23)

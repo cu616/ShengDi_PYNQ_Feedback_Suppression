@@ -8,7 +8,7 @@ RATE = 48828.125
 def trial_parameters(gain_db, seconds):
     if not math.isfinite(gain_db) or not -60 <= gain_db <= 18.06179973983887:
         raise ValueError("gain_db must be finite in -60..20*log10(8)")
-    if not math.isfinite(seconds) or not 0.02 <= seconds <= 10:
+    if not math.isfinite(seconds) or not 0.02 <= seconds <= 61.44:
         raise ValueError("seconds must be finite in 0.02..10")
     return int(math.floor(4096 * 10**(gain_db / 20) + .5)), int(seconds * RATE)
 

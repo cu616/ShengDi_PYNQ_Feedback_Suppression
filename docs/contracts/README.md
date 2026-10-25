@@ -48,3 +48,15 @@
 ```
 
 没有"状态"行的契约，`scripts/check_docs.py` 会报错——因为无法判断它能不能被依赖。
+
+## 版本索引更新（2026-10-25）
+
+| 契约 | 现行版本 | 说明 |
+|---|---|---|
+| audio-replay | **v2** | 运行上限 488281 → 3000000 帧；v1 保留 |
+| audio-closed | **v2** | 同上 |
+| feedback-fir | v1 | 未变 |
+| feedback-calibration | v1 | 未变 |
+| audio-replay-sweep | v2 | 未变 |
+
+v2 的差异只有运行上限，见 [audio-replay-v2](audio-replay-v2.md) 与 [audio-closed-v2](audio-closed-v2.md)。
