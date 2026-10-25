@@ -221,7 +221,8 @@ C 在每个状态变化保存 summary.json；finally 保存 JSON/CSV 和 return-
 ## 2026-10-25 集中实验 RC0
 
 维护者C；本节原样进入OPERATIONS.md。当前包 **RC0.1-human-r1 / c-sprint-rc01-1.0.5**，只做真人和固定听众比较。
-A已报告r4完整15项跑完；C尚未取得r4原回包，复核状态以STATE为准。本包不复制历史通过标记，不重复FIR对照或60秒工程项。
+A=d013930已补交r4原回包，C配置/配对差分/寄存器时间线审核通过；5个非人声原NPZ尚待独立波形复算。
+本包不复制历史通过标记，不重复FIR对照或60秒工程项，最新结论以STATE为准。
 目的：确认当前工作点是否有真人可辨扩声，以及固定听众位置系统开/关的实际变化；负面结果同样有效，不能靠降增益过关。
 
 ### 唯一入口与身份
@@ -232,6 +233,8 @@ A已报告r4完整15项跑完；C尚未取得r4原回包，复核状态以STATE�
   重启内核，只运行从上往下**第1个代码格**（全包唯一），首行：
   `# C sprint RC0.1-human-r1: live speech and listener only, -14 dB, v2`。
   不用In[n]定位，不拷代码、不现场换单件。
+  A在d013930新增的run_rc4_human.sh把5秒讲话倒计时放在START回调返回前，期间Codec仍静音；
+  本次直接使用上述Notebook交互，按START开始后讲话，避免预先讲完。其旧15项包装入口不用于这5项会话。
 - 绑定A=`85f4967f242eed61eaa6b74041be931c2f5bc7a0`，五件Python来自根目录，bit/hwh来自其v2目录，逐字节核验。
   bit SHA256=`61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa`；
   hwh SHA256=`92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b`；MAX_RUN_FRAMES=3000000。
@@ -297,10 +300,10 @@ EQ identity，均衡贡献未测；不产生MSG/ASG，不以保护、削顶或�
 
 ### r4原件交付要求
 
-不重跑r4。只将现有c-sprint-rc01-r4-return.zip提交并给固定提交；目前C同步到的A=85f4967尚无该文件。
-一次附同一轮现有07-fir-off.npz、09-fir-on.npz、11-fir-on.npz、13-fir-off.npz、15-continuous-60s.npz，
+不重跑r4。原返回ZIP已从d013930取得，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422。
+只需一次附同一轮现有07-fir-off.npz、09-fir-on.npz、11-fir-on.npz、13-fir-off.npz、15-continuous-60s.npz，
 用于C独立复算FIR与当前配置60秒尾部算术。无需人声/听众PCM，无需补采；保持原文件字节，按原返回清单核哈希。
-可以将原返回ZIP与这5个NPZ合成一个r4-review-return.zip提交，明确仓库位置；它与真人会话返回包分别留证。
+将这5个NPZ合成一个r4-review-return.zip提交，明确仓库位置；它与真人会话返回包分别留证，原返回ZIP无需再交。
 FIR是4项/2组配对，r4前14项为有界试次；不写“14项FIR配对”。
 60秒工程观测仅寄存器时间线+尾PCM约0.559%，不认证全程音质、话筒无削顶或全程无啸叫。
 v2实际时序WNS/WHS=0.801/0.015ns，1输入/3输出缺外部延迟约束，不称完整I/O签核。

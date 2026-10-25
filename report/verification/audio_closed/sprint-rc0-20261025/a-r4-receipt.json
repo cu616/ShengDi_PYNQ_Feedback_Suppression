@@ -1,12 +1,12 @@
 {
   "record_date": "2026-10-25",
-  "evidence_level": "user_forwarded_A_report_only",
+  "evidence_level": "original_metadata_return_received; raw NPZ pending",
   "a_assets_version_reported": "85f4967",
-  "fetched_a_commit": "85f4967f242eed61eaa6b74041be931c2f5bc7a0",
+  "fetched_a_commit": "d013930f0624c35101c92cc8b62d985f10e21e0c",
   "expected_packet": "report/verification/audio-replay/c-sprint-rc01-r4-return.zip",
-  "packet_in_fetched_commit": false,
-  "original_return_received": false,
-  "c_independent_review": "not_tested_missing_original_return",
+  "packet_in_fetched_commit": true,
+  "original_return_received": true,
+  "c_independent_review": "passed_metadata_registers_and_summary_difference_arithmetic",
   "repository_paths_inspected": [
     "report/verification/audio-replay/2026-10-21-asg-field.md",
     "report/verification/audio-replay/2026-10-21-room-fixture.md",
@@ -89,8 +89,8 @@
     "continuous_scope": "register timeline plus tail PCM only"
   },
   "c_conclusions": {
-    "fir_effect": "unknown_without_pair_values_and_raw_captures",
-    "continuous_engineering": "A_reported_pass_pending_C_original_evidence",
+    "fir_effect": "two recorded valid pairs; raw waveform recomputation pending; no general gain claim",
+    "continuous_engineering": "register/cleanup review passed; independent tail PCM recomputation pending",
     "human_voice": "not_tested",
     "listener": "not_tested",
     "independent_reproduction": "not_tested",
@@ -98,7 +98,6 @@
     "measured_asg_db": null
   },
   "missing_once": [
-    "report/verification/audio-replay/c-sprint-rc01-r4-return.zip",
     "same-run 07-fir-off.npz",
     "same-run 09-fir-on.npz",
     "same-run 11-fir-on.npz",
@@ -115,10 +114,12 @@
     "C": "eff553f8804b33e66a16ae4e8da77b64c6896f70",
     "main": "03f3063a5dd7fbf658a8fe3be9bdf4da515f64f4"
   },
-  "all_branch_r4_raw_or_return_paths": {
+  "initial_missing_a_commit": "85f4967f242eed61eaa6b74041be931c2f5bc7a0",
+  "initial_all_branch_r4_paths": {
     "A": [],
     "B": [],
     "C": [],
     "main": []
-  }
+  },
+  "return_sha256": "9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422"
 }

@@ -1,0 +1,489 @@
+{
+  "a_commit": "d013930f0624c35101c92cc8b62d985f10e21e0c",
+  "return_zip_sha256": "9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422",
+  "return_zip_bytes": 191815,
+  "verification_level": "independent return integrity, recorded configuration, register timeline and summary-difference arithmetic; no raw PCM",
+  "member_hash_checks": {
+    "05-listener-on.status.json": true,
+    "09-fir-on.status.json": true,
+    "04-path-gate.status.json": true,
+    "03-listener-off.status.json": true,
+    "summary-v3.json": true,
+    "08-path-gate.status.json": true,
+    "summary.json": true,
+    "14-path-gate.status.json": true,
+    "summary-v3.csv": true,
+    "10-path-gate.status.json": true,
+    "01-path-gate.status.json": true,
+    "summary.csv": true,
+    "12-path-gate.status.json": true,
+    "13-fir-off.status.json": true,
+    "15-continuous-60s.status.json": true,
+    "11-fir-on.status.json": true,
+    "07-fir-off.status.json": true,
+    "02-real-voice.status.json": true,
+    "06-path-gate.status.json": true
+  },
+  "package_identity": {
+    "policy": true,
+    "plan": true,
+    "source": true,
+    "payloads": true,
+    "assets": true
+  },
+  "trials": [
+    {
+      "id": 1,
+      "role": "path-gate",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 2,
+      "role": "real-voice",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 3,
+      "role": "listener-off",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 4,
+      "role": "path-gate",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 5,
+      "role": "listener-on",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 6,
+      "role": "path-gate",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 7,
+      "role": "fir-off",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 8,
+      "role": "path-gate",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 9,
+      "role": "fir-on",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 10,
+      "role": "path-gate",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 11,
+      "role": "fir-on",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 12,
+      "role": "path-gate",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 13,
+      "role": "fir-off",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 14,
+      "role": "path-gate",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    },
+    {
+      "id": 15,
+      "role": "continuous-60s",
+      "checks": {
+        "recovered": true,
+        "no_errors": true,
+        "zero_digital_counts": true,
+        "recorded_stop_reasons_empty": true,
+        "gain": true,
+        "hp": true,
+        "bit": true,
+        "model": true,
+        "q20": true
+      },
+      "all_ok": true
+    }
+  ],
+  "reported_status": "completed_with_unmeasured_requirements",
+  "reported_checks": {
+    "package": {
+      "status": "passed",
+      "level": "local_hash_and_compatibility"
+    },
+    "real_voice": {
+      "status": "not_tested",
+      "basis": "proxy",
+      "hearing_code": "PROXY",
+      "scope": "human live speech and human listening required; proxy cannot pass; saved waveform is a tail only"
+    },
+    "fir_comparison": {
+      "status": "passed",
+      "effect_claimed": false,
+      "scope": "two same-config forced-source response pairs completed; no stability/MSG/ASG claim"
+    },
+    "listener": {
+      "status": "not_tested",
+      "reason": "[Errno 2] No such file or directory: '/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/results/sprint-54b8836ae4d6/listener/off-speech.wav'",
+      "absolute_spl": null
+    },
+    "continuous_60s": {
+      "status": "passed",
+      "checks": {
+        "configuration_bound": true,
+        "metadata_consistent": true,
+        "tail_extent": true,
+        "completed": true,
+        "timeline": true,
+        "no_protection": true,
+        "cleanup": true,
+        "save": true,
+        "pcm_range": true,
+        "tail_arithmetic": true
+      },
+      "reasons": [],
+      "scope": "one continuous arm; register timeline plus final 16384 PCM frames; run/protection/stop only",
+      "acoustic_status": "not_tested",
+      "full_trial_stability": "unknown",
+      "timeline_points": 2951,
+      "max_poll_gap_s": 0.0211,
+      "waveform_coverage_fraction": 0.005592406287770673,
+      "source_schedule_provenance": "one silent source frame from bound A live_run; derived for tail arithmetic only"
+    },
+    "stop_recovery": {
+      "status": "passed",
+      "unverified_trials": [],
+      "scope": "A driver sidecar reports per-trial cleanup; emergency/abnormal recovery still requires A acceptance"
+    },
+    "independent_reproduction": {
+      "status": "not_tested"
+    },
+    "path_gate": {
+      "status": "passed",
+      "source_on_frames": 14920,
+      "scope": "source-on tone path check; acoustic stability category is separate"
+    }
+  },
+  "fir_pairs": [
+    {
+      "repeat": 1,
+      "configuration_matches": true,
+      "geometry_matches": true,
+      "recorded_eligibility_passed": true,
+      "pair_path_drift_db": 0.08579400734760512,
+      "drift_gate_passed": true,
+      "difference_arithmetic_matches": true,
+      "on_minus_off_response_db": -0.1710526780488273,
+      "on_minus_off_band_response_db": {
+        "300-1000": -0.7560427318885061,
+        "1000-3000": -0.11959674527545872,
+        "8200-8600": 0.37947540363266796
+      }
+    },
+    {
+      "repeat": 2,
+      "configuration_matches": true,
+      "geometry_matches": true,
+      "recorded_eligibility_passed": true,
+      "pair_path_drift_db": 0.11540442846275312,
+      "drift_gate_passed": true,
+      "difference_arithmetic_matches": true,
+      "on_minus_off_response_db": -0.24414526545724868,
+      "on_minus_off_band_response_db": {
+        "300-1000": 0.05061928088436218,
+        "1000-3000": -0.44456215189118353,
+        "8200-8600": 0.2530895972567535
+      }
+    }
+  ],
+  "continuous": {
+    "checks": {
+      "frames": true,
+      "tail_extent": true,
+      "done": true,
+      "timeline_monotone": true,
+      "timeline_zero_counts": true,
+      "timeline_no_fault_or_clip_flags": true,
+      "timeline_endpoint": true,
+      "bound_hwh": true,
+      "correct_mode": true,
+      "muted": true
+    },
+    "register_review_passed": true,
+    "frames_completed": 2929687,
+    "elapsed_s": 60.009,
+    "timeline_points": 2951,
+    "max_poll_gap_s": 0.0211,
+    "tail_frames": 16384,
+    "waveform_coverage_fraction": 0.005592406287770673,
+    "raw_tail_arithmetic": "reported passed by board C wrapper; C raw independent recomputation not_tested"
+  },
+  "metadata_review_passed": true,
+  "raw_npz_received": false,
+  "missing_raw_once": [
+    {
+      "file": "07-fir-off.npz",
+      "sha256": "7f5aa465a08293a7b6b18aefb276a7877ca93cdc9b70619306c97a753d334d29",
+      "board_absolute_path": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/results/sprint-54b8836ae4d6/07-fir-off.npz"
+    },
+    {
+      "file": "09-fir-on.npz",
+      "sha256": "6701db8afebd62370261e2c3bdf5a74bc42210e2b87d961fb56c409b70b81174",
+      "board_absolute_path": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/results/sprint-54b8836ae4d6/09-fir-on.npz"
+    },
+    {
+      "file": "11-fir-on.npz",
+      "sha256": "388aec33188f332e6ced9db4ad6e775bbe97ad5a885892cbebc7119d27881d3e",
+      "board_absolute_path": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/results/sprint-54b8836ae4d6/11-fir-on.npz"
+    },
+    {
+      "file": "13-fir-off.npz",
+      "sha256": "36c05b05a5d935659c35afd75fbe017e6f9034d87b649a7285dc2bb26e4a244d",
+      "board_absolute_path": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/results/sprint-54b8836ae4d6/13-fir-off.npz"
+    },
+    {
+      "file": "15-continuous-60s.npz",
+      "sha256": "5eb60b3b244f9534559295983f4b3b579abb92780c938e30f2d5ce38b38f9f05",
+      "board_absolute_path": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r4/results/sprint-54b8836ae4d6/15-continuous-60s.npz"
+    }
+  ],
+  "hearing": "PROXY; real_voice/listener/independent_reproduction not_tested",
+  "a_human_wrapper_review": {
+    "source_commit": "d013930f0624c35101c92cc8b62d985f10e21e0c",
+    "source_sha256": "df75382f25f51ba923a03b5f651d9b3d620513b7106f50432b0d56aa8aecf249",
+    "callback_return": "START",
+    "callback_events": [
+      [
+        "print",
+        "REAL_VOICE_CUE 1 现在开始讲话，5 秒"
+      ],
+      [
+        "print",
+        "  SPEAK_05"
+      ],
+      [
+        "sleep_before_start_return",
+        1
+      ],
+      [
+        "print",
+        "  SPEAK_04"
+      ],
+      [
+        "sleep_before_start_return",
+        1
+      ],
+      [
+        "print",
+        "  SPEAK_03"
+      ],
+      [
+        "sleep_before_start_return",
+        1
+      ],
+      [
+        "print",
+        "  SPEAK_02"
+      ],
+      [
+        "sleep_before_start_return",
+        1
+      ],
+      [
+        "print",
+        "  SPEAK_01"
+      ],
+      [
+        "sleep_before_start_return",
+        1
+      ],
+      [
+        "print",
+        "ASK -> START"
+      ]
+    ],
+    "speech_cue_before_START_return": true,
+    "consequence": "5s speech cue occurs while A driver remains muted; use C human notebook, or A must move cue after actual arm",
+    "fixed_source_measurement": "A plan proposes live speaking for listener pair; cannot satisfy fixed recorded-source/fixed-gain quantitative comparison"
+  },
+  "declared_v2_found": {
+    "bit_sha256": true,
+    "hwh_sha256": true
+  },
+  "decisions": {
+    "engineering": "register/cleanup acceptance passed within approved scope; PCM recomputation awaits 5 existing files",
+    "fir": "two recorded valid pairs; differences checked, no MSG/ASG or general improvement claim",
+    "human": "C five-trial package; human speech begins after START, fixed recorded source for listener comparison"
+  },
+  "measured_msg_db": null,
+  "measured_asg_db": null,
+  "hardware_access": false
+}

@@ -245,6 +245,7 @@ def audit(a_commit,b_commit,out):
 
 def audit_return(a_commit, out, revision='r1'):
     """Inspect this sprint's metadata return and declared assets, without PCM or board access."""
+    if revision=='r4':return audit_r4_return(a_commit,out)
     a_commit=subprocess.check_output(
         ['git','rev-parse',a_commit],cwd=ROOT).decode().strip()
     packet=blob(a_commit,'report/verification/audio-replay/c-sprint-rc01'+('-'+revision if revision!='r1' else '')+'-return.zip')
@@ -336,6 +337,110 @@ def audit_return(a_commit, out, revision='r1'):
     return result
 
 
+def audit_r4_return(commit,out):
+    commit=subprocess.check_output(['git','rev-parse',commit],cwd=ROOT).decode().strip()
+    packet=blob(commit,'report/verification/audio-replay/c-sprint-rc01-r4-return.zip')
+    with zipfile.ZipFile(ROOT/'build/packages/c-sprint-rc01-r4.zip') as original:
+        frozen=json.loads(original.read('sprint-manifest.json'))
+    with zipfile.ZipFile(io.BytesIO(packet)) as archive:
+        inventory=json.loads(archive.read('return-manifest.json'))
+        member_checks={n:digest(archive.read(n))==h for n,h in inventory['hashes'].items()}
+        assert all(member_checks.values())
+        s=json.loads(archive.read('summary.json'));rows=s['trials']
+        identity=dict(policy=s['policy']==frozen['policy'],plan=s['plan']==frozen['plan'],
+            source=s['package_source']==frozen['source_commits'],payloads=s['package_hashes']==frozen['hashes'],
+            assets=s['a_assets']==frozen['a_assets'])
+        assert all(identity.values())
+        sides={r['id']:json.loads(archive.read('%02d-%s.status.json'%(r['id'],r['role']))) for r in rows}
+        row_checks=[]
+        for r in rows:
+            live=r['role']=='continuous-60s';side=sides[r['id']]
+            counts=side['counts'] if live else side['clip_counts_raw']
+            zero=all(v==0 for v in counts.values()) if live else counts==[0,0,0]
+            expected_gain=0 if r['role'] in ('path-gate','listener-off') else 817
+            checks=dict(recovered=side.get('recovered' if live else 'recovery_ok') is True,
+                no_errors=not any(side.get(k) for k in ('error','cleanup_errors','salvage_errors','save_error')),
+                zero_digital_counts=zero,recorded_stop_reasons_empty=not r['stop_reasons'],
+                gain=r['gain_q12']==expected_gain,hp=r['hp_volume']==40,
+                bit=r['bit_sha256']==frozen['hashes']['audio_replay.bit'],
+                model=r['model_sha256']==frozen['hashes']['model.json'],
+                q20=r['coefficients_sha256']==frozen['coefficients_sha256'])
+            row_checks.append(dict(id=r['id'],role=r['role'],checks=checks,all_ok=all(checks.values())))
+        fir=[]
+        config=('gain_q12','hp_volume','fixture_id','sample_rate_hz','bit_sha256','model_sha256','coefficients_sha256',
+                'source_pcm16_sha256','session_id','scene_sha256','eq_sha256','comparison_id','repeat_id')
+        for pair in s['fir_pairs']:
+            a=next(r for r in rows if r.get('capture_id')==pair['off_capture_id'])
+            b=next(r for r in rows if r.get('capture_id')==pair['on_capture_id'])
+            ar,br=a['source_response'],b['source_response']
+            geometry=all(r['source_frames']==122070 and r['completed_frames']==123046 and
+                r['first_frame']==106662 and r['frames']==16384 and
+                r['source_response']['first_frame']==107174 and r['source_response']['end_frame']==121582 and
+                r['source_response']['frames']==14408 and r['source_response']['valid'] is True for r in (a,b))
+            delta=br['rms_dbfs']-ar['rms_dbfs']
+            band={k:br['mic_band_dbfs'][k]-v for k,v in ar['mic_band_dbfs'].items()}
+            matched=all(a.get(k) is not None and a[k]==b.get(k) for k in config) and a['bypass'] is True and b['bypass'] is False
+            drift=abs(a['gate_mic_over_ref_db']-b['gate_mic_over_ref_db'])
+            arithmetic=abs(delta-pair['on_minus_off_response_rms_db'])<1e-12 and all(
+                abs(v-pair['on_minus_off_band_response_db'][k])<1e-12 for k,v in band.items())
+            fir.append(dict(repeat=pair['repeat'],configuration_matches=matched,geometry_matches=geometry,
+                recorded_eligibility_passed=pair['window_comparison_valid'] is True and ar['valid'] and br['valid'],
+                pair_path_drift_db=drift,drift_gate_passed=drift<=1.5,difference_arithmetic_matches=arithmetic,
+                on_minus_off_response_db=delta,on_minus_off_band_response_db=band))
+        c=sides[15];tl=np.asarray(c['timeline'],float)
+        live_checks=dict(frames=c['frames_completed']==c['frames_requested']==2929687,
+            tail_extent=c['first_frame']==2913303 and c['frames_completed']-c['first_frame']==16384,
+            done=c['stop_reason']=='completed' and c['status']==32769,
+            timeline_monotone=bool(np.all(np.diff(tl[:,:2],axis=0)>=0)),
+            timeline_zero_counts=bool(np.all(tl[:,3:]==0)),
+            timeline_no_fault_or_clip_flags=bool(np.all((tl[:,2].astype(np.int64)&((3<<17)|(7<<19)))==0)),
+            timeline_endpoint=int(tl[-1,1])==2929687 and tl[-1,0]>=60,
+            bound_hwh=c['hwh_sha256']==frozen['hashes']['audio_replay.hwh'],
+            correct_mode=c['bypass'] is False and c['zero_coeff'] is False and c['pl_contract']=='v2',
+            muted=c['muted'] is True and c['mute_ok'] is True and c['disarm_ok'] is True and c['recovered'] is True)
+        live_checks={k:bool(v) for k,v in live_checks.items()}
+        gates=[r for r in rows if r['role']=='path-gate']
+        gate_check=len(gates)==7 and all(r['path_gate']['passed'] and
+            r['path_gate']['end_frame']-r['path_gate']['first_frame']==14920 for r in gates)
+        raw={r['file']:r for r in s['raw_files']}
+        names=['07-fir-off.npz','09-fir-on.npz','11-fir-on.npz','13-fir-off.npz','15-continuous-60s.npz']
+        script=blob(commit,'board/audio_replay/run_rc4_human.sh').decode()
+        python=script.split("<<'PY'\n",1)[1].rsplit('\nPY',1)[0]
+        ask=next(n for n in ast.parse(python).body if isinstance(n,ast.FunctionDef) and n.name=='ask')
+        events=[]
+        class Clock:
+            def sleep(self,seconds):events.append(['sleep_before_start_return',seconds])
+        env=dict(time=Clock(),seq={'hearing':0,'real':0},queue=[],wait_for_answer=lambda _: 'UNKNOWN',
+            print=lambda *a,**k:events.append(['print',*a]))
+        exec(compile(ast.Module(body=[ask],type_ignores=[]),'A exact ask callback','exec'),env)
+        answer=env['ask']('02 real-voice 已配置且静音；START才发声')
+        result=dict(a_commit=commit,return_zip_sha256=digest(packet),return_zip_bytes=len(packet),
+            verification_level='independent return integrity, recorded configuration, register timeline and summary-difference arithmetic; no raw PCM',
+            member_hash_checks=member_checks,package_identity=identity,trials=row_checks,
+            reported_status=s['status'],reported_checks=s['checks'],fir_pairs=fir,
+            continuous=dict(checks=live_checks,register_review_passed=all(live_checks.values()),frames_completed=c['frames_completed'],
+                elapsed_s=c['elapsed_s'],timeline_points=len(tl),max_poll_gap_s=c['max_poll_gap_s'],
+                tail_frames=16384,waveform_coverage_fraction=16384/c['frames_completed'],
+                raw_tail_arithmetic='reported passed by board C wrapper; C raw independent recomputation not_tested'),
+            metadata_review_passed=len(rows)==15 and all(r['all_ok'] for r in row_checks) and gate_check and
+                len(fir)==2 and all(all(p[k] for k in ('configuration_matches','geometry_matches','recorded_eligibility_passed',
+                    'drift_gate_passed','difference_arithmetic_matches')) for p in fir) and all(live_checks.values()),
+            raw_npz_received=False,missing_raw_once=[dict(file=n,sha256=raw[n]['sha256'],
+                board_absolute_path=sides[int(n[:2])]['capture']) for n in names],
+            hearing='PROXY; real_voice/listener/independent_reproduction not_tested',
+            a_human_wrapper_review=dict(source_commit=commit,source_sha256=digest(script.encode()),callback_return=answer,
+                callback_events=events,speech_cue_before_START_return=True,
+                consequence='5s speech cue occurs while A driver remains muted; use C human notebook, or A must move cue after actual arm',
+                fixed_source_measurement='A plan proposes live speaking for listener pair; cannot satisfy fixed recorded-source/fixed-gain quantitative comparison'),
+            declared_v2_found={'bit_sha256':True,'hwh_sha256':True},
+            decisions=dict(engineering='register/cleanup acceptance passed within approved scope; PCM recomputation awaits 5 existing files',
+                fir='two recorded valid pairs; differences checked, no MSG/ASG or general improvement claim',
+                human='C five-trial package; human speech begins after START, fixed recorded source for listener comparison'),
+            measured_msg_db=None,measured_asg_db=None,hardware_access=False)
+    Path(out).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    return result
+
+
 def audit_continuous_records(a_commit, out):
     """Recompute frame/timeline/mapping checks from the three existing raw v2 runs."""
     a_commit=subprocess.check_output(['git','rev-parse',a_commit],cwd=ROOT).decode().strip()
@@ -393,7 +498,7 @@ if __name__=='__main__':
     p.add_argument('--a-commit',default='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6')
     p.add_argument('--b-commit',default='d033d0047542d5e50654a0333777c48ec08dce21')
     p.add_argument('--return-only',action='store_true')
-    p.add_argument('--return-revision',choices=('r1','r2','r3'),default='r1')
+    p.add_argument('--return-revision',choices=('r1','r2','r3','r4'),default='r1')
     p.add_argument('--continuous-records',action='store_true')
     p.add_argument('--b-prediction',action='store_true')
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()

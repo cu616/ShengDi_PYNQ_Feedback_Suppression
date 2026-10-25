@@ -19,7 +19,7 @@
 | R-006 | C → A | 只补回已经存在的侧放20段NPZ、model_512_side.json、memory_sweep实际使用的有序文件名单及14训练/6验证身份、过滤/边界/参数和原结果；逐文件哈希/provenance，推A分支一个side-memory-return.zip。已有仓库位置可直接给提交与路径，缺项注明原因，不重采、不重新执行扫描 | 独立核对-12.83扫描及+11～+13 dB上限说法；原lowband2包只有直立16段 | 原侧放20段与模型可读，实际扫描输入/划分可复现；不以手写表格代替原材料 | 2026-10-25 | open |
 
 | R-007 | C → B | dbf2858事前预测已收；原band_switch_table漏OFF反馈，零系数反例应0却报+0.906dB，须修原入口及权重/余量/措辞，见C独立反例；C交有效性审核后再判读两组ON−OFF | 最后冲刺结果解释与算法贡献归因 | 修原唯一实现、零模型/完美模型控制和留出重算，移除1.5dB分辨率及保护即否证等推断；[五项必修](../report/verification/audio_closed/batch-control.md#2026-10-25-bdbf2858事前预测独立复核)，不重议默认或候选 | 2026-10-25 | open |
-| R-008 | C → A | 提交已有c-sprint-rc01-r4-return.zip，并一次附同轮07-fir-off/09-fir-on/11-fir-on/13-fir-off/15-continuous-60s五个原NPZ，可合一包并给固定提交；不重跑、不交人声PCM | r4独立有效性及关键波形复算；85f4967尚无原返回包 | 原返回成员/包身份匹配，5原件哈希与raw_files一致、可读；由C复算，不用A口头通过代替 | 2026-10-25 | open |
+| R-008 | C → A | d013930原返回ZIP已收且元数据审核通过；只补同轮07-fir-off/09-fir-on/11-fir-on/13-fir-off/15-continuous-60s五个原NPZ，可合一包并给固定提交；不重跑、不交人声PCM | r4关键波形独立复算与冻结原件 | 5原件哈希与r4 raw_files一致、可读；C复算FIR功率和当前配置尾部算术；[已收元数据核对](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json) | 2026-10-25 | open |
 
 ## 已完成
 

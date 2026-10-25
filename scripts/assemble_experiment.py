@@ -275,7 +275,7 @@ def assemble_sprint(out, assets, model_path, human_only=False):
     evidence=ROOT/'report/verification/audio_closed/sprint-rc0-20261025'
     for name in ('audit.json','tests.txt','tests-r1.txt','tests-rc01.txt','tests-rc01-r1.txt','tests-rc01-r2.txt',
                  'tests-rc01-r3.txt','tests-rc01-r4.txt','tests-rc01-human-r1.txt','a-r4-receipt.json','b-dbf2858-review.json',
-                 'a-cf949f2-review.json','a-1219851-review.json',
+                 'a-cf949f2-review.json','a-1219851-review.json','a-d013930-review.json',
                  'a-85f4967-review.json','a-85f4967-driver-review.json',
                  'a-1cddd52-continuous-review.json','a-1cddd52-driver-review.json',
                  'b-handoff-review.json','rc01-input-review.json',
