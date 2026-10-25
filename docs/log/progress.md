@@ -1,3 +1,18 @@
+## 2026-10-25　A　v2 位流与连续 60 秒、条件 4 注入、C 的 r1/r2 执行
+
+- 队长批准运行上限 v2；契约 v2 + v1 保留 + 索引更新；RTL 两处参数 488281 → 3000000（仅 2 行）。
+- 由 A 分支导出到 D:\a 短路径构建（worktree 路径 108 字符会让 Vivado 报 BD 41-1690）；
+  bit 61bb71aa…、hwh 92b499a3…、时序全过、资源与 v1 相同；原件入库 board/audio_replay/v2/。
+- 上板跑通连续 60 秒（2929687/2929687 帧、无保护）与停止测试（1.672 s 停止、stop_latency 0.001 s）；
+  原始 npz 与时间线导出到 report/verification/audio-replay/v2-runs/。
+- 条件 4 用模拟寄存器注入通过：饱和独立停止、保护不被 completed 覆盖、gain 32 位、
+  静音失败不谎报。无板卡、无声、无失控。
+- live_run 补 before_start 接点与保存失败留证；驱动从 HWH 判定位流能力（pl_contract v1/v2）。
+- 执行 C 的 RC0.1-r1：0 dB 第 2 项真实人声 9835 帧（约 0.201 s）保护中止（计数 3/1）。
+- 执行 C 的 RC0.1-r2：−14 dB 下 7 项跑通、无一次保护，停在 fir_observation_insufficient。
+  回包入库；−14 dB 工作点可用。
+- 发布检查新增"发送方自检"与资产绑定规则；C 指出的"v2 原件未入库"已补齐（83ed775）。
+
 ## 2026-10-25　A　连续运行入口、live_run 修正、RC0 执行与自检规则
 
 - 新增 `live_run.py`（a-continuous-v1）并上板验证：9.5 s 跑满、时间线 469 点、停止 0.773 s 响应、

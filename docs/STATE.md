@@ -14,38 +14,37 @@
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**：2026-10-25 完成连续运行入口、修 `live_run` 通道标签、执行 C 的 RC0 并把"发送方自检"写进计划。
-**当前卡点**：60 秒连续运行只差 `MAX_RUN_FRAMES` 契约批准；人声扩声的干净增益上限在 −14 与 −8 dB 之间；
-C 的 RC0 因包参数（捕获窗 0 帧）未过，等 RC0.1。
+**最后动作**：2026-10-25 交付 v2 位流（61.44 s）并跑通连续 60 秒；条件 4 故障注入通过；
+执行 C 的 RC0.1-r1（0 dB 饱和停批）与 r2（−14 dB 下 7 项跑通、停在 FIR 观测不足）。
+**当前卡点**：真实人声扩声仍未通过；r2 剩余阻塞是 FIR 对照的观测覆盖，属测量口径。
 
-- **唯一操板者，SSH 非交互驱动**。板端已核对：`audio_live` 目录 bit `8b2426f4`、hwh `3873b16b`、
-  replay_trial `2127663`（C 已验收）；`audio_replay` 目录是旧 256 版，**不现行**。
-- **连续运行入口 `board/audio_replay/live_run.py`（a-continuous-v1）**：单次装载单次武装、
-  运行期时间线（约 49 Hz，记录 completed/status/四类饱和计数）、停止文件与 SIGINT 均 disarm+mute、
-  任何饱和计数非零即停并静音、证据在异常路径同样保存。
-  上板验证：9.5 s 跑满 463867/463867 帧、status `0x8001`、四类计数全 0、时间线 469 点；停止响应 0.773 s。
-- **60 秒只差一个比较常数**：RTL 参数 `MAX_RUN_FRAMES=488281`（10.0 s），而 `frame_count`/`limit_latched`
-  本来就是 32 位。放宽到 `3000000` 的兼容变更表与回退方案见
-  [提案](contracts/proposal-continuous-run.md)，**等队长确认后构建部署**；未批准前 >10 s 会被 PL 拒绝（bit17）。
-- **`live_run` 通道标签 bug 已修**（2026-10-25）：原先把 `microphone`/`reference` 存反，
-  导致若干"增益符号反了"的异常读数；改为与 `replay_trial` 一致后，
-  −12/−6/0 dB 三点 `ref/mic` 与 `replay_trial` 误差 ≤0.004 dB。**该 bug 只影响新驱动，不影响已回包数据。**
-- **同增益成对对照（修正后驱动，5 s）**：−12 dB 时 bypass 与 cancel 无差别（mic −39.4/−39.4）；
-  **−8 dB 时 cancel 比 bypass 低 5.5 dB**（−38.9 vs −33.4）。所有饱和计数为 0。
-- **麦克风与音响通路均正常**：录 2.68 s 真实人声后关麦直放，操作者确认"比较清楚"。
-  增益映射线性：−20/−14/−8 dB 实测比值 −19.98/−13.99/−8.01。
-- **干净放音上限**：拐点在 **−14 与 −8 dB 之间**；−8 dB 时麦克风从 −25 冲到 −2.6 dBFS（环路再生）。
-  负增益下播放电平低于麦克风电平，故"能干净复现、但盖不过原声"。
-- **C 的 c-sprint-rc0（76b652f）两次都在第 1 项 path-gate 失败**，原因已定位为包参数与捕获语义不匹配：
-  `seconds=1.02`、源 48828 帧、transition 2442 帧、驱动只存末尾 16384 帧 →
-  捕获窗 `[49804,49804]` 全落在源/过渡区间，`window.frames=0` → 门禁无数据 → failed。
-  回包在 `report/verification/audio-replay/c-sprint-rc0-return.zip`。**不是硬件问题。**
-- **发布检查新增"发送方自检"（2026-10-25）**：发送方先用包内软件夹具空跑、附机器可读 `preflight.json`；
-  A 只读 `all_ok`，false/缺失/版本不符即回 `PREFLIGHT_FAIL` 不上板；缺陷分 D1–D4，同类三次上报队长。
-  见 [冻结计划](ref/development-plan.md)。
+- **唯一操板者，SSH 非交互驱动**。板端现为 **v1 位流**（`8b2426f4` / hwh `3873b16b` /
+  `MAX_RUN_FRAMES=488281`），因为 C 的 r1/r2 包绑定 v1；v2 位流存为 `v2_audio_replay.*` 待接入。
+- **v2 已构建并验证**（提交 `83ed775`，`board/audio_replay/v2/`）：
+  bit `61bb71aa…f61fa`、hwh `92b499a3…b75b`（内含 `MAX_RUN_FRAMES=3000000`）；
+  时序 All user specified timing constraints are met（WNS 0.799 / WHS 0.012）；
+  LUT 6.62 %、BRAM 80 %、DSP 1.36 %，与 v1 相同。契约 v2 见
+  [audio-replay-v2](contracts/audio-replay-v2.md)，v1 保留，回退包 `board/audio_replay/rollback-v1/`。
+- **连续 60 秒已跑通**（提交 `8c42d8a`）：2929687/2929687 帧、60.016 s、`status=0x8001`、
+  四类饱和计数全 0、时间线 2952 点、`max_poll_gap 0.0251 s`；停止测试请求 20 s、
+  1.672 s 停止、`stop_latency 0.001 s`。原始 npz 与完整时间线在
+  `report/verification/audio-replay/v2-runs/`。**观测范围按队长条件 5：寄存器时间线 + 尾部 PCM。**
+- **条件 4 故障注入通过**（提交 `dd45c8d`）：用模拟寄存器注入，无板卡、无声、无失控。
+  已验证：饱和是独立停止原因；**保护不被 `completed` 覆盖**（`completed_with_protection`）；
+  gain 计数保留完整 32 位；**静音失败不谎报** `muted`/`recovered`。
+- **驱动 `live_run.py`（a-continuous-v1）**：`MAX_RUN_FRAMES` 从同名 HWH 读取并按位流能力判定
+  （`pl_contract` 记 v1/v2）；新增 `before_start` 接点（配置完成且仍静音时确认，否则取消）；
+  NPZ 保存失败仍写 status 与 `save_error`；停止分阶段记录 `t_stop_request/detected/disarm/mute/cleanup`
+  与 `max_poll_gap_s`。
+- **C 的包执行结果**：r1（0 dB）第 2 项真实人声在 9835 帧、约 0.201 s 保护中止（计数 3/1）；
+  **r2（−14 dB）前 7 项全部跑完、无一次保护**，停在 `fir_observation_insufficient`。
+  回包 `c-sprint-rc01-return.zip`、`c-sprint-rc01-r2-return.zip`。
+  **−14 dB 工作点可用**，这是目前最重要的现场结论。
+- 发布检查已新增"发送方自检"（见 [冻结计划](ref/development-plan.md)）：发送方软件夹具自检 +
+  `preflight.json` + A 只读 `all_ok` + 缺陷 D1–D4 同类三次上报 + **资产绑定不得混用新旧**。
 - 沿用口径：保护/削顶不能直接判啸叫；`hp_volume=40` 是驱动工程上限不是芯片上限；
-  负数字增益也可能产生声学放大；**离线阈值不是实物上限**。本截止不新增 AFC/多速率。
-- 下一步：等 RC0.1（带 preflight）与运行上限批准；批准当天出 60 秒连续运行结果。
+  负数字增益也可能产生声学放大；离线阈值不是实物上限。本截止不新增 AFC/多速率。
+- 下一步：等 C 对 FIR 观测窗的决定或 r3；v2 待 C 核对原件后接入；真实人声扩声仍是未闭环的产品目标。
 
 ### B 数据与算法
 
