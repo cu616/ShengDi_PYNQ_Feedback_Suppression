@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "topic": "coupling and coherence measurement, revised (retraction of the 8 dB claim)",
+  "recorded_by": "A",
+  "measurement": {
+    "source": "white noise, direct playback, -6 dBFS nominal",
+    "captures": 6,
+    "segments": 90,
+    "window_frames": 16384,
+    "note": "each run 2.42 s so the 0.336 s tail sits inside the 2.4 s source"
+  },
+  "results": {
+    "reference_rms_dbfs_approx": -19.5,
+    "microphone_rms_dbfs_approx": -33.2,
+    "broadband_coupling_db": -13.7,
+    "coherence_mean": {
+      "200-500": 0.435,
+      "500-1000": 0.258,
+      "1000-2000": 0.134,
+      "2000-4000": 0.401,
+      "4000-8000": 0.634,
+      "8000-12000": 0.405
+    },
+    "coherence_max": {
+      "200-500": 0.608,
+      "2000-4000": 0.812,
+      "4000-8000": 0.815
+    },
+    "bins_above_0.8": 2,
+    "reliable_peak": {
+      "coupling_db": -8.0,
+      "frequency_hz": 4053,
+      "coherence": 0.81,
+      "max_stable_gain_db": 8.0,
+      "caveat": "based on a single spectral bin; statistically weak"
+    }
+  },
+  "retraction": {
+    "withdrawn": "peak coupling +1.73 dB at 453 Hz / +2.34 dB at 381 Hz and the derived 'about 8 dB of cancellation is required' conclusion",
+    "reason": "those estimates came from bins with coherence near 0.3; the ratio |Gxy|/Gxx is unreliable where the microphone signal is mostly uncorrelated noise",
+    "replacement": "no trustworthy quantitative cancellation target yet; the measurement must reach coherence >= 0.8 across the band first"
+  },
+  "what_stands": [
+    "broadband cross-correlation between reference and microphone is about 0.10 in both earlier captures",
+    "coherence is highest at 4-8 kHz (mean 0.63 after raising the source to -6 dBFS), so the usable linear path is high-frequency",
+    "raising the source from -18 to -6 dBFS improved coherence at 4-8 kHz from about 0.45 to 0.63"
+  ],
+  "next": "swept-sine or averaged long capture to reach coherence >= 0.8 before any model fit",
+  "model_status": "no valid model. model_room_side_100cm_v1.json and model_room_side_100cm_lowband_v1.json are artifacts of an inadequate measurement and must not be used on the board"
+}
