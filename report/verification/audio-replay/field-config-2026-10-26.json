@@ -25,19 +25,16 @@
         "B measured its impulse-response peak at tap 128 while the new layout delay is 185 frames",
         "on-board A/B showed it is worse than loading no model at all"
       ],
-      "action": "renamed on the board to model_room_side_512.STALE-oldfixture.json so any test that "
-                "references the old name fails loudly instead of silently using stale coefficients",
+      "action": "renamed on the board to model_room_side_512.STALE-oldfixture.json so any test that references the old name fails loudly instead of silently using stale coefficients",
       "history_kept": true
     },
-    "zero_coefficient": "available through zero_coeff=True; measured stable to -2.5 dB with a silent "
-                        "source and clean at -6 dB with live speech",
+    "zero_coefficient": "available through zero_coeff=True; measured stable to -2.5 dB with a silent source and clean at -6 dB with live speech",
     "matching_candidate": "pending from B for fixture room_side_100cm_v1"
   },
   "acoustics": {
     "speaker_to_microphone_cm": 100,
     "speaker_orientation": "side-facing the microphone",
-    "reflecting_object": "metal plate 30 cm above the speaker, now covered with sound-absorbing "
-                         "cotton; the plate is considered part of the fixture and must not be moved",
+    "reflecting_object": "metal plate 30 cm above the speaker, now covered with sound-absorbing cotton; the plate is considered part of the fixture and must not be moved",
     "microphone_position": "on the desk",
     "talker_to_microphone_cm": "unknown - verbally reported as 10-15 cm during the last tests, not measured",
     "listener_position": "unknown for the current layout; the earlier 30 cm figure belonged to the old layout"

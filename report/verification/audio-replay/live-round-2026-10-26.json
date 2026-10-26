@@ -2,13 +2,11 @@
   "schema_version": 1,
   "topic": "live-voice comparison round 2026-10-26: zero coefficients vs the retired stale model",
   "recorded_by": "A",
-  "question": "with the speaker at 100 cm side-facing and the metal plate damped, can a listener "
-              "hear intelligible amplification at a gain that does not regenerate?",
+  "question": "with the speaker at 100 cm side-facing and the metal plate damped, can a listener hear intelligible amplification at a gain that does not regenerate?",
   "config": {
     "bit": "61bb71aa (v2)", "hwh": "92b499a3 (v2, MAX_RUN_FRAMES=3000000)",
     "driver": "replay_trial 2127663, live_run a3df27ac",
-    "coefficients": "zero (candidate model loaded with zero_coeff=True); the stale "
-                    "model_room_side_512.json was retired to ...STALE-oldfixture.json",
+    "coefficients": "zero (candidate model loaded with zero_coeff=True); the stale model_room_side_512.json was retired to ...STALE-oldfixture.json",
     "talker_to_mic_cm": 15,
     "listener": "20 cm from the speaker, about 100 cm from the source",
     "preamp_gain": "untouched", "speaker_volume": "at maximum since the start",
@@ -17,8 +15,7 @@
   "runs": [
     {"gain_db": -6.0, "seconds": 6.0, "mic_dbfs": -22.8, "mode_hz": 465, "mode_share": 0.70,
      "saturation": 0,
-     "listener": "amplification audible, but not clear; a white-noise-like layer covers the voice "
-                 "after the first moment"},
+     "listener": "amplification audible, but not clear; a white-noise-like layer covers the voice after the first moment"},
     {"gain_db": -6.0, "seconds": 9.5, "mic_dbfs": -25.7, "mode_hz": 465, "mode_share": 0.37,
      "saturation": 0, "listener": "still uncertain, not clear"},
     {"gain_db": -6.0, "seconds": 9.5, "mic_dbfs": -28.5, "mode_hz": 471, "mode_share": 0.58,
@@ -27,26 +24,17 @@
     {"gain_db": -8.0, "seconds": 9.5, "mic_dbfs": -31.1, "mode_hz": 829, "mode_share": 0.12,
      "saturation": 0, "listener": "cannot hear the human voice at all"},
     {"gain_db": -8.0, "seconds": 9.5, "mic_dbfs": -30.4, "mode_hz": 456, "mode_share": 0.19,
-     "saturation": 0, "note": "intended as a 5 cm close-talk point but the microphone level moved "
-                              "only +0.7 dB, so the speech almost certainly missed the capture "
-                              "window; this run is INVALID and no conclusion is drawn from it"}
+     "saturation": 0, "note": "intended as a 5 cm close-talk point but the microphone level moved only +0.7 dB, so the speech almost certainly missed the capture window; this run is INVALID and no conclusion is drawn from it"}
   ],
   "finding": {
-    "negative_but_bounded": "-6 dB regenerates enough to mask speech (mode share 0.37-0.70); "
-                            "-8 dB is clean (0.12) but the amplified voice is inaudible",
+    "negative_but_bounded": "-6 dB regenerates enough to mask speech (mode share 0.37-0.70); -8 dB is clean (0.12) but the amplified voice is inaudible",
     "width_of_the_gap_db": 2.0,
     "no_usable_point_found": true,
-    "first_positive_observation": "at -6 dB the listener did hear amplification for the first time "
-                                  "in this project; the problem is masking by near-regeneration, "
-                                  "not absence of gain"
+    "first_positive_observation": "at -6 dB the listener did hear amplification for the first time in this project; the problem is masking by near-regeneration, not absence of gain"
   },
   "premise_checks_still_open": [
-    "close-talk at 5 cm was not actually exercised: the microphone level barely moved, so the "
-    "speech timing missed the 0.336 s capture window. This is the only remaining lever that raises "
-    "the output without raising loop gain and it has NOT been tested.",
-    "a high-pass or low-frequency suppression around 465 Hz could remove the masking rumble; this "
-    "requires coefficients, i.e. B's matching model or an explicit high-pass design"
+    "close-talk at 5 cm was not actually exercised: the microphone level barely moved, so the speech timing missed the 0.336 s capture window. This is the only remaining lever that raises the output without raising loop gain and it has NOT been tested.",
+    "a high-pass or low-frequency suppression around 465 Hz could remove the masking rumble; this requires coefficients, i.e. B's matching model or an explicit high-pass design"
   ],
-  "not_claimed": ["no claim that the hardware is at its limit", "no claim that no configuration "
-                  "works", "no ASG", "no cancellation figure"]
+  "not_claimed": ["no claim that the hardware is at its limit", "no claim that no configuration works", "no ASG", "no cancellation figure"]
 }

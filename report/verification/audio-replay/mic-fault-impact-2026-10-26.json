@@ -3,33 +3,22 @@
   "topic": "microphone connection fault invalidated part of the 2026-10-26 live results",
   "recorded_by": "A",
   "what_happened": [
-    "an earlier live test at 5 cm and -8 dB was reported by the listener as clear amplification; "
-    "those captures showed mic -27.9 and -24.3 dBFS",
-    "during the B binding capture the microphone wire turned out to be loose: the ADC read a "
-    "constant -4.2 dBFS independent of source level and of gain",
+    "an earlier live test at 5 cm and -8 dB was reported by the listener as clear amplification; those captures showed mic -27.9 and -24.3 dBFS",
+    "during the B binding capture the microphone wire turned out to be loose: the ADC read a constant -4.2 dBFS independent of source level and of gain",
     "after reseating the wire the noise floor is -35.1 dBFS with zero full-scale samples",
-    "re-running the same 5 cm / -8 dB point with the healthy microphone gives mic -4.0 dBFS with "
-    "peak 0.0, i.e. INPUT CLIPPING"
+    "re-running the same 5 cm / -8 dB point with the healthy microphone gives mic -4.0 dBFS with peak 0.0, i.e. INPUT CLIPPING"
   ],
   "conclusion": {
-    "the_earlier_confirmation_is_not_reproducible_as_measured": "with the wire partly connected the "
-      "microphone was less sensitive, which is why 5 cm produced only -27.9 dBFS; with a healthy "
-      "connection the same position clips",
-    "the_listener_did_hear_amplification": "that observation stands, but the level numbers from those "
-      "runs cannot be used as a calibrated operating point",
+    "the_earlier_confirmation_is_not_reproducible_as_measured": "with the wire partly connected the microphone was less sensitive, which is why 5 cm produced only -27.9 dBFS; with a healthy connection the same position clips",
+    "the_listener_did_hear_amplification": "that observation stands, but the level numbers from those runs cannot be used as a calibrated operating point",
     "what_is_trustworthy_now": [
       "microphone noise floor -35.1 dBFS with no clipping",
       "open-loop coupling -10 to -12 dB measured on six segments with the healthy microphone",
       "loop stability at -8 dB digital gain: loop gain = -8 + (-11) = about -19 dB, far below unity"
     ]
   },
-  "new_engineering_consequence": "the limiting factor at 5 cm is now the INPUT, not the loop. With "
-    "coupling near -11 dB there is a large stability margin, so positive digital gain is plausible "
-    "provided the microphone input does not clip.",
-  "next_measurement": "hold the talker at 20-30 cm so the peak stays below -6 dBFS, then raise the "
-    "digital gain above -8 dB (0 dB and above) and let the listener judge; the loop margin allows it",
-  "process lesson": "when a level reading does not change with the excitation, check the wiring "
-    "before interpreting it acoustically. This cost three invalid captures today.",
-  "not_claimed": ["no calibrated operating point until the microphone is verified and the input "
-                  "peak is measured at the chosen distance"]
+  "new_engineering_consequence": "the limiting factor at 5 cm is now the INPUT, not the loop. With coupling near -11 dB there is a large stability margin, so positive digital gain is plausible provided the microphone input does not clip.",
+  "next_measurement": "hold the talker at 20-30 cm so the peak stays below -6 dBFS, then raise the digital gain above -8 dB (0 dB and above) and let the listener judge; the loop margin allows it",
+  "process lesson": "when a level reading does not change with the excitation, check the wiring before interpreting it acoustically. This cost three invalid captures today.",
+  "not_claimed": ["no calibrated operating point until the microphone is verified and the input peak is measured at the chosen distance"]
 }

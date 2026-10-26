@@ -1,0 +1,38 @@
+{
+  "fixture_id": "room_v1_20261026",
+  "verified_by_A": true,
+  "hp_volume": 40,
+  "sample_rate_hz": 48828.125,
+  "speaker_to_microphone_cm": 100,
+  "speaker_orientation": "side-facing the microphone",
+  "plate_and_cotton_unchanged": true,
+
+  "a_allowed_gains_db": [-14, -12, -10, -8, -6],
+  "a_injection_range_dbfs": [-30, -6],
+  "a_limits_basis": "Measured on 2026-10-26 with a verified microphone (noise floor -35.1 dBFS, zero full-scale samples) and zero coefficients. Digital gain -8 dB is stable (331 Hz mode share 0.12-0.16); -6 dB already shows near-regeneration masking (share 0.37-0.70); -4 dB is loud but muddy (share 0.68); 0 dB oscillates at full scale. Broadband open-loop coupling is -10 to -12 dB (six 16384-frame segments, source -6 dBFS, gain -40 dB). Requirement for every run: microphone peak must stay below -6 dBFS; at 5 cm with a healthy microphone the input CLIPS (mic -4.0, peak 0.0), so 5 cm is NOT an allowed talker distance.",
+
+  "control_and_cue_approved_by_A": true,
+  "control_and_cue_basis": "The path gate may play the packaged cue tone only when the room is silent and the external source is stopped. Gate is accepted on a live-path basis (mic responds above the floor), not on an absolute level match, because the coupling changed when the speaker was moved and the plate was covered. Any saturation counter, any guard stop, or any audible regeneration ends that branch immediately; no automatic bypass and no automatic gain increase.",
+  "allowed_cue_tone_conditions": [
+    "external source stopped and the room silent",
+    "microphone peak below -6 dBFS before the cue",
+    "stop on any saturation counter or guard event"
+  ],
+
+  "talker_to_microphone_cm": 25,
+  "talker_distance_basis": "5 cm clips with a healthy microphone; 15-30 cm keeps the input usable. The value 5 cm in the previous package came from a run whose microphone wire was loose, so the microphone was less sensitive than it is now.",
+  "listener_position": "20 cm from the speaker, facing it",
+
+  "microphone_preamp_gain": "untouched since delivery; physical marker pending A",
+  "speaker_volume_knob": "maximum, unchanged",
+
+  "fixed_speech_source": "pending A",
+  "recorder_gain": "pending A",
+  "agc_disabled": "pending A",
+
+  "a_notes": {
+    "microphone_fault": "During the 2026-10-26 capture the microphone wire was intermittently loose; the ADC read a constant -4.2 dBFS independent of source level and gain. Reseated; noise floor now -35.1 dBFS with zero full-scale samples.",
+    "process_rule": "If a level reading does not change with the excitation, check the wiring before interpreting it acoustically.",
+    "original_json_repair": "Four field JSONs under report/verification/audio-replay were not valid JSON (Python-style implicit string concatenation). Repaired and re-validated; zero malformed files remain."
+  }
+}
