@@ -1,15 +1,15 @@
 {
-  "stage": "draft-before-source-freeze",
+  "stage": "final-archive",
   "policy": "c-new-layout-1.2.0",
   "package_status": "pending_repaired_scene_model",
-  "source_base": "ef95be36be898236b1a81aa8bc4ae36e0146c097",
-  "source_tree_clean": false,
+  "source_base": "4a3a71aac09c04105339d3119cc764b1c7d12322",
+  "source_tree_clean": true,
   "A_driver_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
   "A_scene_commit": "52ee4e4a5d34fff9f0c82ae46d7dd5449ee99d00",
   "B_observed_commit": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a",
   "B_repaired_model_available": false,
-  "package_sha256": "fa015e02e040ff5de88ed75c4b5ee653acaca98a0b845d2caa1b24a5666bc743",
-  "package_bytes": 336650,
+  "package_sha256": "0595b0745434962cfbaebc04351c466425cad40c861b49e1c1cfc9d269f7bf98",
+  "package_bytes": 336654,
   "immutable_payload_files": 31,
   "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
   "accepted_scene": {
@@ -224,6 +224,16 @@
     ],
     "no_active_model": true,
     "old_model_blocked_even_with_FIELD_READY": true,
-    "zero_board_trials": true
+    "zero_board_trials": true,
+    "runnable_C_sources_equal_tested_tree": {
+      "layout_experiment.py": true,
+      "sprint_continuous.py": true,
+      "listener_metrics.py": true,
+      "evaluation.py": true,
+      "growth_monitor.py": true,
+      "tail_metrics.py": true,
+      "model_comparison.py": true,
+      "room_experiment.py": true
+    }
   }
 }

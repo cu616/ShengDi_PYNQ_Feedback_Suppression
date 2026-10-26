@@ -4,6 +4,10 @@
 > 其中"未上传/未验证"等字样只描述当日。**当前状态一律看 [STATE.md](../STATE.md)。**
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
+## 2026-10-26 C 归档r3修线后待绑定完整包
+
+从干净源码4a3a71a生成c-new-layout-r3.zip，独立解压31项载荷与Notebook代码格核对通过；旧B8a02757即使带FIELD_READY也退出2、0试次、无活动模型。A52成品与四JSON修复已合入，严格−6峰值门禁和听众定量未测已备好，收到包不等于效果试验放行。最终身份及全部软件回执见[r3机器检查](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r3-check.json)。C未操板，唯一待绑定外部条件是B修线匹配模型及来源。
+
 ## 2026-10-26 C 接受A52ee4e4修线更正并完成r3集成
 
 按A原成品更新25cm与五档允许值，逐一接受field-config/live-round/mic-fault-impact/usable-point四JSON语法修复，不再退回旧缺陷。撤回5cm工作点适用性与r1/r2在当前接线条件下的使用；历史事实/原包保留。
