@@ -6,11 +6,18 @@
   "speaker_to_microphone_cm": 100,
   "speaker_orientation": "side-facing the microphone",
   "plate_and_cotton_unchanged": true,
-
-  "a_allowed_gains_db": [-14, -12, -10, -8, -6],
-  "a_injection_range_dbfs": [-30, -6],
+  "a_allowed_gains_db": [
+    -14,
+    -12,
+    -10,
+    -8,
+    -6
+  ],
+  "a_injection_range_dbfs": [
+    -30,
+    -6
+  ],
   "a_limits_basis": "Measured on 2026-10-26 with a verified microphone (noise floor -35.1 dBFS, zero full-scale samples) and zero coefficients. Digital gain -8 dB is stable (331 Hz mode share 0.12-0.16); -6 dB already shows near-regeneration masking (share 0.37-0.70); -4 dB is loud but muddy (share 0.68); 0 dB oscillates at full scale. Broadband open-loop coupling is -10 to -12 dB (six 16384-frame segments, source -6 dBFS, gain -40 dB). Requirement for every run: microphone peak must stay below -6 dBFS; at 5 cm with a healthy microphone the input CLIPS (mic -4.0, peak 0.0), so 5 cm is NOT an allowed talker distance.",
-
   "control_and_cue_approved_by_A": true,
   "control_and_cue_basis": "The path gate may play the packaged cue tone only when the room is silent and the external source is stopped. Gate is accepted on a live-path basis (mic responds above the floor), not on an absolute level match, because the coupling changed when the speaker was moved and the plate was covered. Any saturation counter, any guard stop, or any audible regeneration ends that branch immediately; no automatic bypass and no automatic gain increase.",
   "allowed_cue_tone_conditions": [
@@ -18,21 +25,28 @@
     "microphone peak below -6 dBFS before the cue",
     "stop on any saturation counter or guard event"
   ],
-
   "talker_to_microphone_cm": 25,
   "talker_distance_basis": "5 cm clips with a healthy microphone; 15-30 cm keeps the input usable. The value 5 cm in the previous package came from a run whose microphone wire was loose, so the microphone was less sensitive than it is now.",
   "listener_position": "20 cm from the speaker, facing it",
-
-  "microphone_preamp_gain": "untouched since delivery; physical marker pending A",
+  "microphone_preamp_gain": "untouched, factory setting since delivery (operator confirms no adjustment); no physical mark applied",
   "speaker_volume_knob": "maximum, unchanged",
-
-  "fixed_speech_source": "pending A",
-  "recorder_gain": "pending A",
-  "agc_disabled": "pending A",
-
+  "fixed_speech_source": "a recording stored on the operator's phone, played back through the phone's own speaker or wired output; exact file, level and start point MUST be fixed and written down before the comparison round",
+  "recorder_gain": "unknown - there is no external recorder; the phone playback level is the only control, and its gain is not exposed",
+  "agc_disabled": "unknown and not controllable - the operator cannot verify whether the phone applies AGC",
   "a_notes": {
     "microphone_fault": "During the 2026-10-26 capture the microphone wire was intermittently loose; the ADC read a constant -4.2 dBFS independent of source level and gain. Reseated; noise floor now -35.1 dBFS with zero full-scale samples.",
     "process_rule": "If a level reading does not change with the excitation, check the wiring before interpreting it acoustically.",
     "original_json_repair": "Four field JSONs under report/verification/audio-replay were not valid JSON (Python-style implicit string concatenation). Repaired and re-validated; zero malformed files remain."
-  }
+  },
+  "a_consequences_for_listener_quantitative": [
+    "without a fixed-gain recorder and with AGC not controllable, the four listener WAVs cannot be produced to C's spec, so the listener QUANTITATIVE item must be recorded as not tested",
+    "the listener QUALITATIVE judgement (can the amplified voice be heard and is it clear) is still valid and should be recorded separately",
+    "if C needs the quantitative item, A needs a recorder with a fixed, readable gain and a documented AGC-off setting"
+  ],
+  "fixed_source_requirements_for_A": [
+    "one specific recording, identified by name",
+    "fixed playback volume, written down as a number or device step",
+    "fixed phone position relative to the microphone",
+    "do not change any of the three during the round"
+  ]
 }
