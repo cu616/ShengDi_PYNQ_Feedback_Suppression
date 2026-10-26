@@ -1,11 +1,11 @@
 {
-  "stage": "draft-before-source-freeze",
+  "stage": "final-archive",
   "policy": "c-new-layout-1.1.0",
   "package_status": "ready_for_A_field_binding",
-  "source_base": "780c61b4a32699c3119bcd2a20a7c8d72577a473",
-  "source_tree_clean": false,
-  "package_sha256": "b3f2442e3325d872a1cc3e55ab3acbe5c2d75201a16bc7ee64b4cca7082217d3",
-  "package_bytes": 328322,
+  "source_base": "5e738929839fa20d88f066247cc9f719aa58d6a9",
+  "source_tree_clean": true,
+  "package_sha256": "f56365ceaf8dd189a147e2b1551db85726d4efb6510a06386305109925df4d87",
+  "package_bytes": 328371,
   "immutable_payload_files": 27,
   "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
   "hardware_executed": false,
@@ -134,6 +134,16 @@
     ],
     "no_active_model_before_A_confirmation": true,
     "B_additional_reply_not_required": true,
-    "recording_and_frequency_omissions_do_not_block_runtime": true
+    "recording_and_frequency_omissions_do_not_block_runtime": true,
+    "runnable_C_sources_equal_tested_tree": {
+      "layout_experiment.py": true,
+      "sprint_continuous.py": true,
+      "listener_metrics.py": true,
+      "evaluation.py": true,
+      "growth_monitor.py": true,
+      "tail_metrics.py": true,
+      "model_comparison.py": true,
+      "room_experiment.py": true
+    }
   }
 }
