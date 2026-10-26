@@ -57,7 +57,7 @@ from reproduce_b_screening import (  # noqa: E402
 
 TAPS = 512
 RIDGE = 1e-9
-FIXTURE_ID = "room_v1_20261026"
+DEFAULT_FIXTURE_ID = "room_v1_20261026"
 NFFT = 8192
 COHERENCE = 0.8
 BANDS = [(300, 460), (460, 1000), (1000, 3000), (3000, 8200),
@@ -185,11 +185,13 @@ def main():
     ap.add_argument("--out-model", required=True)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--taps", type=int, default=TAPS)
+    ap.add_argument("--fixture-id", default=DEFAULT_FIXTURE_ID,
+                    help="本批采集对应的夹具编号；不要沿用旧编号")
     args = ap.parse_args()
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    result = {"schema_version": 1, "fixture_id": FIXTURE_ID, "taps": args.taps,
+    result = {"schema_version": 1, "fixture_id": args.fixture_id, "taps": args.taps,
               "ridge": RIDGE, "lag_first": 1, "nfft": NFFT, "coherence": COHERENCE}
 
     # ---- [1] 资格与对齐依据 ------------------------------------------
@@ -356,7 +358,7 @@ def main():
         "ridge": RIDGE,
         "training_capture_id": "newlayout-6captures-train4-dev1",
         "training_source": "board",
-        "fixture_id": FIXTURE_ID,
+        "fixture_id": args.fixture_id,
         "hp_volume": 40,
         "validation": {
             "validation_capture_id": segs[val[0]]["meta"]["capture_id"],

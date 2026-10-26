@@ -74,17 +74,32 @@ def estimate_lag(u, m):
     return lag - 2 * n if lag > n else lag
 
 
-def load_packet(packet_dir):
-    """读六份 npz 并按包内 manifest 逐文件校验；任何不一致直接退出，不产生数字。"""
+def load_packet(packet_dir, manifest_name="manifest.json"):
+    """读 npz 并按包内 manifest 逐文件校验；任何不一致直接退出，不产生数字。
+
+    manifest 可以是包里的 zip，也可以是同目录下的 manifest.json（A 后来的采集批次是后者）。
+
+    开环资格按**实际数据**判，不按标签：
+      - `gain_q12 == 0` 表示反馈项增益为 0（不是 0 dB；4096 才是 1.0），环路被零增益切断；
+      - 更硬的一条是 `reference` 与 `source_pcm16/32768` 是否逐样本相同——相同就说明
+        `played = source`，反馈项确实没进来。两者不一致时报出来，不默默放过。
+    若 `gain_q12 != 0` 且 `bypass` 不为真，则这是闭环捕获，不能当开环标定用，直接拒收。
+    """
     dirpath = Path(packet_dir)
-    manifests = sorted(dirpath.glob("*.zip"))
-    records = {}
-    if manifests:
-        with zipfile.ZipFile(manifests[0]) as zf:
-            name = "manifest.json"
-            if name in zf.namelist():
-                payload = json.loads(zf.read(name).decode("utf-8"))
+    records, manifest_source = {}, None
+    zips = sorted(dirpath.glob("*.zip"))
+    if zips:
+        with zipfile.ZipFile(zips[0]) as zf:
+            if manifest_name in zf.namelist():
+                payload = json.loads(zf.read(manifest_name).decode("utf-8"))
                 records = payload.get("files", {})
+                manifest_source = "%s:%s" % (zips[0].name, manifest_name)
+    if not records:
+        plain = dirpath / manifest_name
+        if plain.exists():
+            payload = json.loads(plain.read_text(encoding="utf-8"))
+            records = payload.get("files", {})
+            manifest_source = plain.name
     segs, failures = [], []
     for path in sorted(dirpath.glob("*.npz")):
         digest = sha256_file(path)
@@ -98,12 +113,10 @@ def load_packet(packet_dir):
             continue
         cap = np.load(path, allow_pickle=True)
         meta = json.loads(str(cap["metadata_json"]))
-        if meta.get("bypass") is not True or int(meta.get("gain_q12", -1)) != 0:
-            failures.append({"file": path.name, "reason": "不是开环旁路捕获",
-                             "bypass": meta.get("bypass"), "gain_q12": meta.get("gain_q12")})
-            continue
-        if meta.get("forward_path_open") is not True:
-            failures.append({"file": path.name, "reason": "forward_path_open 不成立"})
+        gain_q12 = int(meta.get("gain_q12", -1))
+        if gain_q12 != 0 and meta.get("bypass") is not True:
+            failures.append({"file": path.name, "reason": "闭环捕获，不能当开环标定",
+                             "bypass": meta.get("bypass"), "gain_q12": gain_q12})
             continue
         if not meta.get("verification", {}).get("bit_exact", False):
             failures.append({"file": path.name, "reason": "板上算术非 bit_exact"})
@@ -117,20 +130,30 @@ def load_packet(packet_dir):
         src = np.asarray(cap["source_pcm16"], float) / 32768.0
         first = int(meta["first_frame"])
         n_overlap = min(len(ref), len(src) - first)
-        scale = 20 * np.log10(np.sqrt(np.mean(ref[:n_overlap] ** 2))
-                              / np.sqrt(np.mean(src[first:first + n_overlap] ** 2)))
+        a, b = ref[:n_overlap], src[first:first + n_overlap]
+        scale = 20 * np.log10(np.sqrt(np.mean(a ** 2)) / np.sqrt(np.mean(b ** 2)))
+        corr = float(np.corrcoef(a, b)[0, 1])
+        identical = bool(abs(scale) < 1e-3 and corr > 0.999999)
+        if not identical:
+            failures.append({"file": path.name, "reason": "reference 与源不同，反馈项可能仍在环内",
+                             "ratio_db": float(scale), "corr": corr, "gain_q12": gain_q12})
+            continue
         segs.append({"path": path, "name": path.name, "meta": meta,
                      "reference": ref, "microphone": mic,
                      "fs": float(cap["sample_rate_hz"]),
                      "coef": np.asarray(cap["coefficients_q20"], float) / float(1 << 20),
                      "source_frames_in_window": int(n_overlap),
                      "reference_vs_source_db": float(scale),
+                     "reference_equals_source": identical,
+                     "gain_q12": gain_q12,
                      "sha256": digest})
     if failures:
         print("输入不合格，停止：")
         for item in failures:
             print("  -", item)
         raise SystemExit(2)
+    if records:
+        records["_manifest_source"] = manifest_source
     return segs, records
 
 

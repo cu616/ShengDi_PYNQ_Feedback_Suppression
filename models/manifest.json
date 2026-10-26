@@ -85,6 +85,27 @@
    "frames_needed_3N_plus_3": 1539,
    "training_split": "time-ordered: train=first4, dev=5th; validation=6th held out",
    "validation_scope": "same-session held-out open-loop prediction; not ASG, not new-session"
+  },
+  {
+   "file": "room_v1/rewired_512_20261026.json",
+   "sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+   "bytes": 17851,
+   "taps": 512,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "room_v1_20261026b",
+   "hp_volume": 40,
+   "role": "candidate",
+   "status": "offline_candidate_not_board_validated",
+   "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+   "ridge": 1e-09,
+   "q20_max_abs": 47879,
+   "l1_q20": 2398706,
+   "float_q20_maxdiff": 4.7682583940210566e-07,
+   "frames_needed_3N_plus_3": 1539,
+   "training_split": "time-ordered: train=first4, dev=5th; validation=6th held out",
+   "validation_scope": "same-session held-out open-loop prediction; not ASG, not new-session",
+   "supersedes": "room_v1/newlayout_512_20261026.json (pre-rewire capture; not applicable to the rewired geometry)"
   }
  ],
  "derived_artifacts": [
