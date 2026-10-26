@@ -341,11 +341,16 @@ def main():
 
     # ---- [1] 对齐与噪声 ----------------------------------------------
     aligned, lags, lag_target = align_segments(segs)
-    print("\n[1] 对齐：逐段 ref→mic 延迟 %s → 统一到 %d 帧（%.2f ms）；32 位浮点不改样本"
-          % (lags, lag_target, 1000 * lag_target / fs))
+    # 只保留源有效的帧：每份尾部 977 帧源已停，跨在静音上的 Welch 窗会把相干和 H 都拖坏
+    n_valid = min(int(s["source_frames_in_window"]) for s in segs)
+    aligned = [(u[:n_valid], m[:n_valid]) for u, m in aligned]
+    print("\n[1] 对齐：逐段 ref→mic 延迟 %s → 统一到 %d 帧（%.2f ms）；统计只用源有效的前 %d 帧"
+          % (lags, lag_target, 1000 * lag_target / fs, n_valid))
     paths = write_aligned(aligned, fs, work)
     result["alignment"] = {"lags": lags, "aligned_to": lag_target,
                            "delay_ms": 1000 * lag_target / fs,
+                           "frames_used_per_capture": n_valid,
+                           "tail_frames_dropped": 16384 - n_valid,
                            "tap_memory_ms": 1000 * args.taps / fs,
                            "memory_left_after_delay_ms": 1000 * (args.taps - lag_target) / fs}
     print("    %d 抽头 = %.2f ms 记忆，其中 %.2f ms 是纯传播延迟，真正可用的拖尾记忆只有 %.2f ms"
@@ -440,7 +445,7 @@ def main():
     result["question_a"] = rows_a
 
     # ---- [4] (b) 允许最大增益 ----------------------------------------
-    print("\n[4] (b) 允许最大数字增益（两个判据分开报；实测边界 %.1f dB）" % MEASURED_BOUNDARY_DB)
+    print("\n[4] (b) 两个判据下的允许增益（都不是实测最大增益；实测边界 %.1f dB）" % MEASURED_BOUNDARY_DB)
     descs = []
     for name, Hh, _c in candidates:
         d = describe(H, Hh, freqs, coh, gate, fsx, args.delay_frames, name)

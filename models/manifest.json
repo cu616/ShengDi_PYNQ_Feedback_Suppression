@@ -65,6 +65,26 @@
    "l1_q20": 28043118,
    "float_q20_maxdiff": 4.767391342808125e-07,
    "frames_needed_3N_plus_3": 771
+  },
+  {
+   "file": "room_v1/newlayout_512_20261026.json",
+   "sha256": "36c0d9705de99fcddd6022390d49bf878f376a38ee535398819ed911eebdd665",
+   "bytes": 17882,
+   "taps": 512,
+   "lag_first": 1,
+   "sample_rate_hz": 48828.125,
+   "fixture_id": "room_v1_20261026",
+   "hp_volume": 40,
+   "role": "candidate",
+   "status": "offline_candidate_not_board_validated",
+   "coefficients_sha256": "e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961",
+   "ridge": 1e-09,
+   "q20_max_abs": 43681,
+   "l1_q20": 2263931,
+   "float_q20_maxdiff": 4.72928968012383e-07,
+   "frames_needed_3N_plus_3": 1539,
+   "training_split": "time-ordered: train=first4, dev=5th; validation=6th held out",
+   "validation_scope": "same-session held-out open-loop prediction; not ASG, not new-session"
   }
  ],
  "derived_artifacts": [
