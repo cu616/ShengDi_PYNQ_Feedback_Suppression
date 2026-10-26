@@ -14,37 +14,39 @@
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**：2026-10-25 交付 v2 位流（61.44 s）并跑通连续 60 秒；条件 4 故障注入通过；
-执行 C 的 RC0.1-r1（0 dB 饱和停批）与 r2（−14 dB 下 7 项跑通、停在 FIR 观测不足）。
-**当前卡点**：真实人声扩声仍未通过；r2 剩余阻塞是 FIR 对照的观测覆盖，属测量口径。
+**最后动作**：2026-10-26 测出真人说话下的可用增益窗口，结论是**当前配置下不存在**
+「能辨出扩声且不啸叫」的工作点。**当前卡点不是调试，是差约 6 dB 抵消量。**
 
-- **唯一操板者，SSH 非交互驱动**。板端现为 **v1 位流**（`8b2426f4` / hwh `3873b16b` /
-  `MAX_RUN_FRAMES=488281`），因为 C 的 r1/r2 包绑定 v1；v2 位流存为 `v2_audio_replay.*` 待接入。
-- **v2 已构建并验证**（提交 `83ed775`，`board/audio_replay/v2/`）：
-  bit `61bb71aa…f61fa`、hwh `92b499a3…b75b`（内含 `MAX_RUN_FRAMES=3000000`）；
-  时序 All user specified timing constraints are met（WNS 0.799 / WHS 0.012）；
-  LUT 6.62 %、BRAM 80 %、DSP 1.36 %，与 v1 相同。契约 v2 见
-  [audio-replay-v2](contracts/audio-replay-v2.md)，v1 保留，回退包 `board/audio_replay/rollback-v1/`。
-- **连续 60 秒已跑通**（提交 `8c42d8a`）：2929687/2929687 帧、60.016 s、`status=0x8001`、
-  四类饱和计数全 0、时间线 2952 点、`max_poll_gap 0.0251 s`；停止测试请求 20 s、
-  1.672 s 停止、`stop_latency 0.001 s`。原始 npz 与完整时间线在
-  `report/verification/audio-replay/v2-runs/`。**观测范围按队长条件 5：寄存器时间线 + 尾部 PCM。**
-- **条件 4 故障注入通过**（提交 `dd45c8d`）：用模拟寄存器注入，无板卡、无声、无失控。
-  已验证：饱和是独立停止原因；**保护不被 `completed` 覆盖**（`completed_with_protection`）；
-  gain 计数保留完整 32 位；**静音失败不谎报** `muted`/`recovered`。
-- **驱动 `live_run.py`（a-continuous-v1）**：`MAX_RUN_FRAMES` 从同名 HWH 读取并按位流能力判定
-  （`pl_contract` 记 v1/v2）；新增 `before_start` 接点（配置完成且仍静音时确认，否则取消）；
-  NPZ 保存失败仍写 status 与 `save_error`；停止分阶段记录 `t_stop_request/detected/disarm/mute/cleanup`
-  与 `max_poll_gap_s`。
-- **C 的包执行结果**：r1（0 dB）第 2 项真实人声在 9835 帧、约 0.201 s 保护中止（计数 3/1）；
-  **r2（−14 dB）前 7 项全部跑完、无一次保护**，停在 `fir_observation_insufficient`。
-  回包 `c-sprint-rc01-return.zip`、`c-sprint-rc01-r2-return.zip`。
-  **−14 dB 工作点可用**，这是目前最重要的现场结论。
-- 发布检查已新增"发送方自检"（见 [冻结计划](ref/development-plan.md)）：发送方软件夹具自检 +
-  `preflight.json` + A 只读 `all_ok` + 缺陷 D1–D4 同类三次上报 + **资产绑定不得混用新旧**。
-- 沿用口径：保护/削顶不能直接判啸叫；`hp_volume=40` 是驱动工程上限不是芯片上限；
-  负数字增益也可能产生声学放大；离线阈值不是实物上限。本截止不新增 AFC/多速率。
-- 下一步：等 C 对 FIR 观测窗的决定或 r3；v2 待 C 核对原件后接入；真实人声扩声仍是未闭环的产品目标。
+- **唯一操板者，SSH 非交互驱动**。板端 v2 位流 `61bb71aa…`（`MAX_RUN_FRAMES=3000000`），
+  v1 存为 `v1_audio_replay.*`；回退包在 `board/audio_replay/rollback-v1/`。
+- **布局**：音响距麦克风 **100 cm、侧对**，音响上方 **30 cm 有金属板**（属夹具，标定后不得移动）。
+  该布局比旧布局（50 cm 正对）耦合更低，但**没有改变瓶颈性质**。
+- **真人说话实测的可用窗口**（[证据](report/verification/audio-replay/live-voice-window-2026-10-26.json)）：
+  −14 dB 稳定但听众报"听不出放大"；**−12 dB 稳定**（325 Hz 模态占比 0.25）；
+  **−10 dB 已接近再生**（占比 0.63）；−6 dB 残差饱和保护停批。
+  **从"听不出"到"接近再生"只有约 4 dB，安全点仅高 2 dB。**
+- **静音源边界不等于可用边界**（本轮重要纠正）：静音源开环测到 −6 dB 稳定、−5 dB 啸叫，
+  据此估算最大稳定增益约 −5.5 dB；但真人说话会激励环路，−6 dB 即残差饱和。
+  见 [实测边界](report/verification/audio-replay/gain-sweep-boundary-2026-10-26.json)。
+- **限制模态是单模 325 Hz**（能量占比 0.93–1.00），不是宽带、不是高频。
+  B 的模型按 435 Hz 算出允许 +2.77 dB，**与实际差约 8 dB**，因为其模型拟在旧布局上。
+- **模型拟合在当前采集接口下不可能**（[证据](report/verification/audio-replay/measurement-exhausted-2026-10-26.json)）：
+  三种测量设计（宽带白噪、分段带限噪声、提高电平）全部失败，根因是**每次只有单段
+  0.336 s 窗口**，估出的冲激响应无法在任何另一段上验证。已向 C 要"同次装载内连续返回多段"。
+- **相干性随电平的实测**（[证据](report/verification/audio-replay/coherence-vs-level-2026-10-26.json)）：
+  源 +12 dB 只换来 4–9 dB 信噪比，约一半干扰随信号增长 → 是超出 512 抽头记忆（10.5 ms）的
+  声学混响拖尾，不是加性噪声。这支持 B 的"更长记忆"方向，也是"提高电平测不准"的原因。
+- **已撤回的结论**（不得再引用）："峰值 +1.73/+2.34 dB @ 453/381 Hz、需约 8 dB 抵消"
+  与两个由它拟合的模型（`model_room_side_100cm_v1`、`_lowband_v1`，均未上板）。
+  撤回原因：那些估计来自相干性约 0.3 的频点。
+- **交付检查已修复**（`bfca2dd`）：`board/audio_replay/deliver_check.py` 走 `test-bindings.json`
+  显式绑定包 zip 的 SHA256，提示缺失由 SKIP 改 FAIL，绑定不符即退出 1；
+  实测 `routing`/`start_control` 双 PASS 并输出真实 `PACKAGE_COMPLETE`。
+- **A 分支已合入 main**（`479a570`，含 A 的 103 个提交）；STATE 冲突按段归属解决，B 段取 main 版本。
+- 沿用口径：保护/削顶不能直接判啸叫；`hp_volume=40` 是驱动上限不是芯片上限；
+  负数字增益不等于没有声学放大；保护触发不是效果通过。
+- **下一步只有三条，都需要别人动手**：①加抵消量（更长记忆或 325 Hz 陷波，B 判断 + 改 RTL）；
+  ②再降声学耦合（麦克风指向/距离，现场 + 重标定）；③C 提供多段连续采集以支持模型拟合。
 
 ### B 数据与算法
 
