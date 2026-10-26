@@ -378,7 +378,7 @@ def assemble_sprint(out, assets, model_path, human_only=False):
 
 def assemble_layout(out):
     """New-layout preparation: exact A assets, no legacy candidate or hardware."""
-    from layout_experiment import POLICY, PLAN as LAYOUT_PLAN, A_COMMIT, template, scene_template, check as check_layout
+    from layout_experiment import POLICY, PLAN as LAYOUT_PLAN, A_COMMIT, template, scene_template, notebook_code_hash, check as check_layout
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
     for name in ('layout_experiment.py','listener_metrics.py','sprint_continuous.py','evaluation.py',
                  'growth_monitor.py','tail_metrics.py','model_comparison.py','room_experiment.py'):
@@ -404,8 +404,9 @@ def assemble_layout(out):
         A_commit=A_COMMIT,A_origins=origins,C_source_base=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),
-        hardware_executed=False,hashes={str(p.relative_to(out)).replace('\\','/'):sha(p)
-            for p in sorted(out.rglob('*')) if p.is_file() and '__pycache__' not in p.parts})
+        hardware_executed=False,notebook_code_sha256=notebook_code_hash(out/'layout.ipynb'),
+        hashes={str(p.relative_to(out)).replace('\\','/'):sha(p)
+            for p in sorted(out.rglob('*')) if p.is_file() and '__pycache__' not in p.parts and p.name!='layout.ipynb'})
     (out/'layout-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     pending=check_layout(out)
     manifest['missing']=pending['missing']

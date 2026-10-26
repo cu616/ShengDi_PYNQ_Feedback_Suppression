@@ -172,6 +172,16 @@ class LayoutTests(unittest.TestCase):
             (base/'listener_metrics.py').write_text('changed',encoding='utf8')
             r=Runner();s=self.execute(base,r)
             self.assertFalse(r.calls);self.assertIn('package hash mismatch',s['stop_reason'])
+    def test_notebook_saved_outputs_are_mutable_but_code_is_frozen(self):
+        with self.work() as d:
+            base=Path(d);self.bound(base);path=base/'layout.ipynb'
+            nb=json.loads(path.read_text(encoding='utf8'));nb['cells'][1]['execution_count']=1
+            nb['cells'][1]['outputs']=[dict(output_type='stream',name='stdout',text=['saved output'])]
+            path.write_text(json.dumps(nb),encoding='utf8')
+            self.assertTrue(x.check(base)['ready'])
+            nb['cells'][1]['source'].append('print("changed")\n')
+            path.write_text(json.dumps(nb),encoding='utf8')
+            with self.assertRaisesRegex(ValueError,'notebook code mismatch'):x.check(base)
     def test_continuous_review_reuses_explicit_bound_model(self):
         from sprint_selftest import SoftwareContinuousRunner
         with self.work() as d:

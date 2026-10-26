@@ -43,6 +43,12 @@ def number(value):
     return type(value) in (int, float) and math.isfinite(value)
 
 
+def notebook_code_hash(path):
+    notebook=json.loads(Path(path).read_text(encoding='utf8'))
+    codes=[''.join(cell['source']) for cell in notebook['cells'] if cell['cell_type']=='code']
+    return hashlib.sha256(encoded(codes)).hexdigest()
+
+
 def template():
     return dict(policy=POLICY, fixture_id=FIXTURE, b_commit=None, model_sha256=None,
         coefficients_sha256=None, hp_volume=40, sample_rate_hz=RATE, lag_first=1,
@@ -131,6 +137,8 @@ def check(base):
             raise ValueError('package hash mismatch:'+name)
     if manifest['hashes'].get('audio_replay.bit')!=BIT or manifest['hashes'].get('audio_replay.hwh')!=HWH:
         raise ValueError('A bit/hwh mismatch')
+    if notebook_code_hash(base/'layout.ipynb')!=manifest.get('notebook_code_sha256'):
+        raise ValueError('notebook code mismatch')
     binding=base/'run-binding.json'
     if not binding.exists():
         return dict(ready=False,missing=prerequisites(template(),scene_template()),hardware_access=False)
