@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "topic": "c-new-layout-r3 received but self-refuses: it still binds the pre-repair candidate",
+  "recorded_by": "A",
+  "package": {
+    "name": "c-new-layout-r3.zip",
+    "bytes": 336654,
+    "sha256": "0595b0745434962cfbaebc04351c466425cad40c861b49e1c1cfc9d269f7bf98",
+    "C_commit": "bbc89b2",
+    "entries": 33
+  },
+  "what_the_package_binds": {
+    "model": "models/room_v1/newlayout_512_20261026.json",
+    "B_commit": "8a027578",
+    "file_sha256": "36c0d970",
+    "q20_sha256": "e8757833",
+    "fixture_id": "room_v1_20261026"
+  },
+  "what_the_package_says": "OPERATIONS.md states the old B=8a02757 model is a historical original only and must not be used as the post-repair candidate; with no new B model the entry exits with code 2, zero trials, and writes a stop package. Receiving r3 does not authorise effect trials.",
+  "what_A_has_staged": {
+    "model": "models/room_v1/rewired_512_20261026.json",
+    "B_commit": "b6bcfb2",
+    "file_sha256_prefix": "01c9102a",
+    "q20_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+    "fixture_id": "room_v1_20261026b",
+    "sum_abs_q": 2398706,
+    "saturation_margin_db": 10.9,
+    "board_state": "uploaded and loader-verified (LOAD_OK), not armed, not audible",
+    "matches": "C's own requirement message (Q20 6118e85d..., fixture room_v1_20261026b)"
+  },
+  "blocker": "the package must be re-bound by C to the rewired candidate; A will not load the old candidate and will not bypass the package's own guard",
+  "not_done": [
+    "no audible trial was run",
+    "the package guard was not bypassed",
+    "the old candidate was not loaded"
+  ]
+}
