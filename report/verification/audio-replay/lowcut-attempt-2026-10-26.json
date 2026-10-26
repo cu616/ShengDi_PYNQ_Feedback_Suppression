@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "topic": "attempted low-band suppression coefficients: invalid, predictor saturates",
+  "recorded_by": "A",
+  "idea": "in this architecture u = (s + g*mic)/(1 + g*Hhat), so a large |Hhat| inside 250-470 Hz should attenuate the loop band there while leaving the speech band untouched",
+  "design": {
+    "taps": 512,
+    "centre_hz": 360,
+    "bandwidth_hz": 220,
+    "hhat_peak": 2.6,
+    "hhat_at_1khz": 0.001,
+    "expected_g_hhat_at_360hz": 1.04
+  },
+  "result": "invalid",
+  "runs": [
+    {
+      "gain_db": -8.0,
+      "mic_dbfs": -11.9,
+      "peak_dbfs": 0.0,
+      "verdict": "saturation guard"
+    },
+    {
+      "gain_db": -6.0,
+      "mic_dbfs": -19.2,
+      "peak_dbfs": -8.1,
+      "verdict": "saturation guard"
+    },
+    {
+      "gain_db": -4.0,
+      "mic_dbfs": 0.0,
+      "peak_dbfs": 0.0,
+      "verdict": "saturation guard"
+    },
+    {
+      "gain_db": -2.0,
+      "mic_dbfs": -0.2,
+      "peak_dbfs": 0.0,
+      "verdict": "saturation guard"
+    },
+    {
+      "gain_db": 0.0,
+      "mic_dbfs": -19.9,
+      "peak_dbfs": -6.5,
+      "verdict": "saturation guard"
+    }
+  ],
+  "comparison": "with zero coefficients the same gain of -8 dB was clean (mode share 0.12) and the listener confirmed clear amplification, so the new coefficients made it strictly worse at every tested gain",
+  "root_cause": "the prediction sum q*ref exceeds the signed-24-bit range long before the intended loop attenuation is reached: reaching |g*Hhat| ~ 1 at 360 Hz needs |Hhat| ~ 2.5, which the fixed-point predictor cannot carry",
+  "conclusion": "low-band suppression through the existing prediction path is not feasible at the required magnitude in this word width; it would need either a different filter placement (a forward-path filter before the gain, not the predictor) or a wider internal format",
+  "not_claimed": [
+    "does not show that low-band suppression is impossible in principle",
+    "only that this placement and width cannot deliver it"
+  ],
+  "recommended_owner": "B decides the filter placement; C keeps the measurement protocol; A loads and re-runs the board comparison once a valid design exists"
+}
