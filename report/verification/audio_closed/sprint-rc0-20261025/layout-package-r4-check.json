@@ -85,5 +85,20 @@
     "archive_commit": "c0b1772",
     "pushed_to": "origin/C",
     "successful": true
+  },
+  "latest_A_handoff": {
+    "declared_commit": "3af9e61",
+    "source": "user-forwarded message; Git object fetch reset during receipt",
+    "received_package": "r3 / bbc89b2 / 336654 bytes / 0595b074...",
+    "r3_execution_refused_before_sound": true,
+    "rewired_file_validation_reported_by_A": true,
+    "PL_loading_not_inferred_from_load_candidate": true,
+    "reroute_to_release": "C fa13877 / c-new-layout-r4.zip",
+    "zero_arm": "original valid rewired model + zero_coeff=True; no synthetic zero model JSON",
+    "microphone_precheck": "0.30s, complete valid samples, absolute peak including DC strictly below -6 dBFS; equality/above/dropped frames stop",
+    "flat_input_scope": "Known constant -4.2dBFS is rejected by peak. Not a general subthreshold stuck-ADC detector; known no-response under actual input requires operator stop.",
+    "saturation_10_9dB_claim_withdrawn": true,
+    "code_or_archive_changed": false,
+    "tests_repeated": false
   }
 }

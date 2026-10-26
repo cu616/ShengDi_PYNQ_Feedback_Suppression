@@ -8,6 +8,11 @@
 
 
 
+
+## 2026-10-26 C 纠正A收到r3的交付错位
+
+接收A3af转发，确认旧r3守卫拒绝合理；明确取已交r4/fa13877及完整SHA，不重建原包。答复零臂用合法模型+zero_coeff=True、0.30秒严格含DC峰值及恒读检测范围；纠正LOAD_OK不是PL加载证据、10.9dB余量已撤回。未改代码、未重验、未操板。[交接证据](../../report/verification/audio_closed/batch-control.md#2026-10-26-a3af收件错位纠正与r4执行确认)。
+
 ## 2026-10-26 C 补齐r4远端同步与B254原件核对
 
 远端连接恢复，C的需求、源码及r4归档已推送至c0b1772；随后取到B=254b8e9，阅读原勘误§0与测试修订，模型与b6bcfb2逐字节相同。更新[r4机器记录](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r4-check.json)中的提交/README身份和同步结果；冻结ZIP未替换，不重复无变化的软件检查，仍无现场效果结果。
