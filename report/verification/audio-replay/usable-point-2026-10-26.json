@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "topic": "first confirmed usable live-amplification point (2026-10-26)",
+  "recorded_by": "A",
+  "status": "CONFIRMED TWICE by the listener",
+  "config": {
+    "bit": "61bb71aa (v2)", "hwh": "92b499a3 (v2, MAX_RUN_FRAMES=3000000)",
+    "driver": "replay_trial 2127663",
+    "coefficients": "zero (candidate model loaded with zero_coeff=True); the stale "
+                    "model_room_side_512.json is retired as ...STALE-oldfixture.json",
+    "digital_gain_db": -8.0,
+    "talker_to_mic_cm": 5,
+    "listener": "20 cm from the speaker",
+    "speaker": "100 cm from the microphone, side-facing; metal plate 30 cm above, covered with "
+                "sound-absorbing cotton",
+    "preamp_gain": "untouched", "speaker_volume": "maximum", "hp_volume": 40,
+    "sample_rate_hz": 48828.125, "run_length_s": 9.5
+  },
+  "confirmations": [
+    {"run": "nomodel6_1746820513613729562", "mic_dbfs": -27.9, "peak_dbfs": -11.3,
+     "mode_hz": 253, "mode_share": 0.36, "saturation": 0,
+     "listener": "fairly clear, can hear the amplification"},
+    {"run": "nomodel6_1746820610817502839", "mic_dbfs": -24.3, "peak_dbfs": -12.0,
+     "mode_hz": 298, "mode_share": 0.42, "saturation": 0,
+     "listener": "same as before, very clear, amplification works - a big step forward"}
+  ],
+  "what_changed_relative_to_everything_before": [
+    "the stale 57-frame-mismatched coefficients were removed, so the loop is a plain feedback loop "
+    "instead of a badly predistorted one",
+    "digital gain -8 dB instead of -14 dB (6 dB louder than the point that was always inaudible)",
+    "talker moved to about 5 cm from the microphone"
+  ],
+  "remaining_limitation_reported_by_the_listener": "near the speaker the amplified sound is still "
+    "not louder than the source, because -8 dB digital gain means the output is 8 dB BELOW the "
+    "microphone signal; positive net gain is needed for the speaker to dominate",
+  "why_more_gain_is_hard": "the loop rings around 250-470 Hz. Raising the talker level raises the "
+    "output AND the feedback by the same amount, so close-talk does not improve the ratio; at 5 cm "
+    "the mode share rose from 0.12 (15 cm) to 0.36-0.42, i.e. closer to regeneration",
+  "the_only_structural_lever_left": "suppress the 250-470 Hz band inside the loop (high-pass or "
+    "low-shelf cut). That buys gain headroom without touching speech band gain",
+  "ownership": "a filter in the loop is a coefficient/algorithm change -> B designs it; A loads and "
+               "runs the board comparison; C owns the measurement protocol",
+  "not_claimed": ["no ASG", "no claim that the current point is the optimum", "no claim about "
+                  "listener intelligibility beyond the two confirmations above"]
+}
