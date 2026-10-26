@@ -1,0 +1,39 @@
+{
+  "purpose": "B request: rebind the current geometry",
+  "geometry": "speaker 100 cm side-facing, plate covered with cotton, listener in place, preamp/volume untouched",
+  "open_loop": "zero_coeff=True, gain -40 dB, direct playback",
+  "source": "white noise -6 dBFS nominal, 2.4 s per segment, 0.5 s pause between",
+  "sample_rate_hz": 48828.125,
+  "capture_frames": 16384,
+  "known_issue": "an earlier batch in this session was invalid: the microphone wire was loose and the ADC read a constant -4.2 dBFS independent of source level and gain",
+  "files": {
+    "bind4_00_1746832927253437612.npz": {
+      "sha256": "2d610c5bf17b0ec1468c538ed31c053c6a74f365a87af1e38189eecdbe694692",
+      "bytes": 378647
+    },
+    "bind4_01_1746832962577236520.npz": {
+      "sha256": "0fff5a18fa326dbe9d78348838a1bcd3fc7cd288e7ba1a58fff29c83d8a7075f",
+      "bytes": 376669
+    },
+    "bind4_02_1746832997608122031.npz": {
+      "sha256": "61a338ab8779c7b02fe934b0d6cf881604227864138f366e0d97cd00be6230ab",
+      "bytes": 378522
+    },
+    "bind4_03_1746833033647207392.npz": {
+      "sha256": "592fbb64e484910302fdcbce6adb69d54cabbb3f9e36ab2c8ed7f46c3cb6365c",
+      "bytes": 376297
+    },
+    "bind4_04_1746833069163613450.npz": {
+      "sha256": "e788c74c3fe8e779a416ec9fb4402cdc056bcc191eb4a32990277ff27cafa131",
+      "bytes": 380127
+    },
+    "bind4_05_1746833105158088504.npz": {
+      "sha256": "30525db94c18cf55428608a8a89347fb15d59e7d867deba22c1c14361151e288",
+      "bytes": 378902
+    },
+    "bind_manifest.json": {
+      "sha256": "13aeb0a2abf36cd409d751bff3f6ee090b27c406ef5539979432917f271f37e8",
+      "bytes": 1731
+    }
+  }
+}
