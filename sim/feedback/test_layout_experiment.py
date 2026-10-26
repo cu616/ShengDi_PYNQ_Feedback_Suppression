@@ -111,14 +111,14 @@ class LayoutTests(unittest.TestCase):
         from assemble_experiment import assemble_layout
         assemble_layout(cls.prepared)
         cls.runtime=Path(cls.temp.name)/'runtime'
-        assemble_layout(cls.runtime,'8a02757')
+        assemble_layout(cls.runtime,'b6bcfb2')
         cls.pending_runtime=Path(cls.temp.name)/'pending-runtime'
         shutil.copytree(cls.runtime,cls.pending_runtime)
-        # The forthcoming-B branch is simulated only; the shipped 8a02757 stays rejected.
-        cp=cls.runtime/'candidate-input.json';c=json.loads(cp.read_text(encoding='utf8'))
-        c.update(b_commit='b'*40);c['wire_repair_binding']=repair_claim(c)
+        # Withdrawn source identity is an explicit negative control; shipped candidate is real B.
+        cp=cls.pending_runtime/'candidate-input.json';c=json.loads(cp.read_text(encoding='utf8'))
+        c.update(b_commit=x.OBSOLETE_B_COMMIT,wire_repair_binding=None)
         cp.write_text(json.dumps(c),encoding='utf8')
-        mp=cls.runtime/'layout-manifest.json';m=json.loads(mp.read_text(encoding='utf8'))
+        mp=cls.pending_runtime/'layout-manifest.json';m=json.loads(mp.read_text(encoding='utf8'))
         m['hashes']['candidate-input.json']=x.sha(cp)
         mp.write_text(json.dumps(m),encoding='utf8')
     @classmethod
@@ -248,13 +248,13 @@ class LayoutTests(unittest.TestCase):
             self.assertEqual((out['first_frame'],out['end_frame'],out['frames']),(33420,48340,14920))
             self.assertAlmostEqual(out['rms_dbfs'],-60.,places=10)
             self.assertGreater(20*np.log10(np.std(samples)),-30)
-    def test_pre_repair_B_candidate_is_carried_but_never_qualified_for_new_wire_state(self):
+    def test_withdrawn_B_source_identity_never_qualifies_for_repaired_wire_state(self):
         with self.work() as d:
             base=Path(d)/'actual'
             shutil.copytree(self.pending_runtime,base)
             report=json.loads((base/'candidate-compatibility.json').read_text(encoding='utf8'))
             self.assertTrue(report['identity_and_driver_compatibility'])
-            self.assertEqual(report['model']['q20_sha256'],'e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961')
+            self.assertEqual(report['model']['q20_sha256'],'6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927')
             self.assertEqual(report['serial_cycles'],1539)
             state=x.check(base);self.assertFalse(state['ready'])
             self.assertNotIn('B:model_file_missing',state['missing'])
@@ -381,6 +381,21 @@ class LayoutTests(unittest.TestCase):
             self.assertTrue(s['listener_measurement']['quantitative_disabled'])
             self.assertFalse(any('四WAV' in prompt for prompt in r.prompts))
 
+    def test_assembly_rejects_wrong_capture_identity_despite_matching_coefficients(self):
+        from unittest.mock import patch
+        from assemble_experiment import assemble_layout
+        original=subprocess.check_output
+        def changed(command,*args,**kwargs):
+            raw=original(command,*args,**kwargs)
+            if command[:2]==['git','show'] and command[2].endswith('rewired-candidate-2026-10-26/metrics.json'):
+                data=json.loads(raw);data['data_identity'][0]['sha256']='0'*64
+                return json.dumps(data).encode('utf8')
+            return raw
+        with self.work() as d:
+            with patch('assemble_experiment.subprocess.check_output',side_effect=changed):
+                with self.assertRaisesRegex(ValueError,'six repaired A captures'):
+                    assemble_layout(Path(d)/'wrong-capture','b6bcfb2')
+
     def test_repaired_capture_binding_mismatch_is_rejected_and_A_scene_is_exact(self):
         with self.work() as d:
             base=Path(d);path,c,scene=inputs(base)
@@ -391,8 +406,13 @@ class LayoutTests(unittest.TestCase):
             self.assertEqual(raw['a_allowed_gains_db'],[-14,-12,-10,-8,-6])
             self.assertIsInstance(raw['agc_disabled'],str)
             self.assertTrue(raw['agc_disabled'].startswith('unknown'))
-            self.assertEqual((self.pending_runtime/'scene-input.json').read_bytes(),
-                (self.pending_runtime/'a-scene-input-original.json').read_bytes())
+            original_path=self.pending_runtime/'a-scene-input-original.json'
+            self.assertEqual(original_path.read_bytes(),subprocess.check_output(['git','show',x.SCENE_COMMIT+':report/verification/audio-replay/scene-input-2026-10-26.json'],cwd=ROOT))
+            original=json.loads(original_path.read_text(encoding='utf8'))
+            self.assertEqual(raw['fixture_id'],x.FIXTURE)
+            self.assertEqual(raw['fixture_provenance']['original_scene_fixture'],original['fixture_id'])
+            self.assertEqual({k:v for k,v in raw.items() if k not in ('fixture_id','fixture_provenance')},
+                {k:v for k,v in original.items() if k!='fixture_id'})
             for name in ('field-config','live-round','mic-fault-impact','usable-point'):
                 self.assertIsInstance(json.loads((self.pending_runtime/('a-'+name+'-original.json')).read_text(encoding='utf8')),dict)
 

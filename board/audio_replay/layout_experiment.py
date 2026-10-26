@@ -21,9 +21,9 @@ from residual_tools import load_candidate
 from room_experiment import gate_metrics, write_json
 from sprint_continuous import driver_request
 
-POLICY = 'c-new-layout-1.2.0'
+POLICY = 'c-new-layout-1.3.0'
 RATE = 48828.125
-FIXTURE = 'room_v1_20261026'
+FIXTURE = 'room_v1_20261026b'
 A_COMMIT = '2928a4a9de2e360d9aeedce435b452b860baf189'
 BIT = '61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa'
 HWH = '92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b'
@@ -244,7 +244,7 @@ def bind_at_field(base, ask):
     prompt=('一次现场核实：麦克风线已修好，一米侧对/金属板隔音棉/Codec40/音响最大/前放出厂未动；默认讲话25cm，听众距音响20cm。'
         '确认单人控板、无耳机、可断音响电源、准许本地存音频，起始外部声源停止且房间安静；'
         '按包内离散档位且不超过-6dB；每项前麦克风峰值必须严格低于-6dBFS。'
-        '手机用自身扬声器对麦克风播放，不直接接LINE_IN。'
+        '手机用自身扬声器对麦克风播放，不直接接LINE_IN；每次从文件0秒重放同一8秒片段。'
         '输入 FIELD_READY|讲话距离cm|手机录音文件名|播放音量档位|手机相对麦克风位置；其他输入取消：')
     answer=ask(prompt).strip().split('|')
     if len(answer)!=5 or answer[0]!='FIELD_READY' or any(not v.strip() for v in answer[1:]):
@@ -253,7 +253,7 @@ def bind_at_field(base, ask):
     except ValueError:raise RuntimeError('invalid_talker_distance')
     scene.update(verified_by_A=True,control_and_cue_approved_by_A=True,
         talker_to_microphone_cm=distance,
-        field_confirmation='FIELD_READY',fixed_speech_source=dict(file=answer[2].strip(),playback_level=answer[3].strip(),phone_position=answer[4].strip(),route='phone_speaker_to_microphone'))
+        field_confirmation='FIELD_READY',fixed_speech_source=dict(file=answer[2].strip(),playback_level=answer[3].strip(),phone_position=answer[4].strip(),route='phone_speaker_to_microphone',start_seconds=0.,segment_seconds=PLAN['speech_seconds']))
     # Validate all remaining identities before writing any active model.
     errors=prerequisites(c,scene,base/'candidate-unbound.json')
     if errors: raise ValueError('BINDING_INCOMPLETE '+json.dumps(errors,ensure_ascii=False))
@@ -601,7 +601,7 @@ def run(base=None, ask=input, runner=None, live_runner=None):
             voice['sound_heard']=ask('真人讲话实际听到声音？HEARD / NOT_HEARD / UNKNOWN（提示音不计）：').strip()
         if ask(('听众/已登记的手机固定片段、音量与位置按scene就位；' if runtime else '听众/固定人声源按scene就位；')+
                'LISTENER继续；其他输入将听众记未测：').strip()=='LISTENER':
-            print('每项8秒；提示音结束后播放已登记同一手机录音，文件/音量/位置不变。只记录听众定性比较，定量预置未测。',flush=True)
+            print('每项8秒；提示音结束后从文件0秒重放已登记同一片段，文件/音量/位置不变。只记录听众定性比较，定量预置未测。',flush=True)
             trial('listener-off',pcm=cue,direct=True,seconds=PLAN['speech_seconds'],positive=True)
             trial('listener-on',pcm=cue,seconds=PLAN['speech_seconds'],positive=True)
             code=ask('相对刚才系统静音：DISTINGUISHABLE / NO_AMPLIFICATION / DISTORTED / UNKNOWN：').strip()

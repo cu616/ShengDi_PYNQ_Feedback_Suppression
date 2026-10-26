@@ -5,6 +5,11 @@
 > 规则：新条目加在最上方；不修改、不删除历史条目；每条结论都应能链到 `report/` 里的证据。
 
 
+
+## 2026-10-26 C 接收B勘误并完成r4修线候选绑定
+
+按用户转发254b8e9勘误接入b6bcfb2同字节候选；网络未取到新Git对象，包内原字节来源与转发勘误明确分开。补六段数据集身份拒绝，派生新fixture同时保留A52原件；五档、峰值门禁、手机同片段、定量未测与保护停止保留。23个相关软件用例及最后一次运行回包复验通过，未重跑旧145项或操板。[集成/失败出口](../../report/verification/audio_closed/batch-control.md#2026-10-26-r4接收b勘误并绑定修线候选)、[检查记录](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r4-check.json)。
+
 ## 2026-10-26 C 接收修线候选并重写A/B需求
 
 按用户最新转发B=b6bcfb2重写两线需求，撤回“仍等B修线模型”的卡点；保留r3旧模型阻断，未伪称新执行包已放行。定向核对模型/Q20及A52六NPZ、按全局帧号重建source均一致；Git摘要13aeb0a2…/1731与A清单匹配，B本地副本差异另列。纠正预测器输出满幅单位、网格界保底承诺和封顶档差机械否定，保留五档硬上限、峰值门禁与定量未测。[需求与交接](../../report/verification/audio_closed/batch-control.md#2026-10-26-修线候选到达后的a与b需求单)、[原字节/数值证据](../../report/verification/audio_closed/sprint-rc0-20261025/rewired-handoff-check.json)。本次未改执行代码或重新验旧基础，无操板/效果结论。

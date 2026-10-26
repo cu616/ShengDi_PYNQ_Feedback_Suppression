@@ -378,7 +378,7 @@ def assemble_sprint(out, assets, model_path, human_only=False):
 
 def assemble_layout(out, candidate_commit=None, repair_binding=None):
     """New-layout preparation: exact A assets, no legacy candidate or hardware."""
-    from layout_experiment import POLICY, PLAN as LAYOUT_PLAN, A_COMMIT, SCENE_COMMIT, REPAIRED_CAPTURE_MANIFEST, REPAIRED_CAPTURE_SET, template, scene_template, notebook_code_hash, check as check_layout
+    from layout_experiment import POLICY, FIXTURE, PLAN as LAYOUT_PLAN, A_COMMIT, SCENE_COMMIT, REPAIRED_CAPTURE_MANIFEST, REPAIRED_CAPTURE_SET, template, scene_template, notebook_code_hash, check as check_layout
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
     for name in ('layout_experiment.py','listener_metrics.py','sprint_continuous.py','evaluation.py',
                  'growth_monitor.py','tail_metrics.py','model_comparison.py','room_experiment.py'):
@@ -398,17 +398,23 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
     for name in ('a-field-config-original.json','a-live-round-original.json','a-mic-fault-impact-original.json','a-usable-point-original.json'):
         json.loads((out/name).read_text(encoding='utf8'))
     (out/'candidate-input.json').write_text(json.dumps(template(),ensure_ascii=False,indent=2)+'\n',encoding='utf8')
-    shutil.copy2(out/'a-scene-input-original.json',out/'scene-input.json')
+    scene=json.loads((out/'a-scene-input-original.json').read_text(encoding='utf8'))
+    scene['fixture_id']=FIXTURE
+    scene['fixture_provenance']=dict(original_scene_fixture='room_v1_20261026',
+        original_capture_metadata_fixture='room_v1_20261021',actual_fixture=FIXTURE,
+        basis='A=52ee4e4 repaired capture geometry + B=b6bcfb2 matching model; confirm unchanged at FIELD_READY',
+        original_files_modified=False)
+    (out/'scene-input.json').write_text(json.dumps(scene,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     if candidate_commit:
         import numpy as np
         from layout_experiment import RATE, FIXTURE
         from sprint_continuous import driver_request
         from model_comparison import qhash
         candidate_commit=subprocess.check_output(['git','rev-parse',candidate_commit],cwd=ROOT).decode().strip()
-        files={'candidate-unbound.json':'models/room_v1/newlayout_512_20261026.json',
-               'b-metrics.json':'report/verification/newlayout-candidate-2026-10-26/metrics.json',
-               'b-readme-original.txt':'report/verification/newlayout-candidate-2026-10-26/README.md',
-               'b-repro-original.txt':'report/verification/newlayout-candidate-2026-10-26/repro.txt',
+        files={'candidate-unbound.json':'models/room_v1/rewired_512_20261026.json',
+               'b-metrics.json':'report/verification/rewired-candidate-2026-10-26/metrics.json',
+               'b-readme-original.txt':'report/verification/rewired-candidate-2026-10-26/README.md',
+               'b-repro-original.txt':'report/verification/rewired-candidate-2026-10-26/repro.txt',
                'b-model-registry.json':'models/manifest.json'}
         for name,origin in files.items():
             (out/name).write_bytes(subprocess.check_output(['git','show',candidate_commit+':'+origin],cwd=ROOT))
@@ -420,20 +426,32 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
         if hashlib.sha256(np.asarray(model['coefficients'],dtype='<f8').tobytes()).hexdigest()!=identity['float_sha256']:
             raise ValueError('B float array identity mismatch')
         registry=json.loads((out/'b-model-registry.json').read_text(encoding='utf8'))
-        entry=next(item for item in registry['models'] if item['file']=='room_v1/newlayout_512_20261026.json')
+        entry=next(item for item in registry['models'] if item['file']=='room_v1/rewired_512_20261026.json')
         if entry.get('sha256')!=identity['file_sha256'] or entry.get('coefficients_sha256')!=identity['q20_sha256']:
             raise ValueError('B registry identity mismatch')
+        capture_manifest=json.loads((out/'a-repaired-capture-manifest.json').read_text(encoding='utf8'))
+        captured={name:info['sha256'] for name,info in capture_manifest['files'].items() if name.endswith('.npz')}
+        declared={item['file']:item['sha256'] for item in metrics['data_identity']}
+        if len(declared)!=6 or declared!=captured or hashlib.sha256(json.dumps(declared,sort_keys=True,separators=(',',':')).encode()).hexdigest()!=REPAIRED_CAPTURE_SET:
+            raise ValueError('B model does not bind the six repaired A captures')
+        if model['fixture_id']!=FIXTURE or metrics['fixture_id']!=FIXTURE or model.get('bias')!=0:
+            raise ValueError('repaired model fixture/bias mismatch')
+        if identity['file_sha256']!='01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23' or identity['q20_sha256']!='6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927':
+            raise ValueError('candidate changed; review before releasing another field package')
         candidate=template();candidate.update(b_commit=candidate_commit,model_sha256=identity['file_sha256'],
-            coefficients_sha256=identity['q20_sha256'],deployment_evidence='b-metrics.json:model_file/deployment',
-            original_timeline_holdout='b-metrics.json:time_domain.q20_traindev_val + unaligned_deployment_check',
+            coefficients_sha256=identity['q20_sha256'],deployment_evidence='b-metrics.json:model_file/deployment_axis',
+            original_timeline_holdout='b-metrics.json:split/time_domain/unaligned_deployment; held-out val, raw deployment kept separate',
             diagnostic_alignment='b-metrics.json:alignment; raw deployment kept separate',
             input_manifest_sha256=hashlib.sha256(json.dumps(metrics['data_identity'],sort_keys=True,separators=(',',':')).encode()).hexdigest(),
-            gain_and_injection_basis='Planned discrete A=52ee4e4 points; all effects blocked pending repaired-scene B candidate',
+            gain_and_injection_basis='A=52ee4e4 five allowed points, B=b6bcfb2 and forwarded 254b8e9 errata; no added injection, level dependence unknown',
             b_allowed_gains_db=LAYOUT_PLAN['runtime_scan_gains_db'],gain_db=-8.,profile='runtime_scan',scan_gains_db=LAYOUT_PLAN['runtime_scan_gains_db'],
             bands=[dict(low_hz=low,high_hz=high,minimum_signal_snr_db=None,
                 basis='B coherence>=0.8 applies to frequency estimates; not estimated in the no-injection runtime branch')
-                for low,high in ((300,460),(3000,10200))],
-            prediction_and_failure_actions='Use zero/matched same-condition observations; do not adopt old-model 14dB threshold or +2..+9 gain forecast as release criteria')
+                for low,high in ((300,460),(460,1000),(1000,3000),(3000,8200),(8200,8600),(8600,10250))],
+            prediction_and_failure_actions='c-integration-notes.json; five points only; protection ends sound, cause unknown; completed arms do not imply gain boundary or lower bound; both at ceiling unresolved',
+            wire_repair_binding=dict(capture_manifest_sha256=REPAIRED_CAPTURE_MANIFEST,capture_set_sha256=REPAIRED_CAPTURE_SET,
+                wire_state='repaired',model_sha256=identity['file_sha256'],coefficients_sha256=identity['q20_sha256'],
+                b_commit=candidate_commit,basis_ref='b-metrics.json:data_identity + A original manifest; C direct six-NPZ/hash/global-source audit'))
         if repair_binding:
             candidate['wire_repair_binding']=json.loads(Path(repair_binding).read_text(encoding='utf8'))
         (out/'candidate-input.json').write_text(json.dumps(candidate,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
@@ -443,20 +461,28 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
             speaker_confirmed=True,local_capture_confirmed=True)
         receipt=dict(B_commit=candidate_commit,A_later_facts_commit=SCENE_COMMIT,model=identity,logical_taps=len(q),loaded_taps=512,
             serial_cycles=3*len(q)+3,frame_budget=2048,bias_loaded=False,lag_first=1,forward_schedule_frames=2,
-            identity_and_driver_compatibility=True,probe=probe,probe_scope='software argument validation only; no gain/injection approval',
-            historical_fixture_alias=dict(original_metadata='room_v1_20261021',new_runs=FIXTURE,
-                provenance='A=f45449d capture scene and B=8a02757 actual-layout handoff',original_NPZ_modified=False),
-            decision_basis=dict(worth_bounded_board_test=None,basis='wire repair invalidates previous scene qualification; await matching model and same-condition comparison',
-                old_model_14dB_difference_not_used=True,automatic_3_or_8dB_accept_reject=False,
-                reason='5cm operating point withdrawn; no effect conclusion before repaired-scene binding and paired field results'),
-            required_repair_binding=dict(capture_manifest_sha256=REPAIRED_CAPTURE_MANIFEST,capture_set_sha256=REPAIRED_CAPTURE_SET,
-                wire_state='repaired',model_sha256=identity['file_sha256'],coefficients_sha256=identity['q20_sha256'],b_commit=candidate_commit,basis_ref='required B evidence using the repaired captures'),
-            sources=files,unresolved=['B matching model tied to repaired capture manifest/set, not pre-repair 8a02757',
-                'Frequency/path estimates not scheduled: no extra injection and no invented pure-SNR threshold',
-                'Quantitative listener measurement disabled; qualitative phone source facts entered once at field binding'],
-            known_report_conflicts=['README section 9 says c771a02d; formal B message corrects it to actual file/metrics/registry e8757833, accepted',
-                'README section 7 gain forecast/3dB test compares old model, not this zero/matched question',
-                'README section 4 unaligned summary differs from section 6 and machine metrics'])
+            identity_and_driver_compatibility=True,probe=probe,probe_scope='software argument validation only; not actual board loading or effect',
+            historical_fixture_alias=scene['fixture_provenance'],
+            decision_basis=dict(worth_bounded_board_test=True,basis='repaired-source identity and positive held-out/raw deployment prediction justify a bounded test only',
+                automatic_gain_accept_reject=False,effect_established=False),
+            repaired_capture_binding=candidate['wire_repair_binding'],sources=files,
+            unresolved=['Actual A loading and paired operation not yet measured',
+                'Frequency/path estimates not scheduled: no extra injection; no broadband SNR cutoff invented',
+                'Quantitative listener disabled; qualitative phone-source facts entered once at field binding'])
+        notes=dict(source='C integration interpretation of B=b6bcfb2 plus user-forwarded B=254b8e9 errata',
+            git_report_source_commit=candidate_commit,forwarded_errata_commit='254b8e9',
+            evidence_scope='Bundled original B report is exact Git bytes from git_report_source_commit; errata handoff is separate authority',
+            coefficient_identity_unchanged=True,
+            saturation='Q20 coefficient range is not PCM output range; L1 bound is not an observed saturation event. Noise RMS formula needs input assumptions and is not a peak guarantee. All A guards retained.',
+            offline_bounds='5.08/8.48dB are sampled/gated offline differences under different FFT grids, not a field benefit interval or lower guarantee; failure of a sufficient bound does not prove instability.',
+            scan_interpretation='Only -14/-12/-10/-8/-6. Same-gain zero stopped/candidate completed is an execution contrast, not a one-grid-step acoustic gain lower bound. Protection has unknown acoustic cause. Ceiling censoring leaves boundary/gain difference unknown.',
+            stop='Any guard, bad microphone precheck, invalid observation or configuration mismatch ends subsequent sound; preserve completed data and mark unattempted arms/listening unknown. No automatic gain extension or replay after protection.',
+            applicable_bands='Gated samples now include 190 bins in 1-3k, not whole-band coverage; <300Hz, >10.25kHz and level dependence remain unknown.',
+            training_capture='Actual gain_q12=0; source/reference equality verified on global frames with stopped-source tail; original labels/files preserved.',
+            summary_copies='A Git summary 13aeb0a2.../1731 matches A manifest. B local 03ff23a3.../1788 is a distinct newline representation per forwarded errata; not a six-NPZ mismatch.',
+            listener='Quantitative not_tested, AGC unknown; heard sound and amplification relative to system mute are separate qualitative reports.',
+            layout_benefit='not_tested; this experiment only compares FIR to zero in the same current layout',hardware_executed=False)
+        (out/'c-integration-notes.json').write_text(json.dumps(notes,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
         (out/'candidate-compatibility.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     code='# 新布局集中实验：核对绑定后执行\nfrom layout_experiment import run\nresult = run()\n'
     nb=dict(nbformat=4,nbformat_minor=5,metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
@@ -470,7 +496,8 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
     manifest=dict(policy=POLICY,plan=LAYOUT_PLAN,package_status='pending_repaired_scene_model',
         A_commit=A_COMMIT,A_scene_commit=SCENE_COMMIT,A_origins=origins,C_source_base=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
-            'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),
+            'board/audio_replay','scripts/assemble_experiment.py','board/audio_closed/BATCH_GUIDE.md',
+            'sim/feedback/test_layout_experiment.py'],cwd=ROOT).strip()),
         hardware_executed=False,notebook_code_sha256=notebook_code_hash(out/'layout.ipynb'),
         hashes={str(p.relative_to(out)).replace('\\','/'):sha(p)
             for p in sorted(out.rglob('*')) if p.is_file() and '__pycache__' not in p.parts and p.name!='layout.ipynb'})
