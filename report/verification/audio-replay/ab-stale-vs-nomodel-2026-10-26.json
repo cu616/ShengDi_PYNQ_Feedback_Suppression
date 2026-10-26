@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "topic": "on-board A/B: stale coefficients vs no model (silent source, v2, new layout)",
+  "recorded_by": "A",
+  "method": "silent source keeps the loop open with no excitation; 2 s per point; judged by microphone level, dominant frequency and single-mode energy share",
+  "zero_coefficients": [
+    {
+      "gain_db": -4.0,
+      "mic_dbfs": -36.6,
+      "mode_hz": 328,
+      "mode_share": 0.19,
+      "verdict": "stable"
+    },
+    {
+      "gain_db": -3.0,
+      "mic_dbfs": -35.2,
+      "mode_hz": 328,
+      "mode_share": 0.47,
+      "verdict": "marginal"
+    },
+    {
+      "gain_db": -2.0,
+      "mic_dbfs": -14.3,
+      "mode_hz": 328,
+      "mode_share": 1.0,
+      "verdict": "howling"
+    },
+    {
+      "gain_db": -1.0,
+      "mic_dbfs": -7.4,
+      "mode_hz": 328,
+      "mode_share": 1.0,
+      "verdict": "howling"
+    },
+    {
+      "gain_db": 0.0,
+      "mic_dbfs": -6.4,
+      "mode_hz": 328,
+      "mode_share": 1.0,
+      "verdict": "howling"
+    }
+  ],
+  "stale_coefficients_93f7ab6e": [
+    {
+      "gain_db": -4.0,
+      "mode_share": 0.98,
+      "verdict": "howling + saturation guard"
+    },
+    {
+      "gain_db": -3.0,
+      "mode_share": 0.98,
+      "verdict": "howling + saturation guard"
+    },
+    {
+      "gain_db": -2.0,
+      "mode_share": 0.91,
+      "verdict": "howling + saturation guard"
+    },
+    {
+      "gain_db": -1.0,
+      "mode_share": 0.92,
+      "verdict": "howling + saturation guard"
+    },
+    {
+      "gain_db": 0.0,
+      "mode_share": 0.87,
+      "verdict": "howling + saturation guard"
+    }
+  ],
+  "conclusion": {
+    "zero_coefficient_boundary_db": -2.5,
+    "stale_coefficient_boundary_db": -5.5,
+    "immediate_gain_from_dropping_the_stale_model_db": 3.0,
+    "confirms_b": "B's offline claim that the on-board coefficients are worse than no model is confirmed on hardware, and the effect is larger at the tested points",
+    "limiting_mode_hz": 328,
+    "note": "with zero coefficients the boundary is about -2.5 dB, so reaching 0 dB digital gain is about 2.5 dB away rather than the 6 dB previously reported"
+  },
+  "caveat": "silent source means no excitation; with live speech the boundary is lower. The earlier live-voice scan measured -12 dB stable and -10 dB marginal with the stale model, and must be repeated with zero coefficients and with B's new coefficients",
+  "next": [
+    "install B's new-layout 512 coefficients",
+    "re-scan silent then live voice",
+    "listener judgement at the highest stable point"
+  ]
+}
