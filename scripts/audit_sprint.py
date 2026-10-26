@@ -20,7 +20,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'board/audio_replay'))
-from evaluation import classify, VERSION
+from evaluation import classify, VERSION, COUNT_KEYS
 from audit_lowband_package import inspect_packet, load_npz, record_metrics, spectral_estimate, digest
 
 
@@ -712,6 +712,182 @@ def audit_r4_waveforms(packet_path, summary_path, out, a_commit):
     return result
 
 
+def audit_a26(a_commit, b_commit, out):
+    """Review the new-layout reports, six nonvoice captures and capture limits.
+
+    No supplied board entry point or model fitter is executed. The existing C
+    growth monitor is exercised on explicitly indexed 325 Hz software controls.
+    """
+    from growth_monitor import replay as monitor_replay
+    a_commit=subprocess.check_output(['git','rev-parse',a_commit],cwd=ROOT).decode().strip()
+    b_commit=subprocess.check_output(['git','rev-parse',b_commit],cwd=ROOT).decode().strip()
+    base='report/verification/audio-replay/'
+    names=('gain-sweep-boundary-2026-10-26.json','live-voice-window-2026-10-26.json',
+           'board-model-stale-2026-10-26.json','ab-stale-vs-nomodel-2026-10-26.json',
+           'measurement-exhausted-2026-10-26.json')
+    reports={n:json.loads(blob(a_commit,base+n)) for n in names}
+    packet=blob(a_commit,base+'b-request-2026-10-25/b-refmic-6captures.zip')
+    checked=[];lags=[];coefficient_hashes=set();signals=[]
+    with zipfile.ZipFile(io.BytesIO(packet)) as z:
+        manifest=json.loads(z.read('manifest.json'))
+        assert len(manifest['files'])==6
+        assert set(z.namelist())==set(manifest['files'])|{'manifest.json'}
+        for name,entry in sorted(manifest['files'].items()):
+            raw=z.read(name)
+            assert digest(raw)==entry['sha256'] and len(raw)==entry['bytes'],name
+            with np.load(io.BytesIO(raw),allow_pickle=False) as cap:
+                m=json.loads(str(cap['metadata_json'].item()))
+                u=np.asarray(cap['reference'],float);y=np.asarray(cap['microphone'],float)
+                source=np.asarray(cap['source_pcm16'],dtype=np.int64)
+                q=np.asarray(cap['coefficients_q20'],dtype=np.int64)
+                rate=float(cap['sample_rate_hz'].item())
+            assert rate==48828.125 and u.shape==y.shape==(16384,) and q.shape==(512,)
+            assert np.isfinite(u).all() and np.isfinite(y).all()
+            assert all(np.array_equal(x*2**23,np.rint(x*2**23)) for x in (u,y))
+            assert m['bypass'] is True and m['gain_q12']==0 and m['forward_path_open'] is True
+            assert all(m[k]==0 for k in COUNT_KEYS)
+            assert m['bit_sha256']=='61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa'
+            assert digest(source.astype('<i2').tobytes())==m['source_pcm16_sha256']
+            assert m['completed_frames']-m['first_frame']==len(u)
+            qsha=digest(q.astype('<i4').tobytes());assert qsha==m['coefficients_sha256']
+            coefficient_hashes.add(qsha)
+            idx=np.arange(m['first_frame'],m['completed_frames']);expected=np.zeros(len(u),dtype=np.int64)
+            keep=idx<len(source);expected[keep]=source[idx[keep]]*256
+            assert np.array_equal(np.rint(u*2**23).astype(np.int64),expected)
+            # Direct time-domain inner products, independent of B's FFT lag finder.
+            scores=[]
+            for lag in range(100,261):
+                x=u[:-lag]-np.mean(u[:-lag]);v=y[lag:]-np.mean(y[lag:])
+                scores.append(abs(float(x@v))/max(float(np.linalg.norm(x)*np.linalg.norm(v)),1e-24))
+            lag=100+int(np.argmax(scores));lags.append(lag)
+            signals.append((u,y,lag))
+            checked.append(dict(file=name,sha256=digest(raw),frames=len(u),first_frame=m['first_frame'],
+                end_frame=m['completed_frames'],sample_rate_hz=rate,source_matches_reference=True,
+                direct_correlation_lag_frames=lag,normalized_correlation=float(max(scores)),
+                actual_q20_sha256=qsha,model_file_sha256=m.get('model_sha256'),
+                bit_sha256=m['bit_sha256'],source_pcm16_sha256=m['source_pcm16_sha256'],
+                coefficient_peak_lag_first_1=int(np.argmax(abs(q)))+1))
+    assert len(coefficient_hashes)==1
+    frozen=json.loads((ROOT/'models/room_v1/calibrated_20261024.json').read_text(encoding='utf8'))
+    frozen_qsha=digest(np.asarray(frozen['coefficients_q20'],dtype='<i4').tobytes())
+    assert frozen_qsha not in coefficient_hashes
+
+    # Independent per-record DFT accumulation: no windows cross capture edges.
+    # One-frame registration is diagnostic normalization, not an authorized
+    # deployment-time correction learned from a future microphone signal.
+    spectra=[];nfft=8192;hann=np.hanning(nfft);freq=np.fft.rfftfreq(nfft,1/48828.125)
+    for align in (False,True):
+        xx=np.zeros(len(freq));yy=xx.copy();xy=np.zeros(len(freq),dtype=complex);windows=0
+        for u,y,lag in signals:
+            shift=max(lags)-lag if align else 0
+            mic=np.r_[np.zeros(shift),y[:len(y)-shift]] if shift else y
+            for first in range(0,len(u)-nfft+1,nfft//2):
+                U=np.fft.rfft(u[first:first+nfft]*hann)
+                Y=np.fft.rfft(mic[first:first+nfft]*hann)
+                xx+=abs(U)**2;yy+=abs(Y)**2;xy+=U.conj()*Y;windows+=1
+        coherence=abs(xy)**2/np.maximum(xx*yy,1e-30)
+        eligible=freq>=300;qualified=eligible&(coherence>=.8)
+        bands=[]
+        for lo,hi in ((300,460),(460,3000),(3000,8200)):
+            mask=(freq>=lo)&(freq<hi)
+            bands.append(dict(low_hz=lo,high_hz=hi,median_coherence=float(np.median(coherence[mask])),
+                              qualified_bins=int(np.sum(qualified&mask)),total_bins=int(np.sum(mask))))
+        spectra.append(dict(microphone_registration_to_max_lag=align,independent_windows=windows,
+            qualified_bins=int(qualified.sum()),bins_above_300=int(eligible.sum()),bands=bands))
+
+    # Reuse C's actual growth implementation: a stationary tone must not become
+    # a growth alarm; contiguous chunking must leave the result unchanged.
+    rate=48828.125;count=8*16384;t=np.arange(count)/rate
+    controls={}
+    for name,amplitude in (('stationary_325',np.full(count,10**(-32/20))),
+                           ('growing_325',10**((-50+8*t)/20))):
+        pcm=np.rint(amplitude*np.sin(2*np.pi*325*t)*2**23).astype(np.int32)
+        whole=monitor_replay(pcm,rate,chunk_frames=count)
+        chunks=monitor_replay(pcm,rate,chunk_frames=16384)
+        assert whole==chunks,name
+        present=chunks['first_suspected_howl'] is not None
+        assert present==(name=='growing_325'),(name,present)
+        controls[name]=dict(growth_evidence=present,chunk_invariant=True,coverage=chunks['coverage'])
+        if name=='growing_325':
+            indices=np.arange(count,dtype=np.int64)+(np.arange(count)//16384)*5000
+            gapped=monitor_replay(pcm,rate,total_frames=int(indices[-1])+1,frame_indices=indices,chunk_frames=16384)
+            assert not gapped['coverage']['complete']
+            assert not gapped['coverage']['sufficient_contiguous_history']
+            assert gapped['first_suspected_howl'] is None
+            controls['independent_short_blocks']=dict(growth_evidence=False,
+                cross_gap_history_used=False,coverage=gapped['coverage'])
+
+    sweep=reports[names[0]];voice=reports[names[1]]
+    voice_minus6=next(r for r in voice['live_voice_points'] if r['gain_db']==-6)
+    assert 'protection' in voice_minus6['verdict']
+    live_source=blob(a_commit,'board/audio_replay/live_run.py')
+    rtl_source=blob(a_commit,'src/rtl/audio_pl_replay.v')
+    assert b'CAPTURE_FRAMES=16384' in rtl_source
+    assert b'memory[completed_count % CAPTURE_FRAMES]' in rtl_source
+    assert b'one silent frame' in live_source and b'pure feedback loop' in live_source
+    result=dict(a_commit=a_commit,b_commit=b_commit,date='2026-10-26',hardware_access=False,
+        report_hashes={n:digest(blob(a_commit,base+n)) for n in names},
+        nonvoice_packet=dict(sha256=digest(packet),bytes=len(packet),verified_files=6,files=checked),
+        direct_lag_frames=lags,board_q20_sha256=sorted(coefficient_hashes),
+        independent_spectral_diagnostics=spectra,
+        frozen_c_package_q20_sha256=frozen_qsha,board_model_matches_frozen_c_package=False,
+        gain_decision=dict(approve_minus6_live_default=False,manual_edit_human_r1_allowed=False,
+            reason='A subsequent live-voice record reports residual protection at -6 dB; six calibration captures use a different model from frozen C human-r1. Silent-source results are not live-speech authorization.',
+            silent_scan_reported_stable_db=-6,reported_concentrated_mode_db=-5,
+            measured_msg_db=None,measured_asg_db=None,
+            measured_midpoint_minus5_5_accepted=False,
+            explanation='At most an A-reported condition-specific 1 dB transition bracket, not a measured midpoint. Concentration, a fixed tone or protection alone is not growth/feedback causality. source=0 with nonzero feedback gain remains closed loop.',
+            latest_voice_record=voice_minus6,
+            unchanged_baseline_result='NO_AMPLIFICATION remains failed; neither low gain nor silence is counted as suppression success.'),
+        protection=dict(silent_packed=589824,silent_prediction_count=0,silent_residual_count=9,
+            live_minus6_packed=131072,live_prediction_count=0,live_residual_count=2,
+            gain_and_mix_counts=None,scope='decode the reported packed words only; original per-run cleanup sidecars not supplied in these summaries; do not repeat the existing protection injection'),
+        capture_feasibility=dict(current_v2_contiguous_multiblock=False,
+            current_evidence='Single overwriting 96-bit x 16384 ring; read_ring reads after disarm. No completed-bank ownership/ack/overrun protocol.',
+            source_hashes={'live_run.py':digest(live_source),'audio_pl_replay.v':digest(rtl_source)},
+            multiple_arms='Can be separate records in one overlay session if A supplies that API; resets and gaps remain explicit. Never concatenate as one continuous record.',
+            requested_true_continuous='A-owned single-arm ref/mic stream with stable completed-bank snapshot or DMA, absolute frame indices and explicit loss/overwrite detection. No C driver/RTL change.',
+            target_segments=8,target_frames_per_segment=16384,target_seconds=count/rate,
+            raw_refmic_bytes_per_second=rate*2*3,
+            int32_refmic_storage_bytes_per_second=rate*2*4,
+            bank_drain_deadline_seconds=16384/rate,
+            current_raw_only_register_operations_per_frame=4,
+            current_raw_only_register_operation_budget_us=1e6/(4*rate),
+            memory_payload_bits_current=16384*96,memory_payload_bits_two_raw_banks=2*16384*48,
+            memory_note='Equal payload-bit arithmetic only, not a resource/timing guarantee. Benchmark drain throughput before choosing MMIO/bank or DMA; do not promise continuity from host timing.',
+            single_window_only_root_cause_established=False,
+            reason='Existing independent records admit per-record train/heldout validation; longer records help coverage/variance but do not by themselves fix low coherence, sample-origin jitter, nonlinearity, level or incorrect model identity.'),
+        monitor_controls=controls,
+        capture_request=dict(status='proposal_not_implemented_or_approved_asset',owner='A',
+            proposed_call='capture_refmic_segments(output_dir, source_pcm16, segments=8, segment_frames=16384, gain_q12=0, bypass=True, before_start=confirm, stop_file=..., require_contiguous=True)',
+            boundary='New calibration capture capability only; do not change FIR, gain, guard or output scheduling semantics. A owns implementation and versioned contract/asset approval.',
+            session_fields=['capture_schema','capture_abi','capture_id','overlay_session_id','arm_id','driver_sha256',
+                'bit_sha256','hwh_sha256','scene_sha256','model_file_sha256','coefficients_q20_sha256',
+                'sample_rate_hz','pcm_scale','gain_q12','hp_volume','bypass','source_pcm16_sha256',
+                'source_frames','source_start_frame','source_end_frame_exclusive','history_reset_count'],
+            segment_fields=['sequence','file','bytes','sha256','first_frame','end_frame_exclusive','frames',
+                'source_first_frame','source_end_frame_exclusive','bank_id','bank_epoch_before','bank_epoch_after',
+                'dropped_frames','overwritten_frames','read_start_time','read_end_time'],
+            signals=['reference: actual DAC-bound played PCM','microphone: simultaneous ADC PCM'],
+            final_fields=['completed_frames','status','count_timeline','stop_reason','disarm_ok','mute_ok',
+                'save_error','contiguous','missing_intervals','overlap_intervals','corrupt_intervals'],
+            acceptance=['one overlay and one arm for the continuous claim; source/frame clock origin shared',
+                '8 blocks of 16384 raw ref/mic frames with exactly adjoining half-open indices',
+                'completed bank remains stable until acknowledged; changing epoch/overwrite is rejected',
+                'known counter/loopback fixture proves payload seam continuity, not just matching header values',
+                'slow reader and deliberate block loss/duplicate/reorder produce explicit non-success, never silently join',
+                'stop/cancel/protection keep real mute/disarm receipts and preserve completed evidence',
+                'benchmark drain with stopped/muted existing data; new RTL needs timing/resource/ABI/hash and rollback evidence',
+                'no transport available: mark capability not implemented; separate-arm records are independent, not continuous'],
+            minimum_drain_payload_bytes_per_second=rate*2*3,
+            receiver='C existing GrowthMonitor.push(pcm, first_frame) or replay(..., frame_indices=...) resets history at gaps; each independent record has separate FIR history'),
+        next_A='No old-model -6 live retry. Preserve existing boundary/open-loop and voice metadata/status/config; no human PCM upload. Implement the requested capture capability as owner after contract/resource review, retaining all stop/mute protections.',
+        next_B='R-007 stays closed. Consolidate the existing new-layout calibration request: export one deployable 512-tap Q20 model plus hashes/convention/provenance, unaltered-data heldout checks and compatibility; do not send A an unfrozen coefficient-only upgrade or recommend stepping through protection.',
+        new_audible_package='not issued: current scene-model identity and deployable replacement are not qualified; changing gain requires a newly frozen complete C package, including all gates and selftest')
+    Path(out).write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+'\n',encoding='utf8')
+    return result
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--a-commit',default='bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6')
@@ -724,13 +900,16 @@ if __name__=='__main__':
     p.add_argument('--b-repro-dir',type=Path)
     p.add_argument('--r4-waveform-return',type=Path)
     p.add_argument('--summary-return',type=Path)
+    p.add_argument('--a26-review',action='store_true')
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    result=(audit_r4_waveforms(a.r4_waveform_return,a.summary_return,a.output,a.a_commit) if a.r4_waveform_return else
+    result=(audit_a26(a.a_commit,a.b_commit,a.output) if a.a26_review else
+        audit_r4_waveforms(a.r4_waveform_return,a.summary_return,a.output,a.a_commit) if a.r4_waveform_return else
         audit_b_revision(a.b_revision_dir,a.b_repro_dir,a.output) if a.b_revision_dir else
         audit_b_prediction(a.b_commit,a.output) if a.b_prediction else
         audit_continuous_records(a.a_commit,a.output) if a.continuous_records else
         audit_return(a.a_commit,a.output,a.return_revision) if a.return_only else audit(a.a_commit,a.b_commit,a.output))
-    keys=(('a_commit','package_sha256','all_raw_checks','pairs') if a.r4_waveform_return else
+    keys=(('a_commit','b_commit','direct_lag_frames','gain_decision','capture_feasibility') if a.a26_review else
+        ('a_commit','package_sha256','all_raw_checks','pairs') if a.r4_waveform_return else
         ('b_commit','numerical_checks_passed','saved_prediction_numbers_compared','max_independent_band_difference') if a.b_revision_dir else
         ('b_commit','zero_model_control','review_status') if a.b_prediction else
         ('a_commit','all_record_checks','scope') if a.continuous_records else

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "C:\\Python314\\python.exe",
+    "scripts/audit_sprint.py",
+    "--a26-review",
+    "--a-commit",
+    "b104f20",
+    "--b-commit",
+    "e9e267b",
+    "--output",
+    "report/verification/audio_closed/sprint-rc0-20261025/a26-gain-and-capture-review.json"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"a_commit\": \"b104f20345a11aaff15ae2b29b3c56ab9f75e95d\", \"b_commit\": \"e9e267bc4f53a50761af78e4280eec2279ecfc2f\", \"direct_lag_frames\": [184, 185, 185, 185, 184, 185], \"gain_decision\": {\"approve_minus6_live_default\": false, \"manual_edit_human_r1_allowed\": false, \"reason\": \"A subsequent live-voice record reports residual protection at -6 dB; six calibration captures use a different model from frozen C human-r1. Silent-source results are not live-speech authorization.\", \"silent_scan_reported_stable_db\": -6, \"reported_concentrated_mode_db\": -5, \"measured_msg_db\": null, \"measured_asg_db\": null, \"measured_midpoint_minus5_5_accepted\": false, \"explanation\": \"At most an A-reported condition-specific 1 dB transition bracket, not a measured midpoint. Concentration, a fixed tone or protection alone is not growth/feedback causality. source=0 with nonzero feedback gain remains closed loop.\", \"latest_voice_record\": {\"gain_db\": -6.0, \"verdict\": \"protection: runtime saturation guard stopped playback (packed_prediction_residual=131072, residual=2)\"}, \"unchanged_baseline_result\": \"NO_AMPLIFICATION remains failed; neither low gain nor silence is counted as suppression success.\"}, \"capture_feasibility\": {\"current_v2_contiguous_multiblock\": false, \"current_evidence\": \"Single overwriting 96-bit x 16384 ring; read_ring reads after disarm. No completed-bank ownership/ack/overrun protocol.\", \"source_hashes\": {\"live_run.py\": \"a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441\", \"audio_pl_replay.v\": \"4cbc11de7325daf7314466718cef0e26d80d7811e8df186a703d910dec2d935f\"}, \"multiple_arms\": \"Can be separate records in one overlay session if A supplies that API; resets and gaps remain explicit. Never concatenate as one continuous record.\", \"requested_true_continuous\": \"A-owned single-arm ref/mic stream with stable completed-bank snapshot or DMA, absolute frame indices and explicit loss/overwrite detection. No C driver/RTL change.\", \"target_segments\": 8, \"target_frames_per_segment\": 16384, \"target_seconds\": 2.68435456, \"raw_refmic_bytes_per_second\": 292968.75, \"int32_refmic_storage_bytes_per_second\": 390625.0, \"bank_drain_deadline_seconds\": 0.33554432, \"current_raw_only_register_operations_per_frame\": 4, \"current_raw_only_register_operation_budget_us\": 5.12, \"memory_payload_bits_current\": 1572864, \"memory_payload_bits_two_raw_banks\": 1572864, \"memory_note\": \"Equal payload-bit arithmetic only, not a resource/timing guarantee. Benchmark drain throughput before choosing MMIO/bank or DMA; do not promise continuity from host timing.\", \"single_window_only_root_cause_established\": false, \"reason\": \"Existing independent records admit per-record train/heldout validation; longer records help coverage/variance but do not by themselves fix low coherence, sample-origin jitter, nonlinearity, level or incorrect model identity.\"}}\n",
+  "stderr": ""
+}
