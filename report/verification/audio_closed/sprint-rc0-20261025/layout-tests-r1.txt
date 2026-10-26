@@ -1,3 +1,4 @@
+test_actual_B_candidate_is_carried_and_compatible_without_sound_approval (test_layout_experiment.LayoutTests.test_actual_B_candidate_is_carried_and_compatible_without_sound_approval) ... ok
 test_binding_rejects_all_bad_identity_and_unsupported_ranges (test_layout_experiment.LayoutTests.test_binding_rejects_all_bad_identity_and_unsupported_ranges) ... ok
 test_cancel_empty_and_invalid_start_never_run_human (test_layout_experiment.LayoutTests.test_cancel_empty_and_invalid_start_never_run_human) ... ok
 test_continuous_review_reuses_explicit_bound_model (test_layout_experiment.LayoutTests.test_continuous_review_reuses_explicit_bound_model) ... ok
@@ -10,6 +11,6 @@ test_snr_definition_matches_analytic_truth (test_layout_experiment.LayoutTests.t
 test_stale_or_changed_frozen_payload_blocks_before_board (test_layout_experiment.LayoutTests.test_stale_or_changed_frozen_payload_blocks_before_board) ... ok
 
 ----------------------------------------------------------------------
-Ran 10 tests in 21.321s
+Ran 11 tests in 23.022s
 
 OK

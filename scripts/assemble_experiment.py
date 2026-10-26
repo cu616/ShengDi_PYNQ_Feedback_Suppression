@@ -376,7 +376,7 @@ def assemble_sprint(out, assets, model_path, human_only=False):
     return manifest
 
 
-def assemble_layout(out):
+def assemble_layout(out, candidate_commit=None):
     """New-layout preparation: exact A assets, no legacy candidate or hardware."""
     from layout_experiment import POLICY, PLAN as LAYOUT_PLAN, A_COMMIT, template, scene_template, notebook_code_hash, check as check_layout
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
@@ -391,6 +391,62 @@ def assemble_layout(out):
         (out/name).write_bytes(subprocess.check_output(['git','show',A_COMMIT+':'+origin],cwd=ROOT))
     for name,data in (('candidate-input.json',template()),('scene-input.json',scene_template())):
         (out/name).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    if candidate_commit:
+        from layout_experiment import RATE, FIXTURE
+        from sprint_continuous import driver_request
+        from model_comparison import qhash
+        candidate_commit=subprocess.check_output(['git','rev-parse',candidate_commit],cwd=ROOT).decode().strip()
+        files={'candidate-unbound.json':'models/room_v1/newlayout_512_20261026.json',
+               'b-metrics.json':'report/verification/newlayout-candidate-2026-10-26/metrics.json',
+               'b-readme-original.txt':'report/verification/newlayout-candidate-2026-10-26/README.md',
+               'b-model-registry.json':'models/manifest.json'}
+        for name,origin in files.items():
+            (out/name).write_bytes(subprocess.check_output(['git','show',candidate_commit+':'+origin],cwd=ROOT))
+        metrics=json.loads((out/'b-metrics.json').read_text(encoding='utf8'))
+        _,q=load_candidate(out/'candidate-unbound.json',FIXTURE,40,RATE)
+        identity=metrics['model_file']
+        if len(q)!=512 or sha(out/'candidate-unbound.json')!=identity['file_sha256'] or qhash(q)!=identity['q20_sha256']:
+            raise ValueError('B candidate/metrics identity mismatch')
+        registry=json.loads((out/'b-model-registry.json').read_text(encoding='utf8'))
+        entry=next(item for item in registry['models'] if item['file']=='room_v1/newlayout_512_20261026.json')
+        if entry.get('sha256')!=identity['file_sha256'] or entry.get('coefficients_sha256')!=identity['q20_sha256']:
+            raise ValueError('B registry identity mismatch')
+        candidate=template();candidate.update(b_commit=candidate_commit,model_sha256=identity['file_sha256'],
+            coefficients_sha256=identity['q20_sha256'],deployment_evidence='b-metrics.json:model_file/deployment',
+            original_timeline_holdout='b-metrics.json:time_domain.q20_traindev_val + unaligned_deployment_check',
+            diagnostic_alignment='b-metrics.json:alignment; raw deployment kept separate',
+            input_manifest_sha256=hashlib.sha256(json.dumps(metrics['data_identity'],sort_keys=True,separators=(',',':')).encode()).hexdigest(),
+            gain_and_injection_basis='B README sections 7-8 plus A actual limits; numerical injection range not supplied',
+            b_allowed_gains_db=list(range(-14,-7)),gain_db=-8.,
+            bands=[dict(low_hz=low,high_hz=high,minimum_signal_snr_db=None,
+                basis='B README section 8 supplies coherence>=0.8, not a pure-SNR cutoff; unresolved')
+                for low,high in ((300,460),(3000,10200))],
+            prediction_and_failure_actions='Use zero/matched same-condition observations; do not adopt old-model 14dB threshold or +2..+9 gain forecast as release criteria')
+        (out/'candidate-input.json').write_text(json.dumps(candidate,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+        later_A='1d7872c4428822c2ab913a494120fd0d137be30e'
+        for name,origin in {'a-usable-point-original.json':'report/verification/audio-replay/usable-point-2026-10-26.json',
+                            'a-live-round-original.json':'report/verification/audio-replay/live-round-2026-10-26.json'}.items():
+            (out/name).write_bytes(subprocess.check_output(['git','show',later_A+':'+origin],cwd=ROOT))
+        scene=scene_template();scene.update(talker_to_microphone_cm=5,
+            listener_position='A reports 20 cm from speaker; original a-usable-point-original.json',
+            speaker_volume_knob='maximum, A=1d7872c',plate_and_cotton_unchanged=True,
+            microphone_preamp_gain='unchanged per A=1d7872c; physical marker still to record',
+            a_limits_basis='A=1d7872c reports zero-coefficient -8dB twice for 9.5s, not a matched-model or sustained guarantee')
+        (out/'scene-input.json').write_text(json.dumps(scene,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+        # These are pure argument-budget checks, not permission for these probe values.
+        probe=driver_request(out,'replay_trial',out/'compatibility-probe.npz',FIXTURE,out/'candidate-unbound.json',
+            __import__('numpy').zeros(1,dtype='<i2'),gain_db=-8.,seconds=2.52,hp_volume=40,
+            speaker_confirmed=True,local_capture_confirmed=True)
+        receipt=dict(B_commit=candidate_commit,A_later_facts_commit=later_A,model=identity,logical_taps=len(q),loaded_taps=512,
+            serial_cycles=3*len(q)+3,frame_budget=2048,bias_loaded=False,lag_first=1,forward_schedule_frames=2,
+            identity_and_driver_compatibility=True,probe=probe,probe_scope='software argument validation only; no gain/injection approval',
+            sources=files,unresolved=['B numeric injection range or justified non-estimation branch',
+                'B band validity: coherence>=0.8 supplied, no pure-SNR threshold; do not invent one',
+                'A current scene and actual limits; external source/recorder facts only for dependent branches'],
+            known_report_conflicts=['README section 9 says c771a02d but file/metrics/registry Q20 is e8757833',
+                'README section 7 gain forecast/3dB test compares old model, not this zero/matched question',
+                'README section 4 unaligned summary differs from section 6 and machine metrics'])
+        (out/'candidate-compatibility.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     code='# 新布局集中实验：核对绑定后执行\nfrom layout_experiment import run\nresult = run()\n'
     nb=dict(nbformat=4,nbformat_minor=5,metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
         cells=[dict(cell_type='markdown',metadata={},source=['先读 OPERATIONS.md；缺候选/场景身份时只生成停止回包，不操板。']),
@@ -426,11 +482,12 @@ if __name__=='__main__':
     p.add_argument('--sprint-ready',action='store_true')
     p.add_argument('--sprint-human',action='store_true')
     p.add_argument('--layout-prepared',action='store_true')
+    p.add_argument('--candidate-commit')
     p.add_argument('--r4-b-handoff',action='store_true')
     p.add_argument('--model',type=Path)
     a=p.parse_args()
     if a.layout_prepared:
-        m=assemble_layout(a.output)
+        m=assemble_layout(a.output,a.candidate_commit)
     elif a.r4_b_handoff:
         m=assemble_r4_b_handoff(a.output)
     elif a.sprint_ready or a.sprint_human:

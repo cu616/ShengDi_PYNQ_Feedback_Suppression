@@ -208,6 +208,20 @@ class LayoutTests(unittest.TestCase):
         out=x.snr_bands({'band_power':{'1-2':2}},{'band_power':{'1-2':1}},bands)
         self.assertEqual(out['1-2']['signal_snr_db'],0)
         self.assertTrue(out['1-2']['valid'])
+    def test_actual_B_candidate_is_carried_and_compatible_without_sound_approval(self):
+        from assemble_experiment import assemble_layout
+        with self.work() as d:
+            base=Path(d)/'actual'
+            assemble_layout(base,'8a02757')
+            report=json.loads((base/'candidate-compatibility.json').read_text(encoding='utf8'))
+            self.assertTrue(report['identity_and_driver_compatibility'])
+            self.assertEqual(report['model']['q20_sha256'],'e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961')
+            self.assertEqual(report['serial_cycles'],1539)
+            state=x.check(base);self.assertFalse(state['ready'])
+            self.assertNotIn('B:model_file_missing',state['missing'])
+            self.assertNotIn('B:Q20_hash',state['missing'])
+            self.assertIn('B:injection_rms_dbfs',state['missing'])
+            self.assertFalse((base/'model.json').exists())
 
 
 if __name__=='__main__':unittest.main()

@@ -23,7 +23,7 @@ from sprint_continuous import driver_request
 
 POLICY = 'c-new-layout-1.0.0'
 RATE = 48828.125
-FIXTURE = 'room_side_100cm_v1'
+FIXTURE = 'room_v1_20261026'
 A_COMMIT = '2928a4a9de2e360d9aeedce435b452b860baf189'
 BIT = '61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa'
 HWH = '92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b'
@@ -141,7 +141,11 @@ def check(base):
         raise ValueError('notebook code mismatch')
     binding=base/'run-binding.json'
     if not binding.exists():
-        return dict(ready=False,missing=prerequisites(template(),scene_template()),hardware_access=False)
+        candidate=json.loads((base/'candidate-input.json').read_text(encoding='utf8'))
+        scene=json.loads((base/'scene-input.json').read_text(encoding='utf8'))
+        model=base/'candidate-unbound.json'
+        return dict(ready=False,missing=prerequisites(candidate,scene,model if model.exists() else None)+
+                    ['C:frozen_run_binding_missing'],hardware_access=False)
     data=json.loads(binding.read_text(encoding='utf8'))
     errors=prerequisites(data['candidate'],data['scene'],base/'model.json')
     if data.get('package_hashes')!=manifest['hashes']: errors.append('binding:stale_payload')
