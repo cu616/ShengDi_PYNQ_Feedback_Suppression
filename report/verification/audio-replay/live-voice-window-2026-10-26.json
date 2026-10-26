@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "topic": "live-voice usable window (silent-source boundary is NOT the usable boundary)",
+  "recorded_by": "A",
+  "key_correction": "a silent source measures the open loop with no excitation. With real speech the loop is driven and the residual saturates earlier, so the silent-source boundary (-5.5 dB) overstates the usable range.",
+  "live_voice_points": [
+    {
+      "gain_db": -14.0,
+      "note": "previous sessions: stable, listener reported NO_AMPLIFICATION"
+    },
+    {
+      "gain_db": -12.0,
+      "mic_dbfs": -22.3,
+      "peak_dbfs": -7.4,
+      "mode_hz": 343,
+      "mode_share": 0.25,
+      "saturation": 0,
+      "verdict": "stable with live speech"
+    },
+    {
+      "gain_db": -10.0,
+      "mic_dbfs": -19.7,
+      "peak_dbfs": -8.0,
+      "mode_hz": 334,
+      "mode_share": 0.63,
+      "saturation": 0,
+      "verdict": "marginal: the 325 Hz mode is strongly excited"
+    },
+    {
+      "gain_db": -8.0,
+      "mic_dbfs": -24.4,
+      "peak_dbfs": -10.6,
+      "mode_hz": 3737,
+      "mode_share": 0.05,
+      "saturation": 0,
+      "verdict": "not conclusive: no mode concentration, speech timing likely missed"
+    },
+    {
+      "gain_db": -6.0,
+      "verdict": "protection: runtime saturation guard stopped playback (packed_prediction_residual=131072, residual=2)"
+    }
+  ],
+  "conclusion": {
+    "safe_live_point_db": -12.0,
+    "marginal_point_db": -10.0,
+    "inaudible_point_db": -14.0,
+    "gap_between_inaudible_and_marginal_db": 4.0,
+    "finding": "the usable live-voice window is only about 2 dB above the level at which the listener already reports no audible amplification; there is no room in this configuration for audible amplification without approaching regeneration"
+  },
+  "limitation": "the -8 dB point is inconclusive because no mode concentration was observed; it should be repeated with continuous speech before any boundary claim",
+  "not_claimed": [
+    "no listener judgement at -12 dB",
+    "no model",
+    "no cancellation target"
+  ]
+}
