@@ -21,19 +21,19 @@
   v1 存为 `v1_audio_replay.*`；回退包在 `board/audio_replay/rollback-v1/`。
 - **布局**：音响距麦克风 **100 cm、侧对**，音响上方 **30 cm 有金属板**（属夹具，标定后不得移动）。
   该布局比旧布局（50 cm 正对）耦合更低，但**没有改变瓶颈性质**。
-- **真人说话实测的可用窗口**（[证据](report/verification/audio-replay/live-voice-window-2026-10-26.json)）：
+- **真人说话实测的可用窗口**（[证据](../report/verification/audio-replay/live-voice-window-2026-10-26.json)）：
   −14 dB 稳定但听众报"听不出放大"；**−12 dB 稳定**（325 Hz 模态占比 0.25）；
   **−10 dB 已接近再生**（占比 0.63）；−6 dB 残差饱和保护停批。
   **从"听不出"到"接近再生"只有约 4 dB，安全点仅高 2 dB。**
 - **静音源边界不等于可用边界**（本轮重要纠正）：静音源开环测到 −6 dB 稳定、−5 dB 啸叫，
   据此估算最大稳定增益约 −5.5 dB；但真人说话会激励环路，−6 dB 即残差饱和。
-  见 [实测边界](report/verification/audio-replay/gain-sweep-boundary-2026-10-26.json)。
+  见 [实测边界](../report/verification/audio-replay/gain-sweep-boundary-2026-10-26.json)。
 - **限制模态是单模 325 Hz**（能量占比 0.93–1.00），不是宽带、不是高频。
   B 的模型按 435 Hz 算出允许 +2.77 dB，**与实际差约 8 dB**，因为其模型拟在旧布局上。
-- **模型拟合在当前采集接口下不可能**（[证据](report/verification/audio-replay/measurement-exhausted-2026-10-26.json)）：
+- **模型拟合在当前采集接口下不可能**（[证据](../report/verification/audio-replay/measurement-exhausted-2026-10-26.json)）：
   三种测量设计（宽带白噪、分段带限噪声、提高电平）全部失败，根因是**每次只有单段
   0.336 s 窗口**，估出的冲激响应无法在任何另一段上验证。已向 C 要"同次装载内连续返回多段"。
-- **相干性随电平的实测**（[证据](report/verification/audio-replay/coherence-vs-level-2026-10-26.json)）：
+- **相干性随电平的实测**（[证据](../report/verification/audio-replay/coherence-vs-level-2026-10-26.json)）：
   源 +12 dB 只换来 4–9 dB 信噪比，约一半干扰随信号增长 → 是超出 512 抽头记忆（10.5 ms）的
   声学混响拖尾，不是加性噪声。这支持 B 的"更长记忆"方向，也是"提高电平测不准"的原因。
 - **已撤回的结论**（不得再引用）："峰值 +1.73/+2.34 dB @ 453/381 Hz、需约 8 dB 抵消"
