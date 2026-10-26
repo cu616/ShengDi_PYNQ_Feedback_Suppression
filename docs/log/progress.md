@@ -7,6 +7,11 @@
 
 
 
+
+## 2026-10-26 C 补齐r4远端同步与B254原件核对
+
+远端连接恢复，C的需求、源码及r4归档已推送至c0b1772；随后取到B=254b8e9，阅读原勘误§0与测试修订，模型与b6bcfb2逐字节相同。更新[r4机器记录](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r4-check.json)中的提交/README身份和同步结果；冻结ZIP未替换，不重复无变化的软件检查，仍无现场效果结果。
+
 ## 2026-10-26 C 冻结r4修线候选最终执行包
 
 从干净9797a12冻结c-new-layout-r4.zip，独立解压32项载荷/Notebook代码及已测源码核对通过；仅余A一次现场手机事实与本地冻结绑定。取消入口退出2、0试次、无活动模型并生成停止回包。最终包338417字节及SHA见[r4机器记录](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r4-check.json)，[操作单](../../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。未操板、未声称效果通过；远端连接失败，交付本地ZIP与C提交，保留待推送事实。

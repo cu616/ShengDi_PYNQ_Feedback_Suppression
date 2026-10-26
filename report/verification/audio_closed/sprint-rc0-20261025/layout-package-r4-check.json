@@ -6,8 +6,8 @@
   "A_scene_commit": "52ee4e4a5d34fff9f0c82ae46d7dd5449ee99d00",
   "B_model_git_source_commit": "b6bcfb21d0f8c51cc4106108053ec6adb4f289e2",
   "B_errata_forwarded_by_user": "254b8e9",
-  "B_errata_git_object_read": false,
-  "network_note": "HTTPS fetch reset/unreachable; original SSH fails host-key verification. Exact b6bcfb2 candidate is locally verified; C integration notes apply user-forwarded errata separately.",
+  "B_errata_git_object_read": true,
+  "network_note": "Connection failed during source freeze; recovered after archive c0b1772. C pushed, then B=254b8e9 fetched and original errata reviewed. Frozen packet retains exact b6bcfb2 model/report plus explicit C errata notes; no archive bytes replaced.",
   "candidate_file_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
   "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
   "fixture_id": "room_v1_20261026b",
@@ -71,5 +71,19 @@
     "stop_reason": "RuntimeError:field_scene_cancelled_or_fixed_source_missing",
     "return_zip_generated": true
   },
-  "hardware_executed": false
+  "hardware_executed": false,
+  "post_archive_B_verification": {
+    "commit": "254b8e931ca0bb2c15538e53bf04628ebbef44e7",
+    "model_bytes_equal_b6bcfb2": true,
+    "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+    "readme_sha256": "abccfd5b5c9679f2994bd77101e5becb10842ce6d5f8a163552926d8af0eb3e2",
+    "report_section_zero_reviewed": true,
+    "field_threshold_interpretation": "C notes retain execution contrast only, no automatic dB lower bound",
+    "tests_repeated": false
+  },
+  "remote_sync": {
+    "archive_commit": "c0b1772",
+    "pushed_to": "origin/C",
+    "successful": true
+  }
 }
