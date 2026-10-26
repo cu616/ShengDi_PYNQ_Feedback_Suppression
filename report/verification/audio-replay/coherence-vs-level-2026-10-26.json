@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "topic": "why raising the source level cannot lift coherence",
+  "recorded_by": "A",
+  "method": "same cross-spectrum estimator on two capture sets; quiet set = -18 dBFS nominal (2 captures), loud set = -6 dBFS nominal (6 captures); 2048-point Hann, 50% overlap",
+  "coherence_mean": {
+    "quiet_-18dBFS": {
+      "200-500": 0.2,
+      "500-1000": 0.04,
+      "1000-2000": 0.05,
+      "2000-4000": 0.16,
+      "4000-8000": 0.42,
+      "8000-12000": 0.31
+    },
+    "loud_-6dBFS": {
+      "200-500": 0.43,
+      "500-1000": 0.26,
+      "1000-2000": 0.13,
+      "2000-4000": 0.4,
+      "4000-8000": 0.63,
+      "8000-12000": 0.41
+    }
+  },
+  "implied_snr_gain_db_for_12db_source": {
+    "200-500": 5.0,
+    "500-1000": 8.7,
+    "1000-2000": 4.9,
+    "2000-4000": 5.6,
+    "4000-8000": 3.8,
+    "8000-12000": 1.8
+  },
+  "interpretation": {
+    "if_interference_were_additive_electrical": "a 12 dB source increase should yield 12 dB of SNR gain and coherence near 1",
+    "observed": "only about 4-9 dB of SNR gain, so roughly half of the interfering energy scales with the source",
+    "therefore": "the unpredictable part is dominated by acoustic reverberation whose tail exceeds the 512-tap memory (10.5 ms), not by an analogue noise floor"
+  },
+  "consequences": {
+    "coherence_0.8_unreachable_by_level": "at 4-8 kHz the SNR is about +2.4 dB and one dB of level buys about 0.4 dB of SNR, so reaching +6 dB needs roughly 9 dB more level; only 6 dB remain between -6 and 0 dBFS",
+    "supports_longer_memory": "the missing energy is real acoustic tail beyond 10.5 ms, which is exactly what a longer-memory model would capture",
+    "measurement_method": "noise correlation is the wrong estimator in a reverberant field; a log sweep with inverse-filter deconvolution recovers the impulse response without relying on coherence"
+  },
+  "status": "measurement not yet adequate for model fitting; no model and no cancellation target is claimed from these captures",
+  "board_state": "unreachable at the time of writing; the multi-band loud run stopped after 2 of 8 bands"
+}
