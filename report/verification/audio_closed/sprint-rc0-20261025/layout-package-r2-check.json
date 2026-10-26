@@ -1,0 +1,139 @@
+{
+  "stage": "draft-before-source-freeze",
+  "policy": "c-new-layout-1.1.0",
+  "package_status": "ready_for_A_field_binding",
+  "source_base": "780c61b4a32699c3119bcd2a20a7c8d72577a473",
+  "source_tree_clean": false,
+  "package_sha256": "b3f2442e3325d872a1cc3e55ab3acbe5c2d75201a16bc7ee64b4cca7082217d3",
+  "package_bytes": 328322,
+  "immutable_payload_files": 27,
+  "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
+  "hardware_executed": false,
+  "physical_effect": "not_tested",
+  "software_tests": {
+    "command": "D:\\Anaconda\\python.exe -m unittest discover -s sim/feedback -p test_layout_experiment.py -v",
+    "count": 16,
+    "seconds": 38.048,
+    "exit_code": 0,
+    "output": "layout-tests-r2.txt",
+    "unchanged_22_sprint_tests": "not repeated; prior result retained, no bottom-layer or shared continuous-review change"
+  },
+  "compatibility": {
+    "B_commit": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a",
+    "A_later_facts_commit": "1d7872c4428822c2ab913a494120fd0d137be30e",
+    "model": {
+      "path": "models/room_v1/newlayout_512_20261026.json",
+      "file_sha256": "36c0d9705de99fcddd6022390d49bf878f376a38ee535398819ed911eebdd665",
+      "q20_sha256": "e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961",
+      "float_sha256": "4dfff1ca3798a59ef00fff0f50f903e936d306b8b1347cff6a1d4aca8f94dc75",
+      "bytes": 17882,
+      "q20_min": -31959,
+      "q20_max": 43681
+    },
+    "logical_taps": 512,
+    "loaded_taps": 512,
+    "serial_cycles": 1539,
+    "frame_budget": 2048,
+    "bias_loaded": false,
+    "lag_first": 1,
+    "forward_schedule_frames": 2,
+    "identity_and_driver_compatibility": true,
+    "probe": {
+      "budget": 123046,
+      "source_frames": 1,
+      "headroom_frames": 123045,
+      "validation_driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62"
+    },
+    "probe_scope": "software argument validation only; no gain/injection approval",
+    "historical_fixture_alias": {
+      "original_metadata": "room_v1_20261021",
+      "new_runs": "room_v1_20261026",
+      "provenance": "A=f45449d capture scene and B=8a02757 actual-layout handoff",
+      "original_NPZ_modified": false
+    },
+    "decision_basis": {
+      "worth_bounded_board_test": true,
+      "basis": "same-session held-out Q20 prediction improves; field result pending",
+      "zero_bound_db": -3.15,
+      "candidate_bound_db": 5.27,
+      "same_metric_difference_db": 8.42,
+      "old_model_14dB_difference_not_used": true,
+      "automatic_3_or_8dB_accept_reject": false,
+      "reason": "offline sufficient bounds are not field MSG; this -14..-8 capped scan cannot establish two onset boundaries"
+    },
+    "sources": {
+      "candidate-unbound.json": "models/room_v1/newlayout_512_20261026.json",
+      "b-metrics.json": "report/verification/newlayout-candidate-2026-10-26/metrics.json",
+      "b-readme-original.txt": "report/verification/newlayout-candidate-2026-10-26/README.md",
+      "b-repro-original.txt": "report/verification/newlayout-candidate-2026-10-26/repro.txt",
+      "b-model-registry.json": "models/manifest.json"
+    },
+    "unresolved": [
+      "A confirms current scene and accepts the frozen -14..-8 bounded experiment in FIELD_READY",
+      "Frequency/path estimates not scheduled: no extra injection and no invented pure-SNR threshold",
+      "Recorder/fixed-source/AGC facts optional, needed only for quantitative listener WAV branch"
+    ],
+    "known_report_conflicts": [
+      "README section 9 says c771a02d; formal B message corrects it to actual file/metrics/registry e8757833, accepted",
+      "README section 7 gain forecast/3dB test compares old model, not this zero/matched question",
+      "README section 4 unaligned summary differs from section 6 and machine metrics"
+    ]
+  },
+  "source_inputs": {
+    "B": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a",
+    "A_driver": "2928a4a9de2e360d9aeedce435b452b860baf189",
+    "A_scene": "1d7872c4428822c2ab913a494120fd0d137be30e",
+    "A_separate_lowcut": "d2a6b555c28123f0a6ff97f0ba4acb09288b2d24"
+  },
+  "registered_scan": {
+    "gains_db": [
+      -14,
+      -13,
+      -12,
+      -11,
+      -10,
+      -9,
+      -8
+    ],
+    "seconds_per_arm": 2.52,
+    "extra_workpoint_repeat": -8,
+    "source": "one silent PCM16 word",
+    "matched_coefficients_sha256": "e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961",
+    "full_growth_history": "not available; retain tail coverage and whole-run counters separately",
+    "msg_db": null,
+    "asg_db": null
+  },
+  "independent_extraction": {
+    "payload_hashes": true,
+    "commands": [
+      {
+        "action": "check",
+        "exit_code": 2,
+        "ready": false,
+        "missing": [
+          "A:a_allowed_gains_db",
+          "A:gain_not_supported",
+          "A:scan_gain_not_supported",
+          "A:unverified:control_and_cue_approved_by_A",
+          "A:unverified:verified_by_A",
+          "C:frozen_run_binding_missing"
+        ],
+        "status": null,
+        "trial_count": 0,
+        "stop_reason": null
+      },
+      {
+        "action": "run",
+        "exit_code": 2,
+        "ready": null,
+        "missing": null,
+        "status": "stopped",
+        "trial_count": 0,
+        "stop_reason": "RuntimeError:field_scene_cancelled_or_changed"
+      }
+    ],
+    "no_active_model_before_A_confirmation": true,
+    "B_additional_reply_not_required": true,
+    "recording_and_frequency_omissions_do_not_block_runtime": true
+  }
+}

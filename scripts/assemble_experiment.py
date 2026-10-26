@@ -392,6 +392,7 @@ def assemble_layout(out, candidate_commit=None):
     for name,data in (('candidate-input.json',template()),('scene-input.json',scene_template())):
         (out/name).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     if candidate_commit:
+        import numpy as np
         from layout_experiment import RATE, FIXTURE
         from sprint_continuous import driver_request
         from model_comparison import qhash
@@ -399,14 +400,17 @@ def assemble_layout(out, candidate_commit=None):
         files={'candidate-unbound.json':'models/room_v1/newlayout_512_20261026.json',
                'b-metrics.json':'report/verification/newlayout-candidate-2026-10-26/metrics.json',
                'b-readme-original.txt':'report/verification/newlayout-candidate-2026-10-26/README.md',
+               'b-repro-original.txt':'report/verification/newlayout-candidate-2026-10-26/repro.txt',
                'b-model-registry.json':'models/manifest.json'}
         for name,origin in files.items():
             (out/name).write_bytes(subprocess.check_output(['git','show',candidate_commit+':'+origin],cwd=ROOT))
         metrics=json.loads((out/'b-metrics.json').read_text(encoding='utf8'))
-        _,q=load_candidate(out/'candidate-unbound.json',FIXTURE,40,RATE)
+        model,q=load_candidate(out/'candidate-unbound.json',FIXTURE,40,RATE)
         identity=metrics['model_file']
         if len(q)!=512 or sha(out/'candidate-unbound.json')!=identity['file_sha256'] or qhash(q)!=identity['q20_sha256']:
             raise ValueError('B candidate/metrics identity mismatch')
+        if hashlib.sha256(np.asarray(model['coefficients'],dtype='<f8').tobytes()).hexdigest()!=identity['float_sha256']:
+            raise ValueError('B float array identity mismatch')
         registry=json.loads((out/'b-model-registry.json').read_text(encoding='utf8'))
         entry=next(item for item in registry['models'] if item['file']=='room_v1/newlayout_512_20261026.json')
         if entry.get('sha256')!=identity['file_sha256'] or entry.get('coefficients_sha256')!=identity['q20_sha256']:
@@ -416,10 +420,10 @@ def assemble_layout(out, candidate_commit=None):
             original_timeline_holdout='b-metrics.json:time_domain.q20_traindev_val + unaligned_deployment_check',
             diagnostic_alignment='b-metrics.json:alignment; raw deployment kept separate',
             input_manifest_sha256=hashlib.sha256(json.dumps(metrics['data_identity'],sort_keys=True,separators=(',',':')).encode()).hexdigest(),
-            gain_and_injection_basis='B README sections 7-8 plus A actual limits; numerical injection range not supplied',
-            b_allowed_gains_db=list(range(-14,-7)),gain_db=-8.,
+            gain_and_injection_basis='B formal handoff starts -14dB; C caps at A reported zero-coefficient -8dB working point; runtime branch adds no injection',
+            b_allowed_gains_db=list(range(-14,-7)),gain_db=-8.,profile='runtime_scan',scan_gains_db=list(range(-14,-7)),
             bands=[dict(low_hz=low,high_hz=high,minimum_signal_snr_db=None,
-                basis='B README section 8 supplies coherence>=0.8, not a pure-SNR cutoff; unresolved')
+                basis='B coherence>=0.8 applies to frequency estimates; not estimated in the no-injection runtime branch')
                 for low,high in ((300,460),(3000,10200))],
             prediction_and_failure_actions='Use zero/matched same-condition observations; do not adopt old-model 14dB threshold or +2..+9 gain forecast as release criteria')
         (out/'candidate-input.json').write_text(json.dumps(candidate,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
@@ -435,15 +439,21 @@ def assemble_layout(out, candidate_commit=None):
         (out/'scene-input.json').write_text(json.dumps(scene,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
         # These are pure argument-budget checks, not permission for these probe values.
         probe=driver_request(out,'replay_trial',out/'compatibility-probe.npz',FIXTURE,out/'candidate-unbound.json',
-            __import__('numpy').zeros(1,dtype='<i2'),gain_db=-8.,seconds=2.52,hp_volume=40,
+            np.zeros(1,dtype='<i2'),gain_db=-8.,seconds=2.52,hp_volume=40,
             speaker_confirmed=True,local_capture_confirmed=True)
         receipt=dict(B_commit=candidate_commit,A_later_facts_commit=later_A,model=identity,logical_taps=len(q),loaded_taps=512,
             serial_cycles=3*len(q)+3,frame_budget=2048,bias_loaded=False,lag_first=1,forward_schedule_frames=2,
             identity_and_driver_compatibility=True,probe=probe,probe_scope='software argument validation only; no gain/injection approval',
-            sources=files,unresolved=['B numeric injection range or justified non-estimation branch',
-                'B band validity: coherence>=0.8 supplied, no pure-SNR threshold; do not invent one',
-                'A current scene and actual limits; external source/recorder facts only for dependent branches'],
-            known_report_conflicts=['README section 9 says c771a02d but file/metrics/registry Q20 is e8757833',
+            historical_fixture_alias=dict(original_metadata='room_v1_20261021',new_runs=FIXTURE,
+                provenance='A=f45449d capture scene and B=8a02757 actual-layout handoff',original_NPZ_modified=False),
+            decision_basis=dict(worth_bounded_board_test=True,basis='same-session held-out Q20 prediction improves; field result pending',
+                zero_bound_db=-3.15,candidate_bound_db=5.27,same_metric_difference_db=8.42,
+                old_model_14dB_difference_not_used=True,automatic_3_or_8dB_accept_reject=False,
+                reason='offline sufficient bounds are not field MSG; this -14..-8 capped scan cannot establish two onset boundaries'),
+            sources=files,unresolved=['A confirms current scene and accepts the frozen -14..-8 bounded experiment in FIELD_READY',
+                'Frequency/path estimates not scheduled: no extra injection and no invented pure-SNR threshold',
+                'Recorder/fixed-source/AGC facts optional, needed only for quantitative listener WAV branch'],
+            known_report_conflicts=['README section 9 says c771a02d; formal B message corrects it to actual file/metrics/registry e8757833, accepted',
                 'README section 7 gain forecast/3dB test compares old model, not this zero/matched question',
                 'README section 4 unaligned summary differs from section 6 and machine metrics'])
         (out/'candidate-compatibility.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
@@ -456,7 +466,7 @@ def assemble_layout(out, candidate_commit=None):
     start=guide.index('## 2026-10-26 新布局一次集中实验')
     stop=guide.index('\n## ',start+4)
     (out/'OPERATIONS.md').write_text(guide[start:stop],encoding='utf8')
-    manifest=dict(policy=POLICY,plan=LAYOUT_PLAN,package_status='prepared_pending_binding',
+    manifest=dict(policy=POLICY,plan=LAYOUT_PLAN,package_status='ready_for_A_field_binding' if candidate_commit else 'prepared_pending_binding',
         A_commit=A_COMMIT,A_origins=origins,C_source_base=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),

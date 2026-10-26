@@ -1,7 +1,7 @@
 """One new-layout decision, using the existing A runners and C measurements.
 
-No board imports until all candidate/site identities have been bound. Independent
-arms remain independent segments; no time shifts, gain search or MSG interpolation.
+No board imports until required candidate/site identities have been bound.
+Independent arms remain separate; gains are frozen and capped, with no MSG interpolation.
 """
 import argparse
 import hashlib
@@ -21,7 +21,7 @@ from residual_tools import load_candidate
 from room_experiment import gate_metrics, write_json
 from sprint_continuous import driver_request
 
-POLICY = 'c-new-layout-1.0.0'
+POLICY = 'c-new-layout-1.1.0'
 RATE = 48828.125
 FIXTURE = 'room_v1_20261026'
 A_COMMIT = '2928a4a9de2e360d9aeedce435b452b860baf189'
@@ -30,7 +30,8 @@ HWH = '92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b'
 ZERO = qhash(np.zeros(512, dtype=np.int64))
 PLAN = dict(source_seconds=2.50, pair_seconds=2.52, repeats=2,
             speech_seconds=8., continuous_seconds=60., gate_seconds=1.02,
-            gain_search=False, eq='identity', capture='independent final rings')
+            gain_search='bounded_registered_scan_only', automatic_extension=False,
+            runtime_scan_gains_db=list(range(-14,-7)),eq='identity', capture='independent final rings')
 SCENE_FIELDS = ('talker_to_microphone_cm', 'listener_position', 'microphone_preamp_gain',
                 'speaker_volume_knob', 'fixed_speech_source', 'recorder_gain', 'agc_disabled')
 
@@ -57,7 +58,7 @@ def template():
         b_allowed_gains_db=None, injection_rms_dbfs=None, b_injection_range_dbfs=None,
         gain_and_injection_basis=None, bands=None,
         # Each band needs low_hz/high_hz/minimum_signal_snr_db/basis. No default threshold.
-        prediction_and_failure_actions=None)
+        prediction_and_failure_actions=None, profile='forced_response', scan_gains_db=[])
 
 
 def scene_template():
@@ -73,8 +74,11 @@ def prerequisites(candidate, scene, model=None):
     errors = []
     def require(ok, reason):
         if not ok: errors.append(reason)
-    for key in template():
+    runtime=candidate.get('profile')=='runtime_scan'
+    optional_B={'injection_rms_dbfs','b_injection_range_dbfs'} if runtime else set()
+    for key in set(template())-optional_B:
         require(key in candidate and candidate[key] is not None, 'B:'+key)
+    require(candidate.get('profile') in ('forced_response','runtime_scan'), 'B:unknown_profile')
     for key, value in dict(policy=POLICY, fixture_id=FIXTURE, hp_volume=40,
                            sample_rate_hz=RATE, lag_first=1, forward_schedule_frames=2).items():
         require(candidate.get(key)==value, 'B:incompatible:'+key)
@@ -85,17 +89,19 @@ def prerequisites(candidate, scene, model=None):
     for key in ('deployment_evidence','original_timeline_holdout','diagnostic_alignment',
                 'gain_and_injection_basis','prediction_and_failure_actions'):
         require(bool(candidate.get(key)), 'B:evidence:'+key)
-    for key in scene_template():
+    optional_A={'fixed_speech_source','recorder_gain','agc_disabled','a_injection_range_dbfs'} if runtime else set()
+    for key in set(scene_template())-optional_A:
         require(key in scene and scene[key] is not None, 'A:'+key)
-    for key,value in dict(fixture_id=FIXTURE, verified_by_A=True, hp_volume=40,
+    required_A=dict(fixture_id=FIXTURE, verified_by_A=True, hp_volume=40,
                           sample_rate_hz=RATE, speaker_to_microphone_cm=100,
                           speaker_orientation='side-facing the microphone',
-                          plate_and_cotton_unchanged=True, agc_disabled=True,
-                          control_and_cue_approved_by_A=True).items():
+                          plate_and_cotton_unchanged=True, control_and_cue_approved_by_A=True)
+    if not runtime: required_A['agc_disabled']=True
+    for key,value in required_A.items():
         require(scene.get(key)==value, 'A:unverified:'+key)
     require(number(scene.get('talker_to_microphone_cm')) and scene['talker_to_microphone_cm']>0,
             'A:talker_distance')
-    for key in SCENE_FIELDS[1:-1]:
+    for key in set(SCENE_FIELDS[1:-1])-optional_A:
         value=scene.get(key)
         require(bool(value) and 'unknown' not in str(value).lower() and '未知' not in str(value), 'A:unknown:'+key)
     gain=candidate.get('gain_db'); level=candidate.get('injection_rms_dbfs')
@@ -103,16 +109,22 @@ def prerequisites(candidate, scene, model=None):
     for owner, gains in (('B',candidate.get('b_allowed_gains_db')),('A',scene.get('a_allowed_gains_db'))):
         require(isinstance(gains,list) and bool(gains) and all(number(g) for g in gains)
                 and number(gain) and gain in gains, owner+':gain_not_supported')
-    require(number(level) and -90<=level<=-6, 'injection:PCM_headroom')
-    for owner,bounds in (('B',candidate.get('b_injection_range_dbfs')),('A',scene.get('a_injection_range_dbfs'))):
-        require(isinstance(bounds,list) and len(bounds)==2 and all(number(v) for v in bounds)
-                and number(level) and bounds[0]<=level<=bounds[1], owner+':injection_not_supported')
+    if not runtime:
+        require(number(level) and -90<=level<=-6, 'injection:PCM_headroom')
+        for owner,bounds in (('B',candidate.get('b_injection_range_dbfs')),('A',scene.get('a_injection_range_dbfs'))):
+            require(isinstance(bounds,list) and len(bounds)==2 and all(number(v) for v in bounds)
+                    and number(level) and bounds[0]<=level<=bounds[1], owner+':injection_not_supported')
+    else:
+        scan=candidate.get('scan_gains_db')
+        require(isinstance(scan,list) and scan==list(range(-14,-7)), 'C:runtime_scan_limits')
+        for owner,gains in (('B',candidate.get('b_allowed_gains_db')),('A',scene.get('a_allowed_gains_db'))):
+            require(isinstance(gains,list) and all(g in gains for g in range(-14,-7)),owner+':scan_gain_not_supported')
     bands=candidate.get('bands')
     require(isinstance(bands,list) and bool(bands), 'B:bands_missing')
     if isinstance(bands,list):
         for i, band in enumerate(bands):
             ok=isinstance(band,dict) and all(number(band.get(k)) for k in
-                ('low_hz','high_hz','minimum_signal_snr_db'))
+                (('low_hz','high_hz') if runtime else ('low_hz','high_hz','minimum_signal_snr_db')))
             require(ok and 0<band['low_hz']<band['high_hz']<RATE/2 and bool(band.get('basis')),
                     'B:band:'+str(i))
     if model is not None:
@@ -164,7 +176,7 @@ def bind(base, model, candidate, scene):
     if (base/'run-binding.json').exists() or (base/'model.json').exists():
         raise ValueError('bind a fresh extraction; do not overwrite a frozen model')
     manifest=json.loads((base/'layout-manifest.json').read_text(encoding='utf8'))
-    tone,burst,cue=sources(candidate['injection_rms_dbfs'])
+    tone,burst,cue=sources(candidate.get('injection_rms_dbfs') if candidate.get('profile')!='runtime_scan' else None)
     controls=[]
     for source,seconds in ((tone,1.02),(burst,PLAN['pair_seconds']),(cue,PLAN['speech_seconds'])):
         controls.append(driver_request(base,'replay_trial',base/'compatibility-probe.npz',FIXTURE,model,source,
@@ -183,16 +195,46 @@ def bind(base, model, candidate, scene):
 def sources(level):
     t=np.arange(int(RATE))/RATE
     tone=np.rint(32768*10**(-20/20)*np.sin(2*np.pi*1000*t)).astype('<i2')
-    noise=np.random.default_rng(20261026).normal(size=int(PLAN['source_seconds']*RATE))
     fade=int(.01*RATE)
-    noise[:fade]*=np.linspace(0,1,fade); noise[-fade:]*=np.linspace(1,0,fade)
-    noise*=10**(level/20)/np.std(noise)
-    if np.max(abs(noise))>.5: raise ValueError('B injection exceeds frozen PCM peak headroom')
+    if level is None:
+        burst=np.zeros(1,dtype='<i2')
+    else:
+        noise=np.random.default_rng(20261026).normal(size=int(PLAN['source_seconds']*RATE))
+        noise[:fade]*=np.linspace(0,1,fade); noise[-fade:]*=np.linspace(1,0,fade)
+        noise*=10**(level/20)/np.std(noise)
+        if np.max(abs(noise))>.5: raise ValueError('B injection exceeds frozen PCM peak headroom')
+        burst=np.rint(noise*32768).astype('<i2')
     # An audible source cue proves playback has started; no pre-arm countdown.
     cue=tone[:int(.15*RATE)].copy()
     cue[:fade]=np.rint(cue[:fade]*np.linspace(0,1,fade))
     cue[-fade:]=np.rint(cue[-fade:]*np.linspace(1,0,fade))
-    return tone,np.rint(noise*32768).astype('<i2'),cue
+    return tone,burst,cue
+
+
+def bind_at_field(base, ask):
+    """Bind only A's current facts locally; no extra B response or board API."""
+    base=Path(base);checked=check(base)
+    if checked['ready']: return checked,False
+    c=json.loads((base/'candidate-input.json').read_text(encoding='utf8'))
+    scene=json.loads((base/'scene-input.json').read_text(encoding='utf8'))
+    if c.get('profile')!='runtime_scan': return checked,False
+    if any(e.startswith('B:') or e.startswith('C:runtime_scan') for e in checked['missing']):
+        return checked,False
+    # A single explicit factual confirmation, not silence, authorises this bounded batch.
+    print('现场预填',json.dumps(scene,ensure_ascii=False),flush=True)
+    prompt=('一次现场核实：一米侧对/金属板隔音棉/Codec40/音响最大/前放未动；讲话5cm、听众距音响20cm。'
+        '确认单人控板、无耳机、可断音响电源、准许本地存音频；只允许-14到-8dB有界对照，'
+        '1kHz峰值-20dBFS定音/提示音可用，不加白噪声、不升过-8。全部属实输入 FIELD_READY；变化或未知输入CANCEL：')
+    if ask(prompt).strip()!='FIELD_READY': raise RuntimeError('field_scene_cancelled_or_changed')
+    scene.update(verified_by_A=True,control_and_cue_approved_by_A=True,
+        a_allowed_gains_db=list(range(-14,-7)),
+        a_limits_basis='A FIELD_READY confirms unchanged fixture and accepts C bounded -14..-8 experiment; not a stability guarantee',
+        field_confirmation='FIELD_READY',fixed_speech_source=None,recorder_gain=None,agc_disabled=None)
+    # Validate all remaining identities before writing any active model.
+    errors=prerequisites(c,scene,base/'candidate-unbound.json')
+    if errors: raise ValueError('BINDING_INCOMPLETE '+json.dumps(errors,ensure_ascii=False))
+    scene_path=base/'field-scene.json';write_json(scene_path,scene)
+    return bind(base,base/'candidate-unbound.json',base/'candidate-input.json',scene_path),True
 
 
 def spectrum(path, bands, source_on=False):
@@ -238,6 +280,18 @@ def snr_bands(active, background, bands):
     return out
 
 
+def positive_background(path):
+    """Use exactly the positive tone's global window, excluding its final fade."""
+    with np.load(path,allow_pickle=False) as capture:
+        m=json.loads(str(capture['metadata_json'].item()))
+        first=m['first_frame'];end=m['completed_frames']
+        begin=max(first,int(.02*RATE));stop=min(end,int(RATE)-int(.01*RATE))
+        x=np.asarray(capture['microphone'],float)[begin-first:stop-first]
+        if len(x)<2048 or not np.isfinite(x).all():raise ValueError('positive background window invalid')
+        return dict(rms_dbfs=20*math.log10(max(float(np.std(x)),1e-12)),
+            first_frame=begin,end_frame=stop,frames=len(x))
+
+
 def paired(rows):
     pairs=[]
     for repeat in (1,2):
@@ -276,9 +330,58 @@ def result_pairs(state):
     return pairs
 
 
+def runtime_pairs(state):
+    groups={}
+    for row in state['trials']:
+        if row['role']=='runtime-scan':
+            groups.setdefault((row['gain_db_requested'],row['repeat']),{})[row['mode']]=row
+    pairs=[]
+    post=state.get('positive_post',{})
+    control_ok=bool(post.get('passed') and abs(post.get('drift_db',math.inf))<=1.5)
+    for (gain,repeat),modes in sorted(groups.items()):
+        reasons=[]
+        if set(modes)!= {'zero','matched'}:reasons.append('incomplete_pair')
+        a,b=modes.get('zero',{}),modes.get('matched',{})
+        if not control_ok:reasons.append('post_control_unverified_or_drift')
+        for key in ('gain_q12','hp_volume','sample_rate_hz','fixture_id','bit_sha256','hwh_sha256',
+                    'model_sha256','scene_sha256','binding_sha256','source_pcm16_sha256','completed_frames','first_frame'):
+            if not a.get(key) or a.get(key)!=b.get(key):reasons.append('pair:'+key)
+        if a.get('coefficients_sha256')!=ZERO or b.get('coefficients_sha256') in (None,ZERO):reasons.append('loaded_modes')
+        if not all(r.get('measurement_valid') for r in (a,b)):reasons.append('invalid_or_stopped_arm')
+        levels=[r.get('analysis',{}).get('window_rms_dbfs') for r in (a,b)]
+        pairs.append(dict(gain_db_requested=gain,gain_q12=a.get('gain_q12'),repeat=repeat,
+            configuration_valid=not reasons,reasons=reasons,
+            zero_capture_id=a.get('capture_id'),matched_capture_id=b.get('capture_id'),
+            categories={mode:r.get('analysis',{}).get('category','unknown') for mode,r in modes.items()},
+            counts={mode:r.get('analysis',{}).get('counts') for mode,r in modes.items()},
+            event_flags={mode:r.get('analysis',{}).get('event_flags') for mode,r in modes.items()},
+            matched_minus_zero_window_mic_rms_db=(levels[1]-levels[0] if not reasons and all(number(v) for v in levels) else None),
+            level_difference_scope='saved microphone window only; no stability margin or ASG inference',
+            scope='same-condition closed-loop operation; no added injection; growth only in saved window',
+            full_trial_stability='unknown',msg_db=None,asg_db=None))
+    return pairs
+
+
+def scan_summary(state):
+    result={}
+    for mode in ('zero','matched'):
+        rows=[r for r in state['trials'] if r['role']=='runtime-scan' and r['mode']==mode]
+        result[mode]=dict(points=[dict(gain_db_requested=r['gain_db_requested'],gain_q12=r.get('gain_q12'),
+            completed_frames=r.get('completed_frames'),requested_seconds=PLAN['pair_seconds'],
+            category=r['analysis']['category'],counts=r['analysis'].get('counts'),
+            event_flags=r['analysis'].get('event_flags'),capture_window=r['analysis'].get('capture_window'),
+            measurement_valid=r['measurement_valid'],stop_reasons=r['stop_reasons']) for r in rows],
+            largest_completed_gain_db=max((r['gain_db_requested'] for r in rows if r['measurement_valid']),default=None),
+            upper_limit_reason='predeclared -8dB cap or earlier stop; never interpolate',
+            acoustic_boundary='unknown',msg_db=None,asg_db=None)
+    return result
+
+
 def collect(folder, state):
     """Runs only after the A call has returned/stopped; never delays protection."""
     state['pairs']=result_pairs(state)
+    state['runtime_pairs']=runtime_pairs(state)
+    state['scan_summary']=scan_summary(state)
     state['inventory']=[]
     for path in sorted(folder.glob('*.npz')):
         item=dict(file=path.name,sha256=sha(path),included=not any(k in path.name for k in ('human','listener')))
@@ -306,13 +409,16 @@ def run(base=None, ask=input, runner=None, live_runner=None):
                     listener_effect='not_tested',continuous_operation='not_tested'),
         layout_benefit='not_measured; layout fixed, FIR contribution only',whole_run_acoustics='unknown')
     try:
-        checked=check(base)
+        checked,field_confirmed=bind_at_field(base,ask)
         if not checked['ready']: raise ValueError('BINDING_INCOMPLETE '+json.dumps(checked['missing'],ensure_ascii=False))
         binding=checked['binding'];c=binding['candidate'];scene=binding['scene']
         state['binding']=binding;write_json(folder/'run-binding.json',binding)
+        shutil.copy2(base/'model.json',folder/'model.json')
         gain=c['gain_db'];gain_q12=int(math.floor(4096*10**(gain/20)+.5))
-        tone,burst,cue=sources(c['injection_rms_dbfs']);silence=np.zeros(1,dtype='<i2')
-        if ask('一次确认：A现场独占控制、scene事实未变、可断音响电源、无耳机、准许本地存音频；READY继续：').strip()!='READY':
+        runtime=c.get('profile')=='runtime_scan'
+        state['profile']=c.get('profile','forced_response')
+        tone,burst,cue=sources(None if runtime else c['injection_rms_dbfs']);silence=np.zeros(1,dtype='<i2')
+        if not field_confirmed and ask('一次确认：A现场独占控制、scene事实未变、可断音响电源、无耳机、准许本地存音频；READY继续：').strip()!='READY':
             raise RuntimeError('operator_cancel')
         if runner is None:
             from replay_trial import replay_trial
@@ -322,23 +428,25 @@ def run(base=None, ask=input, runner=None, live_runner=None):
             seconds=PLAN['pair_seconds'] if seconds is None else seconds
             path=folder/('%02d-%s-%s.npz'%(len(state['trials'])+1,role,mode))
             zero=mode=='zero' or direct;error=None
+            trial_gain=scan_gain if role=='runtime-scan' else gain
+            trial_gain_q12=int(math.floor(4096*10**(trial_gain/20)+.5))
             state['pending_trial']=dict(file=path.name,role=role,mode=mode)
             write_json(folder/'summary.json',state)
             def start():
                 if (folder/'STOP').exists(): return False
-                if role in ('quiet','positive','positive-post','background','response'):
+                if role in ('quiet','positive','positive-post','background','response','runtime-scan'):
                     print(role+' 已配置且静音；按 READY 授权批次继续。',flush=True)
                     return True
                 return ask(role+' 已配置且静音；START继续，其他取消。真人/外源只在实际听到短提示音结束后开始：').strip()=='START'
             try:
-                runner(path,FIXTURE,base/'model.json',pcm,gain_db=gain,seconds=seconds,hp_volume=40,
+                runner(path,FIXTURE,base/'model.json',pcm,gain_db=trial_gain,seconds=seconds,hp_volume=40,
                     bypass=False,zero_coeff=zero,direct_only=direct,speaker_confirmed=True,
                     local_capture_confirmed=True,before_start=start)
             except (Exception,KeyboardInterrupt) as exc: error=type(exc).__name__+':'+str(exc)
             side=path.with_suffix('.status.json')
             status=json.loads(side.read_text(encoding='utf8')) if side.exists() else {}
             expected=dict(fixture_id=FIXTURE,hp_volume=40,sample_rate_hz=RATE,bypass=False,zero_coeff=zero,
-                gain_q12=0 if direct else gain_q12,bit_sha256=BIT,model_sha256=c['model_sha256'],
+                gain_q12=0 if direct else trial_gain_q12,bit_sha256=BIT,model_sha256=c['model_sha256'],
                 coefficients_sha256=ZERO if zero else c['coefficients_sha256'],logical_taps=512,loaded_taps=512)
             human='human' in role or 'listener' in role
             a=analyze_npz(path,expected=expected,positive_control_valid=positive,
@@ -350,6 +458,7 @@ def run(base=None, ask=input, runner=None, live_runner=None):
             if flags.get('protection') or any(flags.get(k) for k in ('prediction_saturations','residual_saturations','gain_saturations','mix_saturations')):
                 reasons.append('protection_or_numeric_event; acoustic_cause_unknown')
             if flags.get('early_stop') or flags.get('microphone_clipping'): reasons.append('early_stop_or_clipping')
+            if m.get('completed_frames')!=int(seconds*RATE):reasons.append('actual_run_duration_incomplete')
             if flags.get('instability_growth'): reasons.append('observed_growth_in_valid_window')
             if status.get('recovery_ok') is not True or status.get('cleanup_errors'): reasons.append('cleanup_unverified')
             if status.get('save_error') or status.get('salvage_errors'): reasons.append('evidence_save_or_salvage_failed')
@@ -358,6 +467,7 @@ def run(base=None, ask=input, runner=None, live_runner=None):
             coeff=m.get('coefficient_status',0)
             if type(coeff) is not int or (coeff>>4)&65535!=512 or coeff&14!=10: reasons.append('loader_readback_invalid')
             row=dict(m,role=role,mode=mode,repeat=repeat,file=path.name,analysis=a,driver_status=status,
+                gain_db_requested=trial_gain,
                 measurement_valid=not reasons,stop_reasons=reasons,scene_sha256=hashlib.sha256(encoded(scene)).hexdigest(),
                 binding_sha256=binding['binding_sha256'],hwh_sha256=HWH,
                 loaded_identity_basis='A loader count/status plus sent Q20 and captured arithmetic; not coefficient-memory hash readback')
@@ -367,30 +477,58 @@ def run(base=None, ask=input, runner=None, live_runner=None):
             return row
         # Current-scene positive control uses current background; no old -37.8 floor.
         quiet=trial('quiet',direct=True,seconds=1.02)
-        with np.load(folder/quiet['file'],allow_pickle=False) as z:
-            floor=20*math.log10(max(float(np.std(z['microphone'])),1e-12))
+        background_control=positive_background(folder/quiet['file'])
+        floor=background_control['rms_dbfs']
         gate=trial('positive',direct=True,pcm=tone,seconds=1.02)
         control=gate_metrics(folder/gate['file'],floor)
         state['positive_control']=control
         if not control['passed']: raise RuntimeError('positive_control_failed:'+','.join(control['reasons']))
-        # Balanced, repeated matched/zero comparison. Each mode has its own background.
-        for repeat,order in ((1,('zero','matched')),(2,('matched','zero'))):
-            for mode in order:
-                background=trial('background',mode,repeat=repeat,positive=True)
-                response=trial('response',mode,pcm=burst,repeat=repeat,positive=True)
-                response['spectrum']=spectrum(folder/response['file'],c['bands'],True)
-                background['spectrum']=spectrum(folder/background['file'],c['bands'])
-                response['snr_bands']=snr_bands(response['spectrum'],background['spectrum'],c['bands'])
-                # Low SNR invalidates this band's estimate only. No gain escalation.
+        difference=control['rms_dbfs']-floor
+        state['signal_noise_conditions']=dict(positive_total_dbfs=control['rms_dbfs'],background_dbfs=floor,
+            total_to_background_db=difference,
+            signal_snr_db=10*math.log10(10**(difference/10)-1) if difference>0 else None,
+            background_window=background_control,
+            positive_window={key:control[key] for key in ('first_frame','end_frame')},
+            scope='same gain=0 direct positive tone/background; no broadband model qualification',
+            frequency_estimation='not_tested' if runtime else 'conditional_on_each_band',
+            no_extra_injection=runtime,coherence_required_for_B_frequency_estimate=.8,
+            reason='No new injection level or pure-SNR cutoff invented; runtime/listening proceed independently' if runtime else None)
+        if runtime:
+            for i,scan_gain in enumerate(c['scan_gains_db']):
+                order=('zero','matched') if i%2==0 else ('matched','zero')
+                for mode in order:trial('runtime-scan',mode,repeat=1,positive=True)
+            scan_gain=gain
+            for mode in ('matched','zero'):trial('runtime-scan',mode,repeat=2,positive=True)
+        else:
+            # Balanced, repeated matched/zero forced response; local SNR failure never stops the batch.
+            for repeat,order in ((1,('zero','matched')),(2,('matched','zero'))):
+                for mode in order:
+                    background=trial('background',mode,repeat=repeat,positive=True)
+                    response=trial('response',mode,pcm=burst,repeat=repeat,positive=True)
+                    response['spectrum']=spectrum(folder/response['file'],c['bands'],True)
+                    background['spectrum']=spectrum(folder/background['file'],c['bands'])
+                    response['snr_bands']=snr_bands(response['spectrum'],background['spectrum'],c['bands'])
         post=trial('positive-post',direct=True,pcm=tone,seconds=1.02)
         after=gate_metrics(folder/post['file'],floor,control['rms_dbfs'])
         state['positive_post']=after
         if not after['passed']: raise RuntimeError('positive_post_failed')
         state['grades']['algorithm_difference']='descriptive_pairs_available'
-        voice=trial('human',pcm=cue,seconds=PLAN['speech_seconds'],positive=True)
-        voice['sound_heard']=ask('真人讲话实际听到声音？HEARD / NOT_HEARD / UNKNOWN（提示音不计）：').strip()
-        if ask('听众/固定人声源/录音设备按scene就位；LISTENER继续；其他输入将听众记未测：').strip()=='LISTENER':
-            print('每项8秒；短提示音结束后播同一固定人声片段。外录前后各留至少1秒背景。四WAV按OPERATIONS命名。',flush=True)
+        if runtime:
+            state['human_switch']=dict(scope='same speaker, same phrase, same -8dB; qualitative report only',trials=[])
+            for mode in ('zero','matched'):
+                voice=trial('human-'+mode,mode,pcm=cue,seconds=PLAN['speech_seconds'],positive=True)
+                voice['sound_heard']=ask(mode+' 真人讲话实际听到声音？HEARD / NOT_HEARD / UNKNOWN（提示音不计）：').strip()
+                state['human_switch']['trials'].append(dict(mode=mode,capture_id=voice.get('capture_id'),sound_heard=voice['sound_heard']))
+            comparison=ask('比较零系数/匹配模型真人同句：IMPROVED / SIMILAR / WORSE / DISTORTED / HOWL / UNKNOWN：').strip()
+            state['human_switch']['comparison_report']=comparison or 'UNKNOWN'
+            if comparison in ('WORSE','DISTORTED','HOWL'):raise RuntimeError('human_comparison_stop:'+comparison)
+        else:
+            voice=trial('human',pcm=cue,seconds=PLAN['speech_seconds'],positive=True)
+            voice['sound_heard']=ask('真人讲话实际听到声音？HEARD / NOT_HEARD / UNKNOWN（提示音不计）：').strip()
+        if ask(('听众/同一说话人和同一句话按scene就位；' if runtime else '听众/固定人声源/录音设备按scene就位；')+
+               'LISTENER继续；其他输入将听众记未测：').strip()=='LISTENER':
+            print(('每项8秒；短提示音结束后，同一说话人重复同一句话。可选仪表录音条件不齐则只记录人耳比较。' if runtime else
+                '每项8秒；短提示音结束后播同一固定人声片段。外录前后各留至少1秒背景。四WAV按OPERATIONS命名。'),flush=True)
             trial('listener-off',pcm=cue,direct=True,seconds=PLAN['speech_seconds'],positive=True)
             trial('listener-on',pcm=cue,seconds=PLAN['speech_seconds'],positive=True)
             code=ask('相对刚才系统静音：DISTINGUISHABLE / NO_AMPLIFICATION / DISTORTED / UNKNOWN：').strip()
@@ -428,13 +566,15 @@ def run(base=None, ask=input, runner=None, live_runner=None):
     finally:
         state['pairs']=result_pairs(state)
         valid=[b['valid'] for p in state['pairs'] for b in p['bands'].values()]
-        state['grades']['measurement']='valid_bands_available' if any(valid) else 'unknown_or_invalid'
-        state['grades']['algorithm_difference']='valid_window_differences_available' if any(valid) else 'unknown'
+        rp=runtime_pairs(state)
+        operation_valid=any(p['configuration_valid'] for p in rp)
+        state['grades']['measurement']='valid_runtime_pairs_available' if operation_valid else 'valid_bands_available' if any(valid) else 'unknown_or_invalid'
+        state['grades']['algorithm_difference']='bounded_runtime_comparison_available' if operation_valid else 'valid_window_differences_available' if any(valid) else 'unknown'
         state['running_observations']=[dict(mode=r['mode'],repeat=r['repeat'],role=r['role'],
             gain_q12=r.get('gain_q12'),completed_frames=r.get('completed_frames'),
             category=r['analysis']['category'],event_flags=r['analysis'].get('event_flags'),
             counts=r['analysis'].get('counts'),scope=r['analysis'].get('capture_window'),
-            stop_reasons=r['stop_reasons']) for r in state['trials'] if r['role'] in ('background','response')]
+            stop_reasons=r['stop_reasons']) for r in state['trials'] if r['role'] in ('background','response','runtime-scan')]
         state['algorithm_effect']='unknown; response deltas, protection, human effect and sustained run reported separately'
         collect(folder,state)
     return state
@@ -465,8 +605,12 @@ def review(path, output):
                     if hashlib.sha256(data).hexdigest()!=item['sha256']:
                         qc.append('inventory_hash:'+name);continue
                     (temp/name).write_bytes(data)
+                for name in manifest['hashes']:
+                    if name.endswith('.status.json') or name=='model.json':
+                        if Path(name).name!=name:raise ValueError('unsafe return metadata path')
+                        (temp/name).write_bytes(z.read(name))
                 for row in state['trials']:
-                    if row['role'] not in ('background','response'): continue
+                    if row['role'] not in ('background','response','runtime-scan'): continue
                     raw=temp/row['file']
                     if not raw.exists():
                         qc.append('raw_missing:'+row['file']);row['measurement_valid']=False;continue
@@ -476,7 +620,8 @@ def review(path, output):
                     if row['measurement_valid'] and (analysis['category']=='invalid' or
                         analysis.get('evaluation_metadata',{}).get('verification',{}).get('bit_exact') is not True):
                         qc.append('raw_revalidation:'+row['file']);row['measurement_valid']=False
-                    if row['measurement_valid']:
+                    if row['role']=='runtime-scan':row['analysis']=analysis
+                    if row['measurement_valid'] and row['role']!='runtime-scan':
                         row['spectrum']=spectrum(raw,candidate['bands'],row['role']=='response')
                 for row in state['trials']:
                     if row['role']!='response' or not row['measurement_valid']: continue
@@ -485,6 +630,22 @@ def review(path, output):
                     if background is None:
                         qc.append('background_missing:'+row['file']);row['measurement_valid']=False
                     else:row['snr_bands']=snr_bands(row['spectrum'],background['spectrum'],candidate['bands'])
+                quiet=next((r for r in state['trials'] if r['role']=='quiet' and r['measurement_valid']),None)
+                positive=next((r for r in state['trials'] if r['role']=='positive' and r['measurement_valid']),None)
+                post=next((r for r in state['trials'] if r['role']=='positive-post' and r['measurement_valid']),None)
+                if quiet and positive and post:
+                    floor=positive_background(temp/quiet['file'])['rms_dbfs']
+                    state['positive_control']=gate_metrics(temp/positive['file'],floor)
+                    state['positive_post']=gate_metrics(temp/post['file'],floor,state['positive_control']['rms_dbfs'])
+                if state.get('continuous'):
+                    from sprint_continuous import review_continuous
+                    if sha(temp/'model.json')!=candidate['model_sha256']:raise ValueError('return model identity')
+                    model_manifest=dict(hashes={'model.json':candidate['model_sha256'],'audio_replay.bit':BIT,
+                        'audio_replay.hwh':HWH},coefficients_sha256=candidate['coefficients_sha256'])
+                    plan=dict(fixture_id=FIXTURE,gain_q12=int(math.floor(4096*10**(candidate['gain_db']/20)+.5)),
+                        hp_volume=40,continuous_target_seconds=60.)
+                    state['continuous']=review_continuous(temp/'continuous.npz',model_manifest,plan,
+                        state.get('continuous_error'),model_path=temp/'model.json')
         pairs=result_pairs(state)
         # Round only for cross-machine comparison, never for stored numerical results.
         def rounded(value):
@@ -493,13 +654,18 @@ def review(path, output):
             if isinstance(value,list):return [rounded(v) for v in value]
             return value
         if rounded(pairs)!=rounded(state['pairs']):qc.append('paired_summary_differs_on_raw_recalculation')
+        run_pairs=runtime_pairs(state)
+        if rounded(run_pairs)!=rounded(state.get('runtime_pairs',[])):qc.append('runtime_pairs_differ_on_raw_recalculation')
         missing=[dict(file=r['file'],reasons=r['stop_reasons']) for r in state['trials'] if r['stop_reasons']]
         report=dict(policy=POLICY,return_sha256=sha(path),grades=state['grades'],pairs=pairs,
             raw_quality_control=dict(status='completed' if not qc else 'discrepancies',issues=qc),
+            runtime_pairs=run_pairs,scan_summary=scan_summary(state),
+            signal_noise_conditions=state.get('signal_noise_conditions'),
             uncertainties=missing,stop_reason=state.get('stop_reason'),binding=state.get('binding'),
             running_observations=state.get('running_observations'),
             raw_nonhuman_files=[i for i in state['inventory'] if i['included']],
             listener=state.get('listener_report'),listener_measurement=state.get('listener_measurement'),
+            human_switch=state.get('human_switch'),
             continuous=state.get('continuous'),whole_run_acoustics='unknown',msg_db=None,asg_db=None)
         write_json(output,report)
         return report

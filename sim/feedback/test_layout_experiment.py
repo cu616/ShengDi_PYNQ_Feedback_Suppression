@@ -1,4 +1,4 @@
-"""Decision-changing controls for the new-layout integration, all synthetic."""
+"""Synthetic execution controls plus exact B-asset compatibility; no board."""
 import contextlib
 import copy
 import hashlib
@@ -71,7 +71,7 @@ class Runner:
             verification=verify,early_stop=False,stop_reason='completed',clip_counts_raw=[0,0,0],
             prediction_saturations=0,residual_saturations=0,gain_saturations=0,mix_saturations=0)
         status=dict(recovery_ok=True,cleanup_errors=[],salvage_errors=[],save_error=None)
-        trigger=self.fail and 'response-zero' in path.stem
+        trigger=self.fail and ('response-zero' in path.stem or 'runtime-scan-zero' in path.stem)
         if trigger:
             if self.fail=='protection':m.update(early_stop=True,stop_reason='guard',clip_counts_raw=[65536,0,0],residual_saturations=1)
             elif self.fail=='source_time':m['source_end_frame_exclusive']-=1
@@ -97,6 +97,8 @@ class LayoutTests(unittest.TestCase):
         cls.prepared=Path(cls.temp.name)/'prepared'
         from assemble_experiment import assemble_layout
         assemble_layout(cls.prepared)
+        cls.runtime=Path(cls.temp.name)/'runtime'
+        assemble_layout(cls.runtime,'8a02757')
     @classmethod
     def tearDownClass(cls):cls.temp.cleanup()
     def work(self):return tempfile.TemporaryDirectory(dir=ROOT/'tmp',prefix='layout-case-')
@@ -108,11 +110,13 @@ class LayoutTests(unittest.TestCase):
         self.assertTrue(x.bind(base,path,base/'b.json',base/'a.json')['ready'])
     def execute(self,base,runner,listener='NO_AMPLIFICATION',start='START',live_runner=None):
         def answer(prompt):
+            if 'FIELD_READY' in prompt:return 'FIELD_READY'
             if 'READY' in prompt:return 'READY'
             if 'START' in prompt:return start
             if 'LISTENER继续' in prompt:return 'LISTENER'
             if 'HEARD /' in prompt:return 'HEARD'
             if 'DISTINGUISHABLE /' in prompt:return listener
+            if 'IMPROVED /' in prompt:return 'SIMILAR'
             if '一次填写' in prompt:return 'synthetic only'
             return ''
         with contextlib.redirect_stdout(io.StringIO()):return x.run(base,answer,runner,live_runner)
@@ -208,11 +212,21 @@ class LayoutTests(unittest.TestCase):
         out=x.snr_bands({'band_power':{'1-2':2}},{'band_power':{'1-2':1}},bands)
         self.assertEqual(out['1-2']['signal_snr_db'],0)
         self.assertTrue(out['1-2']['valid'])
-    def test_actual_B_candidate_is_carried_and_compatible_without_sound_approval(self):
-        from assemble_experiment import assemble_layout
+    def test_positive_background_uses_the_same_global_window_as_tone(self):
+        with self.work() as d:
+            path=Path(d)/'quiet.npz';first=33420;end=49804
+            samples=np.full(end-first,.25)
+            samples[:14920]=np.tile([.001,-.001],7460)
+            m=dict(first_frame=first,completed_frames=end)
+            np.savez_compressed(path,microphone=samples,metadata_json=json.dumps(m))
+            out=x.positive_background(path)
+            self.assertEqual((out['first_frame'],out['end_frame'],out['frames']),(33420,48340,14920))
+            self.assertAlmostEqual(out['rms_dbfs'],-60.,places=10)
+            self.assertGreater(20*np.log10(np.std(samples)),-30)
+    def test_actual_B_candidate_is_carried_and_only_A_field_facts_remain(self):
         with self.work() as d:
             base=Path(d)/'actual'
-            assemble_layout(base,'8a02757')
+            shutil.copytree(self.runtime,base)
             report=json.loads((base/'candidate-compatibility.json').read_text(encoding='utf8'))
             self.assertTrue(report['identity_and_driver_compatibility'])
             self.assertEqual(report['model']['q20_sha256'],'e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961')
@@ -220,8 +234,71 @@ class LayoutTests(unittest.TestCase):
             state=x.check(base);self.assertFalse(state['ready'])
             self.assertNotIn('B:model_file_missing',state['missing'])
             self.assertNotIn('B:Q20_hash',state['missing'])
-            self.assertIn('B:injection_rms_dbfs',state['missing'])
+            self.assertFalse(any(reason.startswith('B:') for reason in state['missing']),state['missing'])
             self.assertFalse((base/'model.json').exists())
+
+    def test_runtime_scan_does_not_require_injection_or_optional_recordings(self):
+        with self.work() as d:
+            base=Path(d);shutil.copytree(self.runtime,base,dirs_exist_ok=True)
+            r=Runner();s=self.execute(base,r)
+            self.assertEqual(s['status'],'completed',s.get('stop_reason'))
+            self.assertEqual(s['grades']['measurement'],'valid_runtime_pairs_available')
+            self.assertEqual(s['grades']['listener_effect'],'failed')
+            self.assertEqual(s['listener_measurement']['status'],'not_tested')
+            self.assertEqual(len(r.calls),23)
+            rows=[row for row in s['trials'] if row['role']=='runtime-scan']
+            self.assertEqual(len(rows),16)
+            self.assertEqual(sorted({row['gain_db_requested'] for row in rows}),list(range(-14,-7)))
+            self.assertTrue(all(row['source_frames']==1 for row in rows))
+            self.assertEqual(len(s['runtime_pairs']),8)
+            self.assertTrue(all(pair['configuration_valid'] for pair in s['runtime_pairs']))
+            self.assertEqual(s['signal_noise_conditions']['frequency_estimation'],'not_tested')
+            self.assertIsNone(s['asg_db'])
+            report=x.review(next(base.rglob('return-results.zip')),base/'intake.json')
+            self.assertEqual(report['raw_quality_control']['status'],'completed',report)
+            self.assertEqual(report['runtime_pairs'],s['runtime_pairs'])
+            self.assertEqual(report['scan_summary']['zero']['acoustic_boundary'],'unknown')
+            self.assertEqual([row['mode'] for row in report['human_switch']['trials']],['zero','matched'])
+
+    def test_runtime_field_cancel_and_wrong_identity_never_activate_or_touch_board(self):
+        for changed in (False,True):
+            with self.subTest(changed=changed),self.work() as d:
+                base=Path(d);shutil.copytree(self.runtime,base,dirs_exist_ok=True);r=Runner()
+                if changed:
+                    (base/'candidate-unbound.json').write_text('{}',encoding='utf8')
+                with contextlib.redirect_stdout(io.StringIO()):
+                    s=x.run(base,ask=lambda _: 'CANCEL',runner=r)
+                self.assertEqual(s['status'],'stopped');self.assertFalse(r.calls)
+                self.assertFalse((base/'model.json').exists())
+
+    def test_runtime_protection_drop_and_failed_save_stop_all_later_sound(self):
+        for failure in ('protection','drop','save'):
+            with self.subTest(failure=failure),self.work() as d:
+                base=Path(d);shutil.copytree(self.runtime,base,dirs_exist_ok=True);r=Runner(failure)
+                s=self.execute(base,r)
+                self.assertEqual(s['status'],'stopped');self.assertEqual(len(r.calls),3)
+                self.assertFalse(any('human' in name for name in r.calls))
+                self.assertTrue(next(base.rglob('return-results.zip')).is_file())
+                self.assertIsNone(s['asg_db'])
+                if failure=='protection':
+                    row=s['trials'][-1];self.assertTrue(row['analysis']['event_flags']['protection'])
+                    self.assertNotEqual(row['analysis']['category'],'observed_instability')
+
+    def test_runtime_listener_success_keeps_continuous_engineering_separate_on_intake(self):
+        from sprint_selftest import SoftwareContinuousRunner
+        with self.work() as d:
+            base=Path(d);shutil.copytree(self.runtime,base,dirs_exist_ok=True)
+            c=json.loads((base/'candidate-input.json').read_text(encoding='utf8'))
+            manifest=dict(hashes={'model.json':c['model_sha256'],'audio_replay.bit':x.BIT,'audio_replay.hwh':x.HWH},
+                coefficients_sha256=c['coefficients_sha256'])
+            live=SoftwareContinuousRunner(manifest,base)
+            s=self.execute(base,Runner(),listener='DISTINGUISHABLE',live_runner=live)
+            self.assertEqual(s['status'],'completed',s.get('continuous'))
+            self.assertEqual(s['grades']['continuous_operation'],'engineering_completed')
+            report=x.review(next(base.rglob('return-results.zip')),base/'intake.json')
+            self.assertEqual(report['raw_quality_control']['status'],'completed',report['raw_quality_control'])
+            self.assertEqual(report['continuous']['acoustic_status'],'not_tested')
+            self.assertIsNone(report['asg_db'])
 
 
 if __name__=='__main__':unittest.main()
