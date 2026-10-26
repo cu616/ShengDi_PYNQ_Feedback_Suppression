@@ -1,5 +1,5 @@
 {
-  "stage": "source-preflight",
+  "stage": "final-archive",
   "policy": "c-new-layout-1.3.0",
   "package_status": "ready_for_A_field_binding",
   "A_driver_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
@@ -50,5 +50,26 @@
     "C:frozen_run_binding_missing"
   ],
   "actual_field_model_loaded": false,
-  "field_effect_established": false
+  "field_effect_established": false,
+  "source_base": "9797a1237119138151a79f608a819948da8005ba",
+  "source_tree_clean": true,
+  "package_sha256": "b9ad6dabc5a8e6619b0859a8f1109471f57d4661273eeaa8eaa817487281852f",
+  "package_bytes": 338417,
+  "immutable_payload_files": 32,
+  "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
+  "final_check_missing": [
+    "A:fixed_phone_source_facts",
+    "C:frozen_run_binding_missing"
+  ],
+  "archive_payload_verified": true,
+  "source_payload_matches_tested_files": true,
+  "cancel_control": {
+    "exit_code": 2,
+    "trials": 0,
+    "active_model_created": false,
+    "active_binding_created": false,
+    "stop_reason": "RuntimeError:field_scene_cancelled_or_fixed_source_missing",
+    "return_zip_generated": true
+  },
+  "hardware_executed": false
 }

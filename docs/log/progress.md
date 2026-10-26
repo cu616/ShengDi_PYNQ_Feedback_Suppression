@@ -6,6 +6,11 @@
 
 
 
+
+## 2026-10-26 C 冻结r4修线候选最终执行包
+
+从干净9797a12冻结c-new-layout-r4.zip，独立解压32项载荷/Notebook代码及已测源码核对通过；仅余A一次现场手机事实与本地冻结绑定。取消入口退出2、0试次、无活动模型并生成停止回包。最终包338417字节及SHA见[r4机器记录](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r4-check.json)，[操作单](../../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。未操板、未声称效果通过；远端连接失败，交付本地ZIP与C提交，保留待推送事实。
+
 ## 2026-10-26 C 接收B勘误并完成r4修线候选绑定
 
 按用户转发254b8e9勘误接入b6bcfb2同字节候选；网络未取到新Git对象，包内原字节来源与转发勘误明确分开。补六段数据集身份拒绝，派生新fixture同时保留A52原件；五档、峰值门禁、手机同片段、定量未测与保护停止保留。23个相关软件用例及最后一次运行回包复验通过，未重跑旧145项或操板。[集成/失败出口](../../report/verification/audio_closed/batch-control.md#2026-10-26-r4接收b勘误并绑定修线候选)、[检查记录](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r4-check.json)。

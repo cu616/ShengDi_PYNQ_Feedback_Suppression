@@ -10,7 +10,7 @@ C接入rewired_512_20261026，file01c9102a…/Q206118e85d…；builder拒绝候�
 
 相关[22项检查](sprint-rc0-20261025/layout-tests-r4.txt)通过（83.018秒），新增[采集来源错配拒绝](sprint-rc0-20261025/layout-binding-negative-r4.txt)通过（5.843秒），最后[运行与回包复核](sprint-rc0-20261025/layout-runtime-final-r4.txt)通过（12.761秒）。合计23个不同用例，末项为其中一项的最终定向复验；不称24项，不重跑无变化的B145项或A底层验收。均为软件合成，无板卡/声学效果。
 
-草包检查只剩现场手机事实及本地冻结绑定，不再缺B模型。源码/归档身份见[r4机器记录](sprint-rc0-20261025/layout-package-r4-check.json)，[完整操作单](../../../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。C从干净源码冻结归档，A只执行唯一Notebook入口、一次回return-results.zip，C一次质检/配对再交B；不新增平台或普通三方会签。
+草包检查只剩现场手机事实及本地冻结绑定，不再缺B模型。源码/归档身份见[r4机器记录](sprint-rc0-20261025/layout-package-r4-check.json)，[完整操作单](../../../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。已从干净源码9797a12冻结[r4最终包](../../../build/packages/c-new-layout-r4.zip)，338417字节、SHA256=b9ad6dabc5a8e6619b0859a8f1109471f57d4661273eeaa8eaa817487281852f；独立解压32项不可变载荷和Notebook代码哈希核对、与已测C源码逐字节核对通过。现场取消实际退出2、0试次、无活动model/run-binding并生成停止回包；不是现场运行验证。A只执行唯一Notebook入口、一次回return-results.zip，C一次质检/配对再交B；不新增平台或普通三方会签。
 
 ## 2026-10-26 修线候选到达后的A与B需求单
 
