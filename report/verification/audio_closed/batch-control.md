@@ -10,9 +10,9 @@
 
 执行/测量/算法差异/听众效果/持续运行分别给出结果。非人声NPZ与所有status/metadata进唯一回包；人声PCM不出板，缺帧和全程声学仍未知。C的review入口一次核验回包哈希、非人声原件算术、源内频谱/SNR与配对，交B有效数据及不确定项。保护先于任何C汇总，保护不自动等于啸叫；没有插值MSG或混报布局收益。
 
-软件验证：新布局11项测试（含7类运行失败、3类启动取消等子用例）通过，相关sprint22项回归通过；[新入口原始输出](sprint-rc0-20261025/layout-tests-r1.txt)，[包身份/独立解压检查](sprint-rc0-20261025/layout-package-r1-check.json)。测试中的模型、听感与信号均为合成，不是B候选或现场效果。初次默认Python无NumPy，改用现有Anaconda；后续回包复算临时目录权限失败已改为输出目录内的临时目录，原失败与修正见AI记录。
+软件验证：新布局11项测试（含7类运行失败、3类启动取消等子用例）通过，相关sprint22项回归通过；[新入口原始输出](sprint-rc0-20261025/layout-tests-r1.txt)，[包身份/独立解压检查](sprint-rc0-20261025/layout-package-r1-check.json)。功能与听感测试使用合成信号/回答；另以B真实候选做身份/格式/参数兼容核对，均不代表现场效果。初次默认Python无NumPy，改用现有Anaconda；后续回包复算临时目录权限失败已改为输出目录内的临时目录，原失败与修正见AI记录。
 
-准备包 [c-new-layout-r1.zip](../../../build/packages/c-new-layout-r1.zip)不含model.json、不含旧系数，缺绑定触板前退出2/生成停止回包。收尾取得B=8a02757，候选原字节随包candidate-unbound.json；file36c0d970…/Q20e8757833…/registry/512 taps/lag_first=1通过，具体见包内candidate-compatibility.json。B未给注入范围/纯信号SNR门限，只给相干0.8；不杜撰数值放行。A=1d7872c已报5cm/−8dB零系数两次可听放大，预填事实；余下范围与现场条件一次交A/B。取得后只做bind，不等普通会签。A原field-config JSON存在三处相邻字符串（首次解析在29行失败）；保留原字节，使用独立scene输入承接事实并给A一次完整修正清单，不据此退回旧驱动缺陷。没有完整有效现场实验结果，未触发队长升级条件。
+准备包 [c-new-layout-r1.zip](../../../build/packages/c-new-layout-r1.zip)不含model.json、不含旧系数，缺绑定触板前退出2/生成停止回包。收尾取得B=8a02757，候选原字节随包candidate-unbound.json；file36c0d970…/Q20e8757833…/registry/512 taps/lag_first=1通过，具体见包内candidate-compatibility.json。B未给注入范围/纯信号SNR门限，只给相干0.8；不杜撰数值放行。A=1d7872c已报5cm/−8dB零系数两次可听放大，预填事实；余下范围与现场条件一次交A/B。取得后只做bind，不等普通会签。A原field-config JSON存在三处相邻字符串（首次解析在29行失败）；保留原字节，使用独立scene输入承接事实并给A一次完整修正清单，不据此退回旧驱动缺陷。没有完整有效现场实验结果，未触发队长升级条件。 最终准备包从干净源码c6980a1生成，322836字节，SHA256=8a992db05b0c42cd765a16176b7346f63754ccd631473a0b75d38696857bd564；26项不可变载荷及Notebook代码格独立核对通过，候选已随包、未激活。三份A原始JSON均保留解析错误，具体行号在机器报告内；C不重写原件。
 
 ## 2026-10-25 lowband2 原包复核
 

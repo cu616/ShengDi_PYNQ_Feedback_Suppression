@@ -1,17 +1,17 @@
 {
-  "stage": "source-preparation",
+  "stage": "final-candidate-archive",
   "policy": "c-new-layout-1.0.0",
   "package_status": "prepared_pending_binding",
-  "package_sha256": "b532544cb609d35c848e21ffaa1efcc8e199ae25f518a80c2a6d7b0a93466c94",
-  "package_bytes": 295711,
-  "source_base": "ed32a09d59e666aafd0a187ab5aeb221977e7244",
-  "source_tree_clean": false,
+  "package_sha256": "8a992db05b0c42cd765a16176b7346f63754ccd631473a0b75d38696857bd564",
+  "package_bytes": 322836,
+  "source_base": "c6980a107f933a56099f664a7bd71480b24cddd3",
+  "source_tree_clean": true,
   "A_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
   "software_tests": {
     "layout": {
       "command": "D:\\Anaconda\\python.exe -m unittest discover -s sim/feedback -p test_layout_experiment.py -v",
-      "count": 9,
-      "seconds": 21.868,
+      "count": 11,
+      "seconds": 23.022,
       "exit_code": 0,
       "output": "layout-tests-r1.txt"
     },
@@ -24,7 +24,7 @@
   },
   "hardware_executed": false,
   "physical_effect": "not_tested",
-  "candidate_supplied": false,
+  "candidate_supplied": true,
   "workflow_refs": {
     "rules": "ddafcb7",
     "state_and_review": "ca9b484"
@@ -70,85 +70,144 @@
     "column": 17,
     "known_fields": [
       "retired.action",
-      "zero_coefficient"
+      "zero_coefficient",
+      "acoustics.reflecting_object"
     ]
   },
   "independent_extraction": {
-    "commands": [
-      {
-        "action": "check",
-        "exit_code": 2,
-        "ready": false,
-        "status": null,
-        "trials": 0,
-        "missing": [
-          "A:a_allowed_gains_db",
-          "A:a_injection_range_dbfs",
-          "A:a_limits_basis",
-          "A:agc_disabled",
-          "A:fixed_speech_source",
-          "A:gain_not_supported",
-          "A:injection_not_supported",
-          "A:listener_position",
-          "A:microphone_preamp_gain",
-          "A:plate_and_cotton_unchanged",
-          "A:recorder_gain",
-          "A:speaker_volume_knob",
-          "A:talker_distance",
-          "A:talker_to_microphone_cm",
-          "A:unknown:fixed_speech_source",
-          "A:unknown:listener_position",
-          "A:unknown:microphone_preamp_gain",
-          "A:unknown:recorder_gain",
-          "A:unknown:speaker_volume_knob",
-          "A:unverified:agc_disabled",
-          "A:unverified:control_and_cue_approved_by_A",
-          "A:unverified:plate_and_cotton_unchanged",
-          "A:unverified:verified_by_A",
-          "B:b_allowed_gains_db",
-          "B:b_commit",
-          "B:b_injection_range_dbfs",
-          "B:bands",
-          "B:bands_missing",
-          "B:coefficients_sha256",
-          "B:deployment_evidence",
-          "B:diagnostic_alignment",
-          "B:evidence:deployment_evidence",
-          "B:evidence:diagnostic_alignment",
-          "B:evidence:gain_and_injection_basis",
-          "B:evidence:original_timeline_holdout",
-          "B:evidence:prediction_and_failure_actions",
-          "B:gain_and_injection_basis",
-          "B:gain_db",
-          "B:gain_not_supported",
-          "B:identity:b_commit",
-          "B:identity:coefficients_sha256",
-          "B:identity:input_manifest_sha256",
-          "B:identity:model_sha256",
-          "B:injection_not_supported",
-          "B:injection_rms_dbfs",
-          "B:input_manifest_sha256",
-          "B:model_file_missing",
-          "B:model_sha256",
-          "B:original_timeline_holdout",
-          "B:prediction_and_failure_actions",
-          "gain:driver_range",
-          "injection:PCM_headroom"
-        ],
-        "stop_reason": null
-      },
-      {
-        "action": "run",
-        "exit_code": 2,
-        "ready": null,
-        "status": "stopped",
-        "trials": 0,
-        "missing": null,
-        "stop_reason": "ValueError:BINDING_INCOMPLETE [\"A:a_allowed_gains_db\", \"A:a_injection_range_dbfs\", \"A:a_limits_basis\", \"A:agc_disabled\", \"A:fixed_speech_source\", \"A:gain_not_supported\", \"A:injection_not_supported\", \"A:listener_position\", \"A:microphone_preamp_gain\", \"A:plate_and_cotton_unchanged\", \"A:recorder_gain\", \"A:speaker_volume_knob\", \"A:talker_distance\", \"A:talker_to_microphone_cm\", \"A:unknown:fixed_speech_source\", \"A:unknown:listener_position\", \"A:unknown:microphone_preamp_gain\", \"A:unknown:recorder_gain\", \"A:unknown:speaker_volume_knob\", \"A:unverified:agc_disabled\", \"A:unverified:control_and_cue_approved_by_A\", \"A:unverified:plate_and_cotton_unchanged\", \"A:unverified:verified_by_A\", \"B:b_allowed_gains_db\", \"B:b_commit\", \"B:b_injection_range_dbfs\", \"B:bands\", \"B:bands_missing\", \"B:coefficients_sha256\", \"B:deployment_evidence\", \"B:diagnostic_alignment\", \"B:evidence:deployment_evidence\", \"B:evidence:diagnostic_alignment\", \"B:evidence:gain_and_injection_basis\", \"B:evidence:original_timeline_holdout\", \"B:evidence:prediction_and_failure_actions\", \"B:gain_and_injection_basis\", \"B:gain_db\", \"B:gain_not_supported\", \"B:identity:b_commit\", \"B:identity:coefficients_sha256\", \"B:identity:input_manifest_sha256\", \"B:identity:model_sha256\", \"B:injection_not_supported\", \"B:injection_rms_dbfs\", \"B:input_manifest_sha256\", \"B:model_file_missing\", \"B:model_sha256\", \"B:original_timeline_holdout\", \"B:prediction_and_failure_actions\", \"gain:driver_range\", \"injection:PCM_headroom\"]"
-      }
+    "action": "check",
+    "exit_code": 2,
+    "ready": false,
+    "missing": [
+      "A:a_allowed_gains_db",
+      "A:a_injection_range_dbfs",
+      "A:agc_disabled",
+      "A:fixed_speech_source",
+      "A:gain_not_supported",
+      "A:injection_not_supported",
+      "A:recorder_gain",
+      "A:unknown:fixed_speech_source",
+      "A:unknown:recorder_gain",
+      "A:unverified:agc_disabled",
+      "A:unverified:control_and_cue_approved_by_A",
+      "A:unverified:verified_by_A",
+      "B:b_injection_range_dbfs",
+      "B:band:0",
+      "B:band:1",
+      "B:injection_not_supported",
+      "B:injection_rms_dbfs",
+      "injection:PCM_headroom",
+      "C:frozen_run_binding_missing"
     ],
-    "no_model": true,
-    "unbound_sound_branches_blocked": true
+    "no_active_model": true,
+    "candidate_present": true,
+    "immutable_payload_hashes_verified": true,
+    "runnable_C_sources_equal_tested_tree": {
+      "layout_experiment.py": true,
+      "sprint_continuous.py": true,
+      "listener_metrics.py": true,
+      "evaluation.py": true,
+      "growth_monitor.py": true,
+      "tail_metrics.py": true,
+      "model_comparison.py": true,
+      "room_experiment.py": true
+    },
+    "unbound_run_covered_by": "test_pending_is_complete_missing_list_and_never_calls_board; test_actual_B_candidate_is_carried_and_compatible_without_sound_approval"
   },
-  "payload_files": 20
+  "payload_files": 26,
+  "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
+  "candidate_activated": false,
+  "candidate_compatibility": {
+    "B_commit": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a",
+    "A_later_facts_commit": "1d7872c4428822c2ab913a494120fd0d137be30e",
+    "model": {
+      "path": "models/room_v1/newlayout_512_20261026.json",
+      "file_sha256": "36c0d9705de99fcddd6022390d49bf878f376a38ee535398819ed911eebdd665",
+      "q20_sha256": "e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961",
+      "float_sha256": "4dfff1ca3798a59ef00fff0f50f903e936d306b8b1347cff6a1d4aca8f94dc75",
+      "bytes": 17882,
+      "q20_min": -31959,
+      "q20_max": 43681
+    },
+    "logical_taps": 512,
+    "loaded_taps": 512,
+    "serial_cycles": 1539,
+    "frame_budget": 2048,
+    "bias_loaded": false,
+    "lag_first": 1,
+    "forward_schedule_frames": 2,
+    "identity_and_driver_compatibility": true,
+    "probe": {
+      "budget": 123046,
+      "source_frames": 1,
+      "headroom_frames": 123045,
+      "validation_driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62"
+    },
+    "probe_scope": "software argument validation only; no gain/injection approval",
+    "sources": {
+      "candidate-unbound.json": "models/room_v1/newlayout_512_20261026.json",
+      "b-metrics.json": "report/verification/newlayout-candidate-2026-10-26/metrics.json",
+      "b-readme-original.txt": "report/verification/newlayout-candidate-2026-10-26/README.md",
+      "b-model-registry.json": "models/manifest.json"
+    },
+    "unresolved": [
+      "B numeric injection range or justified non-estimation branch",
+      "B band validity: coherence>=0.8 supplied, no pure-SNR threshold; do not invent one",
+      "A current scene and actual limits; external source/recorder facts only for dependent branches"
+    ],
+    "known_report_conflicts": [
+      "README section 9 says c771a02d but file/metrics/registry Q20 is e8757833",
+      "README section 7 gain forecast/3dB test compares old model, not this zero/matched question",
+      "README section 4 unaligned summary differs from section 6 and machine metrics"
+    ]
+  },
+  "latest_handoffs": {
+    "A": "1d7872c4428822c2ab913a494120fd0d137be30e",
+    "B": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a"
+  },
+  "A_original_JSONs": {
+    "a-field-config-original.json": {
+      "valid": false,
+      "error": "Expecting ',' delimiter: line 29 column 17 (char 1534)",
+      "adjacent_string_lines": [
+        28,
+        32,
+        39
+      ]
+    },
+    "a-usable-point-original.json": {
+      "valid": false,
+      "error": "Expecting ',' delimiter: line 10 column 21 (char 402)",
+      "adjacent_string_lines": [
+        9,
+        14,
+        28,
+        33,
+        34,
+        36,
+        37,
+        39,
+        41,
+        43
+      ]
+    },
+    "a-live-round-original.json": {
+      "valid": false,
+      "error": "Expecting ',' delimiter: line 6 column 15 (char 259)",
+      "adjacent_string_lines": [
+        5,
+        10,
+        20,
+        30,
+        31,
+        35,
+        39,
+        40,
+        44,
+        45,
+        47,
+        50
+      ]
+    }
+  }
 }
