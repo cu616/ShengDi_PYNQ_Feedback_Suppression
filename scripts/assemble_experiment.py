@@ -376,9 +376,9 @@ def assemble_sprint(out, assets, model_path, human_only=False):
     return manifest
 
 
-def assemble_layout(out, candidate_commit=None):
+def assemble_layout(out, candidate_commit=None, repair_binding=None):
     """New-layout preparation: exact A assets, no legacy candidate or hardware."""
-    from layout_experiment import POLICY, PLAN as LAYOUT_PLAN, A_COMMIT, template, scene_template, notebook_code_hash, check as check_layout
+    from layout_experiment import POLICY, PLAN as LAYOUT_PLAN, A_COMMIT, SCENE_COMMIT, REPAIRED_CAPTURE_MANIFEST, REPAIRED_CAPTURE_SET, template, scene_template, notebook_code_hash, check as check_layout
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
     for name in ('layout_experiment.py','listener_metrics.py','sprint_continuous.py','evaluation.py',
                  'growth_monitor.py','tail_metrics.py','model_comparison.py','room_experiment.py'):
@@ -387,10 +387,18 @@ def assemble_layout(out, candidate_commit=None):
              ('replay_trial.py','live_run.py','replay_tools.py','closed_tools.py','residual_tools.py')}
     origins.update({name:'board/audio_replay/v2/'+name for name in ('audio_replay.bit','audio_replay.hwh')})
     origins['a-field-config-original.json']='report/verification/audio-replay/field-config-2026-10-26.json'
+    origins.update({'a-'+name+'-original.json':'report/verification/audio-replay/'+name+'-2026-10-26.json'
+        for name in ('scene-input','live-round','mic-fault-impact','usable-point')})
+    origins['a-repaired-capture-manifest.json']='report/verification/audio-replay/bind-capture-2026-10-26/manifest.json'
+    origins['a-repaired-capture-details.json']='report/verification/audio-replay/bind-capture-2026-10-26/bind_manifest.json'
     for name,origin in origins.items():
-        (out/name).write_bytes(subprocess.check_output(['git','show',A_COMMIT+':'+origin],cwd=ROOT))
-    for name,data in (('candidate-input.json',template()),('scene-input.json',scene_template())):
-        (out/name).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+        commit=SCENE_COMMIT if origin.startswith('report/') else A_COMMIT
+        (out/name).write_bytes(subprocess.check_output(['git','show',commit+':'+origin],cwd=ROOT))
+    if sha(out/'a-repaired-capture-manifest.json')!=REPAIRED_CAPTURE_MANIFEST:raise ValueError('repair capture manifest mismatch')
+    for name in ('a-field-config-original.json','a-live-round-original.json','a-mic-fault-impact-original.json','a-usable-point-original.json'):
+        json.loads((out/name).read_text(encoding='utf8'))
+    (out/'candidate-input.json').write_text(json.dumps(template(),ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    shutil.copy2(out/'a-scene-input-original.json',out/'scene-input.json')
     if candidate_commit:
         import numpy as np
         from layout_experiment import RATE, FIXTURE
@@ -420,39 +428,32 @@ def assemble_layout(out, candidate_commit=None):
             original_timeline_holdout='b-metrics.json:time_domain.q20_traindev_val + unaligned_deployment_check',
             diagnostic_alignment='b-metrics.json:alignment; raw deployment kept separate',
             input_manifest_sha256=hashlib.sha256(json.dumps(metrics['data_identity'],sort_keys=True,separators=(',',':')).encode()).hexdigest(),
-            gain_and_injection_basis='B formal handoff starts -14dB; C caps at A reported zero-coefficient -8dB working point; runtime branch adds no injection',
-            b_allowed_gains_db=list(range(-14,-7)),gain_db=-8.,profile='runtime_scan',scan_gains_db=list(range(-14,-7)),
+            gain_and_injection_basis='Planned discrete A=52ee4e4 points; all effects blocked pending repaired-scene B candidate',
+            b_allowed_gains_db=LAYOUT_PLAN['runtime_scan_gains_db'],gain_db=-8.,profile='runtime_scan',scan_gains_db=LAYOUT_PLAN['runtime_scan_gains_db'],
             bands=[dict(low_hz=low,high_hz=high,minimum_signal_snr_db=None,
                 basis='B coherence>=0.8 applies to frequency estimates; not estimated in the no-injection runtime branch')
                 for low,high in ((300,460),(3000,10200))],
             prediction_and_failure_actions='Use zero/matched same-condition observations; do not adopt old-model 14dB threshold or +2..+9 gain forecast as release criteria')
+        if repair_binding:
+            candidate['wire_repair_binding']=json.loads(Path(repair_binding).read_text(encoding='utf8'))
         (out/'candidate-input.json').write_text(json.dumps(candidate,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
-        later_A='1d7872c4428822c2ab913a494120fd0d137be30e'
-        for name,origin in {'a-usable-point-original.json':'report/verification/audio-replay/usable-point-2026-10-26.json',
-                            'a-live-round-original.json':'report/verification/audio-replay/live-round-2026-10-26.json'}.items():
-            (out/name).write_bytes(subprocess.check_output(['git','show',later_A+':'+origin],cwd=ROOT))
-        scene=scene_template();scene.update(talker_to_microphone_cm=5,
-            listener_position='A reports 20 cm from speaker; original a-usable-point-original.json',
-            speaker_volume_knob='maximum, A=1d7872c',plate_and_cotton_unchanged=True,
-            microphone_preamp_gain='unchanged per A=1d7872c; physical marker still to record',
-            a_limits_basis='A=1d7872c reports zero-coefficient -8dB twice for 9.5s, not a matched-model or sustained guarantee')
-        (out/'scene-input.json').write_text(json.dumps(scene,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
         # These are pure argument-budget checks, not permission for these probe values.
         probe=driver_request(out,'replay_trial',out/'compatibility-probe.npz',FIXTURE,out/'candidate-unbound.json',
             np.zeros(1,dtype='<i2'),gain_db=-8.,seconds=2.52,hp_volume=40,
             speaker_confirmed=True,local_capture_confirmed=True)
-        receipt=dict(B_commit=candidate_commit,A_later_facts_commit=later_A,model=identity,logical_taps=len(q),loaded_taps=512,
+        receipt=dict(B_commit=candidate_commit,A_later_facts_commit=SCENE_COMMIT,model=identity,logical_taps=len(q),loaded_taps=512,
             serial_cycles=3*len(q)+3,frame_budget=2048,bias_loaded=False,lag_first=1,forward_schedule_frames=2,
             identity_and_driver_compatibility=True,probe=probe,probe_scope='software argument validation only; no gain/injection approval',
             historical_fixture_alias=dict(original_metadata='room_v1_20261021',new_runs=FIXTURE,
                 provenance='A=f45449d capture scene and B=8a02757 actual-layout handoff',original_NPZ_modified=False),
-            decision_basis=dict(worth_bounded_board_test=True,basis='same-session held-out Q20 prediction improves; field result pending',
-                zero_bound_db=-3.15,candidate_bound_db=5.27,same_metric_difference_db=8.42,
+            decision_basis=dict(worth_bounded_board_test=None,basis='wire repair invalidates previous scene qualification; await matching model and same-condition comparison',
                 old_model_14dB_difference_not_used=True,automatic_3_or_8dB_accept_reject=False,
-                reason='offline sufficient bounds are not field MSG; this -14..-8 capped scan cannot establish two onset boundaries'),
-            sources=files,unresolved=['A confirms current scene and accepts the frozen -14..-8 bounded experiment in FIELD_READY',
+                reason='5cm operating point withdrawn; no effect conclusion before repaired-scene binding and paired field results'),
+            required_repair_binding=dict(capture_manifest_sha256=REPAIRED_CAPTURE_MANIFEST,capture_set_sha256=REPAIRED_CAPTURE_SET,
+                wire_state='repaired',model_sha256=identity['file_sha256'],coefficients_sha256=identity['q20_sha256'],b_commit=candidate_commit,basis_ref='required B evidence using the repaired captures'),
+            sources=files,unresolved=['B matching model tied to repaired capture manifest/set, not pre-repair 8a02757',
                 'Frequency/path estimates not scheduled: no extra injection and no invented pure-SNR threshold',
-                'Recorder/fixed-source/AGC facts optional, needed only for quantitative listener WAV branch'],
+                'Quantitative listener measurement disabled; qualitative phone source facts entered once at field binding'],
             known_report_conflicts=['README section 9 says c771a02d; formal B message corrects it to actual file/metrics/registry e8757833, accepted',
                 'README section 7 gain forecast/3dB test compares old model, not this zero/matched question',
                 'README section 4 unaligned summary differs from section 6 and machine metrics'])
@@ -466,8 +467,8 @@ def assemble_layout(out, candidate_commit=None):
     start=guide.index('## 2026-10-26 新布局一次集中实验')
     stop=guide.index('\n## ',start+4)
     (out/'OPERATIONS.md').write_text(guide[start:stop],encoding='utf8')
-    manifest=dict(policy=POLICY,plan=LAYOUT_PLAN,package_status='ready_for_A_field_binding' if candidate_commit else 'prepared_pending_binding',
-        A_commit=A_COMMIT,A_origins=origins,C_source_base=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
+    manifest=dict(policy=POLICY,plan=LAYOUT_PLAN,package_status='pending_repaired_scene_model',
+        A_commit=A_COMMIT,A_scene_commit=SCENE_COMMIT,A_origins=origins,C_source_base=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),
         hardware_executed=False,notebook_code_sha256=notebook_code_hash(out/'layout.ipynb'),
@@ -476,6 +477,7 @@ def assemble_layout(out, candidate_commit=None):
     (out/'layout-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     pending=check_layout(out)
     manifest['missing']=pending['missing']
+    if not any(e.startswith('B:') for e in pending['missing']):manifest['package_status']='ready_for_A_field_binding'
     (out/'layout-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:
         for path in sorted(out.rglob('*')):
@@ -493,11 +495,12 @@ if __name__=='__main__':
     p.add_argument('--sprint-human',action='store_true')
     p.add_argument('--layout-prepared',action='store_true')
     p.add_argument('--candidate-commit')
+    p.add_argument('--repair-binding',type=Path)
     p.add_argument('--r4-b-handoff',action='store_true')
     p.add_argument('--model',type=Path)
     a=p.parse_args()
     if a.layout_prepared:
-        m=assemble_layout(a.output,a.candidate_commit)
+        m=assemble_layout(a.output,a.candidate_commit,a.repair_binding)
     elif a.r4_b_handoff:
         m=assemble_r4_b_handoff(a.output)
     elif a.sprint_ready or a.sprint_human:

@@ -1,0 +1,6 @@
+test_runtime_scan_does_not_require_injection_or_optional_recordings (test_layout_experiment.LayoutTests.test_runtime_scan_does_not_require_injection_or_optional_recordings) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 13.436s
+
+OK

@@ -1,0 +1,229 @@
+{
+  "stage": "draft-before-source-freeze",
+  "policy": "c-new-layout-1.2.0",
+  "package_status": "pending_repaired_scene_model",
+  "source_base": "ef95be36be898236b1a81aa8bc4ae36e0146c097",
+  "source_tree_clean": false,
+  "A_driver_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
+  "A_scene_commit": "52ee4e4a5d34fff9f0c82ae46d7dd5449ee99d00",
+  "B_observed_commit": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a",
+  "B_repaired_model_available": false,
+  "package_sha256": "fa015e02e040ff5de88ed75c4b5ee653acaca98a0b845d2caa1b24a5666bc743",
+  "package_bytes": 336650,
+  "immutable_payload_files": 31,
+  "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
+  "accepted_scene": {
+    "fixture_id": "room_v1_20261026",
+    "verified_by_A": true,
+    "hp_volume": 40,
+    "sample_rate_hz": 48828.125,
+    "speaker_to_microphone_cm": 100,
+    "speaker_orientation": "side-facing the microphone",
+    "plate_and_cotton_unchanged": true,
+    "a_allowed_gains_db": [
+      -14,
+      -12,
+      -10,
+      -8,
+      -6
+    ],
+    "a_injection_range_dbfs": [
+      -30,
+      -6
+    ],
+    "a_limits_basis": "Measured on 2026-10-26 with a verified microphone (noise floor -35.1 dBFS, zero full-scale samples) and zero coefficients. Digital gain -8 dB is stable (331 Hz mode share 0.12-0.16); -6 dB already shows near-regeneration masking (share 0.37-0.70); -4 dB is loud but muddy (share 0.68); 0 dB oscillates at full scale. Broadband open-loop coupling is -10 to -12 dB (six 16384-frame segments, source -6 dBFS, gain -40 dB). Requirement for every run: microphone peak must stay below -6 dBFS; at 5 cm with a healthy microphone the input CLIPS (mic -4.0, peak 0.0), so 5 cm is NOT an allowed talker distance.",
+    "control_and_cue_approved_by_A": true,
+    "control_and_cue_basis": "The path gate may play the packaged cue tone only when the room is silent and the external source is stopped. Gate is accepted on a live-path basis (mic responds above the floor), not on an absolute level match, because the coupling changed when the speaker was moved and the plate was covered. Any saturation counter, any guard stop, or any audible regeneration ends that branch immediately; no automatic bypass and no automatic gain increase.",
+    "allowed_cue_tone_conditions": [
+      "external source stopped and the room silent",
+      "microphone peak below -6 dBFS before the cue",
+      "stop on any saturation counter or guard event"
+    ],
+    "talker_to_microphone_cm": 25,
+    "talker_distance_basis": "5 cm clips with a healthy microphone; 15-30 cm keeps the input usable. The value 5 cm in the previous package came from a run whose microphone wire was loose, so the microphone was less sensitive than it is now.",
+    "listener_position": "20 cm from the speaker, facing it",
+    "microphone_preamp_gain": "untouched, factory setting since delivery (operator confirms no adjustment); no physical mark applied",
+    "speaker_volume_knob": "maximum, unchanged",
+    "fixed_speech_source": "a recording stored on the operator's phone, played back through the phone's own speaker or wired output; exact file, level and start point MUST be fixed and written down before the comparison round",
+    "recorder_gain": "unknown - there is no external recorder; the phone playback level is the only control, and its gain is not exposed",
+    "agc_disabled": "unknown and not controllable - the operator cannot verify whether the phone applies AGC",
+    "a_notes": {
+      "microphone_fault": "During the 2026-10-26 capture the microphone wire was intermittently loose; the ADC read a constant -4.2 dBFS independent of source level and gain. Reseated; noise floor now -35.1 dBFS with zero full-scale samples.",
+      "process_rule": "If a level reading does not change with the excitation, check the wiring before interpreting it acoustically.",
+      "original_json_repair": "Four field JSONs under report/verification/audio-replay were not valid JSON (Python-style implicit string concatenation). Repaired and re-validated; zero malformed files remain."
+    },
+    "a_consequences_for_listener_quantitative": [
+      "without a fixed-gain recorder and with AGC not controllable, the four listener WAVs cannot be produced to C's spec, so the listener QUANTITATIVE item must be recorded as not tested",
+      "the listener QUALITATIVE judgement (can the amplified voice be heard and is it clear) is still valid and should be recorded separately",
+      "if C needs the quantitative item, A needs a recorder with a fixed, readable gain and a documented AGC-off setting"
+    ],
+    "fixed_source_requirements_for_A": [
+      "one specific recording, identified by name",
+      "fixed playback volume, written down as a number or device step",
+      "fixed phone position relative to the microphone",
+      "do not change any of the three during the round"
+    ]
+  },
+  "A_repaired_JSONs": {
+    "a-field-config-original.json": {
+      "valid_JSON": true,
+      "sha256": "fefadca01135186b30f770a255e62aef0c8007ed01a6c84359c9a32712350402"
+    },
+    "a-live-round-original.json": {
+      "valid_JSON": true,
+      "sha256": "278c3ad714d048785ba7bd2ff7fc837895a0d0569646c3c91ce8cb2d4647b1dc"
+    },
+    "a-mic-fault-impact-original.json": {
+      "valid_JSON": true,
+      "sha256": "b20a051a0fd7749eaaf13c03e115f84e9b8ea06c481bba1347188b08afe2ce0a"
+    },
+    "a-usable-point-original.json": {
+      "valid_JSON": true,
+      "sha256": "a16a648b73e0ec808b8a5602e8ebbaedd28eb2c81fef6b84655a915653c474c6"
+    }
+  },
+  "required_capture_manifest_sha256": "1a4196c27730e4ceec678fc2d6debc755212790b494716b45d9e887769bfcfaa",
+  "required_capture_set_sha256": "46aad2acf0557698281d67fdac5724daad9e246f1225c4114093d52abd0036da",
+  "compatibility": {
+    "B_commit": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a",
+    "A_later_facts_commit": "52ee4e4a5d34fff9f0c82ae46d7dd5449ee99d00",
+    "model": {
+      "path": "models/room_v1/newlayout_512_20261026.json",
+      "file_sha256": "36c0d9705de99fcddd6022390d49bf878f376a38ee535398819ed911eebdd665",
+      "q20_sha256": "e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961",
+      "float_sha256": "4dfff1ca3798a59ef00fff0f50f903e936d306b8b1347cff6a1d4aca8f94dc75",
+      "bytes": 17882,
+      "q20_min": -31959,
+      "q20_max": 43681
+    },
+    "logical_taps": 512,
+    "loaded_taps": 512,
+    "serial_cycles": 1539,
+    "frame_budget": 2048,
+    "bias_loaded": false,
+    "lag_first": 1,
+    "forward_schedule_frames": 2,
+    "identity_and_driver_compatibility": true,
+    "probe": {
+      "budget": 123046,
+      "source_frames": 1,
+      "headroom_frames": 123045,
+      "validation_driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62"
+    },
+    "probe_scope": "software argument validation only; no gain/injection approval",
+    "historical_fixture_alias": {
+      "original_metadata": "room_v1_20261021",
+      "new_runs": "room_v1_20261026",
+      "provenance": "A=f45449d capture scene and B=8a02757 actual-layout handoff",
+      "original_NPZ_modified": false
+    },
+    "decision_basis": {
+      "worth_bounded_board_test": null,
+      "basis": "wire repair invalidates previous scene qualification; await matching model and same-condition comparison",
+      "old_model_14dB_difference_not_used": true,
+      "automatic_3_or_8dB_accept_reject": false,
+      "reason": "5cm operating point withdrawn; no effect conclusion before repaired-scene binding and paired field results"
+    },
+    "required_repair_binding": {
+      "capture_manifest_sha256": "1a4196c27730e4ceec678fc2d6debc755212790b494716b45d9e887769bfcfaa",
+      "capture_set_sha256": "46aad2acf0557698281d67fdac5724daad9e246f1225c4114093d52abd0036da",
+      "wire_state": "repaired",
+      "model_sha256": "36c0d9705de99fcddd6022390d49bf878f376a38ee535398819ed911eebdd665",
+      "coefficients_sha256": "e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961",
+      "b_commit": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a",
+      "basis_ref": "required B evidence using the repaired captures"
+    },
+    "sources": {
+      "candidate-unbound.json": "models/room_v1/newlayout_512_20261026.json",
+      "b-metrics.json": "report/verification/newlayout-candidate-2026-10-26/metrics.json",
+      "b-readme-original.txt": "report/verification/newlayout-candidate-2026-10-26/README.md",
+      "b-repro-original.txt": "report/verification/newlayout-candidate-2026-10-26/repro.txt",
+      "b-model-registry.json": "models/manifest.json"
+    },
+    "unresolved": [
+      "B matching model tied to repaired capture manifest/set, not pre-repair 8a02757",
+      "Frequency/path estimates not scheduled: no extra injection and no invented pure-SNR threshold",
+      "Quantitative listener measurement disabled; qualitative phone source facts entered once at field binding"
+    ],
+    "known_report_conflicts": [
+      "README section 9 says c771a02d; formal B message corrects it to actual file/metrics/registry e8757833, accepted",
+      "README section 7 gain forecast/3dB test compares old model, not this zero/matched question",
+      "README section 4 unaligned summary differs from section 6 and machine metrics"
+    ]
+  },
+  "software_test_runs": [
+    {
+      "file": "layout-tests-r3.txt",
+      "tests": 21,
+      "seconds": 76.663,
+      "exit_code": 0
+    },
+    {
+      "file": "layout-distance-control-r3.txt",
+      "tests": 1,
+      "seconds": 4.39,
+      "exit_code": 0
+    },
+    {
+      "file": "layout-runtime-control-r3.txt",
+      "tests": 1,
+      "seconds": 13.436,
+      "exit_code": 0
+    }
+  ],
+  "unchanged_22_sprint_tests": "not repeated: no A bottom-layer, FIR, shared continuous-review or listener-tool changes",
+  "hardware_executed": false,
+  "physical_effect": "not_established",
+  "peak_policy": {
+    "limit_dbfs": -6,
+    "strict": true,
+    "includes_DC": true,
+    "seconds": 0.3,
+    "complete_precheck_capture": true,
+    "output": "zero source + zero_coeff=True + direct_only=True",
+    "future_whole_run_guarantee": false
+  },
+  "quantitative_listener": {
+    "status": "not_tested",
+    "disabled": true,
+    "reason": "A has no fixed readable gain recorder; AGC unknown/not controllable"
+  },
+  "independent_extraction": {
+    "payload_hashes_verified": true,
+    "commands": [
+      {
+        "action": "check",
+        "exit_code": 2,
+        "ready": false,
+        "missing": [
+          "A:fixed_phone_source_facts",
+          "B:pre_repair_candidate_not_qualified",
+          "B:wire_repair_binding",
+          "B:wire_repair_binding:b_commit",
+          "B:wire_repair_binding:basis_ref",
+          "B:wire_repair_binding:capture_manifest_sha256",
+          "B:wire_repair_binding:capture_set_sha256",
+          "B:wire_repair_binding:coefficients_sha256",
+          "B:wire_repair_binding:model_sha256",
+          "B:wire_repair_binding:wire_state",
+          "C:frozen_run_binding_missing"
+        ],
+        "status": null,
+        "trial_count": 0,
+        "stop_reason": null
+      },
+      {
+        "action": "run",
+        "exit_code": 2,
+        "ready": null,
+        "missing": null,
+        "status": "stopped",
+        "trial_count": 0,
+        "stop_reason": "ValueError:BINDING_INCOMPLETE [\"A:fixed_phone_source_facts\", \"B:pre_repair_candidate_not_qualified\", \"B:wire_repair_binding\", \"B:wire_repair_binding:b_commit\", \"B:wire_repair_binding:basis_ref\", \"B:wire_repair_binding:capture_manifest_sha256\", \"B:wire_repair_binding:capture_set_sha256\", \"B:wire_repair_binding:coefficients_sha256\", \"B:wire_repair_binding:model_sha256\", \"B:wire_repair_binding:wire_state\", \"C:frozen_run_binding_missing\"]"
+      }
+    ],
+    "no_active_model": true,
+    "old_model_blocked_even_with_FIELD_READY": true,
+    "zero_board_trials": true
+  }
+}
