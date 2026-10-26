@@ -35,5 +35,11 @@
   "not_claimed": [
     "no audible test was run",
     "no effect conclusion"
-  ]
+  ],
+  "retracted": {
+    "claim": "10.9 dB saturation margin guarantees the candidate can be loaded safely",
+    "why_retracted": "C is right: LOAD_OK is a file/identity check, not a runtime guarantee. The saturation headroom is an arithmetic bound on sum|q| only, not a measured in-run margin. Per-run load count, status and capture arithmetic are recorded by the package itself.",
+    "still_valid": "the arithmetic bound itself (sum|q| = 2,398,706 versus the 8,388,608 threshold) and the identity match of the Q20 hash"
+  },
+  "zero_arm": "per C: the zero arm loads the legitimate rewired model file with zero_coeff=True; the driver sends 512 zeros. No separate zero-coefficient JSON is created."
 }
