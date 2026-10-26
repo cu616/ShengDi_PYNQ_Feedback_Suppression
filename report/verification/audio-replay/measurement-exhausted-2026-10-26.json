@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "topic": "measurement designs exhausted: single 0.336 s window is the binding constraint",
+  "recorded_by": "A",
+  "designs_tried": [
+    {
+      "design": "broadband white noise",
+      "source_level": "-18 then -6 dBFS",
+      "outcome": "broadband cross-correlation 0.10; coherence 0.42-0.63 at 4-8 kHz; no reliable band"
+    },
+    {
+      "design": "band-limited noise, one band per run",
+      "source_level": "-6 dBFS",
+      "outcome": "best mean coherence 0.537 at 4-6 kHz; 2 usable bins of 4097"
+    },
+    {
+      "design": "band-limited noise, two repeats per band",
+      "source_level": "-3 dBFS",
+      "outcome": "best mean coherence 0.439 at 4-6 kHz; 1 usable bin; no improvement over -6 dBFS"
+    }
+  ],
+  "why_level_does_not_help": "a 12 dB source increase bought only 4-9 dB of SNR, so roughly half of the interfering energy scales with the source; it is reverberant tail beyond the 512-tap (10.5 ms) memory, not additive noise",
+  "binding_constraint": "every capture is a single 16384-frame (0.336 s) window, so an impulse response estimated from that window cannot be validated on another window of the same excitation",
+  "conclusion": "model fitting is not physically possible with the current capture interface; no fourth estimator will change this",
+  "requested_from_C": "either longer raw PCM, or several consecutive 0.336 s captures returned together from a single overlay load",
+  "not_claimed": [
+    "no model",
+    "no cancellation target",
+    "no maximum stable gain"
+  ]
+}
