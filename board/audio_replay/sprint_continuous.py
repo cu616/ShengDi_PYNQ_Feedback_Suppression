@@ -49,7 +49,7 @@ def driver_request(base, name, *args, **kwargs):
     return result
 
 
-def review_continuous(path, manifest, plan, error=None):
+def review_continuous(path, manifest, plan, error=None, model_path=None):
     """Register timeline + tail PCM: engineering coverage, never full-run acoustics."""
     path=Path(path);side=path.with_suffix('.status.json')
     state={};original={};checks={};verification={};reasons=[]
@@ -83,7 +83,7 @@ def review_continuous(path, manifest, plan, error=None):
             np.all(timeline[:,3:]==0) and np.all((words&((3<<17)|(7<<19)))==0))
         checks['cleanup']=all(state.get(k) is True for k in ('recovered','mute_ok','disarm_ok','muted')) and not state.get('cleanup_errors')
         checks['save']=not state.get('save_error') and not state.get('salvage_errors')
-        q=np.asarray(json.loads((path.parent.parent.parent/'model.json').read_text(encoding='utf8'))['coefficients_q20'],dtype=np.int64)
+        q=np.asarray(json.loads(Path(model_path or path.parent.parent.parent/'model.json').read_text(encoding='utf8'))['coefficients_q20'],dtype=np.int64)
         from replay_tools import verify_replay
         raw=np.column_stack((np.rint(arrays['reference']*2**23),np.rint(arrays['microphone']*2**23),
                              arrays['prediction_pcm'],arrays['residual_pcm'])).astype(np.int64)

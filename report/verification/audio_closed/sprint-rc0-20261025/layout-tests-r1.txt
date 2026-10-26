@@ -1,0 +1,14 @@
+test_binding_rejects_all_bad_identity_and_unsupported_ranges (test_layout_experiment.LayoutTests.test_binding_rejects_all_bad_identity_and_unsupported_ranges) ... ok
+test_cancel_empty_and_invalid_start_never_run_human (test_layout_experiment.LayoutTests.test_cancel_empty_and_invalid_start_never_run_human) ... ok
+test_continuous_review_reuses_explicit_bound_model (test_layout_experiment.LayoutTests.test_continuous_review_reuses_explicit_bound_model) ... ok
+test_known_failures_stop_before_other_sound_and_keep_evidence (test_layout_experiment.LayoutTests.test_known_failures_stop_before_other_sound_and_keep_evidence) ... ok
+test_low_snr_is_band_local_and_heard_is_not_amplification (test_layout_experiment.LayoutTests.test_low_snr_is_band_local_and_heard_is_not_amplification) ... ok
+test_pending_is_complete_missing_list_and_never_calls_board (test_layout_experiment.LayoutTests.test_pending_is_complete_missing_list_and_never_calls_board) ... ok
+test_post_control_drift_rejects_pairs_without_erasing_other_facts (test_layout_experiment.LayoutTests.test_post_control_drift_rejects_pairs_without_erasing_other_facts) ... ok
+test_snr_definition_matches_analytic_truth (test_layout_experiment.LayoutTests.test_snr_definition_matches_analytic_truth) ... ok
+test_stale_or_changed_frozen_payload_blocks_before_board (test_layout_experiment.LayoutTests.test_stale_or_changed_frozen_payload_blocks_before_board) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 21.868s
+
+OK

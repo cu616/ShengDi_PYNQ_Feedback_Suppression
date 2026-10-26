@@ -40,32 +40,17 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-26取得A=b104f20/B=e9e267b，独立核验新场六原件、实际播放参考/Q20、184/185帧延迟及逐段频谱；以原C判据验证325Hz稳定/增长/缺口控制。后续真人−6保护推翻早先“−6可安全真人测试”建议，不发旧包手改增益版。已提出A连续原始采集字段/验收、B同场Q20完整交接，两者并行，R-007仍done。
-**当前卡点**：新场实录Q20=93f7ab6e…与C冻包c9d3b1e6…不同，尚无可部署的新场Q20/场景及真人工作点资格；−5.5只是两档中点，不作为精确MSG或0.16dB预测验证。v2只有事后16384帧尾环，没有单arm连续分块协议。A已修部分路由/记录字段，但完整夹具实跑仍因test_start_control旧绝对路径退出1。保持负面听感与未测项，不自动旁路、升档或改保护。
+**最后动作**：2026-10-26按A=ddafcb7规则及ca9b484状态/审阅读取，保持C分支，集成A=2928a4a原驱动/v2与已有批次、真人、听众工具；新布局入口9项及相关22项软件回归通过，交一次集中操作单、待绑定准备包和一次回包复算入口。
+**当前卡点**：B=e9e267b尚无本场可部署候选及增益/注入/频带SNR适用条件；A现场身份仍有未记录项，其field-config JSON两处相邻字符串不能直接解析。准备包无model.json、无旧系数替代；缺身份禁止有声，取得材料后只做必要绑定/兼容核对，不等普通三方会签。
 
-- [r4原包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-d013930-review.json)、[结果与边界](../report/verification/audio_closed/batch-control.md#2026-10-25-ad013930原回包独立审核)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-25-集中实验-rc0)。r4原返回ZIP191815字节，SHA256=9fd5c28704df0b35750cdf85fbd66cfee894db0467bb3ef22af0c9c3cb0a3422，成员及包身份全部通过。
-- [r4五原件独立波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json)：A=63f6a69的r4-review-return.zip共2082636字节、SHA256=e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48；5/5与原清单一致。四FIR源内功率和两次差分吻合，五份环形尾部预测/残差/输出算术零失配；60秒原时间线与状态一致，声学覆盖边界不变。
-- [真人完整ZIP](../build/packages/c-sprint-rc01-human-r1.zip)、[归档验收](../report/verification/audio_closed/sprint-rc0-20261025/sprint-package-check-human-r1.json)：源码59f2b2a，365967字节，SHA256=0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e；48载荷/A七件/C八件身份与实际归档5项自检原样复现通过，8类负例拒绝。SELFTEST min14920/gate passed/0.434分钟，现场未测。
-- 绑定资产仍A=85f4967/v2 bit61bb71aa…/hwh92b499a3…；d013930是结果提交。strong、EQ identity、−14dB/Q12=817、Codec40不变。失败静音停批，不升档、不自动旁路、不装旧场系数。
-- 真人包只做2门禁、真人、听众关/开5项；PROXY触板前拒绝，明确人耳负面记failed，四份固定增益/无AGC录音缺失记未测。A的run_rc4_human2.sh仍在START回调返回前倒计时讲话、自动填人工确认；原脚本控制复现通过。待本次保护问题核实后，使用C唯一Notebook在实际START后讲话，听众用同一固定录制源。
-- [A新增三次回包审核](../report/verification/audio_closed/sprint-rc0-20261025/a-9edd83b-review.json)：均是旧r4 1.0.4，不是human-only 1.0.5。首次听感OTHER；第二次约3.568秒保护，原回包记录prediction/residual=0/2、保存窗麦克风满幅13样本，原因未知；第三次14920帧定音窗存在、tonal_fraction=0.746<0.8。三次清理回执通过，不据此证明声学可用或已排除故障。
-- 两组总/中带响应均减小，高带均增大，低带方向不一致；只描述14408帧源内窗，不推出整体抑制或ASG。60秒PCM覆盖约0.559%，全程声学未知，真人/听众不能以PROXY填通过。
-- [B=7c6d3ed最终验收](../report/verification/audio_closed/sprint-rc0-20261025/b-7c6d3ed-review.json)：与8b01999同Git blob，原134项回归通过；真实正例及对照均通过、原数不变。采样界及旧场限定等请求修订接受，新增预算数字仍未独立复算、不参与现场放行。60秒output在B侧仍未测，不混用C证据；默认与候选不变。
-- [B入口完整回执](../report/verification/audio_closed/sprint-rc0-20261025/b-7c6d3ed-cli-controls.json)：C[专用检查器](../tools/check_b_waveform_cli.py)正例通过、八坏例均退出2且ok=false/附诊断，整体退出0，末行positive=passed/bad_rejected=8/8。R-007按既定r4范围关闭，不重开旧判据/候选；B的新场同场Q20交接另列R-012，沿用其唯一生产脚本。
-- [给B的冻结原始汇总包](../build/packages/c-r4-to-b-r1.zip)、[字节与哈希核验](../report/verification/audio_closed/sprint-rc0-20261025/b-handoff-r1-check.json)：入口summary-v3.json → fir_switch_pairs两组，含原A回包和C审核；376395字节，SHA256=474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367，14载荷通过，源c0af379。新增波形取固定A=63f6a69的r4-review-return.zip；C波形复算已完成，B按同一原件补独立判读。
-- 用户常设要求：每轮回应前分别检查A、B是否需要派单；有新动作就给完整可转发消息，无新动作明确写无需新增。按最新提交去重，不因等待原件重复已经通过的现场项目。
-- [A更新交付复核](../report/verification/audio_closed/sprint-rc0-20261025/a26-delivery-binding-review.json)：配齐且核对冻结原包夹具后，routing实际退出0，start_control仍读旧绝对路径并退出1，整体DELIVERY_INCOMPLETE。接受summary.scene.layout说明及旧max_stable_gain_db改null的修订，R-009只保留未闭合软件/来源绑定；不重复保护注入或已通过START语义。
-- [下次发包外部输入清单](../board/audio_closed/BATCH_GUIDE.md#下一次真人发包必须随消息列全的外部输入)列全A需外部产生的四WAV、固定源与实测布局；没有WAV则listener未测，失败停批不为录齐而继续。C交付消息漏列责任已补，旧冻结包字节不改。
-- [门禁与耦合独立复核](../report/verification/audio_closed/sprint-rc0-20261025/gate-coupling-review.json)：首项已有传入底噪+6dB及定音0.8，后续漂移另判；冻结旧底噪−37.8不能当新场测量。下一包需当前同场静默证据绑定，未知不自动适配或重置。A报宽带+3dB未交原校准捕获，C只核算差值，不接受解释全部现象；同RMS而不同峰值、同1kHz而不同宽带的受控反例通过。
-- [10/26增益与采集独立复核](../report/verification/audio_closed/sprint-rc0-20261025/a26-gain-and-capture-review.json)：六原件哈希/实际ref与source及v2 bit通过；直接内积延迟184/185。未对齐与诊断对齐后合格bin为428/1052（总4046），460–3000Hz仍未知；对齐诊断不是部署保证。已有六片可继续按段训练/验证，不能称物理不可拟合或把0.336秒认作唯一根因。
-- [连续采集具体请求](../report/verification/audio_closed/batch-control.md#2026-10-26-增益决定与连续采集请求)：A负责新契约/底层，目标单装载单arm八块ref/mic；C已有显式帧号/缺口重置的接收判据。v2不具备运行中原子快照/银行确认；多次arm只能独立段。R-013先做静音吞吐/原子性可行性，不承诺2.684秒连续已实现。
-- 325Hz作为局部诊断与全带并列，不把0.93能量集中度独自判啸叫或接近起振。原C增长判据已验证稳定325Hz不报增长、增长325Hz报疑似证据、跨缺口不累计；未改现有门禁/保护阈值。A报告保护计数−3为prediction/residual=0/9，真人−6为0/2；仅解码已有回执，不据保护求精确阈值。
-- 收尾已通过官方API读A=ca9b484的统筹审阅，仅文档/状态变化，没有新增模型或接口；其现场/离线分级、SNR/对齐/串行预算及先停声后保存原则与本轮合并执行。B的科学口径修订归同一R-012，不再开平行任务；现有有效观测保留，旧系数不再多档证伪。
-- [冷启动完整包](../build/packages/c-cold-start-r1.zip)：389560字节，SHA256=aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/cold-start.json)资产字段非空，原冻结包用a_assets，新生成器兼容assets同值别名。
-- [听众管线完整包](../build/packages/c-listener-pipeline-r1.zip)：49280字节，SHA256=e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58；[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/listener-pipeline.json)扣背景后的语音变化2.999839dB，原snr_db总录音/背景口径差2.978339dB，均距+3dB小于0.5dB；全为合成WAV，不算真人。
-- [正式退出码与独立解压复核](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-check.json)、[原工具回执](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-console.json)。每个交付只回答一个问题，首行来自其真实检查器最后一行；非0不作交付，缺陷附D1–D4和具体命令。接收方无需提供文件，后续现场四份固定增益录音仍由A外部录制。
-- [最新真人回包接收](../report/verification/audio_closed/sprint-rc0-20261025/a-50f30dd-human-receipt.json)：A=50f30dd的7成员/冻结human-r1身份通过、门禁通过、无保护、清理通过；仍2项停在NO_AMPLIFICATION，明确failed。标题称5cm但scene写15cm，实际距离/声源未核实；麦克风未满幅只限保存尾窗的metadata统计，不推全8秒。没读人声PCM，听众未测；R-009启动脚本字节未改，事实补正与原D4合并处理，不新派有声试验。
-- C未操板或改A/B实现。10/26质检，10/27 20:00冻结，10/28另一队友复现并冻结源码/bit/hwh/模型/配置/哈希；v2外部I/O签核仍不完整。
+- 本轮唯一问题、前提、完成/失败分支与实际路径见[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。同布局、同模拟档位，新模型/实际全零Q20两次反向配对；候选与工作点不由离线界自动放行。
+- [集成与必要软件证据](../report/verification/audio_closed/batch-control.md#2026-10-26-新布局集中包集成)、[机器检查](../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r1-check.json)、[准备包](../build/packages/c-new-layout-r1.zip)。同场背景/正向、实际装载计数与Q20、实际参考算术、独立段时间轴及各带扣背景SNR自动汇总；局部SNR无效保留其他结果。
+- 新入口直接调用A修复后的replay_trial/live_run，不依赖旧run_human脚本；A原先停声后读环/保存语义保留。旧D4交付检查不作为本包入口，不再派相同旧缺陷；A新field-config原字节留存，不静默修写其源文件。
+- 真人“听见声音”和听众“相对系统静音可辨扩声”分开；复用既有四WAV分析。仅听众支持后测试同候选工作点60秒工程运行；全程声学仍未知。执行完成、测量有效、算法差异、听众效果、持续运行分别分级；ready/package通过不是效果通过。
+- 失败先由A底层disarm/Codec静音，再尽力保存已有环形/计数；保护不直接判啸叫，不插值精确MSG，不混报布局与FIR收益。缺帧、保护前覆盖、保存/清理失败均保留未知，无自动升档/旁路/旧场回退。
+- A一次返回唯一return-results.zip，含非人声原NPZ、全部status/metadata与绑定；人声PCM不上传。C原入口一次核验/从原件复算配对，给B有效数据和不确定项。底层缺口交A、候选/算法条件交B；本轮尚无完整有效现场失败，不满足交队长重规划条件。
+- 历史r4原件、B=7c6d3ed修复与R-007验收保留在[既有证据](../report/verification/audio_closed/batch-control.md)；无变化不重验。新规则指定版本的A/B现状以[ca9b484快照](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/ca9b484/docs/STATE.md)为读取依据，未跨线覆盖本地A/B段或陈旧公共数字；其校正由对应责任方接手。
+- C未操板、未改A底层/B算法；新模型效果、真人扩声与新工作点持续结果均待现场。现有连续工程证据不是从零未做，也不作为新候选声学证明。
 
 ## 已验证 / 未验证（只在这里写一次）
 

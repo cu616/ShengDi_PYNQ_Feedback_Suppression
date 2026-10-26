@@ -1,0 +1,154 @@
+{
+  "stage": "source-preparation",
+  "policy": "c-new-layout-1.0.0",
+  "package_status": "prepared_pending_binding",
+  "package_sha256": "b532544cb609d35c848e21ffaa1efcc8e199ae25f518a80c2a6d7b0a93466c94",
+  "package_bytes": 295711,
+  "source_base": "ed32a09d59e666aafd0a187ab5aeb221977e7244",
+  "source_tree_clean": false,
+  "A_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
+  "software_tests": {
+    "layout": {
+      "command": "D:\\Anaconda\\python.exe -m unittest discover -s sim/feedback -p test_layout_experiment.py -v",
+      "count": 9,
+      "seconds": 21.868,
+      "exit_code": 0,
+      "output": "layout-tests-r1.txt"
+    },
+    "related_sprint": {
+      "command": "D:\\Anaconda\\python.exe -m unittest discover -s sim/feedback -p test_sprint_experiment.py -v",
+      "count": 22,
+      "seconds": 37.046,
+      "exit_code": 0
+    }
+  },
+  "hardware_executed": false,
+  "physical_effect": "not_tested",
+  "candidate_supplied": false,
+  "workflow_refs": {
+    "rules": "ddafcb7",
+    "state_and_review": "ca9b484"
+  },
+  "A_sources": {
+    "replay_trial.py": {
+      "sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+      "git_bytes_identical": true
+    },
+    "live_run.py": {
+      "sha256": "a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441",
+      "git_bytes_identical": true
+    },
+    "replay_tools.py": {
+      "sha256": "e3c748e07a6e87e9dd1522eebe11a24e171407039d35142590e70a85dc6bb767",
+      "git_bytes_identical": true
+    },
+    "closed_tools.py": {
+      "sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "git_bytes_identical": true
+    },
+    "residual_tools.py": {
+      "sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "git_bytes_identical": true
+    },
+    "audio_replay.bit": {
+      "sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+      "git_bytes_identical": true
+    },
+    "audio_replay.hwh": {
+      "sha256": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b",
+      "git_bytes_identical": true
+    },
+    "a-field-config-original.json": {
+      "sha256": "b4db3fb621ac6a9cfc9bb39121a96c03b66da29ca79bce689bcf54efd44d87bf",
+      "git_bytes_identical": true
+    }
+  },
+  "A_field_config_parse": {
+    "valid": false,
+    "error": "Expecting ',' delimiter: line 29 column 17 (char 1534)",
+    "line": 29,
+    "column": 17,
+    "known_fields": [
+      "retired.action",
+      "zero_coefficient"
+    ]
+  },
+  "independent_extraction": {
+    "commands": [
+      {
+        "action": "check",
+        "exit_code": 2,
+        "ready": false,
+        "status": null,
+        "trials": 0,
+        "missing": [
+          "A:a_allowed_gains_db",
+          "A:a_injection_range_dbfs",
+          "A:a_limits_basis",
+          "A:agc_disabled",
+          "A:fixed_speech_source",
+          "A:gain_not_supported",
+          "A:injection_not_supported",
+          "A:listener_position",
+          "A:microphone_preamp_gain",
+          "A:plate_and_cotton_unchanged",
+          "A:recorder_gain",
+          "A:speaker_volume_knob",
+          "A:talker_distance",
+          "A:talker_to_microphone_cm",
+          "A:unknown:fixed_speech_source",
+          "A:unknown:listener_position",
+          "A:unknown:microphone_preamp_gain",
+          "A:unknown:recorder_gain",
+          "A:unknown:speaker_volume_knob",
+          "A:unverified:agc_disabled",
+          "A:unverified:control_and_cue_approved_by_A",
+          "A:unverified:plate_and_cotton_unchanged",
+          "A:unverified:verified_by_A",
+          "B:b_allowed_gains_db",
+          "B:b_commit",
+          "B:b_injection_range_dbfs",
+          "B:bands",
+          "B:bands_missing",
+          "B:coefficients_sha256",
+          "B:deployment_evidence",
+          "B:diagnostic_alignment",
+          "B:evidence:deployment_evidence",
+          "B:evidence:diagnostic_alignment",
+          "B:evidence:gain_and_injection_basis",
+          "B:evidence:original_timeline_holdout",
+          "B:evidence:prediction_and_failure_actions",
+          "B:gain_and_injection_basis",
+          "B:gain_db",
+          "B:gain_not_supported",
+          "B:identity:b_commit",
+          "B:identity:coefficients_sha256",
+          "B:identity:input_manifest_sha256",
+          "B:identity:model_sha256",
+          "B:injection_not_supported",
+          "B:injection_rms_dbfs",
+          "B:input_manifest_sha256",
+          "B:model_file_missing",
+          "B:model_sha256",
+          "B:original_timeline_holdout",
+          "B:prediction_and_failure_actions",
+          "gain:driver_range",
+          "injection:PCM_headroom"
+        ],
+        "stop_reason": null
+      },
+      {
+        "action": "run",
+        "exit_code": 2,
+        "ready": null,
+        "status": "stopped",
+        "trials": 0,
+        "missing": null,
+        "stop_reason": "ValueError:BINDING_INCOMPLETE [\"A:a_allowed_gains_db\", \"A:a_injection_range_dbfs\", \"A:a_limits_basis\", \"A:agc_disabled\", \"A:fixed_speech_source\", \"A:gain_not_supported\", \"A:injection_not_supported\", \"A:listener_position\", \"A:microphone_preamp_gain\", \"A:plate_and_cotton_unchanged\", \"A:recorder_gain\", \"A:speaker_volume_knob\", \"A:talker_distance\", \"A:talker_to_microphone_cm\", \"A:unknown:fixed_speech_source\", \"A:unknown:listener_position\", \"A:unknown:microphone_preamp_gain\", \"A:unknown:recorder_gain\", \"A:unknown:speaker_volume_knob\", \"A:unverified:agc_disabled\", \"A:unverified:control_and_cue_approved_by_A\", \"A:unverified:plate_and_cotton_unchanged\", \"A:unverified:verified_by_A\", \"B:b_allowed_gains_db\", \"B:b_commit\", \"B:b_injection_range_dbfs\", \"B:bands\", \"B:bands_missing\", \"B:coefficients_sha256\", \"B:deployment_evidence\", \"B:diagnostic_alignment\", \"B:evidence:deployment_evidence\", \"B:evidence:diagnostic_alignment\", \"B:evidence:gain_and_injection_basis\", \"B:evidence:original_timeline_holdout\", \"B:evidence:prediction_and_failure_actions\", \"B:gain_and_injection_basis\", \"B:gain_db\", \"B:gain_not_supported\", \"B:identity:b_commit\", \"B:identity:coefficients_sha256\", \"B:identity:input_manifest_sha256\", \"B:identity:model_sha256\", \"B:injection_not_supported\", \"B:injection_rms_dbfs\", \"B:input_manifest_sha256\", \"B:model_file_missing\", \"B:model_sha256\", \"B:original_timeline_holdout\", \"B:prediction_and_failure_actions\", \"gain:driver_range\", \"injection:PCM_headroom\"]"
+      }
+    ],
+    "no_model": true,
+    "unbound_sound_branches_blocked": true
+  },
+  "payload_files": 20
+}

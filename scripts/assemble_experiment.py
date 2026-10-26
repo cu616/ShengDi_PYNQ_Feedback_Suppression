@@ -376,6 +376,46 @@ def assemble_sprint(out, assets, model_path, human_only=False):
     return manifest
 
 
+def assemble_layout(out):
+    """New-layout preparation: exact A assets, no legacy candidate or hardware."""
+    from layout_experiment import POLICY, PLAN as LAYOUT_PLAN, A_COMMIT, template, scene_template, check as check_layout
+    out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
+    for name in ('layout_experiment.py','listener_metrics.py','sprint_continuous.py','evaluation.py',
+                 'growth_monitor.py','tail_metrics.py','model_comparison.py','room_experiment.py'):
+        shutil.copy2(ROOT/'board/audio_replay'/name,out/name)
+    origins={name:'board/audio_replay/'+name for name in
+             ('replay_trial.py','live_run.py','replay_tools.py','closed_tools.py','residual_tools.py')}
+    origins.update({name:'board/audio_replay/v2/'+name for name in ('audio_replay.bit','audio_replay.hwh')})
+    origins['a-field-config-original.json']='report/verification/audio-replay/field-config-2026-10-26.json'
+    for name,origin in origins.items():
+        (out/name).write_bytes(subprocess.check_output(['git','show',A_COMMIT+':'+origin],cwd=ROOT))
+    for name,data in (('candidate-input.json',template()),('scene-input.json',scene_template())):
+        (out/name).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    code='# 新布局集中实验：核对绑定后执行\nfrom layout_experiment import run\nresult = run()\n'
+    nb=dict(nbformat=4,nbformat_minor=5,metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
+        cells=[dict(cell_type='markdown',metadata={},source=['先读 OPERATIONS.md；缺候选/场景身份时只生成停止回包，不操板。']),
+               dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=code.splitlines(True))])
+    (out/'layout.ipynb').write_text(json.dumps(nb,ensure_ascii=False,indent=2),encoding='utf8')
+    guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
+    start=guide.index('## 2026-10-26 新布局一次集中实验')
+    stop=guide.index('\n## ',start+4)
+    (out/'OPERATIONS.md').write_text(guide[start:stop],encoding='utf8')
+    manifest=dict(policy=POLICY,plan=LAYOUT_PLAN,package_status='prepared_pending_binding',
+        A_commit=A_COMMIT,A_origins=origins,C_source_base=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
+        source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
+            'board/audio_replay','scripts/assemble_experiment.py'],cwd=ROOT).strip()),
+        hardware_executed=False,hashes={str(p.relative_to(out)).replace('\\','/'):sha(p)
+            for p in sorted(out.rglob('*')) if p.is_file() and '__pycache__' not in p.parts})
+    (out/'layout-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    pending=check_layout(out)
+    manifest['missing']=pending['missing']
+    (out/'layout-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:
+        for path in sorted(out.rglob('*')):
+            if path.is_file() and '__pycache__' not in path.parts:z.write(path,path.relative_to(out))
+    return manifest
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser()
     p.add_argument('--output',type=Path,required=True)
@@ -384,10 +424,13 @@ if __name__=='__main__':
     p.add_argument('--room-ready',action='store_true')
     p.add_argument('--sprint-ready',action='store_true')
     p.add_argument('--sprint-human',action='store_true')
+    p.add_argument('--layout-prepared',action='store_true')
     p.add_argument('--r4-b-handoff',action='store_true')
     p.add_argument('--model',type=Path)
     a=p.parse_args()
-    if a.r4_b_handoff:
+    if a.layout_prepared:
+        m=assemble_layout(a.output)
+    elif a.r4_b_handoff:
         m=assemble_r4_b_handoff(a.output)
     elif a.sprint_ready or a.sprint_human:
         if not a.assets or not a.model:p.error('sprint package requires --assets and --model')
