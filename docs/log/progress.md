@@ -10,6 +10,11 @@
 
 
 
+
+## 2026-10-26 C 冻结r5相对正向检测最终包
+
+从干净c2acf87冻结c-new-layout-r5.zip（342392字节），独立解压32项载荷、Notebook及已测源码身份核对完成；取消退出2、0试次、无活动绑定。定音频率/声量/时长、模型/bit、五档及原保护保持，仅改runtime测量和原件复算。第一回包有污染、零算法配对；第二回包待A网络恢复取回，不要求旧试次重跑。最终SHA与限制见[r5机器记录](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r5-check.json)，[操作单](../../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。无C操板或新效果结论。
+
 ## 2026-10-26 C 复算A正向失败并修复r5检测
 
 读取A26aaedd原摘要及083f31c第一份原ZIP，身份/原件质检无差异，闭环对照0；手机污染只作诊断。原窗1k分量−38.27、相对背景/邻频约27.57dB，旧宽带+6dB/占比0.8要求过强。C选相对等窗检测，保持声量/时长/模型/五档/保护，不旁路正向；4检测+4runtime/质检用例通过，未重跑旧145项。第二次仅摘要且板卡断网，待取原件，不原样第三次试验。[决定与失败出口](../../report/verification/audio_closed/batch-control.md#2026-10-26-r5修复正向对照的宽带支配门禁)、[复算](../../report/verification/audio_closed/sprint-rc0-20261025/positive-control-r5-audit.json)。

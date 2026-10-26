@@ -41,9 +41,9 @@
 ### C 测评与工具
 
 **最后动作**：2026-10-26读取A26aaedd报告及083f31c第一份原回包，SHA/原件质检通过，无闭环配对。旧runtime正向用宽带+6dB/1k占比0.8，误把窄带可检出要求成压过总噪声；C选择相对同窗检测并完成r5源码与8项定向软件检查。第一包有手机污染，仅诊断：1k投影−38.27dBFS、相对检测对比约27.57dB，不追认干净正向或算法结果。
-**当前卡点**：C正在从干净源码冻结r5；不再原样跑第三次r4。第二次既有ZIP因A板卡网络中断未取回，恢复后只取原件；不等待它才准备测量修复。r5不增电平/时长、不改模型/五档/保护；正向仍为声学分支前提，不能以未测直接放行效果。暂无新模型对照/真人/听众/持续结果。
+**当前卡点**：C已从干净源码c2acf87冻结r5最终ZIP，独立解压32项载荷/Notebook及取消入口核对完成；不再原样跑第三次r4。第二次既有ZIP因A板卡网络中断未取回，恢复后只取原件；不等待它才准备测量修复。r5不增电平/时长、不改模型/五档/保护；正向仍为声学分支前提，不能以未测直接放行效果。暂无新模型对照/真人/听众/持续结果。
 
-- [r5决定与失败出口](../report/verification/audio_closed/batch-control.md#2026-10-26-r5修复正向对照的宽带支配门禁)、[实际原包诊断](../report/verification/audio_closed/sprint-rc0-20261025/positive-control-r5-audit.json)、[第一包质检](../report/verification/audio_closed/sprint-rc0-20261025/a-083f31c-r4-intake.json)、[r5机器记录](../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r5-check.json)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。原r4及原包保留；C未操板，不把软件或原件质检完成当效果通过。
+- [r5最终包](../build/packages/c-new-layout-r5.zip)、[r5决定与失败出口](../report/verification/audio_closed/batch-control.md#2026-10-26-r5修复正向对照的宽带支配门禁)、[实际原包诊断](../report/verification/audio_closed/sprint-rc0-20261025/positive-control-r5-audit.json)、[第一包质检](../report/verification/audio_closed/sprint-rc0-20261025/a-083f31c-r4-intake.json)、[r5机器记录](../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r5-check.json)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。原r4及原包保留；C未操板，不把软件或原件质检完成当效果通过。
 - 采用1kHz正余弦投影，静默/含源取相同33420..48340帧；噪声基准取静默目标投影及两窗邻频均值最大，对比度≥10dB。实际reference/时间轴必须有效；相对检测不是全带SNR、H/CD或FIR收益。前后用1k投影mic/reference传递量漂移，1.5dB配对/5dB停止界保持。
 - 仍是原1kHz、峰值−20dBFS、1.02秒；延长播放不会增加末尾16384帧缓存，本轮不提高声量、不跳过正向。新检测失败保留已完成配置/数值记录，停止声学分支；手机必须实际暂停，不能脚本代答现场事实。
 - 候选file01c9102a…/Q206118e85d…、fixture room_v1_20261026b、512/lag1/bias不装载、bit/HWH均不变；零臂合法模型+zero_coeff=True。五档−14/−12/−10/−8/−6，0.30秒含DC峰值严格<−6及原数值保护保持，触发先停声后保存。A上次20cm在已允许15–30内，按当前事实一次登记，不为修门禁移动夹具。

@@ -14,7 +14,7 @@
 
 **失败出口/现场要求**：A用r5独立目录、唯一Notebook原入口，重启内核；不能用自动脚本代替FIELD_READY/MIC_READY/START的实际暂停手机等动作。相对正向仍不满足、参考/时间轴不符或保护时先停声，再读缓存保存；保留已完成有效数值，不把整批原件作废，不自动提高电平/改阈值/跳过正向。尚未执行的算法/真人/听众记未测。第二包只待网络恢复取回；普通测量缺陷由C修，底层新缺口归A、算法条件归B，无有效完整算法失败，不触发队长改范围条件。
 
-r5源码/归档身份见[机器记录](sprint-rc0-20261025/layout-package-r5-check.json)，[完整操作单](../../../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。
+[r5最终包](../../../build/packages/c-new-layout-r5.zip)已从干净源码c2acf87冻结，342392字节，SHA256=feaca0b6cf2fd5b828456f0cfa504f16fd2e852549d3f625f229663fc5992bfa。独立解压32项载荷及Notebook代码哈希核对、载荷与已测C源码逐字节核对完成；取消实测退出2、0试次、无活动model/run-binding并生成停止回包。模型及原报告按B254原Git字节取得。操作路径改为独立c-new-layout-r5，唯一格序不变；A网络恢复后执行新版并取回第二次既有回包，不重跑r4。源码/归档身份见[机器记录](sprint-rc0-20261025/layout-package-r5-check.json)，[完整操作单](../../../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。
 
 ## 2026-10-26 A3af收件错位纠正与r4执行确认
 
