@@ -75,20 +75,22 @@ class RegistryIdentityTest(unittest.TestCase):
                 self.assertEqual(cycles, entry["frames_needed_3N_plus_3"])
                 self.assertLessEqual(cycles, mf["frame_budget_cycles"])
 
-    def test_predictor_headroom_below_saturation(self):
-        """L1 上界 |pred| ≤ ‖h‖₁·max|u|；离 24 位饱和要有余量，装板才不会一上线就饱和。
+    def test_coefficient_l1_is_recorded_as_a_risk_marker(self):
+        """系数 L1 只当饱和预算的**风险标记**，不是"不会饱和"的承诺。
 
-        判据：pred 饱和 ⟺ ‖h‖₁·|u| ≥ 8（Q20 下 2^23/2^20）。所以 ‖h‖₁ ≤ 8 是"满幅输入也不饱和"的
-        充分条件。**room 的两个候选满足**；`box_v1/baseline_256` 的 ‖h‖₁ ≈ 26.7 不满足——
-        它靠箱体实验里 mic 常在 −18 dBFS 左右才没触发，属于历史模型的已知限制，记在这里不隐藏。
+        口径更正（C 指出）：Q20 的 ±8 是**系数**满量程，PCM 侧饱和阈值是 **1.0**。
+        所以 `‖h‖₁ ≤ 1` 才是"任何合法输入都不饱和"的充分条件；`‖h‖₁ > 1` 只说明"可能饱和"，
+        不是必然，也不能据此否定模型。两个 room 候选都在 1–4 之间，属"可能但需保护"，
+        现场各级饱和保护必须保留。
         """
-        strict = {"room_v1_20261026", "room_v1_20261026b"}
+        rows = {e["file"]: float(e["l1_q20"]) / (1 << 20) for e in manifest()["models"]}
         for entry in manifest()["models"]:
-            l1 = float(entry["l1_q20"]) / (1 << 20)
+            l1 = rows[entry["file"]]
             with self.subTest(entry=entry["file"]):
                 self.assertLess(l1, 40.0)
-                if entry["fixture_id"] in strict:
-                    self.assertLessEqual(l1, 8.0, "满幅输入下可能够到 signed24 饱和")
+        for name in ("room_v1/newlayout_512_20261026.json", "room_v1/rewired_512_20261026.json"):
+            self.assertGreater(rows[name], 1.0, "L1 若 ≤1 才可宣称不可能饱和，需同步改口径")
+            self.assertLess(rows[name], 4.0)
 
 
 class RewiredCandidateTest(unittest.TestCase):
