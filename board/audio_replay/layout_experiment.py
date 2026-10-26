@@ -21,7 +21,7 @@ from residual_tools import load_candidate
 from room_experiment import gate_metrics, write_json
 from sprint_continuous import driver_request
 
-POLICY = 'c-new-layout-1.3.0'
+POLICY = 'c-new-layout-1.4.0'
 RATE = 48828.125
 FIXTURE = 'room_v1_20261026b'
 A_COMMIT = '2928a4a9de2e360d9aeedce435b452b860baf189'
@@ -35,6 +35,8 @@ OBSOLETE_B_COMMIT = '8a027578be68d79eece4837c4fb3b5ffb65a7a7a'
 MIC_PEAK_LIMIT_DBFS = -6.
 PLAN = dict(source_seconds=2.50, pair_seconds=2.52, repeats=2,
             speech_seconds=8., continuous_seconds=60., gate_seconds=1.02,
+            gate_hz=1000., positive_control='relative-tone-projection-v1',
+            positive_minimum_contrast_db=10., positive_noise_offset_bins=list(range(8,16)),
             microphone_check_seconds=.30,microphone_peak_limit_dbfs=MIC_PEAK_LIMIT_DBFS,
             gain_search='bounded_registered_scan_only', automatic_extension=False,
             runtime_scan_gains_db=[-14,-12,-10,-8,-6],eq='identity', capture='independent final rings')
@@ -316,6 +318,76 @@ def positive_background(path):
             first_frame=begin,end_frame=stop,frames=len(x))
 
 
+def relative_positive_control(path, background_path, baseline=None):
+    """Detect the registered tone against equal-window spectral background.
+
+    This is a path-presence test, not a model or full-band SNR test. The floor
+    is conservative across the quiet target, quiet neighbours and concurrent
+    neighbours. Broadband RMS and tonal dominance are descriptive only.
+    """
+    out=dict(passed=False,method=PLAN['positive_control'],reasons=[],
+        capture_sha256=sha(path),background_sha256=sha(background_path),
+        minimum_contrast_db=PLAN['positive_minimum_contrast_db'],drift_db=None,
+        scope='1 kHz path presence only; no broadband model, MSG or ASG qualification')
+    try:
+        arrays=[]
+        for file in (path,background_path):
+            with np.load(file,allow_pickle=False) as z:
+                m=json.loads(str(z['metadata_json'].item()))
+                x=np.asarray(z['microphone'],float);y=np.asarray(z['reference'],float)
+                first,end,count=(m.get(k) for k in ('first_frame','completed_frames','frames'))
+                if (any(type(v) is not int or v<0 for v in (first,end,count)) or end-first!=count or
+                    x.shape!=(count,) or y.shape!=x.shape or not np.isfinite(x).all() or
+                    not np.isfinite(y).all() or m.get('dropped_frames',0)):
+                    raise ValueError('invalid_positive_time_axis')
+                arrays.append((m,x,y))
+        (m,x,y),(q,bg,bgref)=arrays
+        if m.get('source_schedule_verified') is not True or m.get('source_end_frame_exclusive')!=int(RATE):
+            raise ValueError('positive_source_schedule_unverified')
+        begin=max(m['first_frame'],q['first_frame'],int(.02*RATE))
+        end=min(m['completed_frames'],q['completed_frames'],int(RATE)-int(.01*RATE))
+        if end-begin<2048:raise ValueError('positive_common_window_too_short')
+        x=x[begin-m['first_frame']:end-m['first_frame']]
+        y=y[begin-m['first_frame']:end-m['first_frame']]
+        bg=bg[begin-q['first_frame']:end-q['first_frame']]
+        bgref=bgref[begin-q['first_frame']:end-q['first_frame']]
+        if np.any(bgref):raise ValueError('quiet_reference_not_zero')
+        t=np.arange(begin,end)/RATE
+        def power(v,hz):
+            basis=np.column_stack((np.sin(2*np.pi*hz*t),np.cos(2*np.pi*hz*t),np.ones(len(t))))
+            fit=basis[:,:2]@np.linalg.lstsq(basis,v,rcond=None)[0][:2]
+            return float(np.mean(fit*fit))
+        db=lambda p:10*math.log10(max(p,1e-24))
+        hz=PLAN['gate_hz'];step=RATE/len(x)
+        offsets=[sign*k for sign in (-1,1) for k in PLAN['positive_noise_offset_bins']]
+        neighbour_hz=[hz+k*step for k in offsets]
+        total=power(x,hz);quiet_target=power(bg,hz);reference=power(y,hz)
+        ref_fraction=reference/max(float(np.var(y)),1e-24)
+        if reference<=1e-20 or ref_fraction<.99:raise ValueError('actual_reference_tone_missing')
+        quiet_local=float(np.mean([power(bg,f) for f in neighbour_hz]))
+        concurrent_local=float(np.mean([power(x,f) for f in neighbour_hz]))
+        floor=max(quiet_target,quiet_local,concurrent_local,1e-24)
+        contrast=db(total)-db(floor)
+        transfer=db(total)-db(reference)
+        drift=None if baseline is None else transfer-baseline['mic_over_ref_db']
+        out.update(first_frame=begin,end_frame=end,frames=len(x),nominal_bin_width_hz=step,
+            neighbour_hz=neighbour_hz,rms_dbfs=db(float(np.var(x))),
+            background_rms_dbfs=db(float(np.var(bg))),tonal_fraction=total/max(float(np.var(x)),1e-24),
+            reference_rms_dbfs=db(float(np.var(y))),reference_tonal_fraction=ref_fraction,
+            tone_rms_dbfs=db(total),reference_tone_rms_dbfs=db(reference),mic_over_ref_db=transfer,
+            tone_power=total,quiet_tone_power=quiet_target,quiet_neighbour_mean_power=quiet_local,
+            concurrent_neighbour_mean_power=concurrent_local,noise_power_used=floor,
+            detection_contrast_db=contrast,drift_db=drift,operational_drift_limit_db=5.,
+            contrast_definition='tone projection / max(quiet target, quiet neighbour mean, concurrent neighbour mean); equal duration and projection normalization',
+            signal_snr_estimate_db=db((total-floor)/floor) if total>floor else None,
+            snr_assumptions='conditional estimate only: locally representative, stationary uncorrelated noise; contrast is not itself pure-signal SNR')
+        if contrast<PLAN['positive_minimum_contrast_db']:out['reasons'].append('positive_tone_below_relative_floor')
+        if drift is not None and abs(drift)>5.:out['reasons'].append('positive_transfer_drift_exceeds_5_db')
+        out['passed']=not out['reasons']
+    except (OSError,ValueError,KeyError,TypeError,zipfile.BadZipFile) as exc:out['reasons'].append(str(exc))
+    return out
+
+
 def microphone_headroom(path, require_full_capture=False):
     """ADC absolute peak, including DC. Strict threshold; never an anti-howl result."""
     out=dict(passed=False,peak_dbfs=None,limit_dbfs=MIC_PEAK_LIMIT_DBFS,
@@ -553,7 +625,8 @@ def run(base=None, ask=input, runner=None, live_runner=None):
         background_control=positive_background(folder/quiet['file'])
         floor=background_control['rms_dbfs']
         gate=trial('positive',direct=True,pcm=tone,seconds=1.02)
-        control=gate_metrics(folder/gate['file'],floor)
+        control=(relative_positive_control(folder/gate['file'],folder/quiet['file']) if runtime else
+                 gate_metrics(folder/gate['file'],floor))
         state['positive_control']=control
         if not control['passed']: raise RuntimeError('positive_control_failed:'+','.join(control['reasons']))
         difference=control['rms_dbfs']-floor
@@ -565,6 +638,8 @@ def run(base=None, ask=input, runner=None, live_runner=None):
             scope='same gain=0 direct positive tone/background; no broadband model qualification',
             frequency_estimation='not_tested' if runtime else 'conditional_on_each_band',
             no_extra_injection=runtime,coherence_required_for_B_frequency_estimate=.8,
+            positive_detection_method=control.get('method','legacy_tonal_dominance'),
+            relative_tone_control=control if runtime else None,
             reason='No new injection level or pure-SNR cutoff invented; runtime/listening proceed independently' if runtime else None)
         if runtime:
             for i,scan_gain in enumerate(c['scan_gains_db']):
@@ -582,7 +657,8 @@ def run(base=None, ask=input, runner=None, live_runner=None):
                     background['spectrum']=spectrum(folder/background['file'],c['bands'])
                     response['snr_bands']=snr_bands(response['spectrum'],background['spectrum'],c['bands'])
         post=trial('positive-post',direct=True,pcm=tone,seconds=1.02)
-        after=gate_metrics(folder/post['file'],floor,control['rms_dbfs'])
+        after=(relative_positive_control(folder/post['file'],folder/quiet['file'],control) if runtime else
+               gate_metrics(folder/post['file'],floor,control['rms_dbfs']))
         state['positive_post']=after
         if not after['passed']: raise RuntimeError('positive_post_failed')
         state['grades']['algorithm_difference']='descriptive_pairs_available'
@@ -710,10 +786,14 @@ def review(path, output):
                 quiet=next((r for r in state['trials'] if r['role']=='quiet' and r['measurement_valid']),None)
                 positive=next((r for r in state['trials'] if r['role']=='positive' and r['measurement_valid']),None)
                 post=next((r for r in state['trials'] if r['role']=='positive-post' and r['measurement_valid']),None)
-                if quiet and positive and post:
+                if quiet and positive:
                     floor=positive_background(temp/quiet['file'])['rms_dbfs']
-                    state['positive_control']=gate_metrics(temp/positive['file'],floor)
-                    state['positive_post']=gate_metrics(temp/post['file'],floor,state['positive_control']['rms_dbfs'])
+                    runtime=candidate.get('profile')=='runtime_scan'
+                    state['positive_control']=(relative_positive_control(temp/positive['file'],temp/quiet['file']) if runtime else
+                        gate_metrics(temp/positive['file'],floor))
+                    if post:
+                        state['positive_post']=(relative_positive_control(temp/post['file'],temp/quiet['file'],state['positive_control']) if runtime else
+                            gate_metrics(temp/post['file'],floor,state['positive_control']['rms_dbfs']))
                 if state.get('continuous'):
                     if sha(temp/'model.json')!=candidate['model_sha256']:raise ValueError('return model identity')
                     model_manifest=dict(hashes={'model.json':candidate['model_sha256'],'audio_replay.bit':BIT,
@@ -737,6 +817,7 @@ def review(path, output):
             raw_quality_control=dict(status='completed' if not qc else 'discrepancies',issues=qc),
             runtime_pairs=run_pairs,scan_summary=scan_summary(state),
             signal_noise_conditions=state.get('signal_noise_conditions'),
+            positive_control=state.get('positive_control'),positive_post=state.get('positive_post'),
             uncertainties=missing,stop_reason=state.get('stop_reason'),binding=state.get('binding'),
             running_observations=state.get('running_observations'),
             raw_nonhuman_files=[i for i in state['inventory'] if i['included']],

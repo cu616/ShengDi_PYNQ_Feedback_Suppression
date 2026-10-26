@@ -9,6 +9,11 @@
 
 
 
+
+## 2026-10-26 C 复算A正向失败并修复r5检测
+
+读取A26aaedd原摘要及083f31c第一份原ZIP，身份/原件质检无差异，闭环对照0；手机污染只作诊断。原窗1k分量−38.27、相对背景/邻频约27.57dB，旧宽带+6dB/占比0.8要求过强。C选相对等窗检测，保持声量/时长/模型/五档/保护，不旁路正向；4检测+4runtime/质检用例通过，未重跑旧145项。第二次仅摘要且板卡断网，待取原件，不原样第三次试验。[决定与失败出口](../../report/verification/audio_closed/batch-control.md#2026-10-26-r5修复正向对照的宽带支配门禁)、[复算](../../report/verification/audio_closed/sprint-rc0-20261025/positive-control-r5-audit.json)。
+
 ## 2026-10-26 C 纠正A收到r3的交付错位
 
 接收A3af转发，确认旧r3守卫拒绝合理；明确取已交r4/fa13877及完整SHA，不重建原包。答复零臂用合法模型+zero_coeff=True、0.30秒严格含DC峰值及恒读检测范围；纠正LOAD_OK不是PL加载证据、10.9dB余量已撤回。未改代码、未重验、未操板。[交接证据](../../report/verification/audio_closed/batch-control.md#2026-10-26-a3af收件错位纠正与r4执行确认)。

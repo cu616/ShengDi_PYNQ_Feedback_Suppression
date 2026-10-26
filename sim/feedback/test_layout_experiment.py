@@ -66,7 +66,7 @@ class Runner:
             target.fill(round(10**(-4.2/20)*2**23))
         if self.fail=='human_peak' and 'mic-precheck-human' in path.stem:
             target.fill(round(.6*2**23))
-        if len(source)>1:
+        if len(source)>1 and not (self.fail=='positive_missing' and 'positive' in path.stem):
             count=min(len(source),n-125)
             target[125:125+count]+=source[:count].astype(np.int64)*128
         ref[2:]+=gain_pcm(target[:-2],gain)
@@ -100,6 +100,64 @@ class Runner:
             source_zero=not bool(np.any(source)),seconds=kw['seconds']))
         if trigger and self.fail=='protection': raise RuntimeError('guard; stopped before returning')
         return m
+
+
+class RelativePositiveTests(unittest.TestCase):
+    def setUp(self):
+        (ROOT/'tmp').mkdir(exist_ok=True)
+        self.temp=tempfile.TemporaryDirectory(dir=ROOT/'tmp',prefix='relative-positive-')
+        self.base=Path(self.temp.name)
+    def tearDown(self):self.temp.cleanup()
+    def captures(self,amplitude=.008,ambient=0.,seed=13,louder_noise=1.):
+        n=int(1.02*x.RATE);first=n-16384;t=np.arange(first,n)/x.RATE
+        rng=np.random.default_rng(seed);tone=np.sin(2*np.pi*1000*t)
+        quiet=.03*rng.normal(size=len(t))+ambient*tone
+        active=.03*louder_noise*rng.normal(size=len(t))+(ambient+amplitude)*tone
+        source=x.sources(None)[0];ref=np.zeros(n);ref[:len(source)]=source.astype(float)/32768
+        paths=[]
+        for name,mic,reference in (('quiet',quiet,np.zeros(len(t))),('active',active,ref[first:])):
+            meta=dict(first_frame=first,completed_frames=n,frames=n-first,
+                source_schedule_verified=True,source_end_frame_exclusive=len(source) if name=='active' else 1)
+            path=self.base/(name+'.npz')
+            np.savez_compressed(path,microphone=mic,reference=reference,metadata_json=json.dumps(meta))
+            paths.append(path)
+        return paths
+    def test_narrow_tone_below_broadband_noise_is_detected_without_dominance(self):
+        quiet,active=self.captures()
+        result=x.relative_positive_control(active,quiet)
+        self.assertTrue(result['passed'],result)
+        old=x.gate_metrics(active,x.positive_background(quiet)['rms_dbfs'])
+        self.assertFalse(old['passed']);self.assertLess(result['tonal_fraction'],.8)
+        self.assertLess(result['rms_dbfs']-result['background_rms_dbfs'],6.)
+        self.assertEqual((result['first_frame'],result['end_frame'],result['frames']),(33420,48340,14920))
+        delta=result['detection_contrast_db']
+        self.assertAlmostEqual(result['signal_snr_estimate_db'],10*np.log10(10**(delta/10)-1),places=8)
+    def test_noise_only_stationary_tone_and_broadband_level_change_do_not_pass(self):
+        for options in ([dict(amplitude=0.,seed=k) for k in range(16)]+
+                        [dict(amplitude=0.,ambient=.15),dict(amplitude=0.,louder_noise=5.)]):
+            with self.subTest(options=options):
+                quiet,active=self.captures(**options)
+                result=x.relative_positive_control(active,quiet)
+                self.assertFalse(result['passed'],result)
+    def test_missing_reference_bad_schedule_and_missing_frames_are_rejected(self):
+        for fault in ('reference','schedule','drop','short'):
+            with self.subTest(fault=fault):
+                quiet,active=self.captures()
+                with np.load(active,allow_pickle=False) as z:data={k:z[k] for k in z.files}
+                m=json.loads(str(data['metadata_json'].item()))
+                if fault=='reference':data['reference']=np.zeros_like(data['reference'])
+                elif fault=='schedule':m['source_end_frame_exclusive']-=1
+                elif fault=='drop':m['dropped_frames']=1
+                else:m['first_frame']=m['completed_frames']-10
+                data['metadata_json']=json.dumps(m);np.savez_compressed(active,**data)
+                self.assertFalse(x.relative_positive_control(active,quiet)['passed'])
+    def test_post_control_uses_tone_transfer_and_rejects_large_drift(self):
+        quiet,active=self.captures(amplitude=.008)
+        before=x.relative_positive_control(active,quiet);self.assertTrue(before['passed'])
+        quiet,active=self.captures(amplitude=.032)
+        after=x.relative_positive_control(active,quiet,before)
+        self.assertFalse(after['passed']);self.assertGreater(after['drift_db'],5.)
+        self.assertIn('positive_transfer_drift_exceeds_5_db',after['reasons'])
 
 
 class LayoutTests(unittest.TestCase):
@@ -286,6 +344,18 @@ class LayoutTests(unittest.TestCase):
             self.assertEqual(report['runtime_pairs'],s['runtime_pairs'])
             self.assertEqual(report['scan_summary']['zero']['acoustic_boundary'],'unknown')
             self.assertEqual([row['mode'] for row in report['human_switch']['trials']],['zero','matched'])
+
+    def test_relative_positive_failure_stops_before_scan_and_is_recomputed_on_intake(self):
+        with self.work() as d:
+            base=Path(d);shutil.copytree(self.runtime,base,dirs_exist_ok=True);runner=Runner('positive_missing')
+            result=self.execute(base,runner)
+            self.assertEqual(result['status'],'stopped');self.assertEqual(len(runner.calls),4)
+            self.assertIn('positive_tone_below_relative_floor',result['stop_reason'])
+            self.assertFalse(any('runtime-scan' in name or 'human' in name for name in runner.calls))
+            report=x.review(next(base.rglob('return-results.zip')),base/'intake.json')
+            self.assertFalse(report['positive_control']['passed'])
+            self.assertEqual(report['raw_quality_control']['status'],'completed',report)
+            self.assertFalse(report['runtime_pairs']);self.assertIsNone(report['asg_db'])
 
     def test_runtime_field_cancel_and_wrong_identity_never_activate_or_touch_board(self):
         for changed in (False,True):

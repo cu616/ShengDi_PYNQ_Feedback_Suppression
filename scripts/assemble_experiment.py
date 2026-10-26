@@ -480,6 +480,8 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
             applicable_bands='Gated samples now include 190 bins in 1-3k, not whole-band coverage; <300Hz, >10.25kHz and level dependence remain unknown.',
             training_capture='Actual gain_q12=0; source/reference equality verified on global frames with stopped-source tail; original labels/files preserved.',
             summary_copies='A Git summary 13aeb0a2.../1731 matches A manifest. B local 03ff23a3.../1788 is a distinct newline representation per forwarded errata; not a six-NPZ mismatch.',
+            positive_control='Runtime uses relative-tone-projection-v1 at unchanged 1kHz/peak -20dBFS/1.02s; >=10dB projection contrast over max(quiet target, quiet/concurrent neighbours), equal windows; no broadband dominance or absolute microphone-level threshold.',
+            positive_failure='A failed reference, timeline or relative path detection ends acoustic branches and retains records. Do not bypass the path test or run the old gate a third time. Raw contaminated data is diagnostic only.',
             listener='Quantitative not_tested, AGC unknown; heard sound and amplification relative to system mute are separate qualitative reports.',
             layout_benefit='not_tested; this experiment only compares FIR to zero in the same current layout',hardware_executed=False)
         (out/'c-integration-notes.json').write_text(json.dumps(notes,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
