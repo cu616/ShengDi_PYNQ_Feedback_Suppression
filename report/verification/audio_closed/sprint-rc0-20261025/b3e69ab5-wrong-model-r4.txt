@@ -1,0 +1,20 @@
+模型：models\room_v1\rewired_512_20261026.json（512 抽头，file 01c9102af5e0…）
+
+==============================================================================
+残差首次越界：主路径按板上记录重建，辅路径用模型整数重放交叉核对
+越界判据 x>2^23-1 或 x<-2^23（-2^23 合法）；增益按半值远离零舍入
+==============================================================================
+
+--- 04-positive-matched.npz
+  采集：16384 帧 / 335.5 ms；有效窗口从第 513 帧起（15871 帧 / 325.0 ms）；全局帧 33420–49803
+  身份：fixture=room_v1_20261026b bit=61bb71aabb82… bypass=False gain_q12=0 (无增益)
+  板上计数：{'prediction_saturations': 0, 'residual_saturations': 0, 'gain_saturations': 0, 'mix_saturations': 0, 'stop_reason': 'completed'}
+  [主] 越界样本 0（有效窗口 0，历史区 0）；残差贴轨 +0/−0
+       |mic|峰值 -19.4 dBFS；|pred|峰值 -138.5 dBFS；|宽残差|max 0.1069×满幅（余量 +19.42 dB）
+  [辅] 模型整数重放：prediction 失配 15407/15871（系数被覆盖，失配属预期），本地预测饱和 0
+  [增益后] |out|max 0.0000×满幅（余量 +138.47 dB），越界样本 0；残差最多可到 不适用（增益为 0）
+  归因：停止（模型与抓包内系数不同：只能作为替代模型的算术推演，不能归因本次事件）
+
+结构化结果写入 D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\tmp\c-b3e69ab5-review\wrong-model-existing-r4.json
+
+结论受限：1 个文件不能归因（04-positive-matched.npz）；不据此给“通过”或“方案成立”的结论。

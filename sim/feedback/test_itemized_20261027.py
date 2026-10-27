@@ -198,43 +198,103 @@ class ItemizedReviewTests(unittest.TestCase):
 
 def probe_b_analyzer(path):
     """Run the same boundary contract against a specified B revision, read-only."""
+    import inspect
     spec = importlib.util.spec_from_file_location('B_analyzer_under_review', path)
     analyzer = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(analyzer)
+    new_api = 'model_label' in inspect.signature(analyzer.analyze).parameters
+
+    def call(p):
+        with np.errstate(divide='ignore', invalid='ignore'):
+            return analyzer.analyze(p, None, None, None) if new_api else analyzer.analyze(p)
+
+    def primary(r):
+        return r['primary_capture_only'] if new_api else r['overflow']
+
+    def overflow(r):
+        return primary(r)['overflow_in_valid_window' if new_api else 'samples_over']
+
+    def maximum_output(r):
+        return r['post_gain']['max_abs'] if new_api else r['output']['max_abs_after_gain']
+
+    def rejected(r):
+        return (r.get('valid') is False or bool(r.get('issues')) or
+                r.get('attribution', {}).get('allowed') is False)
+
     results = []
     with tempfile.TemporaryDirectory(dir=TEST_TEMP) as d:
         p = Path(d)/'negative-rail.npz'
         fixture(p, np.full(1024, review.MINIMUM))
-        r = analyzer.analyze(p)
+        r = call(p)
         results.append(dict(case='legal_negative_rail', expected=0,
-                            observed=r['overflow']['samples_over'],
-                            passed=r['overflow']['samples_over'] == 0))
+                            observed=overflow(r), passed=overflow(r) == 0))
         p = Path(d)/'negative-half.npz'
         fixture(p, np.full(1024, -2048), gain_q12=1)
-        r = analyzer.analyze(p)
+        r = call(p)
         results.append(dict(case='negative_Q12_half', expected=1/review.SCALE,
-                            observed=r['output']['max_abs_after_gain'],
-                            passed=r['output']['max_abs_after_gain'] == 1/review.SCALE))
+                            observed=maximum_output(r),
+                            passed=maximum_output(r) == 1/review.SCALE))
         p = Path(d)/'unknown-prefix.npz'
         q = np.zeros(512, dtype=np.int64); q[0], q[-1] = -2**19, 2**19
         fixture(p, np.full(1024, int(.95*review.SCALE)), first=447483, q=q)
-        r = analyzer.analyze(p)
+        r = call(p)
         results.append(dict(case='unknown_FIR_prefix', expected=0,
-                            observed=r['overflow']['samples_over'],
-                            passed=r['overflow']['samples_over'] == 0))
+                            observed=overflow(r), passed=overflow(r) == 0))
         for name, change in (('Q20_hash_mismatch', dict(coefficients_sha256='incorrect')),
                              ('inconsistent_extent', dict(completed_frames=2000))):
             p = Path(d)/(name+'.npz')
             fixture(p, np.zeros(1024), **change)
             try:
-                r = analyzer.analyze(p)
+                r = call(p)
                 # Rejection or an explicit invalid result is acceptable. This check
                 # does not promote an unknown new output schema to a passing result.
-                invalid = r.get('valid') is False or bool(r.get('issues'))
+                invalid = rejected(r)
                 results.append(dict(case=name, passed=invalid,
                                     observed='explicit invalid' if invalid else 'ordinary result without invalid marker'))
-            except (ValueError, RuntimeError) as exc:
-                results.append(dict(case=name, passed=True, observed=type(exc).__name__))
+            except (ValueError, RuntimeError, SystemExit) as exc:
+                results.append(dict(case=name,
+                                    passed=not isinstance(exc, SystemExit) or exc.code == 2,
+                                    observed=type(exc).__name__))
+        if new_api:
+            for name, level in (('positive_float_one_must_not_sign_wrap', 1.0),
+                                ('out_of_range_normalized_float_must_be_invalid', 2.0)):
+                p = Path(d)/(name+'.npz')
+                fixture(p, np.ones(1024, dtype=np.int64))
+                with np.load(p, allow_pickle=False) as cap:
+                    fields = {key: cap[key] for key in cap.files}
+                fields['microphone'] = np.full(1024, level)
+                fields['residual_pcm'] = np.full(1024, review.MAXIMUM, dtype=np.int64)
+                np.savez_compressed(p, **fields)
+                try:
+                    r = call(p)
+                    if level == 1.0:
+                        observed = primary(r)['max_wide']
+                        ok = abs(observed-review.MAXIMUM/review.SCALE) < .5/review.SCALE
+                    else:
+                        observed = r['attribution']
+                        ok = rejected(r)
+                    results.append(dict(case=name, passed=bool(ok), observed=observed))
+                except (ValueError, RuntimeError, SystemExit) as exc:
+                    results.append(dict(case=name,
+                                        passed=not isinstance(exc, SystemExit) or exc.code == 2,
+                                        observed=type(exc).__name__))
+            p = Path(d)/'prefix-headroom.npz'
+            q = np.zeros(512, dtype=np.int64); q[0] = 1 << 20
+            reference = np.zeros(1024, dtype=np.int64); reference[100:108] = -200
+            pred = np.r_[0, reference[:-1]]
+            mic = np.ones(1024, dtype=np.int64); mic[101:109] = review.MAXIMUM-100
+            fixture(p, mic, q=q, pred=pred, first=50000, counts=(8 << 16, 0, 0))
+            with np.load(p, allow_pickle=False) as cap:
+                fields = {key: cap[key] for key in cap.files}
+            fields['reference'] = reference/review.SCALE
+            np.savez_compressed(p, **fields)
+            r = call(p)
+            expected = float(-20*np.log10(1/review.SCALE))
+            # A whole-capture peak may remain, but cannot substitute for a metric
+            # explicitly claimed to exclude the unscored prefix.
+            measured = primary(r).get('valid_window_headroom_db', primary(r)['headroom_db'])
+            results.append(dict(case='valid_window_headroom_excludes_prefix', expected=expected,
+                                observed=measured, passed=abs(measured-expected) < 1e-8))
     return dict(script=str(path), script_sha256=review.sha(path),
                 fixtures='synthetic boundaries, not recovered A speech PCM', cases=results)
 

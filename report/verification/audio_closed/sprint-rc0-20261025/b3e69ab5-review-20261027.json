@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "kind": "C-limited-review-of-B-3e69ab5",
+  "B_commit": "3e69ab54f88da06a2d76155d6e4618f7a36185bf",
+  "A_commit": "5c67f2115062f9c5f51dd2496594ae6ea46f10c4",
+  "B_script_sha256": "7abe11d69ab302fb44a43d6129303b1755e5a764472e6c6865123987bf42e66f",
+  "A_script_copy_exact_match": true,
+  "model_file_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+  "model_byte_identical_to_b6bcfb2": true,
+  "hardware_operations": 0,
+  "B_named_tests": {
+    "executed": 10,
+    "passed": 10,
+    "log": "b3e69ab5-named-tests.txt",
+    "scope": "legal rails, gain rounding, history first-index mask, substituted-model stop, time-in-ms; no full175 regression"
+  },
+  "C_independent_probes": {
+    "script": "tmp\\c-b3e69ab5-review\\scripts\\analyze_residual_overflow.py",
+    "script_sha256": "7abe11d69ab302fb44a43d6129303b1755e5a764472e6c6865123987bf42e66f",
+    "fixtures": "synthetic boundaries, not recovered A speech PCM",
+    "cases": [
+      {
+        "case": "legal_negative_rail",
+        "expected": 0,
+        "observed": 0,
+        "passed": true
+      },
+      {
+        "case": "negative_Q12_half",
+        "expected": 1.1920928955078125e-07,
+        "observed": 1.1920928955078125e-07,
+        "passed": true
+      },
+      {
+        "case": "unknown_FIR_prefix",
+        "expected": 0,
+        "observed": 0,
+        "passed": true
+      },
+      {
+        "case": "Q20_hash_mismatch",
+        "passed": false,
+        "observed": "ordinary result without invalid marker"
+      },
+      {
+        "case": "inconsistent_extent",
+        "passed": false,
+        "observed": "ordinary result without invalid marker"
+      },
+      {
+        "case": "positive_float_one_must_not_sign_wrap",
+        "passed": false,
+        "observed": 1.0
+      },
+      {
+        "case": "out_of_range_normalized_float_must_be_invalid",
+        "passed": false,
+        "observed": {
+          "allowed": true,
+          "model_substituted": false,
+          "reasons": []
+        }
+      },
+      {
+        "case": "valid_window_headroom_excludes_prefix",
+        "expected": 138.47379800543135,
+        "observed": -0.00010250782967100745,
+        "passed": false
+      }
+    ]
+  },
+  "issues": [
+    {
+      "id": "normalized_float_sign_and_clamp",
+      "observed": "+1.0 in a nonnegative float microphone window becomes -8388608 via unsigned24 reinterpretation; +2.0 is clamped to8388607 and attribution stays allowed",
+      "minimum_fix": "Keep normalized signed floating PCM separate from explicitly encoded unsigned24 words; require finite/range/grid validity. Reject invalid inputs; any justified bounded legacy restoration must be explicit and recorded, never silent.",
+      "effect": "Blocks trusting input restoration or granting attribution for such malformed captures; does not prove A original captures are malformed."
+    },
+    {
+      "id": "declared_Q20_identity",
+      "observed": "NPZ coefficient array remains unchanged but metadata.coefficients_sha256 is wrong; attribution allowed true",
+      "minimum_fix": "Hash actual signed Q20 array and compare declared identity separately from optional model-array substitution check; retain primary arithmetic but stop inconsistent model attribution.",
+      "effect": "Substituted-model gate passes, declared-hash gate remains missing."
+    },
+    {
+      "id": "actual_frame_extent",
+      "observed": "1024 channel samples with first_frame0 and completed_frames2000 are reported as global0..1023 and attribution allowed true",
+      "minimum_fix": "Validate channel lengths and actual first/completed/frames. When unknown, keep local arithmetic and ms span but do not fabricate global extent or claim complete coverage.",
+      "effect": "ms conversion passes, actual interval validation remains missing."
+    },
+    {
+      "id": "prefix_margin_scope",
+      "observed": "Only prefix has8 strict overflows; valid-window headroom138.473798dB, reported primary headroom-0.0001025dB; whole-window maxima remain despite claim of excluded prefix",
+      "minimum_fix": "Separate whole-capture observed subtraction metrics from model-replay valid-window metrics; label margins/counts/first indices with their scope. Recorded prediction needs no invented history for primary subtraction; never call a missing capture predecessor an empty RTL history.",
+      "effect": "Valid-window first-index mask passes; margin and post-gain scope still need correction."
+    }
+  ],
+  "A_new_return_check": {
+    "summary_sample_count": 33,
+    "certain_overflow_count": 8,
+    "ambiguous_count": 0,
+    "certain_overflow_global_frames": [
+      114687,
+      114688,
+      114689,
+      114690,
+      114691,
+      114692,
+      114693,
+      114694
+    ],
+    "first_certain_in_returned_excerpt": 114687,
+    "arithmetic_display_max_error": 7.236633301488382e-07,
+    "display_rounding_error_bound": 1e-06,
+    "first_frame_anchor_consistent": true,
+    "capture_end_exclusive": 114718,
+    "reported_stop_delay_frames": 31,
+    "available_pre_event_valid_ms": 324.4032,
+    "growth_window_used_ms": 41.94,
+    "evidence_scope": "Independent arithmetic of A returned rounded summary; not independent replay of full NPZ, status or counter reset.",
+    "reported_zero_rail_sum": 3359,
+    "zero_main_observation_retained_despite_model_substitution": true,
+    "post_gain": "hypothetical unclamped-wide subtraction times gain on recorded input, not deployed DAC output or a closed-loop modification validation",
+    "standard_normalization_roundtrip": [
+      {
+        "dtype": "float64",
+        "round_trip_exact": true,
+        "positive_full_scale_rounds_to_one": false
+      },
+      {
+        "dtype": "float32",
+        "round_trip_exact": true,
+        "positive_full_scale_rounds_to_one": false
+      }
+    ]
+  },
+  "A_originals_independently_replayed": false,
+  "true_event_scope": "A returned excerpt corroborates8 strict local overflows; full NPZ/sidecar/reset coverage and actual Q20 binding not independently supplied. Do not equate excerpt consistency to independent full-run first-event verification.",
+  "limits": [
+    "No candidate benefit/adoption, no new gain/model/RTL/protection recommendation authorized by these software checks.",
+    "Prediction saturation0 does not exclude acoustic regeneration.",
+    "396Hz is a model sensitive point only.",
+    "3359 rail hits with zero prediction and residual counter0 are consistent with legal signed24 subtraction, not evidence of float rounding. Standard float32/64 normalization roundtrips rails exactly.",
+    "The tool analyzed41.94ms before the event; the returned indices indicate324.4032ms of valid preceding capture. A longer existing-data check, if needed, requires no new on-site run.",
+    "Post-gain wide-residual numbers are a counterfactual arithmetic calculation on recorded signals, not observed DAC output or proof of a modified closed loop."
+  ],
+  "completion": "Limited review complete; B correction request remains for four scoped issues. Current code is not accepted without qualification. Existing A observations retained.",
+  "unchanged_regression_repeated": false
+}
