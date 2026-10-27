@@ -1,0 +1,6 @@
+test_success_is_zero_baseline_first_then_human_60_then_same_gain_candidate (sim.feedback.test_layout_experiment.ReproductionTests.test_success_is_zero_baseline_first_then_human_60_then_same_gain_candidate) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 13.685s
+
+OK

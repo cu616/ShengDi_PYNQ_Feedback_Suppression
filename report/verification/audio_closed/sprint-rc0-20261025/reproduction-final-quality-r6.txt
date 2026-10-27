@@ -1,0 +1,7 @@
+test_success_is_zero_baseline_first_then_human_60_then_same_gain_candidate (sim.feedback.test_layout_experiment.ReproductionTests.test_success_is_zero_baseline_first_then_human_60_then_same_gain_candidate) ... ok
+test_stuck_input_and_unverified_recovery_do_not_enter_distance_or_closed_loop (sim.feedback.test_layout_experiment.ReproductionTests.test_stuck_input_and_unverified_recovery_do_not_enter_distance_or_closed_loop) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 18.451s
+
+OK

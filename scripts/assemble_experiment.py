@@ -376,7 +376,7 @@ def assemble_sprint(out, assets, model_path, human_only=False):
     return manifest
 
 
-def assemble_layout(out, candidate_commit=None, repair_binding=None):
+def assemble_layout(out, candidate_commit=None, repair_binding=None, baseline_first=False):
     """New-layout preparation: exact A assets, no legacy candidate or hardware."""
     from layout_experiment import POLICY, FIXTURE, PLAN as LAYOUT_PLAN, A_COMMIT, SCENE_COMMIT, REPAIRED_CAPTURE_MANIFEST, REPAIRED_CAPTURE_SET, template, scene_template, notebook_code_hash, check as check_layout
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
@@ -404,6 +404,26 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
         original_capture_metadata_fixture='room_v1_20261021',actual_fixture=FIXTURE,
         basis='A=52ee4e4 repaired capture geometry + B=b6bcfb2 matching model; confirm unchanged at FIELD_READY',
         original_files_modified=False)
+    if baseline_first:
+        scene.update(talker_to_microphone_cm=5.,verified_by_A=False,source_kind='human_live',talker_id=None,phrase=None,
+            fixed_speech_source=dict(kind='human_live',talker_id=None,phrase=None),
+            talker_distance_basis='0f17c74: silence-output qualification at recorded 5cm; one distance-only variant if rejected; historical microphone state unknown',
+            a_limits_basis='0f17c74 success-first protocol: recorded -8dB zero FIR, input-qualified 5cm; one distance-only variant 15-30cm if rejected; no gain scan')
+        history_origin='report/verification/audio-replay/usable-point-2026-10-26.json'
+        (out/'a-historical-usable-point.json').write_bytes(subprocess.check_output(['git','show','0f17c74:'+history_origin],cwd=ROOT))
+        (out/'baseline-model.json').write_bytes(subprocess.check_output(['git','show','b6bcfb2:models/room_v1/rewired_512_20261026.json'],cwd=ROOT))
+        if sha(out/'baseline-model.json')!='01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23':
+            raise ValueError('baseline zero-transport file changed')
+        import numpy as np
+        from sprint_continuous import driver_request
+        from layout_experiment import sources
+        cue=sources(None)[2]
+        baseline_checks=[driver_request(out,'replay_trial',out/'software-only-9p5.npz',FIXTURE,out/'baseline-model.json',cue,
+            gain_db=-8.,seconds=9.5,hp_volume=40,bypass=False,zero_coeff=True,speaker_confirmed=True,local_capture_confirmed=True),
+            driver_request(out,'live_run',out/'software-only-60s.npz',FIXTURE,out/'baseline-model.json',
+            gain_db=-8.,seconds=60.,hp_volume=40,bypass=False,zero_coeff=True,speaker_confirmed=True,local_capture_confirmed=True)]
+        (out/'baseline-driver-compatibility.json').write_text(json.dumps(dict(checks=baseline_checks,
+            scope='pure driver argument/frame-budget validation, not actual speaker or human confirmation',hardware_access=False),ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     (out/'scene-input.json').write_text(json.dumps(scene,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     if candidate_commit:
         import numpy as np
@@ -452,6 +472,9 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
             wire_repair_binding=dict(capture_manifest_sha256=REPAIRED_CAPTURE_MANIFEST,capture_set_sha256=REPAIRED_CAPTURE_SET,
                 wire_state='repaired',model_sha256=identity['file_sha256'],coefficients_sha256=identity['q20_sha256'],
                 b_commit=candidate_commit,basis_ref='b-metrics.json:data_identity + A original manifest; C direct six-NPZ/hash/global-source audit'))
+        if baseline_first:
+            candidate.update(profile='human_pair',workflow='success_first',scan_gains_db=[],
+                gain_and_injection_basis='0f17c74 recorded zero baseline -8dB; live human, no added noise, no gain scan')
         if repair_binding:
             candidate['wire_repair_binding']=json.loads(Path(repair_binding).read_text(encoding='utf8'))
         (out/'candidate-input.json').write_text(json.dumps(candidate,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
@@ -484,15 +507,24 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
             positive_failure='A failed reference, timeline or relative path detection ends acoustic branches and retains records. Do not bypass the path test or run the old gate a third time. Raw contaminated data is diagnostic only.',
             listener='Quantitative not_tested, AGC unknown; heard sound and amplification relative to system mute are separate qualitative reports.',
             layout_benefit='not_tested; this experiment only compares FIR to zero in the same current layout',hardware_executed=False)
+        if baseline_first:
+            notes.update(positive_control='Confirm real speech input response, actual registered DAC source and manual output from the named loudspeaker. Legacy and relative 1kHz statistics are diagnostic; no arbitrary threshold lowering.',
+                positive_failure='Unknown input, actual output route, reference, or protection stops dependent sound. An unknown isolated 1kHz estimate does not erase independent human baseline observations.',
+                scan_interpretation='No gain scan in this workflow. Reproduce the zero-FIR -8dB baseline first; optional same-gain human candidate pairs follow; missing candidate cannot block zero baseline.',
+                listener='Live human only. Two output-muted/on comparisons, separate heard/clarity/original words; conditional zero-FIR 60s human use. No phone substitute or quantitative SPL claim.')
         (out/'c-integration-notes.json').write_text(json.dumps(notes,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+        if baseline_first:
+            receipt['unresolved']=['Historical microphone state and exact source loudness not reconstructed',
+                'Current human baseline requires real input/output confirmations and two reports',
+                'Candidate is optional after baseline; missing/mismatched candidate does not block zero FIR use']
         (out/'candidate-compatibility.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
-    code='# 新布局集中实验：核对绑定后执行\nfrom layout_experiment import run\nresult = run()\n'
+    code=('# 成功工作点集中复现：输入与路径确认后执行\n' if baseline_first else '# 新布局集中实验：核对绑定后执行\n')+'from layout_experiment import run\nresult = run()\n'
     nb=dict(nbformat=4,nbformat_minor=5,metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
         cells=[dict(cell_type='markdown',metadata={},source=['先读 OPERATIONS.md；缺候选/场景身份时只生成停止回包，不操板。']),
                dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=code.splitlines(True))])
     (out/'layout.ipynb').write_text(json.dumps(nb,ensure_ascii=False,indent=2),encoding='utf8')
     guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
-    start=guide.index('## 2026-10-26 新布局一次集中实验')
+    start=guide.index('## 2026-10-27 成功工作点集中复现' if baseline_first else '## 2026-10-26 新布局一次集中实验')
     stop=guide.index('\n## ',start+4)
     (out/'OPERATIONS.md').write_text(guide[start:stop],encoding='utf8')
     manifest=dict(policy=POLICY,plan=LAYOUT_PLAN,package_status='pending_repaired_scene_model',
@@ -503,10 +535,19 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None):
         hardware_executed=False,notebook_code_sha256=notebook_code_hash(out/'layout.ipynb'),
         hashes={str(p.relative_to(out)).replace('\\','/'):sha(p)
             for p in sorted(out.rglob('*')) if p.is_file() and '__pycache__' not in p.parts and p.name!='layout.ipynb'})
+    if baseline_first:
+        manifest.update(workflow='success_first',workflow_basis='A 0f17c74 development-plan 2026-10-27 execution order',
+            baseline_transport_sha256=sha(out/'baseline-model.json'),
+            active_plan=dict(baseline_gain_db=-8.,baseline_actual_Q20='all_zero_512',short_seconds=9.5,
+                baseline_repeats=2,listener_order=['off','on','off','on'],historical_distance_cm=5.,
+                permitted_distance_variant_cm=[15,30],distance_variant_attempts=1,conditional_live_human_seconds=60.,
+                candidate_gain_db=-8.,candidate_pair_repeats=2,gain_scan=False,source_kind='human_live'),
+            candidate_optional_files=[name for name in manifest['hashes'] if name.startswith('b-') or name in ('candidate-input.json','candidate-unbound.json')])
     (out/'layout-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     pending=check_layout(out)
     manifest['missing']=pending['missing']
-    if not any(e.startswith('B:') for e in pending['missing']):manifest['package_status']='ready_for_A_field_binding'
+    if baseline_first:manifest['package_status']='ready_for_human_baseline_then_optional_candidate'
+    elif not any(e.startswith('B:') for e in pending['missing']):manifest['package_status']='ready_for_A_field_binding'
     (out/'layout-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:
         for path in sorted(out.rglob('*')):
@@ -523,13 +564,14 @@ if __name__=='__main__':
     p.add_argument('--sprint-ready',action='store_true')
     p.add_argument('--sprint-human',action='store_true')
     p.add_argument('--layout-prepared',action='store_true')
+    p.add_argument('--baseline-first',action='store_true')
     p.add_argument('--candidate-commit')
     p.add_argument('--repair-binding',type=Path)
     p.add_argument('--r4-b-handoff',action='store_true')
     p.add_argument('--model',type=Path)
     a=p.parse_args()
     if a.layout_prepared:
-        m=assemble_layout(a.output,a.candidate_commit,a.repair_binding)
+        m=assemble_layout(a.output,a.candidate_commit,a.repair_binding,a.baseline_first)
     elif a.r4_b_handoff:
         m=assemble_r4_b_handoff(a.output)
     elif a.sprint_ready or a.sprint_human:

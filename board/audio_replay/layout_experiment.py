@@ -21,7 +21,7 @@ from residual_tools import load_candidate
 from room_experiment import gate_metrics, write_json
 from sprint_continuous import driver_request
 
-POLICY = 'c-new-layout-1.4.0'
+POLICY = 'c-new-layout-1.5.0'
 RATE = 48828.125
 FIXTURE = 'room_v1_20261026b'
 A_COMMIT = '2928a4a9de2e360d9aeedce435b452b860baf189'
@@ -33,7 +33,9 @@ REPAIRED_CAPTURE_MANIFEST = '1a4196c27730e4ceec678fc2d6debc755212790b494716b45d9
 REPAIRED_CAPTURE_SET = '46aad2acf0557698281d67fdac5724daad9e246f1225c4114093d52abd0036da'
 OBSOLETE_B_COMMIT = '8a027578be68d79eece4837c4fb3b5ffb65a7a7a'
 MIC_PEAK_LIMIT_DBFS = -6.
-PLAN = dict(source_seconds=2.50, pair_seconds=2.52, repeats=2,
+PLAN = dict(baseline_seconds=9.5,baseline_gain_db=-8.,baseline_initial_distance_cm=5.,
+            baseline_distance_variant_range_cm=[15.,30.],candidate_pair_repeats=2,
+            source_seconds=2.50, pair_seconds=2.52, repeats=2,
             speech_seconds=8., continuous_seconds=60., gate_seconds=1.02,
             gate_hz=1000., positive_control='relative-tone-projection-v1',
             positive_minimum_contrast_db=10., positive_noise_offset_bins=list(range(8,16)),
@@ -82,11 +84,12 @@ def prerequisites(candidate, scene, model=None):
     errors = []
     def require(ok, reason):
         if not ok: errors.append(reason)
-    runtime=candidate.get('profile')=='runtime_scan'
+    human_pair=candidate.get('profile')=='human_pair'
+    runtime=candidate.get('profile') in ('runtime_scan','human_pair')
     optional_B={'injection_rms_dbfs','b_injection_range_dbfs'} if runtime else set()
     for key in set(template())-optional_B:
         require(key in candidate and candidate[key] is not None, 'B:'+key)
-    require(candidate.get('profile') in ('forced_response','runtime_scan'), 'B:unknown_profile')
+    require(candidate.get('profile') in ('forced_response','runtime_scan','human_pair'), 'B:unknown_profile')
     for key, value in dict(policy=POLICY, fixture_id=FIXTURE, hp_volume=40,
                            sample_rate_hz=RATE, lag_first=1, forward_schedule_frames=2).items():
         require(candidate.get(key)==value, 'B:incompatible:'+key)
@@ -115,12 +118,14 @@ def prerequisites(candidate, scene, model=None):
     if not runtime: required_A['agc_disabled']=True
     for key,value in required_A.items():
         require(scene.get(key)==value, 'A:unverified:'+key)
-    require(number(scene.get('talker_to_microphone_cm')) and 15<=scene['talker_to_microphone_cm']<=30,
-            'A:talker_distance_15_to_30cm_after_repair')
+    require(number(scene.get('talker_to_microphone_cm')) and (5 if human_pair else 15)<=scene['talker_to_microphone_cm']<=30,
+            'A:qualified_talker_distance' if human_pair else 'A:talker_distance_15_to_30cm_after_repair')
     for key in set(SCENE_FIELDS[1:-1])-optional_A:
         value=scene.get(key)
         require(bool(value) and 'unknown' not in str(value).lower() and '未知' not in str(value), 'A:unknown:'+key)
-    if runtime:
+    if human_pair:
+        require(scene.get('source_kind')=='human_live' and bool(scene.get('talker_id')) and bool(scene.get('phrase')), 'A:human_source_facts')
+    elif runtime:
         source=scene.get('fixed_speech_source')
         require(isinstance(source,dict) and all(bool(source.get(k)) for k in ('file','playback_level','phone_position'))
                 and source.get('route')=='phone_speaker_to_microphone','A:fixed_phone_source_facts')
@@ -134,7 +139,7 @@ def prerequisites(candidate, scene, model=None):
         for owner,bounds in (('B',candidate.get('b_injection_range_dbfs')),('A',scene.get('a_injection_range_dbfs'))):
             require(isinstance(bounds,list) and len(bounds)==2 and all(number(v) for v in bounds)
                     and number(level) and bounds[0]<=level<=bounds[1], owner+':injection_not_supported')
-    else:
+    elif not human_pair:
         scan=candidate.get('scan_gains_db')
         require(isinstance(scan,list) and bool(scan) and scan==sorted(set(scan)) and scan[0]==-14
                 and candidate.get('gain_db') in scan and all(g in PLAN['runtime_scan_gains_db'] for g in scan), 'C:runtime_scan_limits')
@@ -162,6 +167,7 @@ def prerequisites(candidate, scene, model=None):
 def check(base):
     base=Path(base)
     manifest=json.loads((base/'layout-manifest.json').read_text(encoding='utf8'))
+    if manifest.get('workflow')=='success_first':return _check_reproduction(base,manifest)
     if manifest.get('policy')!=POLICY or manifest.get('plan')!=PLAN:
         raise ValueError('package policy/plan mismatch')
     for name,digest in manifest['hashes'].items():
@@ -388,7 +394,7 @@ def relative_positive_control(path, background_path, baseline=None):
     return out
 
 
-def microphone_headroom(path, require_full_capture=False):
+def microphone_headroom(path, require_full_capture=False, require_input_response=False):
     """ADC absolute peak, including DC. Strict threshold; never an anti-howl result."""
     out=dict(passed=False,peak_dbfs=None,limit_dbfs=MIC_PEAK_LIMIT_DBFS,
         first_frame=None,end_frame=None,frames=0,full_capture=False,reason=None,
@@ -406,10 +412,14 @@ def microphone_headroom(path, require_full_capture=False):
             full=first==0 and count==end
             peak=float(np.max(np.abs(x)))
             out.update(first_frame=first,end_frame=end,frames=count,full_capture=full,
-                peak_dbfs=20*math.log10(max(peak,1e-12)),peak_amplitude=peak)
+                peak_dbfs=20*math.log10(max(peak,1e-12)),peak_amplitude=peak,
+                rms_dbfs=20*math.log10(max(float(np.std(x)),1e-12)))
             if require_full_capture and not full:raise ValueError('precheck_not_fully_captured')
+            out['input_varies']=bool(np.ptp(x)>0)
             out['passed']=bool(peak<10**(MIC_PEAK_LIMIT_DBFS/20))
             if not out['passed']:out['reason']='microphone_peak_at_or_above_minus6; lower source or move talker away before a new batch'
+            if require_input_response and not out['input_varies']:
+                out['passed']=False;out['reason']='input_no_variation_during_requested_speech'
     except (OSError,ValueError,KeyError,TypeError,zipfile.BadZipFile) as exc:out['reason']=str(exc)
     return out
 
@@ -510,12 +520,15 @@ def scan_summary(state):
 
 def collect(folder, state):
     """Runs only after the A call has returned/stopped; never delays protection."""
+    if state.get('workflow')=='success_first':
+        state['baseline_result'],state['candidate_result']=reproduction_results(state)
     state['pairs']=result_pairs(state)
     state['runtime_pairs']=runtime_pairs(state)
     state['scan_summary']=scan_summary(state)
     state['inventory']=[]
     for path in sorted(folder.glob('*.npz')):
         item=dict(file=path.name,sha256=sha(path),included=not any(k in path.name for k in ('human','listener')))
+        if state.get('workflow')=='success_first':item['board_path']=str(path.resolve())
         try:
             with np.load(path,allow_pickle=False) as z: item['metadata']=json.loads(str(z['metadata_json'].item()))
         except (OSError,ValueError,KeyError,EOFError,zipfile.BadZipFile) as exc: item['error']=str(exc)
@@ -530,8 +543,307 @@ def collect(folder, state):
     print('RETURN_PACKAGE',str((folder/'return-results.zip').resolve()),flush=True)
 
 
+class TrialStopped(RuntimeError):
+    def __init__(self,row):
+        self.row=row
+        super().__init__(';'.join(row['stop_reasons']))
+
+
+def _make_trial(base,folder,state,context,ask,runner):
+    silence=np.zeros(1,dtype='<i2')
+    def trial(role,mode='matched',pcm=None,direct=False,repeat=0,seconds=None,positive=False,is_precheck=False,gain_db=None):
+        c=context['candidate'];scene=context['scene'];model_path=Path(context['model_path'])
+        binding_sha=context['binding_sha256']
+        if not is_precheck:
+            pre=trial('mic-precheck-'+role,'zero',direct=True,seconds=PLAN['microphone_check_seconds'],is_precheck=True)
+            state['last_input_precheck']=dict(capture_id=pre.get('capture_id'),target_role=role,headroom=pre['microphone_headroom'])
+            if 'human' in role or 'listener' in role:
+                print('输入预检通过；现在停止讲话/暂停手机，等正式提示音结束再开始。',flush=True)
+        pcm=silence if pcm is None else pcm
+        seconds=PLAN['pair_seconds'] if seconds is None else seconds
+        path=folder/('%02d-%s-%s.npz'%(len(state['trials'])+1,role,mode))
+        zero=mode=='zero' or direct;error=None
+        trial_gain=c['gain_db'] if gain_db is None else gain_db
+        trial_gain_q12=int(math.floor(4096*10**(trial_gain/20)+.5))
+        state['pending_trial']=dict(file=path.name,role=role,mode=mode)
+        write_json(folder/'summary.json',state)
+        def start():
+            if (folder/'STOP').exists(): return False
+            if is_precheck:
+                if 'human' in role or 'listener' in role:
+                    action=('实际真人用正式响度说最响部分，不播放手机；' if context.get('live_human') else '用正式响度说最响部分/播放固定片段；')
+                    return ask(role+' 输出为零，只检查麦克风输入。'+action+'输入MIC_READY并保持到采集结束，其他取消：').strip()=='MIC_READY'
+                return True
+            if role in ('quiet','positive','positive-post','background','response','runtime-scan'):
+                print(role+' 已配置且静音；执行已登记的机器步骤，外源须保持停止。',flush=True)
+                return True
+            return ask(role+' 已配置且静音；先停止讲话/暂停手机，START继续，其他取消。真人/外源只在实际听到短提示音结束后开始：').strip()=='START'
+        try:
+            runner(path,FIXTURE,model_path,pcm,gain_db=trial_gain,seconds=seconds,hp_volume=40,
+                bypass=False,zero_coeff=zero,direct_only=direct,speaker_confirmed=True,
+                local_capture_confirmed=True,before_start=start)
+        except (Exception,KeyboardInterrupt) as exc: error=type(exc).__name__+':'+str(exc)
+        side=path.with_suffix('.status.json')
+        status=json.loads(side.read_text(encoding='utf8')) if side.exists() else {}
+        expected=dict(fixture_id=FIXTURE,hp_volume=40,sample_rate_hz=RATE,bypass=False,zero_coeff=zero,
+            gain_q12=0 if direct else trial_gain_q12,bit_sha256=BIT,model_sha256=c['model_sha256'],
+            coefficients_sha256=ZERO if zero else c['coefficients_sha256'],logical_taps=512,loaded_taps=512)
+        human='human' in role or 'listener' in role
+        a=analyze_npz(path,expected=expected,positive_control_valid=positive,
+            external_source_active=human,external_source_off_verified=not human)
+        m=a.get('original_metadata',{})
+        reasons=[];flags=a.get('event_flags',{})
+        if error: reasons.append(error)
+        if a['category']=='invalid': reasons.append('invalid_capture:'+','.join(a['reasons']))
+        if flags.get('protection') or any(flags.get(k) for k in ('prediction_saturations','residual_saturations','gain_saturations','mix_saturations')):
+            reasons.append('protection_or_numeric_event; acoustic_cause_unknown')
+        if flags.get('early_stop') or flags.get('microphone_clipping'): reasons.append('early_stop_or_clipping')
+        if m.get('completed_frames')!=int(seconds*RATE):reasons.append('actual_run_duration_incomplete')
+        if flags.get('instability_growth'): reasons.append('observed_growth_in_valid_window')
+        if status.get('recovery_ok') is not True or status.get('cleanup_errors'): reasons.append('cleanup_unverified')
+        if status.get('save_error') or status.get('salvage_errors'): reasons.append('evidence_save_or_salvage_failed')
+        if a.get('evaluation_metadata',{}).get('verification',{}).get('bit_exact') is not True: reasons.append('actual_reference_arithmetic_unverified')
+        if m.get('source_pcm16_sha256')!=hashlib.sha256(pcm.astype('<i2').tobytes()).hexdigest(): reasons.append('actual_source_mismatch')
+        if m.get('source_schedule_verified') is not True or m.get('source_end_frame_exclusive')!=len(pcm) or m.get('source_frames')!=len(pcm):
+            reasons.append('actual_digital_source_schedule_mismatch')
+        coeff=m.get('coefficient_status',0)
+        if type(coeff) is not int or (coeff>>4)&65535!=512 or coeff&14!=10: reasons.append('loader_readback_invalid')
+        headroom=microphone_headroom(path,require_full_capture=is_precheck,require_input_response=is_precheck and human and context.get('live_human',False))
+        if not headroom['passed']:reasons.append('microphone_headroom_failed:'+str(headroom['reason']))
+        row=dict(m,role=role,mode=mode,repeat=repeat,file=path.name,analysis=a,driver_status=status,
+            gain_db_requested=trial_gain,microphone_headroom=headroom,is_input_precheck=is_precheck,
+            measurement_valid=not reasons,stop_reasons=reasons,scene_sha256=hashlib.sha256(encoded(scene)).hexdigest(),
+            binding_sha256=binding_sha,hwh_sha256=HWH,
+            condition_id=context.get('condition_id'),actual_talker_distance_cm=scene.get('talker_to_microphone_cm'),
+            requested_seconds=seconds,scene_snapshot=dict(scene),prompt_sequence=len(state.get('prompt_log',[])),
+            loaded_identity_basis='A loader count/status plus sent Q20 and captured arithmetic; not coefficient-memory hash readback')
+        state['trials'].append(row);state.pop('pending_trial',None)
+        collect(folder,state)
+        if reasons: raise TrialStopped(row)
+        return row
+    return trial
+
+
+def _check_reproduction(base,manifest):
+    if manifest.get('policy')!=POLICY or manifest.get('plan')!=PLAN:raise ValueError('package policy/plan mismatch')
+    candidate_issues=[];optional=set(manifest['candidate_optional_files'])
+    for name,digest in manifest['hashes'].items():
+        path=(base/name).resolve()
+        if base.resolve() not in path.parents:raise ValueError('unsafe package path')
+        ok=path.exists() and sha(path)==digest
+        if not ok:
+            if name in optional:candidate_issues.append('candidate_payload:'+name)
+            else:raise ValueError('package hash mismatch:'+name)
+    if sha(base/'audio_replay.bit')!=BIT or sha(base/'audio_replay.hwh')!=HWH:raise ValueError('A bit/hwh mismatch')
+    if notebook_code_hash(base/'layout.ipynb')!=manifest['notebook_code_sha256']:raise ValueError('notebook code mismatch')
+    model,q=load_candidate(base/'baseline-model.json',FIXTURE,40,RATE)
+    if len(q)!=512 or sha(base/'baseline-model.json')!=manifest['baseline_transport_sha256']:raise ValueError('baseline transport identity')
+    return dict(ready=False,ready_for_field=True,missing=['A:actual_human_configuration'],candidate_issues=candidate_issues,hardware_access=False)
+
+
+def _human_scene_errors(scene):
+    errors=[]
+    for key,value in dict(fixture_id=FIXTURE,hp_volume=40,sample_rate_hz=RATE,speaker_to_microphone_cm=100,
+        speaker_orientation='side-facing the microphone',plate_and_cotton_unchanged=True,
+        verified_by_A=True,control_and_cue_approved_by_A=True,source_kind='human_live').items():
+        if scene.get(key)!=value:errors.append('A:'+key)
+    for key in ('talker_id','phrase','listener_position','microphone_preamp_gain','speaker_volume_knob'):
+        if not scene.get(key):errors.append('A:'+key)
+    if -8 not in scene.get('a_allowed_gains_db',[]):errors.append('A:baseline_gain')
+    if not number(scene.get('talker_to_microphone_cm')) or not 5<=scene['talker_to_microphone_cm']<=30:errors.append('A:distance')
+    return errors
+
+
+def reproduction_results(state):
+    repeats=state.get('baseline_repeats',[])
+    positive=lambda r:r.get('measurement_valid') and r.get('sound_heard')=='HEARD' and r.get('verdict')=='AMPLIFIED_CLEAR'
+    qualified=state.get('input_response_confirmed') and state.get('path_pre',{}).get('confirmed')
+    usable=qualified and len(repeats)==2 and all(positive(r) for r in repeats)
+    original_refused=bool(state.get('original_input_refused'))
+    if usable:
+        reproduction=('changed_distance_usable' if original_refused else 'recorded_settings_reproduced' if
+            state.get('historical_similarity')=='SAME' else 'current_conditions_usable_history_comparison_unknown')
+    else:reproduction='original_input_refused' if original_refused and not repeats else 'not_reproduced' if len(repeats)==2 else 'incomplete'
+    baseline=dict(usable='supported' if usable else 'not_supported' if qualified and len(repeats)==2 else 'unknown',
+        reproduction=reproduction,original_input_refused=original_refused,repeats=repeats,
+        historical_similarity=state.get('historical_similarity','UNKNOWN'),
+        continuous=state.get('human_continuous'),historical_feedback_retained=True,
+        scope='current zero-FIR -8dB human use; reports, counters and saved windows, not calibrated SPL or whole-run acoustic proof',
+        history_unknowns=['Historical microphone/contact state is not inferred from later faults', 'Exact historical source level may remain unknown'])
+    comparisons=state.get('candidate_comparisons',[]);codes=[r.get('verdict') for r in comparisons]
+    comparable=bool(usable and len(comparisons)==2 and all(r.get('pair_valid') and r.get('voice_comparable')=='COMPARABLE' for r in comparisons))
+    post=state.get('path_post',{});pre=state.get('path_pre',{})
+    if not post.get('confirmed'):comparable=False
+    drift=None
+    if pre.get('relative',{}).get('passed') and post.get('relative',{}).get('passed'):
+        drift=post['relative']['mic_over_ref_db']-pre['relative']['mic_over_ref_db']
+        if abs(drift)>1.5:comparable=False
+    outcome=('qualitative_improvement_reported' if comparable and all(c=='IMPROVED' for c in codes) else
+        'no_improvement_reported' if comparable and all(c in ('SIMILAR','WORSE') for c in codes) else
+        'mixed_or_unknown' if comparisons else 'not_tested')
+    attempted=[r for r in state.get('trials',[]) if r['role']=='human-candidate']
+    if any(not r['measurement_valid'] for r in attempted):outcome='execution_failed_effect_unknown'
+    elif attempted and len(comparisons)<2:outcome='incomplete_effect_unknown'
+    candidate=dict(improvement=outcome,comparisons=comparisons,conditions_comparable=comparable,
+        unavailable_reasons=state.get('candidate_unavailable',[]),tone_transfer_drift_db=drift,
+        tone_transfer_repeatability='observed' if drift is not None else 'unknown',msg_db=None,asg_db=None,
+        scope='same-gain zero/candidate human comparisons; voice is uncalibrated, no precise dB benefit')
+    return baseline,candidate
+
+
+def _run_reproduction(base,ask,runner,live_runner):
+    folder=base/'results'/('reproduction-'+uuid.uuid4().hex[:12]);folder.mkdir(parents=True)
+    state=dict(policy=POLICY,workflow='success_first',calculation_version=VERSION,detector_config=CONFIG,plan=PLAN,
+        run_id=folder.name,board_result_dir=str(folder.resolve()),status='prepared',trials=[],pairs=[],conditions=[],prompt_log=[],msg_db=None,asg_db=None,
+        grades=dict(execution='not_started',measurement='unknown',algorithm_difference='unknown',listener_effect='not_tested',continuous_operation='not_tested'),
+        execution_origin='injected_runner_not_field_evidence' if runner is not None else 'A_operator_board',
+        listener_measurement=dict(status='not_tested',reason='No fixed recorder gain; AGC unknown; qualitative reports separate'),
+        baseline_repeats=[],candidate_comparisons=[],historical_listener_feedback=[])
+    def human(prompt):
+        answer=ask(prompt).strip()
+        state['prompt_log'].append(dict(sequence=len(state['prompt_log'])+1,prompt=prompt,answer=answer,
+            requirement='actual human action/report; never an automatically supplied field fact'))
+        write_json(folder/'summary.json',state)
+        return answer
+    try:
+        manifest=json.loads((base/'layout-manifest.json').read_text(encoding='utf8'));checked=check(base)
+        history=json.loads((base/'a-historical-usable-point.json').read_text(encoding='utf8'))
+        state['historical_listener_feedback']=history['confirmations']
+        scene=json.loads((base/'scene-input.json').read_text(encoding='utf8'))
+        answer=human('历史零系数工作点复现：确认当前可靠接线、不恢复不良接触；1米侧对/板棉/Codec40/前放及旋钮不变、听众20cm、单人值守无耳机可断电。手机暂停，只用真人；先在输出静音下检查历史约5cm。标记同一讲话人和同一句话；历史相似性不明写UNKNOWN。输入 REPRO_READY|讲话人标识|固定句子|SAME或UNKNOWN；其他取消：').split('|')
+        if len(answer)!=4 or answer[0]!='REPRO_READY' or not all(answer[1:3]) or answer[3] not in ('SAME','UNKNOWN'):raise RuntimeError('reproduction_configuration_cancelled')
+        scene.update(talker_to_microphone_cm=5.,talker_id=answer[1],phrase=answer[2],source_kind='human_live',
+            verified_by_A=True,control_and_cue_approved_by_A=True,historical_similarity=answer[3],
+            fixed_speech_source=dict(kind='human_live',talker_id=answer[1],phrase=answer[2]))
+        errors=_human_scene_errors(scene)
+        if errors:raise ValueError('BASELINE_CONFIGURATION '+json.dumps(errors))
+        state['historical_similarity']=answer[3]
+        c=dict(gain_db=-8.,model_sha256=sha(base/'baseline-model.json'))
+        _,q=load_candidate(base/'baseline-model.json',FIXTURE,40,RATE);c['coefficients_sha256']=qhash(q)
+        binding=dict(workflow='success_first',baseline=dict(c,actual_coefficients_sha256=ZERO,zero_coeff=True,
+            transport_file_role='parser/loader transport only; no fitted coefficients used'),scene=dict(scene),package_hashes=manifest['hashes'])
+        binding['binding_sha256']=hashlib.sha256(encoded(binding)).hexdigest()
+        state['binding']=binding;write_json(folder/'run-binding.json',binding)
+        shutil.copy2(base/'baseline-model.json',folder/'model.json')
+        context=dict(candidate=c,scene=scene,model_path=base/'baseline-model.json',binding_sha256=binding['binding_sha256'],
+            live_human=True,condition_id='recorded-distance-5cm')
+        state['conditions'].append(dict(condition_id=context['condition_id'],scene=dict(scene)))
+        if runner is None:
+            from replay_trial import replay_trial
+            runner=replay_trial
+        trial=_make_trial(base,folder,state,context,human,runner)
+        silence=np.zeros(1,dtype='<i2');tone,_,cue=sources(None)
+        quiet_input=trial('input-quiet','zero',direct=True,seconds=.30,is_precheck=True)
+        try:voice_input=trial('human-input-original','zero',direct=True,seconds=.30,is_precheck=True)
+        except TrialStopped as exc:
+            row=exc.row
+            clipping_only_invalid=(row['analysis']['event_flags'].get('microphone_clipping') is True and
+                set(row['analysis']['reasons'])<= {'source_end_unverified','microphone_full_scale_in_capture'})
+            allowed=all(r.startswith('microphone_headroom_failed:microphone_peak_at_or_above_minus6') or
+                r=='early_stop_or_clipping' or (r.startswith('invalid_capture:') and clipping_only_invalid)
+                for r in row['stop_reasons'])
+            if not (allowed and row['microphone_headroom'].get('input_varies') and not row['analysis']['event_flags'].get('early_stop')):raise
+            state['original_input_refused']=dict(file=row['file'],reason=row['stop_reasons'],scene=dict(scene))
+            response=human('历史5cm输入不合格，输出已停止并留证；不闭环硬试。只允许改变讲话距离一次，其他设置/声量不变。输入 DISTANCE|15至30内实际cm；其他结束并保留原条件拒绝：').split('|')
+            if len(response)!=2 or response[0]!='DISTANCE':raise RuntimeError('original_input_refused_no_distance_variant')
+            distance=float(response[1])
+            if not 15<=distance<=30:raise RuntimeError('distance_variant_out_of_range')
+            context['scene']=dict(scene,talker_to_microphone_cm=distance);scene=context['scene']
+            context['condition_id']='changed-distance';context['binding_sha256']=hashlib.sha256(encoded(dict(binding=binding,scene=scene))).hexdigest()
+            state['conditions'].append(dict(condition_id=context['condition_id'],scene=dict(scene)))
+            voice_input=trial('human-input-distance','zero',direct=True,seconds=.30,is_precheck=True)
+        print('输入对照',json.dumps(dict(quiet=quiet_input['microphone_headroom'].get('rms_dbfs'),speech=voice_input['microphone_headroom'].get('rms_dbfs'),
+            absolute_peak=voice_input['microphone_headroom']['peak_dbfs']),ensure_ascii=False),flush=True)
+        if human('刚才实际说话/暂停时麦克风读数有响应？INPUT_RESPONDS / NO_RESPONSE / UNKNOWN：')!='INPUT_RESPONDS':raise RuntimeError('microphone_response_unknown')
+        state['input_response_confirmed']=True
+        state['input_response_prompt_sequence']=len(state['prompt_log'])
+        def path_check(post=False):
+            if human('停止真人讲话并实际暂停手机/其他声源，房间安静后输入 SOURCES_STOPPED；其他取消：')!='SOURCES_STOPPED':raise RuntimeError('sources_not_confirmed_stopped')
+            source_prompt_sequence=len(state['prompt_log'])
+            quiet=trial('quiet','zero',direct=True,seconds=1.02)
+            active=trial('positive-post' if post else 'positive','zero',direct=True,pcm=tone,seconds=1.02)
+            relative=relative_positive_control(folder/active['file'],folder/quiet['file'])
+            legacy=gate_metrics(folder/active['file'],positive_background(folder/quiet['file'])['rms_dbfs'])
+            if any(r!='positive_tone_below_relative_floor' for r in relative['reasons']):
+                raise RuntimeError('path_reference_or_observation_invalid')
+            heard=human('刚才登记的测试音是否实际由指定音响发出（不是手机或电脑）？TONE_HEARD / NOT_HEARD / UNKNOWN：')
+            result=dict(confirmed=heard=='TONE_HEARD' and state['input_response_confirmed'],output_report=heard,
+                source_prompt_sequence=source_prompt_sequence,output_prompt_sequence=len(state['prompt_log']),
+                actual_reference_verified=True,input_response_confirmed=True,relative=relative,legacy=legacy,
+                scope='separately verified live input and actual loudspeaker output; 1kHz estimate may remain unknown')
+            state['path_post' if post else 'path_pre']=result;collect(folder,state)
+            if not result['confirmed']:raise RuntimeError('actual_output_route_unknown')
+        path_check()
+        for repeat in (1,2):
+            trial('human-baseline-off','zero',pcm=cue,direct=True,seconds=PLAN['baseline_seconds'],repeat=repeat,positive=True)
+            on=trial('human-baseline-on','zero',pcm=cue,seconds=PLAN['baseline_seconds'],repeat=repeat,positive=True)
+            heard=human('本次真人实际听到声音？HEARD / NOT_HEARD / UNKNOWN（原声和扩声来源区分，提示音不计）：')
+            verdict=human('相对本轮输出静音，同一真人同句：更容易听清且清晰、无持续鸣叫/明显失真才选 AMPLIFIED_CLEAR；否则 CLEAR_NO_IMPROVEMENT / UNCLEAR / DISTORTED / HOWL / UNKNOWN：')
+            words=human('记录本次听众原话：')
+            state['baseline_repeats'].append(dict(repeat=repeat,capture_id=on['capture_id'],measurement_valid=on['measurement_valid'],sound_heard=heard,verdict=verdict,listener_words=words,scene=dict(scene)))
+            collect(folder,state)
+            if verdict in ('DISTORTED','HOWL'):raise RuntimeError('baseline_human_safety_stop:'+verdict)
+        usable,_=reproduction_results(state)
+        if usable['usable']!='supported':
+            state['candidate_unavailable']=['baseline_not_reproduced; no automatic parameter exploration'];state['status']='completed_with_negative_or_unknown_baseline'
+            return state
+        trial('human-precheck-continuous','zero',direct=True,seconds=.30,is_precheck=True)
+        for name in ('audio_replay.bit','audio_replay.hwh'):shutil.copy2(base/name,folder/name)
+        if live_runner is None:
+            from live_run import live_run
+            live_runner=live_run
+        continuous=folder/'human-continuous.npz';error=None
+        try:
+            live_runner(continuous,FIXTURE,context['model_path'],gain_db=-8.,seconds=60.,hp_volume=40,bypass=False,zero_coeff=True,
+                speaker_confirmed=True,local_capture_confirmed=True,stop_file=str(folder/'STOP'),
+                before_start=lambda:human('60秒真人使用已配置且仍静音。先暂停讲话，START确认后开始正常讲话至程序结束；精确语音起点未测。其他取消：')=='START')
+        except (Exception,KeyboardInterrupt) as exc:error=type(exc).__name__+':'+str(exc)
+        continuous_manifest=dict(hashes={'model.json':c['model_sha256'],'audio_replay.bit':BIT,'audio_replay.hwh':HWH},coefficients_sha256=ZERO)
+        report=continuous_with_headroom(continuous,continuous_manifest,dict(fixture_id=FIXTURE,gain_q12=int(math.floor(4096*10**(-8/20)+.5)),hp_volume=40,continuous_target_seconds=60.,zero_coeff=True),error,model_path=context['model_path'])
+        state['human_continuous']=dict(report=report,source_kind='live_human',voice_onset='operator START boundary; precise onset unmeasured',raw_audio_local_only=True)
+        if report['status']!='passed':raise RuntimeError('human_continuous_stopped:'+','.join(report['reasons']))
+        state['human_continuous']['verdict']=human('本段实际真人持续使用：CLEAR_THROUGHOUT / DEGRADED / DISTORTED / HOWL / PARTIAL / UNKNOWN：')
+        state['human_continuous']['listener_words']=human('记录持续使用原话及未覆盖情况：')
+        if state['human_continuous']['verdict'] in ('DISTORTED','HOWL','DEGRADED'):raise RuntimeError('human_continuous_use_failed')
+        candidate_errors=list(checked['candidate_issues']);candidate=None
+        if not candidate_errors:
+            candidate=json.loads((base/'candidate-input.json').read_text(encoding='utf8'))
+            candidate_errors+=prerequisites(candidate,scene,base/'candidate-unbound.json')
+            if candidate.get('profile')!='human_pair' or candidate.get('gain_db')!=-8.:candidate_errors.append('candidate_working_point_must_remain_minus8')
+        state['candidate_unavailable']=candidate_errors
+        if candidate_errors:
+            state['status']='completed_baseline_candidate_unavailable';return state
+        state['candidate_binding']=dict(candidate=candidate,scene=dict(scene))
+        context.update(candidate=candidate,model_path=base/'candidate-unbound.json',binding_sha256=hashlib.sha256(encoded(state['candidate_binding'])).hexdigest())
+        shutil.copy2(base/'candidate-unbound.json',folder/'candidate-model.json')
+        for repeat,order in ((1,('zero','matched')),(2,('matched','zero'))):
+            rows={}
+            for mode in order:rows[mode]=trial('human-candidate',mode,pcm=cue,seconds=PLAN['baseline_seconds'],repeat=repeat,positive=True)
+            comparison=human('本对零系数/候选真人同句：IMPROVED / SIMILAR / WORSE / DISTORTED / HOWL / UNKNOWN：')
+            comparable=human('本对同一讲话人、同句、位置与相近声量是否保持？COMPARABLE / NOT_COMPARABLE / UNKNOWN：')
+            valid=all(r['measurement_valid'] for r in rows.values()) and rows['zero']['scene_sha256']==rows['matched']['scene_sha256'] and rows['zero']['gain_q12']==rows['matched']['gain_q12']
+            state['candidate_comparisons'].append(dict(repeat=repeat,pair_valid=valid,voice_comparable=comparable,verdict=comparison,
+                listener_words=human('记录本对听众原话：'),captures={k:v['capture_id'] for k,v in rows.items()},gain_db=-8.,scope='uncalibrated live human; qualitative and numerical events separately'))
+            if comparison in ('DISTORTED','HOWL'):raise RuntimeError('candidate_human_safety_stop')
+        path_check(post=True)
+        state['status']='completed'
+    except (Exception,KeyboardInterrupt) as exc:
+        state['status']='stopped';state['stop_reason']=type(exc).__name__+':'+str(exc)
+    finally:
+        baseline,candidate=reproduction_results(state)
+        state['baseline_result']=baseline;state['candidate_result']=candidate
+        state['grades'].update(execution=state['status'],measurement='independent_observations_retained',
+            listener_effect=baseline['usable'],algorithm_difference=candidate['improvement'],
+            continuous_operation=('supported_human_use' if state.get('human_continuous',{}).get('verdict')=='CLEAR_THROUGHOUT' and state.get('human_continuous',{}).get('report',{}).get('status')=='passed' else
+                'human_use_unknown_or_failed' if state.get('human_continuous') else 'not_tested'))
+        collect(folder,state)
+    return state
+
+
 def run(base=None, ask=input, runner=None, live_runner=None):
     base=Path(base or Path(__file__).resolve().parent).resolve()
+    if json.loads((base/'layout-manifest.json').read_text(encoding='utf8')).get('workflow')=='success_first':
+        return _run_reproduction(base,ask,runner,live_runner)
     folder=base/'results'/('layout-'+uuid.uuid4().hex[:12]);folder.mkdir(parents=True)
     (folder/'listener').mkdir()
     state=dict(policy=POLICY,calculation_version=VERSION,detector_config=CONFIG,plan=PLAN,
@@ -557,69 +869,8 @@ def run(base=None, ask=input, runner=None, live_runner=None):
         if runner is None:
             from replay_trial import replay_trial
             runner=replay_trial
-        def trial(role,mode='matched',pcm=None,direct=False,repeat=0,seconds=None,positive=False,is_precheck=False):
-            if not is_precheck:
-                pre=trial('mic-precheck-'+role,'zero',direct=True,seconds=PLAN['microphone_check_seconds'],is_precheck=True)
-                state['last_input_precheck']=dict(capture_id=pre.get('capture_id'),target_role=role,headroom=pre['microphone_headroom'])
-                if 'human' in role or 'listener' in role:
-                    print('输入预检通过；现在停止讲话/暂停手机，等正式提示音结束再开始。',flush=True)
-            pcm=silence if pcm is None else pcm
-            seconds=PLAN['pair_seconds'] if seconds is None else seconds
-            path=folder/('%02d-%s-%s.npz'%(len(state['trials'])+1,role,mode))
-            zero=mode=='zero' or direct;error=None
-            trial_gain=scan_gain if role=='runtime-scan' else gain
-            trial_gain_q12=int(math.floor(4096*10**(trial_gain/20)+.5))
-            state['pending_trial']=dict(file=path.name,role=role,mode=mode)
-            write_json(folder/'summary.json',state)
-            def start():
-                if (folder/'STOP').exists(): return False
-                if is_precheck:
-                    if 'human' in role or 'listener' in role:
-                        return ask(role+' 输出为零，只检查麦克风输入。用正式响度说最响部分/播放固定片段；输入MIC_READY并保持到采集结束，其他取消：').strip()=='MIC_READY'
-                    return True
-                if role in ('quiet','positive','positive-post','background','response','runtime-scan'):
-                    print(role+' 已配置且静音；按 READY 授权批次继续。',flush=True)
-                    return True
-                return ask(role+' 已配置且静音；先停止讲话/暂停手机，START继续，其他取消。真人/外源只在实际听到短提示音结束后开始：').strip()=='START'
-            try:
-                runner(path,FIXTURE,base/'model.json',pcm,gain_db=trial_gain,seconds=seconds,hp_volume=40,
-                    bypass=False,zero_coeff=zero,direct_only=direct,speaker_confirmed=True,
-                    local_capture_confirmed=True,before_start=start)
-            except (Exception,KeyboardInterrupt) as exc: error=type(exc).__name__+':'+str(exc)
-            side=path.with_suffix('.status.json')
-            status=json.loads(side.read_text(encoding='utf8')) if side.exists() else {}
-            expected=dict(fixture_id=FIXTURE,hp_volume=40,sample_rate_hz=RATE,bypass=False,zero_coeff=zero,
-                gain_q12=0 if direct else trial_gain_q12,bit_sha256=BIT,model_sha256=c['model_sha256'],
-                coefficients_sha256=ZERO if zero else c['coefficients_sha256'],logical_taps=512,loaded_taps=512)
-            human='human' in role or 'listener' in role
-            a=analyze_npz(path,expected=expected,positive_control_valid=positive,
-                external_source_active=human,external_source_off_verified=not human)
-            m=a.get('original_metadata',{})
-            reasons=[];flags=a.get('event_flags',{})
-            if error: reasons.append(error)
-            if a['category']=='invalid': reasons.append('invalid_capture:'+','.join(a['reasons']))
-            if flags.get('protection') or any(flags.get(k) for k in ('prediction_saturations','residual_saturations','gain_saturations','mix_saturations')):
-                reasons.append('protection_or_numeric_event; acoustic_cause_unknown')
-            if flags.get('early_stop') or flags.get('microphone_clipping'): reasons.append('early_stop_or_clipping')
-            if m.get('completed_frames')!=int(seconds*RATE):reasons.append('actual_run_duration_incomplete')
-            if flags.get('instability_growth'): reasons.append('observed_growth_in_valid_window')
-            if status.get('recovery_ok') is not True or status.get('cleanup_errors'): reasons.append('cleanup_unverified')
-            if status.get('save_error') or status.get('salvage_errors'): reasons.append('evidence_save_or_salvage_failed')
-            if a.get('evaluation_metadata',{}).get('verification',{}).get('bit_exact') is not True: reasons.append('actual_reference_arithmetic_unverified')
-            if m.get('source_pcm16_sha256')!=hashlib.sha256(pcm.astype('<i2').tobytes()).hexdigest(): reasons.append('actual_source_mismatch')
-            coeff=m.get('coefficient_status',0)
-            if type(coeff) is not int or (coeff>>4)&65535!=512 or coeff&14!=10: reasons.append('loader_readback_invalid')
-            headroom=microphone_headroom(path,require_full_capture=is_precheck)
-            if not headroom['passed']:reasons.append('microphone_headroom_failed:'+str(headroom['reason']))
-            row=dict(m,role=role,mode=mode,repeat=repeat,file=path.name,analysis=a,driver_status=status,
-                gain_db_requested=trial_gain,microphone_headroom=headroom,is_input_precheck=is_precheck,
-                measurement_valid=not reasons,stop_reasons=reasons,scene_sha256=hashlib.sha256(encoded(scene)).hexdigest(),
-                binding_sha256=binding['binding_sha256'],hwh_sha256=HWH,
-                loaded_identity_basis='A loader count/status plus sent Q20 and captured arithmetic; not coefficient-memory hash readback')
-            state['trials'].append(row);state.pop('pending_trial',None)
-            collect(folder,state)
-            if reasons: raise RuntimeError(';'.join(reasons))
-            return row
+        context=dict(candidate=c,scene=scene,model_path=base/'model.json',binding_sha256=binding['binding_sha256'])
+        trial=_make_trial(base,folder,state,context,ask,runner)
         # Current-scene positive control uses current background; no old -37.8 floor.
         quiet=trial('quiet',direct=True,seconds=1.02)
         background_control=positive_background(folder/quiet['file'])
@@ -644,9 +895,9 @@ def run(base=None, ask=input, runner=None, live_runner=None):
         if runtime:
             for i,scan_gain in enumerate(c['scan_gains_db']):
                 order=('zero','matched') if i%2==0 else ('matched','zero')
-                for mode in order:trial('runtime-scan',mode,repeat=1,positive=True)
+                for mode in order:trial('runtime-scan',mode,repeat=1,positive=True,gain_db=scan_gain)
             scan_gain=gain
-            for mode in ('matched','zero'):trial('runtime-scan',mode,repeat=2,positive=True)
+            for mode in ('matched','zero'):trial('runtime-scan',mode,repeat=2,positive=True,gain_db=scan_gain)
         else:
             # Balanced, repeated matched/zero forced response; local SNR failure never stops the batch.
             for repeat,order in ((1,('zero','matched')),(2,('matched','zero'))):
@@ -727,6 +978,110 @@ def run(base=None, ask=input, runner=None, live_runner=None):
     return state
 
 
+def _review_reproduction(archive,state,output,return_sha):
+    issues=[];binding=state.get('binding');raw_checked=[];voice_metadata=[]
+    if not binding:
+        result=dict(policy=POLICY,workflow='success_first',return_sha256=return_sha,raw_quality_control=dict(status='no_board_records',issues=[]),
+            baseline_result=reproduction_results(state)[0],candidate_result=reproduction_results(state)[1],
+            historical_listener_feedback=state.get('historical_listener_feedback'),execution_origin=state.get('execution_origin'),
+            field_effect_claims_allowed=False,stop_reason=state.get('stop_reason'),prompt_log=state.get('prompt_log',[]))
+        write_json(output,result);return result
+    if hashlib.sha256(archive.read('model.json')).hexdigest()!=binding['baseline']['model_sha256']:issues.append('baseline_transport_hash')
+    if hashlib.sha256(encoded({k:v for k,v in binding.items() if k!='binding_sha256'})).hexdigest()!=binding['binding_sha256']:issues.append('baseline_binding_hash')
+    inventory={r['file']:r for r in state.get('inventory',[])}
+    with tempfile.TemporaryDirectory(prefix='c-reproduction-intake-',dir=Path(output).resolve().parent) as d:
+        temp=Path(d)
+        for name in archive.namelist():
+            if Path(name).name!=name:raise ValueError('unsafe return path')
+            if name.endswith('.json') or name.endswith('.npz'):(temp/name).write_bytes(archive.read(name))
+        for row in state['trials']:
+            name=row['file'];item=inventory.get(name,{})
+            if item.get('metadata') and any(item['metadata'].get(k)!=row.get(k) for k in
+                    ('capture_id','first_frame','completed_frames','frames','zero_coeff','coefficients_sha256','model_sha256','gain_q12')):
+                issues.append('metadata_disagrees:'+name)
+            if row.get('measurement_valid'):
+                status=row.get('driver_status',{})
+                if status.get('recovery_ok') is not True or status.get('save_error') or status.get('cleanup_errors'):issues.append('status_disagrees:'+name)
+                zero=row['role']!='human-candidate' or row.get('mode')=='zero'
+                expected_hash=ZERO if zero else state.get('candidate_binding',{}).get('candidate',{}).get('coefficients_sha256')
+                audible=row['role'] in ('human-baseline-on','human-candidate')
+                expected_gain=int(math.floor(4096*10**(-8/20)+.5)) if audible else 0
+                if (row.get('coefficients_sha256')!=expected_hash or row.get('zero_coeff')!=zero or row.get('gain_q12')!=expected_gain or
+                    row.get('hp_volume')!=40 or row.get('bit_sha256')!=BIT or row.get('fixture_id')!=FIXTURE or
+                    row.get('completed_frames')!=int(row['requested_seconds']*RATE) or row.get('source_schedule_verified') is not True or
+                    row.get('source_end_frame_exclusive')!=row.get('source_frames')):
+                    issues.append('identity_or_budget:'+name)
+            if 'human' in name or 'listener' in name:
+                if name in archive.namelist():issues.append('unexpected_human_pcm:'+name)
+                voice_metadata.append(name);continue
+            if name not in archive.namelist():issues.append('raw_missing:'+name);continue
+            path=temp/name
+            if sha(path)!=item.get('sha256'):issues.append('inventory_hash:'+name);continue
+            expected={k:row.get(k) for k in ('fixture_id','hp_volume','sample_rate_hz','bit_sha256','model_sha256','gain_q12','zero_coeff','coefficients_sha256')}
+            a=analyze_npz(path,expected=expected,positive_control_valid=False,external_source_active=False,external_source_off_verified=True)
+            headroom=microphone_headroom(path,require_full_capture=row.get('is_input_precheck',False))
+            if row.get('measurement_valid') and (a['category']=='invalid' or not headroom['passed']):issues.append('raw_recalculation:'+name)
+            if (temp/name.replace('.npz','.status.json')).exists():
+                status=json.loads((temp/name.replace('.npz','.status.json')).read_text(encoding='utf8'))
+                if status!=row['driver_status']:issues.append('status_file:'+name)
+            raw_checked.append(name)
+        for which,positive_role in (('path_pre','positive'),('path_post','positive-post')):
+            declared=state.get(which)
+            if not declared:continue
+            active=next((r for r in state['trials'] if r['role']==positive_role and not r['is_input_precheck']),None)
+            quiet=next((r for r in reversed(state['trials'][:state['trials'].index(active)]) if r['role']=='quiet'),None) if active else None
+            if active and quiet:
+                actual=relative_positive_control(temp/active['file'],temp/quiet['file'])
+                if actual['passed']!=declared['relative']['passed'] or (actual.get('detection_contrast_db') is not None and
+                    abs(actual['detection_contrast_db']-declared['relative']['detection_contrast_db'])>1e-7):issues.append('path_recalculation:'+which)
+            else:issues.append('path_raw_missing:'+which)
+        continuous=state.get('human_continuous')
+        if continuous:
+            status_name='human-continuous.status.json'
+            if status_name not in archive.namelist():issues.append('continuous_status_missing')
+            else:
+                status=json.loads(archive.read(status_name))
+                if status!=continuous['report']['driver_status']:issues.append('continuous_status_disagrees')
+                if continuous['report']['status']=='passed' and (not all(status.get(k) is True for k in ('recovered','mute_ok','disarm_ok')) or
+                    status.get('zero_coeff') is not True or status.get('coefficients_sha256')!=ZERO or
+                    status.get('frames_completed')!=int(60*RATE) or any(status.get('counts',{}).values())):
+                    issues.append('continuous_zero_use_identity_or_counts')
+    answers={r['sequence']:r['answer'] for r in state.get('prompt_log',[])}
+    by_id={r.get('capture_id'):r for r in state['trials']}
+    for item in state.get('baseline_repeats',[]):
+        row=by_id.get(item['capture_id'],{})
+        if row.get('role')!='human-baseline-on' or row.get('measurement_valid')!=item['measurement_valid']:issues.append('baseline_capture_reference')
+    for item in state.get('candidate_comparisons',[]):
+        rows={k:by_id.get(v,{}) for k,v in item['captures'].items()}
+        valid=(set(rows)=={'zero','matched'} and all(r.get('measurement_valid') for r in rows.values()) and
+            rows['zero'].get('scene_sha256')==rows['matched'].get('scene_sha256') and rows['zero'].get('gain_q12')==rows['matched'].get('gain_q12'))
+        if bool(valid)!=item['pair_valid']:issues.append('candidate_pair_reference')
+    if state.get('input_response_confirmed') and answers.get(state.get('input_response_prompt_sequence'))!='INPUT_RESPONDS':issues.append('input_confirmation_missing')
+    for which in ('path_pre','path_post'):
+        item=state.get(which,{})
+        if item.get('confirmed') and (answers.get(item.get('output_prompt_sequence'))!='TONE_HEARD' or
+            answers.get(item.get('source_prompt_sequence'))!='SOURCES_STOPPED'):
+            issues.append('human_path_confirmation_missing:'+which)
+    baseline,candidate=reproduction_results(state)
+    if baseline!=state.get('baseline_result'):issues.append('baseline_summary_disagrees')
+    if candidate!=state.get('candidate_result'):issues.append('candidate_summary_disagrees')
+    reported_baseline=baseline;reported_candidate=candidate
+    if issues:
+        baseline=dict(baseline,usable='unknown',quality='blocked_pending_quality_fix')
+        candidate=dict(candidate,improvement='unknown',quality='blocked_pending_quality_fix')
+    result=dict(policy=POLICY,workflow='success_first',return_sha256=return_sha,
+        raw_quality_control=dict(status='completed_available_records' if not issues else 'discrepancies',issues=issues,
+            independent_raw_files=raw_checked,voice_metadata_only=voice_metadata,
+            limitation='Raw human PCM remains local; voice statistics/continuous waveform verification are board-side only, not independent acoustic revalidation'),
+        baseline_result=baseline,candidate_result=candidate,reported_baseline_result=reported_baseline,reported_candidate_result=reported_candidate,
+        field_effect_claims_allowed=not issues and state.get('execution_origin')=='A_operator_board',
+        board_result_dir=state.get('board_result_dir'),trials=state['trials'],historical_listener_feedback=state.get('historical_listener_feedback'),
+        conditions=state.get('conditions'),original_input_refused=state.get('original_input_refused'),
+        path_pre=state.get('path_pre'),path_post=state.get('path_post'),human_continuous=state.get('human_continuous'),
+        prompt_log=state.get('prompt_log'),execution_origin=state.get('execution_origin'),stop_reason=state.get('stop_reason'),msg_db=None,asg_db=None)
+    write_json(output,result);return result
+
+
 def review(path, output):
     """C's one return intake, with all omissions carried to B together."""
     with zipfile.ZipFile(path) as z:
@@ -735,6 +1090,7 @@ def review(path, output):
             if hashlib.sha256(z.read(name)).hexdigest()!=digest: raise ValueError('return hash:'+name)
         state=json.loads(z.read('summary.json'))
         if state['policy']!=POLICY: raise ValueError('return policy')
+        if state.get('workflow')=='success_first':return _review_reproduction(z,state,output,sha(path))
         qc=[]
         binding=state.get('binding')
         if binding:
@@ -842,6 +1198,7 @@ def main():
         result=review(a.return_zip,a.output)
     else: result=check(a.base)
     print(json.dumps(result,ensure_ascii=False,allow_nan=False))
+    if a.action=='review' and result.get('workflow')=='success_first':return 2 if result['raw_quality_control']['issues'] else 0
     return 0 if result.get('ready',result.get('status')=='completed' or a.action=='review') else 2
 
 

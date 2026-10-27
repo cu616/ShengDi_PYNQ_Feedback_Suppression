@@ -59,7 +59,7 @@ def review_continuous(path, manifest, plan, error=None, model_path=None):
             original=json.loads(str(capture['metadata_json'].item()))
             arrays={k:np.asarray(capture[k]) for k in ('reference','microphone','prediction_pcm','residual_pcm')}
         expected=dict(fixture_id=plan['fixture_id'],gain_q12=plan['gain_q12'],hp_volume=plan['hp_volume'],
-            bypass=False,zero_coeff=False,sample_rate_hz=RATE,logical_taps=512,loaded_taps=512,
+            bypass=False,zero_coeff=plan.get('zero_coeff',False),sample_rate_hz=RATE,logical_taps=512,loaded_taps=512,
             frames_requested=int(plan['continuous_target_seconds']*RATE),pl_max_run_frames=3000000,
             driver_evidence_version='a-continuous-v1',mode='continuous',pl_contract='v2',
             model_sha256=manifest['hashes']['model.json'],coefficients_sha256=manifest['coefficients_sha256'],
@@ -84,6 +84,7 @@ def review_continuous(path, manifest, plan, error=None, model_path=None):
         checks['cleanup']=all(state.get(k) is True for k in ('recovered','mute_ok','disarm_ok','muted')) and not state.get('cleanup_errors')
         checks['save']=not state.get('save_error') and not state.get('salvage_errors')
         q=np.asarray(json.loads(Path(model_path or path.parent.parent.parent/'model.json').read_text(encoding='utf8'))['coefficients_q20'],dtype=np.int64)
+        if plan.get('zero_coeff',False):q=np.zeros_like(q)
         from replay_tools import verify_replay
         raw=np.column_stack((np.rint(arrays['reference']*2**23),np.rint(arrays['microphone']*2**23),
                              arrays['prediction_pcm'],arrays['residual_pcm'])).astype(np.int64)

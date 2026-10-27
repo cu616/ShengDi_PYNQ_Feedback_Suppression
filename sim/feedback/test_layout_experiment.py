@@ -62,6 +62,11 @@ class Runner:
         t=np.arange(n)/x.RATE
         # Known algebraic signal: quiet is low noise, direct tone is delayed input.
         target=np.rint(200*(np.sin(2*np.pi*700*t)+np.sin(2*np.pi*1500*t))).astype(np.int64)
+        if 'human' in path.stem:target*=getattr(self,'human_scale',1)
+        if 'human-input-original' in path.stem and self.fail in ('original_peak','original_clipped','original_bad_restore','original_clipped_bad_restore','original_clipped_bad_schedule'):
+            amplitude=1.2 if self.fail in ('original_clipped','original_clipped_bad_restore','original_clipped_bad_schedule') else .7
+            target=np.clip(np.rint(amplitude*2**23*np.sin(2*np.pi*700*t)),-2**23,2**23-1).astype(np.int64)
+        if 'human-input-original' in path.stem and self.fail=='original_flat':target.fill(round(.3*2**23))
         if self.fail=='precheck_peak' and 'mic-precheck' in path.stem:
             target.fill(round(10**(-4.2/20)*2**23))
         if self.fail=='human_peak' and 'mic-precheck-human' in path.stem:
@@ -82,6 +87,8 @@ class Runner:
             verification=verify,early_stop=False,stop_reason='completed',clip_counts_raw=[0,0,0],
             prediction_saturations=0,residual_saturations=0,gain_saturations=0,mix_saturations=0)
         status=dict(recovery_ok=True,cleanup_errors=[],salvage_errors=[],save_error=None)
+        if self.fail=='original_clipped_bad_schedule' and 'human-input-original' in path.stem:m['source_end_frame_exclusive']-=1
+        if self.fail in ('original_bad_restore','original_clipped_bad_restore') and 'human-input-original' in path.stem:status['recovery_ok']=False
         trigger=self.fail and 'mic-precheck' not in path.stem and ('response-zero' in path.stem or 'runtime-scan-zero' in path.stem)
         if trigger:
             if self.fail=='protection':m.update(early_stop=True,stop_reason='guard',clip_counts_raw=[65536,0,0],residual_saturations=1)
@@ -91,6 +98,8 @@ class Runner:
             elif self.fail=='cleanup':status['recovery_ok']=False
             elif self.fail=='save':status['save_error']='injected write failure'
             elif self.fail=='clip':raw[-1,1]=2**23-1
+        candidate_guard=self.fail=='candidate_protection' and 'human-candidate-matched' in path.stem
+        if candidate_guard:m.update(early_stop=True,stop_reason='guard',clip_counts_raw=[65536,0,0],residual_saturations=1)
         np.savez_compressed(path,reference=raw[:,0]/2**23,microphone=raw[:,1]/2**23,
             prediction_pcm=raw[:,2],residual_pcm=raw[:,3],coefficients_q20=q,source_pcm16=source,
             sample_rate_hz=x.RATE,metadata_json=json.dumps(m))
@@ -98,8 +107,139 @@ class Runner:
         self.calls.append(path.stem)
         self.requests.append(dict(file=path.stem,direct_only=kw['direct_only'],zero_coeff=kw['zero_coeff'],
             source_zero=not bool(np.any(source)),seconds=kw['seconds']))
+        if candidate_guard:raise RuntimeError('synthetic candidate guard; stopped before return')
         if trigger and self.fail=='protection': raise RuntimeError('guard; stopped before returning')
         return m
+
+
+class ReproductionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from assemble_experiment import assemble_layout
+        (ROOT/'tmp').mkdir(exist_ok=True)
+        cls.temp=tempfile.TemporaryDirectory(dir=ROOT/'tmp',prefix='success-reproduction-')
+        cls.prepared=Path(cls.temp.name)/'prepared'
+        assemble_layout(cls.prepared,'254b8e9',baseline_first=True)
+    @classmethod
+    def tearDownClass(cls):cls.temp.cleanup()
+    def work(self):return tempfile.TemporaryDirectory(dir=ROOT/'tmp',prefix='success-case-')
+    def execute(self,base,failure=None,verdict='AMPLIFIED_CLEAR',path='TONE_HEARD',cancel=None):
+        from sprint_selftest import SoftwareContinuousRunner
+        runner=Runner(failure);runner.human_scale=20;events=[]
+        class Record:
+            def __call__(self,*args,**kwargs):events.append(Path(args[0]).stem);return runner(*args,**kwargs)
+        manifest=dict(hashes={'audio_replay.bit':x.BIT,'audio_replay.hwh':x.HWH},coefficients_sha256=x.ZERO)
+        live=SoftwareContinuousRunner(manifest,base)
+        class Live:
+            def __call__(self,*args,**kwargs):events.append('LIVE_HUMAN_60');return live(*args,**kwargs)
+        def answer(prompt):
+            if cancel and cancel in prompt:return 'CANCEL'
+            if 'REPRO_READY|' in prompt:return 'REPRO_READY|synthetic-talker|synthetic phrase|SAME'
+            if 'DISTANCE|' in prompt:return 'DISTANCE|20'
+            if 'INPUT_RESPONDS /' in prompt:return 'INPUT_RESPONDS'
+            if 'SOURCES_STOPPED' in prompt:return 'SOURCES_STOPPED'
+            if 'TONE_HEARD /' in prompt:return path
+            if 'MIC_READY' in prompt:return 'MIC_READY'
+            if 'START' in prompt:return 'START'
+            if 'HEARD /' in prompt:return 'HEARD'
+            if 'AMPLIFIED_CLEAR' in prompt:return verdict
+            if 'CLEAR_THROUGHOUT /' in prompt:return 'CLEAR_THROUGHOUT'
+            if 'IMPROVED /' in prompt:return 'IMPROVED'
+            if 'COMPARABLE /' in prompt:return 'COMPARABLE'
+            return 'synthetic report only'
+        with contextlib.redirect_stdout(io.StringIO()):result=x.run(base,ask=answer,runner=Record(),live_runner=Live())
+        return result,runner,live,events
+    def prepare(self,base):shutil.copytree(self.prepared,base,dirs_exist_ok=True)
+    def test_success_is_zero_baseline_first_then_human_60_then_same_gain_candidate(self):
+        with self.work() as d:
+            base=Path(d);self.prepare(base);s,r,live,events=self.execute(base)
+            self.assertEqual(s['status'],'completed',s.get('stop_reason'))
+            self.assertEqual(s['baseline_result']['usable'],'supported')
+            self.assertEqual(s['baseline_result']['reproduction'],'recorded_settings_reproduced')
+            self.assertEqual(s['candidate_result']['improvement'],'qualitative_improvement_reported')
+            self.assertEqual(len(s['baseline_result']['repeats']),2)
+            ons=[t for t in s['trials'] if t['role']=='human-baseline-on']
+            self.assertTrue(all(t['zero_coeff'] and t['requested_seconds']==9.5 and t['actual_talker_distance_cm']==5 for t in ons))
+            self.assertLess(events.index('LIVE_HUMAN_60'),next(i for i,e in enumerate(events) if 'human-candidate' in e))
+            self.assertTrue(s['human_continuous']['report']['driver_status']['zero_coeff'])
+            self.assertEqual(len(live.calls),1)
+            report=x.review(next(base.rglob('return-results.zip')),base/'intake.json')
+            self.assertEqual(report['raw_quality_control']['issues'],[],report)
+            self.assertEqual(report['baseline_result'],s['baseline_result'])
+            self.assertEqual(report['candidate_result'],s['candidate_result'])
+            with zipfile.ZipFile(next(base.rglob('return-results.zip'))) as z:
+                self.assertFalse(any('human' in n and n.endswith('.npz') for n in z.namelist()))
+            self.assertFalse(report['field_effect_claims_allowed'])
+            with zipfile.ZipFile(next(base.rglob('return-results.zip'))) as z:files={n:z.read(n) for n in z.namelist()}
+            forged=json.loads(files['summary.json']);forged['baseline_result']['usable']='not_supported'
+            files['summary.json']=json.dumps(forged).encode('utf8')
+            manifest=json.loads(files['return-manifest.json']);manifest['hashes']['summary.json']=hashlib.sha256(files['summary.json']).hexdigest()
+            files['return-manifest.json']=json.dumps(manifest).encode('utf8')
+            altered=base/'altered.zip'
+            with zipfile.ZipFile(altered,'w') as z:
+                for name,data in files.items():z.writestr(name,data)
+            rejected=x.review(altered,base/'rejected.json')
+            self.assertEqual(rejected['raw_quality_control']['status'],'discrepancies')
+            self.assertEqual(rejected['baseline_result']['usable'],'unknown')
+    def test_missing_candidate_does_not_block_baseline_or_human_use(self):
+        with self.work() as d:
+            base=Path(d);self.prepare(base);(base/'candidate-unbound.json').unlink()
+            s,r,live,events=self.execute(base)
+            self.assertEqual(s['baseline_result']['usable'],'supported',s.get('stop_reason'))
+            self.assertEqual(s['candidate_result']['improvement'],'not_tested')
+            self.assertTrue(s['candidate_result']['unavailable_reasons'])
+            self.assertEqual(len(live.calls),1)
+            self.assertFalse(any('human-candidate' in e for e in events))
+    def test_original_peak_refusal_allows_only_one_distance_variant(self):
+        for fault in ('original_peak','original_clipped'):
+            with self.subTest(fault=fault),self.work() as d:
+                base=Path(d);self.prepare(base);s,r,live,events=self.execute(base,failure=fault)
+                self.assertEqual(s['baseline_result']['usable'],'supported',s.get('stop_reason'))
+                self.assertEqual(s['baseline_result']['reproduction'],'changed_distance_usable')
+                self.assertTrue(s['original_input_refused'])
+                self.assertTrue(all(t['actual_talker_distance_cm']==20 for t in s['trials'] if t['role']=='human-baseline-on'))
+                self.assertEqual(sum('DISTANCE|' in p['prompt'] for p in s['prompt_log']),1)
+    def test_stuck_input_and_unverified_recovery_do_not_enter_distance_or_closed_loop(self):
+        for fault in ('original_flat','original_bad_restore','original_clipped_bad_restore','original_clipped_bad_schedule'):
+            with self.subTest(fault=fault),self.work() as d:
+                base=Path(d);self.prepare(base);s,r,live,events=self.execute(base,failure=fault)
+                self.assertEqual(s['status'],'stopped');self.assertFalse(live.calls)
+                self.assertFalse(any('human-baseline-on' in e for e in events))
+                self.assertFalse(any('DISTANCE|' in p['prompt'] for p in s['prompt_log']))
+    def test_unknown_tone_estimate_does_not_erase_confirmed_io_baseline(self):
+        with self.work() as d:
+            base=Path(d);self.prepare(base);s,r,live,events=self.execute(base,failure='positive_missing')
+            self.assertFalse(s['path_pre']['relative']['passed'])
+            self.assertTrue(s['path_pre']['confirmed'])
+            self.assertEqual(s['baseline_result']['usable'],'supported',s.get('stop_reason'))
+            self.assertIsNone(s['candidate_result']['tone_transfer_drift_db'])
+    def test_output_route_unknown_stops_before_any_closed_baseline(self):
+        for value in ('NOT_HEARD','UNKNOWN'):
+            with self.subTest(value=value),self.work() as d:
+                base=Path(d);self.prepare(base);s,r,live,events=self.execute(base,path=value)
+                self.assertEqual(s['status'],'stopped')
+                self.assertFalse(any('human-baseline-on' in e for e in events))
+                self.assertEqual(s['baseline_result']['usable'],'unknown')
+    def test_real_action_cancellation_never_generates_listener_success(self):
+        for prompt in ('REPRO_READY|','SOURCES_STOPPED'):
+            with self.subTest(prompt=prompt),self.work() as d:
+                base=Path(d);self.prepare(base);s,r,live,events=self.execute(base,cancel=prompt)
+                self.assertEqual(s['status'],'stopped');self.assertFalse(s['baseline_repeats'])
+                self.assertFalse(live.calls);self.assertFalse(any('human-baseline-on' in e for e in events))
+    def test_candidate_protection_preserves_previously_supported_baseline(self):
+        with self.work() as d:
+            base=Path(d);self.prepare(base);s,r,live,events=self.execute(base,failure='candidate_protection')
+            self.assertEqual(s['status'],'stopped')
+            self.assertEqual(s['baseline_result']['usable'],'supported')
+            self.assertEqual(s['candidate_result']['improvement'],'execution_failed_effect_unknown')
+            self.assertFalse(s.get('path_post'))
+    def test_two_negative_baseline_reports_preserve_history_and_do_not_extend(self):
+        with self.work() as d:
+            base=Path(d);self.prepare(base);s,r,live,events=self.execute(base,verdict='CLEAR_NO_IMPROVEMENT')
+            self.assertEqual(s['baseline_result']['usable'],'not_supported')
+            self.assertEqual(len(s['baseline_repeats']),2);self.assertFalse(live.calls)
+            self.assertEqual(len(s['historical_listener_feedback']),2)
+            self.assertFalse(any('human-candidate' in e for e in events))
 
 
 class RelativePositiveTests(unittest.TestCase):

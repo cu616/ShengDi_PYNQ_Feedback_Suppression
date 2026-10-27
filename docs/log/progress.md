@@ -11,6 +11,11 @@
 
 
 
+
+## 2026-10-27 C 按0f工作流整合成功复现与候选依赖
+
+fetch后读取A0f17c74指定规则/计划，保持C。核对r4实际源/帧窗/背景及首四角色无START路由，未把距离或阈值定为唯一原因；第二次仍摘要。r6在已有入口先零系数−8基线，5cm仅静音资格检查、一次距离变更，真人/静音听众两次及条件60秒使用后再同增益候选；缺模型不阻基线，实际人工动作有阶段记录。11个不同软件用例最终通过，初次满幅分支失败及定向修复留证，未全套重验。[审计与完成/失败出口](../../report/verification/audio_closed/batch-control.md#2026-10-27-r6按成功复现顺序整合基线与候选)、[原帧审计](../../report/verification/audio_closed/sprint-rc0-20261025/reproduction-r6-audit.json)。无C操板或新效果。
+
 ## 2026-10-26 C 冻结r5相对正向检测最终包
 
 从干净c2acf87冻结c-new-layout-r5.zip（342392字节），独立解压32项载荷、Notebook及已测源码身份核对完成；取消退出2、0试次、无活动绑定。定音频率/声量/时长、模型/bit、五档及原保护保持，仅改runtime测量和原件复算。第一回包有污染、零算法配对；第二回包待A网络恢复取回，不要求旧试次重跑。最终SHA与限制见[r5机器记录](../../report/verification/audio_closed/sprint-rc0-20261025/layout-package-r5-check.json)，[操作单](../../board/audio_closed/BATCH_GUIDE.md#2026-10-26-新布局一次集中实验)。无C操板或新效果结论。

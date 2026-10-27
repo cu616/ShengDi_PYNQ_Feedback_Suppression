@@ -1,0 +1,80 @@
+{
+  "stage": "source-preflight",
+  "policy": "c-new-layout-1.5.0",
+  "workflow": "success_first",
+  "workflow_commit": "0f17c74f21360ca8d84240be8a50be35ddeb8cbc",
+  "A_driver_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
+  "A_scene_commit": "52ee4e4a5d34fff9f0c82ae46d7dd5449ee99d00",
+  "A_driver_changes_to_0f17c74": false,
+  "baseline": {
+    "gain_db": -8.0,
+    "zero_coeff": true,
+    "actual_Q20_sha256": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+    "initial_silent_input_distance_cm": 5.0,
+    "distance_variant_cm": [
+      15,
+      30
+    ],
+    "permitted_distance_variants": 1,
+    "listener_sequence": [
+      "off",
+      "on",
+      "off",
+      "on"
+    ],
+    "short_seconds": 9.5,
+    "conditional_live_human_seconds": 60.0,
+    "transport_model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+    "candidate_qualification_dependency": false
+  },
+  "candidate": {
+    "source_commit": "254b8e9",
+    "gain_db": -8.0,
+    "pair_repeats": 2,
+    "no_gain_scan": true,
+    "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+    "missing_candidate_blocks_baseline": false
+  },
+  "path_confirmation": "Actual speech input response + registered digital reference/window + actual named-loudspeaker TONE_HEARD; numeric 1k estimates diagnostic only",
+  "human_actions_auto_answered": false,
+  "software_provenance": "synthetic fixtures only; no field effect claim",
+  "software_controls": {
+    "new_methods_finally_passed": 9,
+    "affected_legacy_methods_passed": 2,
+    "initial_run": {
+      "methods": 9,
+      "failed": 1,
+      "seconds": 47.579,
+      "log": "reproduction-tests-r6.txt"
+    },
+    "resolved_distance_and_affected_legacy": {
+      "methods": 4,
+      "failed": 0,
+      "seconds": 43.569,
+      "log": "reproduction-controls-r6.txt"
+    },
+    "final_quality_and_actual_source_schedule": {
+      "methods": 2,
+      "failed": 0,
+      "seconds": 18.451,
+      "log": "reproduction-final-quality-r6.txt"
+    },
+    "final_prompt_linkage": {
+      "methods": 1,
+      "failed": 0,
+      "seconds": 13.685,
+      "log": "reproduction-prompt-intake-r6.txt"
+    },
+    "unchanged_B_145_repeated": false,
+    "hardware_executed": false
+  },
+  "nominal_full_run_seconds": 144.58,
+  "nominal_calls": 28,
+  "first_raw_scope": "contaminated diagnostic only",
+  "second_raw_scope": "summary only, existing file pending A network recovery",
+  "hardware_executed": false,
+  "baseline_field_usable": "not_yet_reproduced",
+  "candidate_field_improvement": "not_yet_measured",
+  "voice_raw_transfer": false,
+  "quantitative_listener": "not_tested"
+}

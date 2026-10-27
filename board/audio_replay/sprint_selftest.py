@@ -96,6 +96,7 @@ class SoftwareContinuousRunner:
         t=np.arange(start,n)/RATE
         target=np.rint(2**23*.05*(np.sin(2*np.pi*500*t)+np.sin(2*np.pi*2000*t)+np.sin(2*np.pi*8400*t))).astype(np.int64)
         q=np.asarray(json.loads(Path(model).read_text(encoding='utf8'))['coefficients_q20'],dtype='<i4')
+        if kw.get('zero_coeff',False):q=np.zeros_like(q)
         ref=np.zeros(len(t),dtype=np.int64);ref[2:]=gain_pcm(target[:-2],request['gain_q12'])
         pred=rounded_shift(np.convolve(ref,np.r_[np.int64(0),q])[:len(t)],20)
         mic=target+pred
