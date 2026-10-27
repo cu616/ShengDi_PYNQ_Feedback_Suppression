@@ -95,6 +95,55 @@
       ],
       "verdict": "no cancellation conclusion. The two arms differ, but the share metric is confounded by a 7.8 dB total-level difference and the room gate moved 11.8 dB between the two windows of this session (gate -38.2 dBFS in run 1, -26.4 dBFS in run 2), so single-window arm pairs are not comparable. Needs a supervised window with a stable baseline."
     },
+    "steady_state_tone_three_point": {
+      "why": "replacing white noise with a pure tone at the measured |H| peak (322 Hz): a tone puts all its energy in one bin, so the microphone band level sits about 40 dB above the room floor instead of under it. Three points, same source level (0.15 FS), same gain -8 dB and hp volume 40, candidate model loaded in all three.",
+      "open": "digital gain forced to 0: microphone 322 Hz 45.44 dB, mic RMS -24.6 dBFS, peak -16.0",
+      "bypass": "loop closed, candidate coefficients loaded but not subtracted: 322 Hz 49.19 dB (+3.75 dB vs open)",
+      "cancel": "loop closed, subtraction active: 322 Hz 44.43 dB",
+      "cancellation_depth_db": 6.37,
+      "cancellation_depth_how": "residual at 322 Hz in bypass 187.66 dB vs cancel 181.29 dB in the same (un-normalised PCM) units, so +6.37 dB; the residual is what the canceller actually minimises",
+      "acoustic_result": "microphone at 322 Hz is 4.76 dB lower in cancel than in bypass, and 1.01 dB lower than with no loop at all: the canceller removes the loop's +3.75 dB boost and slightly more",
+      "all_arms": "bit_exact=true, wide_residual_frames=0, bit22=0, no gain/mix/prediction/residual saturation, no clipping, completed",
+      "limits": "one frequency, one level, small-signal (loop only +3.75 dB above the no-loop path). This is a cancellation depth at 322 Hz, NOT ASG and NOT the maximum achievable",
+      "meaning": "the first steady-state measurement in this session that is above the noise: white-noise band shares gave +1.6 / -4.7 / -2.1 dB with a flipping sign and are unusable; the tone gives a stable, sign-consistent 6.37 dB depth"
+    },
+    "stationary_noise_runs_summary": {
+      "share_differences_db": [1.6, -4.7, -2.1],
+      "verdict": "unusable as an instrument at these levels: the sign flips run to run and the arm levels themselves follow the room floor",
+      "recommendation": "stop using broadband-noise band share for arm comparison in this fixture; use a tone at the |H| peak (done above) or a louder source that lifts the microphone at least 10 dB above the floor"
+    },
+    "human_speech_runs": {
+      "note": "three attempts, all with the candidate model file loaded and zero_coeff=True/False selecting the arm; injected source is silent (the person is the source); gain -8 dB, hp volume 40; capture keeps the last 16384 frames (0.336 s) while the counters cover the whole 6 s",
+      "attempt_1_12cm_zero_arm": {
+        "trial": "audio_wide/human_speech_zero_1746897440856886600.npz",
+        "result": "stop=completed, 292968 frames, mic -27.9 dBFS RMS, tail peak -12.2 dBFS, full-scale samples 0 in the tail, all four saturations 0, bit_exact=true",
+        "but": "capture_status bit22 = 1: the input hit the ADC rail somewhere inside the 6 s window while the last 0.336 s was quiet",
+        "verdict": "INADMISSIBLE by the agreed rule (input must not clip)"
+      },
+      "attempt_2_20cm_separate_arms": {
+        "zero": "audio_wide/human_speech_zero_1746897709081803394.npz: completed, mic -36.6, peak -23.1, bit22=0, no saturations, bit_exact -> admissible",
+        "candidate": "audio_wide/human_speech_cand_1746897790220651889.npz: completed, mic -27.8, peak -16.6, bit22=1, prediction_saturations=0, residual_saturations=7, gain/mix 0, bit_exact",
+        "candidate_verdict": "INADMISSIBLE acoustically (input clipped), but this is the field failure signature reproduced: psat=0 with rsat=7. Under v2 the driver stopped on the first residual saturation (2026-10-27 live speech: residual_saturations=8 and playback cut). Under v3 the run CONTINUED and finished all 292968 frames with no guard stop and no audible howl",
+        "listener": {"howl": "no howl", "loudness": "could not tell", "intelligibility": "both arms unintelligible (person at 20 cm)"}
+      },
+      "attempt_3_20cm_same_continuous_speech_pair": {
+        "why": "the two arms had to hear the same speech, so both 6 s windows were taken inside one continuous 20 s utterance",
+        "zero": "audio_wide/human_zero_pair_1746898126201309351.npz: completed, mic -21.6, peak -8.5, bit22=0, all saturations 0, bit_exact -> admissible",
+        "candidate": "audio_wide/human_cand_pair_1746898161064674862.npz: completed, mic -24.0, peak -10.2, bit22=0, all saturations 0, bit_exact -> admissible",
+        "difference": "candidate 2.4 dB lower microphone RMS; no protection trip in either arm; pre-gain overflow did not occur in this pair (rsat=0, wide_residual_frames=0)",
+        "listener_verbatim": {
+          "howl": "no howl",
+          "loudness": "I cannot tell - my hearing is not good enough; this does NOT mean they were the same",
+          "intelligibility": "it did not feel like either arm amplified the voice"
+        },
+        "verdict": "the pair is admissible but the working point does not give the listener an audible PA benefit at 20 cm and -8 dB. That is a working-point result, not a difference between the two arms, and it does not discriminate v2 from v3"
+      }
+    },
+    "v3_behaviour_evidence_on_hardware": {
+      "claim": "the approved change is observable on real hardware: a pre-gain residual overflow no longer interrupts the run",
+      "evidence": "attempt 2 candidate arm: residual_saturations=7, prediction_saturations=0, stop_reason=completed, 292968/292968 frames; the same signature stopped playback under v2 on 2026-10-27",
+      "limits": "that trial had bit22=1, so it is evidence about the guard, not about acoustic cancellation"
+    },
     "human_speech_two_arm": {
       "status": "NOT RUN",
       "reason": "needs a person speaking at ~12 cm plus a confirmed stable speaker/microphone baseline"
