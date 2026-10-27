@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "topic": "correction: the 2026-10-26 'clear amplification' case used the PHONE RECORDING, not a live human",
+  "recorded_by": "A",
+  "correction": {
+    "what_was_recorded": "the 2026-10-26 usable point and all live-voice trials were logged as live human speech",
+    "what_actually_happened": "the operator clarified that the phone recording (1101.m4a, volume 8 of 15) has been standing in for the human voice throughout; the 5 cm / -8 dB success was a PHONE-SOURCE run",
+    "affected_claims": [
+      "usable-point-2026-10-26.json says the listener confirmed live amplification - the object was a playback, not a live talker",
+      "live-round-2026-10-26.json labels the runs as live voice",
+      "the reproduction plan and today's plan inherit the same mislabel"
+    ],
+    "what_still_holds": "with the phone at 5 cm, a listener twice reported clear, audible amplification at -8 dB with zero coefficients; that observation is unchanged",
+    "what_does_not_hold": "no claim that a LIVE human talking into the microphone is audibly amplified exists at all - that has never been demonstrated"
+  },
+  "consequence_for_the_captain_instruction": "the instruction says a phone source may not impersonate the historical live human; the historical case WAS the phone, so the reproduction must use the phone and must be labelled 'fixed recorded source reproduction', and a live-human run must be a separate, later condition",
+  "input_check_today": {
+    "source": "phone 1101.m4a at 5 cm from the microphone, output silent",
+    "mic_peak_dbfs": -11.66,
+    "mic_rms_dbfs": -24.27,
+    "full_scale": 0,
+    "limit_dbfs": -6.0,
+    "verdict": "OK - the 5 cm phone condition can be run"
+  },
+  "plan": [
+    "1. reproduce with the phone at 5 cm, -8 dB, zero coefficients, two 10 s runs, listener silence contrast in between; label as fixed recorded source",
+    "2. if both are clear and no protection or instability appears, fix the configuration and run one 60 s continuous use under the same source",
+    "3. then run the live-human version as a separate condition; do not merge its result with 1-2"
+  ],
+  "not_claimed": [
+    "no live-human amplification has been demonstrated",
+    "the phone result does not transfer to a live talker without its own measurement"
+  ]
+}
