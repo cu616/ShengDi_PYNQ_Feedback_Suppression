@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "topic": "impact list for keeping the wide residual through the digital gain (25-bit subtract -> clamp -> gain today)",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "status": "PROPOSAL ONLY. No RTL change made. Protection semantics are the captain's call.",
+  "deployed_path_today": {
+    "feedback_fir.v:35": "difference = sign_extend(microphone,25) - sign_extend(prediction,25)",
+    "feedback_fir.v:36": "difference_clip = difference > 24-bit max or < 24-bit min",
+    "feedback_fir.v:37-38": "difference_limited = clamp(difference, 24-bit)",
+    "feedback_fir.v:99": "residual_pcm <= bypass ? microphone : difference_limited   // CLAMP HERE",
+    "feedback_fir.v:101": "residual_saturated <= !bypass && difference_clip",
+    "audio_pl_replay.v:173": "gain_product <= residual * gain_latched              // GAIN AFTER",
+    "audio_pl_replay.v:70-72": "gain_rounded clip to 24-bit -> gain_clip_count"
+  },
+  "proposed_change": "carry the 25-bit difference unclamped out of feedback_fir and apply the digital gain to it; clamp only after the gain, where the existing gain_clip path already sits. Because the digital gain is <= 1.0 in every allowed setting, a residual that exceeds 24-bit by a few percent lands back inside 24-bit after scaling, so the information is not lost.",
+  "impact_list": {
+    "modules": [
+      "src/rtl/feedback_fir.v (widen residual_pcm, move difference_clip out of the residual path)",
+      "src/rtl/audio_pl_replay.v (multiply the wide residual; derive the overflow counter after the gain)"
+    ],
+    "interfaces": [
+      "feedback_fir.residual_pcm: [23:0] signed -> [24:0] signed (or [25:0])",
+      "feedback_fir.residual_saturated: semantics change from 'pre-gain overflow' to 'pre-gain overflow observed' and must not by itself trip the guard",
+      "audio_pl_replay.saturation_counts: the upper 16 bits currently carry residual_clips; their meaning changes"
+    ],
+    "counters": [
+      "residual_clips / residual_clip_seen (audio_pl_replay.v:40, 175, 177)",
+      "saturation_counts packing (audio_pl_replay.v:73)",
+      "capture_status bit for residual_clip_seen (audio_pl_replay.v:87)",
+      "gain_clip_count stays and becomes the authoritative post-gain overflow count"
+    ],
+    "capture": [
+      "memory packing is {reference, microphone, prediction, residual} = 4 x 24 bit (audio_pl_replay.v:170); a 25-bit residual breaks the 4 x 24 layout, so either the word widens or the capture stores the clamped value plus a separate wide flag",
+      "any change breaks existing npz readers, so the driver must be versioned together"
+    ],
+    "driver": [
+      "board/audio_replay/replay_trial.py (unpacking, residual_saturations reporting, guard condition)",
+      "board/audio_replay/residual_tools.py (decode helpers)",
+      "the guard must be re-specified: today it stops on residual_clips, which under the new path can fire while the signal is still recoverable"
+    ],
+    "timing": [
+      "the multiply is currently signed 24 x 16 -> 41 bits; a 25-bit operand makes it 42 bits, one extra bit into the DSP48 cascade",
+      "must be re-verified by synthesis and by the existing feedback_fir testbench before any board run"
+    ],
+    "rollback": [
+      "keep v2 bitstream audio_replay.bit 61bb71aa in place until the new bitstream passes the same tests",
+      "board/audio_replay/rollback-v1 already holds the v1 driver; add the v2 driver as the second rollback point",
+      "the successful zero-coefficient configuration today used v2 and must remain runnable unmodified (captain's instruction)"
+    ]
+  },
+  "what_this_does_not_do": [
+    "does not change any protection threshold by itself",
+    "does not alter the model or the coefficients",
+    "does not claim the change fixes the regeneration seen today"
+  ],
+  "open_question_for_the_captain": "under the new path, should the guard still stop on pre-gain overflow (safer, but fires during loud speech) or only on post-gain clamp (lets the gain absorb it, but the guard then no longer catches a genuinely large residual early)?"
+}

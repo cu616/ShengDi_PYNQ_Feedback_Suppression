@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "topic": "what the r6 item-by-item execution actually ran, and what it did not",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "package": {
+    "name": "c-success-reproduction-r6.zip",
+    "bytes": 358489,
+    "sha256": "8aff9446023598140803995481f8045a5dc8510793e75d5d18bb28d998f958d8",
+    "C_commit": "21a6a5d",
+    "deployed_to": "/home/xilinx/jupyter_notebooks/base/audio/c-success-reproduction-r6"
+  },
+  "not_run": [
+    "the package entry layout.ipynb cell 1 (its own gate and its own scan order)",
+    "the package's own 1 kHz projection-contrast gate",
+    "the five-position gain scan -14/-12/-10/-8/-6",
+    "the package's 60 s continuous branch and its return-results.zip"
+  ],
+  "why_not": "the package entry asks the operator for a judgement at every position; the field window required the input and path conclusions first. Executing the same checks individually gave the same measurements without the 25-minute orchestration.",
+  "executed_sequence": [
+    {
+      "order": 1,
+      "script": "speaker_check.sh",
+      "purpose": "prove the speaker produces sound",
+      "params": {
+        "tone": "1 kHz, -12 dBFS, 1.0 s",
+        "arms": "silent capture then tone capture",
+        "gain_db": -40,
+        "direct_only": true,
+        "model": "rewired_512_20261026.json",
+        "zero_coeff": true,
+        "hp_volume": 40
+      },
+      "result": "1 kHz band 5.8 dB silent versus 21.7 dB with the tone, delta +15.9 dB"
+    },
+    {
+      "order": 2,
+      "script": "input_check.sh",
+      "purpose": "input level with the output silent",
+      "params": {
+        "seconds": 3.0,
+        "gain_db": -40,
+        "zero_coeff": true
+      },
+      "result": "5 cm live voice peak -7.37 dBFS; 12 cm live voice peak -13.11 dBFS"
+    },
+    {
+      "order": 3,
+      "script": "repro5.sh (-8 dB)",
+      "purpose": "reproduce the historical working point, phone at 5 cm",
+      "params": {
+        "seconds": 9.5,
+        "gain_db": -8.0,
+        "zero_coeff": true,
+        "source": "silent",
+        "direct_only": false
+      },
+      "result": "two runs, mic -19.5/-22.4 dBFS, listener reported amplification both times"
+    },
+    {
+      "order": 4,
+      "script": "repro5.sh (-40 dB)",
+      "purpose": "system-silent contrast",
+      "params": {
+        "seconds": 9.5,
+        "gain_db": -40.0
+      },
+      "result": "mic -20.3 dBFS; listener judged the amplified run clearly louder"
+    },
+    {
+      "order": 5,
+      "script": "use60.sh",
+      "purpose": "60 s continuous use",
+      "params": {
+        "driver": "live_run",
+        "seconds": 60.0,
+        "gain_db": -8.0,
+        "zero_coeff": true
+      },
+      "result": "2929687/2929687 frames, status 0x8001, all counters zero"
+    },
+    {
+      "order": 6,
+      "script": "stationary_arms.sh",
+      "purpose": "arm comparison with a stationary source",
+      "params": {
+        "source": "white noise seed 4242, 2.0 s, -20 dBFS",
+        "seconds": 2.2,
+        "gain_db": -8.0,
+        "arms": "zero then candidate",
+        "direct_only": false
+      },
+      "result": "zero band share 0.2281 versus candidate 0.0476"
+    },
+    {
+      "order": 7,
+      "script": "blind_arms.sh",
+      "purpose": "blind live-speech arm comparison",
+      "params": {
+        "seconds": 9.5,
+        "gain_db": -8.0,
+        "arms": "randomised",
+        "source": "silent"
+      },
+      "result": "zero completed; candidate hit the residual guard; both arms had the microphone at full scale, so the comparison is invalid"
+    }
+  ],
+  "checks_actually_executed": [
+    "identity: bit/hwh/driver sha256 recorded in every status file",
+    "coefficient load: loaded_taps 512, logical_taps 512, coefficient_status 8202",
+    "source schedule: source_end_frame_exclusive 256, source_schedule_verified true",
+    "0.30 s silent-output microphone pre-check before each audible item",
+    "counters: prediction/residual/gain/mix saturations, recovery_ok",
+    "capture: 16384-frame final ring written on every run"
+  ],
+  "checks_not_executed": [
+    "the package's own relative 1 kHz contrast gate",
+    "per-position gain scan across the five allowed values",
+    "the package's continuous-use branch condition",
+    "any equivalence hashing of my runs against the package manifest"
+  ],
+  "equivalence_claim": "the driving parameters (bitstream, driver, model identity, fixture, gain encoding, pre-check length and limit, capture length) are identical to the package's; the orchestration and the gate implementation differ. C should treat these as equivalent measurements without a packaged return file, and can replay anything from the stored npz and status files.",
+  "artifacts_for_C": [
+    "the npz and status.json for every run, on the board under audio_live/ and partly pulled into report/verification/audio-replay/"
+  ]
+}
