@@ -178,9 +178,9 @@
 
 ## 板卡占用
 
-- **A 占用中 / 2026-10-27**：现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`（v3 宽残差位流）；
-  回退包 `audio_live` 未动。历史证据目录 `/home/xilinx/{b512_pkg,room_cal520,room_head513,room_tail590}`。
-  其他操作者勿并行控制音频。
+- **空闲（2026-10-27 收工）**。下一次操作是 A 的现场窗口，届时先在这里改「占用中 / A / 时间」。
+  现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`（v3 宽残差位流）；
+  回退包 `audio_live` 原样未动。历史证据目录 `/home/xilinx/{b512_pkg,room_cal520,room_head513,room_tail590}`。
 - 当前接线：**0.5 m 房间夹具**（惠普 NS1 Pro + 备用麦，间距 0.5 m，延迟 125 帧）。
   **2026-10-27 下半轮：音响声路已验证是通的**（数字增益 0 时 1 kHz 音调令麦克风 RMS +6.5 dB、带内 +30 dB），
   但**静默门禁在两轮之间漂了 11.8 dB**（−38.2 → −26.4 dBFS），原因未定，现场窗口须前后各测一次门禁。
