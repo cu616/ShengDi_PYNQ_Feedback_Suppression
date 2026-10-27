@@ -1,0 +1,6 @@
+test_protocol_failure_keeps_arithmetic_but_blocks_completion (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_protocol_failure_keeps_arithmetic_but_blocks_completion) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.031s
+
+OK

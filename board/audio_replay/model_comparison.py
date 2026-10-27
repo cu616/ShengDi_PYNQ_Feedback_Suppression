@@ -9,9 +9,14 @@ from tail_metrics import BANDS, empty_tail
 
 SUMMARY_VERSION = 3
 SUMMARY_REVISION = '3.2.1'
+V3_BIT = '48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78'
+V3_IDENTITY = dict(hwh_sha256='9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e',
+                   driver_sha256='6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d',
+                   replay_tools_sha256='0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792')
 MODEL_SELECTION = {'room_v1_20261021':'room_v1/calibrated_20261024.json',
                    'box_v1_20261016':'box_v1/baseline_256.json'}
 BIT_CAPACITIES = {'8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339':512,
+                  V3_BIT:512,
                   'dadbbbabd75ec5c641b337819d33a5845e54da6b89bf6507b5323807d9ddcb05':256}
 # Source: A's 2026-10-21-asg-field.md, sections 4.1 and 5 (full replay hash).
 # The retired overlay is deliberately excluded from deployable BIT_CAPACITIES.
@@ -28,6 +33,21 @@ def protection_evidence(metadata):
     """Read A's explicit outcome; absence in unversioned captures stays unknown."""
     values=[metadata.get('guard_tripped'),metadata.get('protection_triggered')]
     if any(v is True for v in values):return True,'explicit_guard_field'
+    if metadata.get('bit_sha256') == V3_BIT:
+        reason = metadata.get('stop_reason')
+        if reason == 'guard':
+            return True, 'v3:explicit_guard_stop'
+        words = metadata.get('clip_counts_raw')
+        status = metadata.get('capture_status')
+        if (isinstance(words, list) and len(words) == 3 and
+                all(type(w) is int and 0 <= w < 2**32 for w in words)):
+            # The upper packed half is pre-gain diagnostic overflow in v3.
+            if words[0] & 0xffff or words[1] or words[2]:
+                return True, 'v3:prediction_or_post_gain_or_mix_protection'
+            if (reason == 'completed' and metadata.get('early_stop') is False and
+                    type(status) is int and status & 1 and not status & (3 << 17)):
+                return False, 'v3:completed_without_stopping_counter'
+        return None, None
     if any(v is False for v in values):return False,'explicit_guard_field'
     if metadata.get('driver_evidence_version')=='a-replay-evidence-v2':
         reason=metadata.get('stop_reason')
@@ -128,7 +148,7 @@ def flat_trial(row, registry=None):
     known=bit in BIT_CAPACITIES or retired
     out.update(bitstream_overlay='audio_closed' if retired else 'audio_replay' if known else None,
                bitstream_capacity=BIT_CAPACITIES.get(bit,RETIRED_BITS.get(bit)),
-               bitstream_provenance=BIT_PROVENANCE if known else None,
+               bitstream_provenance=('A:e132991:docs/contracts/audio-replay-v3.md' if bit == V3_BIT else BIT_PROVENANCE) if known else None,
                retired_overlay=retired if known else None,
                acoustic_evidence_eligible=False if retired else True if known else None,
                evidence_scope='pl_arithmetic_only' if retired else 'capture_window')
@@ -142,7 +162,11 @@ def flat_trial(row, registry=None):
                microphone_clipping=flags.get('microphone_clipping'),
                mute_applied=m.get('mute_applied'),mute_during_observation=m.get('mute_during_observation'),
                silence_in_window=a.get('silence_in_window'))
+    if bit == V3_BIT:
+        out['residual_metric_semantics'] = tail.get('residual_semantics', 'wide25_pre_gain_not_available')
     errors=[]
+    if bit == V3_BIT:
+        errors.extend('v3_version_binding_missing_or_mismatch:'+k for k,v in V3_IDENTITY.items() if m.get(k) != v)
     if retired:errors.append('retired_overlay_no_dac_output')
     if type(out['gain_q12']) is not int or not 0<=out['gain_q12']<=32768:errors.append('actual_gain_q12_missing_or_invalid')
     if type(out['hp_volume']) is not int or not 10<=out['hp_volume']<=40:errors.append('actual_hp_volume_missing_or_invalid')
@@ -187,8 +211,18 @@ def flat_trial(row, registry=None):
     if not out['tail_valid']:reasons.append('tail_not_validated')
     if out['positive_control_valid'] is not True:
         reasons.append('positive_control_failed' if out['positive_control_valid'] is False else 'positive_control_not_validated')
-    safety=[out[k] is False for k in ('protection_triggered','microphone_clipping','mute_during_observation',
-                                      'prediction_saturation','residual_saturation','gain_saturation','mix_saturation')]
+    safety_keys = ['protection_triggered','microphone_clipping','mute_during_observation',
+                   'prediction_saturation','gain_saturation','mix_saturation']
+    if bit != V3_BIT:
+        safety_keys.append('residual_saturation')
+    else:
+        sticky = m.get('input_full_scale_seen') is True or bool(int(m.get('capture_status') or 0) & (1 << 22))
+        out['input_full_scale_seen'] = sticky
+        if sticky:
+            out['microphone_clipping'] = True
+            out['category'] = 'invalid'
+            out['comparison_reasons'].append('input_full_scale_seen')
+    safety=[out[k] is False for k in safety_keys]
     if not all(safety):reasons.append('safety_not_validated')
     if m.get('verification',{}).get('bit_exact') is not True:reasons.append('arithmetic_not_validated')
     if out['evidence_kind']!='board_recording':reasons.append('evidence_not_board_recording')

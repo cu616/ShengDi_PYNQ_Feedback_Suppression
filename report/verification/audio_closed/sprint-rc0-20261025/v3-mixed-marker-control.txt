@@ -1,0 +1,6 @@
+test_mixed_driver_bit_and_helper_identity_are_rejected (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_mixed_driver_bit_and_helper_identity_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK

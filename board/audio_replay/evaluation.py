@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from growth_monitor import MonitorConfig, replay
 
-VERSION = 'c-measurement-2.3.0'
+VERSION = 'c-measurement-2.4.0'
 CONFIG = dict(window_seconds=.016, hop_seconds=.008, growth_seconds=.08,
               confirm_seconds=.016, minimum_rise_db=3.,
               minimum_slope_db_per_second=12., minimum_fit_r2=.9,
@@ -92,7 +92,7 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
                   event_flags={}, instability_evidence=[], msg_db=None, asg_db=None,
                   scope='captured window only; no whole-trial stability claim')
     flags = result['event_flags']
-    from model_comparison import protection_evidence
+    from model_comparison import protection_evidence, V3_BIT, V3_IDENTITY
     protection,protection_basis=protection_evidence(m)
     flags.update(protection=m.get('guard_tripped') is True or m.get('protection_triggered') is True,
                  early_stop=m.get('early_stop'), execution_error=bool(m.get('error')),
@@ -114,6 +114,29 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
         flags['execution_error'] = bool(m.get('error'))
         flags['recovery_failed'] = m.get('recovery_ok') is False
         flags['instability_growth'] = False
+        if m.get('bit_sha256') == V3_BIT:
+            status = m.get('capture_status')
+            explicit = m.get('input_full_scale_seen')
+            status_valid = type(status) is int and 0 <= status < 2**23
+            sticky = status_valid and bool(status & (1 << 22))
+            flags['input_full_scale_seen'] = sticky or explicit is True
+            flags['microphone_clipping'] = sticky or explicit is True
+            if sticky or explicit is True:
+                raise ValueError('input_full_scale_seen')
+            if not status_valid or type(explicit) is not bool:
+                raise ValueError('v3_input_evidence_missing')
+            if status & (3 << 17):
+                raise ValueError('v3_config_or_protocol_fault')
+            if explicit != sticky:
+                raise ValueError('v3_input_evidence_inconsistent')
+            if m.get('replay_abi_version') not in (None, 3):
+                raise ValueError('v3_abi_marker_mismatch')
+            missing = [k for k,v in V3_IDENTITY.items() if m.get(k) != v]
+            if missing:
+                raise ValueError('v3_version_binding_missing_or_mismatch:' + ','.join(missing))
+        elif ('input_full_scale_seen' in m or m.get('replay_abi_version') == 3 or
+              any(m.get(k) == v for k,v in V3_IDENTITY.items())):
+            raise ValueError('v3_package_component_with_other_bitstream')
         if expected:
             mismatches = [k for k, v in expected.items() if m.get(k) != v]
             if mismatches:
@@ -201,6 +224,39 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
     return result
 
 
+def verify_v3_words(raw, q, bypass, gain, source, first):
+    """Independent v3 consumer oracle; the A driver/helper files remain untouched."""
+    from closed_tools import gain_pcm, rounded_shift
+    raw, q = np.asarray(raw, dtype=np.int64), np.asarray(q, dtype=np.int64)
+    acc = np.convolve(raw[:, 0], np.r_[np.int64(0), q])[:len(raw)]
+    pred = np.clip(rounded_shift(acc, 20), -2**23, 2**23-1)
+    diagnostic = raw[:, 1] if bypass else np.clip(raw[:, 1]-pred, -2**23, 2**23-1)
+    skip = len(q) if first else 0
+    start = skip+2
+    if start >= len(raw):
+        raise ValueError('no_v3_output_frames_after_history')
+    indices = np.arange(first, first+len(raw))
+    injection = np.zeros(len(raw), dtype=np.int64)
+    active = indices < len(source)
+    injection[active] = np.asarray(source, dtype=np.int64)[indices[active]]*256
+    operand = raw[:, 1] if bypass else raw[:, 1]-pred
+    expected = np.clip(injection[start:] + gain_pcm(operand[skip:-2], gain), -2**23, 2**23-1)
+    pm = int(np.count_nonzero(pred[skip:] != raw[skip:, 2]))
+    rm = int(np.count_nonzero(diagnostic[skip:] != raw[skip:, 3]))
+    tm = int(np.count_nonzero(expected != raw[start:, 0]))
+    if first == 0:
+        tm += int(np.count_nonzero(raw[:2, 0] != injection[:2]))
+    observed = raw[:, 1] if bypass else raw[:, 1]-raw[:, 2]
+    return dict(bit_exact=pm == rm == tm == 0, prediction_mismatches=pm,
+                residual_mismatches=rm, output_mismatches=tm,
+                history_excluded_frames=skip, evaluated_frames=len(raw)-skip,
+                output_checked_frames=max(len(raw)-start, 0), output_first_capture_index=start,
+                startup_output_checked_frames=2 if first == 0 else 0,
+                wide_residual_frames=int(np.count_nonzero((observed < -2**23) | (observed > 2**23-1))),
+                wide_residual_frames_scope='actual recorded prediction, whole captured window',
+                interpretation='v3: gain(wide residual), post-gain clamp then mix clamp; arithmetic only')
+
+
 def analyze_npz(path, expected=None, positive_control_valid=False, external_source_active=False,
                 external_source_off_verified=False, metadata_evidence=None, analysis_interval=None):
     """No pickle, no writes to the source; independently check stored arithmetic."""
@@ -219,6 +275,7 @@ def analyze_npz(path, expected=None, positive_control_valid=False, external_sour
                            'scene_sha256','session_id','comparison_id','repeat_id','mute_applied',
                            'mute_during_observation','source_schedule_provenance','positive_control_provenance',
                            'measurement_policy_version','trial_role','noise_floor_dbfs'}
+                allowed.update(('driver_sha256', 'replay_tools_sha256', 'hwh_sha256', 'replay_abi_version'))
                 facts = metadata_evidence.get('metadata',{})
                 if metadata_evidence.get('input_sha256') != sha(path) or not metadata_evidence.get('provenance'):
                     raise ValueError('unbound_metadata_evidence')
@@ -271,8 +328,12 @@ def analyze_npz(path, expected=None, positive_control_valid=False, external_sour
                     raise ValueError('coefficient_hash_mismatch')
                 if m.get('source_frames', len(source)) != len(source):
                     raise ValueError('source_length_mismatch')
-                from replay_tools import verify_replay
-                v = verify_replay(raw, z['coefficients_q20'], m['bypass'], m['gain_q12'], z['source_pcm16'], m['first_frame'])
+                from model_comparison import V3_BIT
+                if m.get('bit_sha256') == V3_BIT:
+                    v = verify_v3_words(raw, coefficients, m['bypass'], m['gain_q12'], source, m['first_frame'])
+                else:
+                    from replay_tools import verify_replay
+                    v = verify_replay(raw, coefficients, m['bypass'], m['gain_q12'], source, m['first_frame'])
                 m['verification'] = v
             if positive_control_valid:
                 m['positive_control_valid'] = True
@@ -299,7 +360,10 @@ def analyze_npz(path, expected=None, positive_control_valid=False, external_sour
                 out['category']='invalid'
                 out['reasons'].append('microphone_full_scale_in_capture')
             from tail_metrics import tail_statistics, empty_tail
-            out['tail_statistics']=(tail_statistics(analysis_raw[:,1],analysis_raw[:,3],analysis_m,rate)
+            from model_comparison import V3_BIT
+            wide_tail = m.get('bit_sha256') == V3_BIT
+            err = (analysis_raw[:,1] if m.get('bypass') else analysis_raw[:,1]-analysis_raw[:,2]) if wide_tail else analysis_raw[:,3]
+            out['tail_statistics']=(tail_statistics(analysis_raw[:,1],err,analysis_m,rate,residual_wide=wide_tail)
                                     if out['category']!='invalid' else empty_tail('invalid_capture'))
             out.update(recorded_coefficients_sha256=recorded_qhash,recorded_taps=recorded_taps,
                        silence_in_window=not bool(np.any(raw[:,1])),

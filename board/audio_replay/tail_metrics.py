@@ -14,7 +14,7 @@ def empty_tail(reason):
                 tail_band_reasons={}, tail_reasons=[reason], tail_config=TAIL_CONFIG)
 
 
-def tail_statistics(microphone, residual, metadata, rate):
+def tail_statistics(microphone, residual, metadata, rate, residual_wide=False):
     from evaluation import window_gate
     out = empty_tail('unvalidated_tail')
     effective_config=dict(TAIL_CONFIG)
@@ -23,7 +23,8 @@ def tail_statistics(microphone, residual, metadata, rate):
         if (mic.ndim != 1 or mic.shape != err.shape or mic.dtype.kind not in 'iu'
             or err.dtype.kind not in 'iu' or not len(mic)
             or np.any(mic < -2**23) or np.any(mic >= 2**23)
-            or np.any(err < -2**23) or np.any(err >= 2**23)):
+            or np.any(err < -(2**24 if residual_wide else 2**23))
+            or np.any(err >= (2**24 if residual_wide else 2**23))):
             raise ValueError('invalid_tail_pcm')
         gate = window_gate(metadata, rate, len(mic))
         if not gate['pure_tail']: raise ValueError(gate['reason'])
@@ -39,7 +40,8 @@ def tail_statistics(microphone, residual, metadata, rate):
                 or ix[0]!=gate['first_frame'] or ix[-1]+1!=gate['end_frame']
                 or np.any(np.diff(ix)!=1)):
                 raise ValueError('invalid_frame_indices')
-        if any(np.any((x==-2**23)|(x==2**23-1)) for x in (mic,err)):
+        clipped_channels = (mic,) if residual_wide else (mic, err)
+        if any(np.any((x==-2**23)|(x==2**23-1)) for x in clipped_channels):
             raise ValueError('tail_clipped')
         nblock=max(2,round(rate*TAIL_CONFIG['block_seconds']))
         blocks=len(mic)//nblock
@@ -90,4 +92,5 @@ def tail_statistics(microphone, residual, metadata, rate):
     except (ValueError,TypeError,OverflowError) as exc:
         out=empty_tail(str(exc))
     out['tail_config']=effective_config
+    out['residual_semantics']='wide25_pre_gain' if residual_wide else 'captured_clamped24'
     return out

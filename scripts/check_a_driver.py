@@ -21,10 +21,10 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def check(folder, output):
+def check(folder, output, v3=False, extras_only=False, only=None):
     folder = Path(folder).resolve()
     cases = []
-    for name, guard, fault, cancel, counts, restore_error, write_error in (
+    specs = [
         ('guard_distinct_counts', True, False, False, [0x00030002, 5, 7], False, False),
         ('bypass_prediction_only', True, False, False, [2, 0, 0], False, False),
         ('terminal_counts', False, False, False, [0x00030002, 5, 7], False, False),
@@ -33,8 +33,27 @@ def check(folder, output):
         ('operator_cancel', False, False, True, [0, 0, 0], False, False),
         ('restore_failure', False, False, False, [0, 0, 0], True, False),
         ('capture_write_failure', False, False, False, [0, 0, 0], False, True),
-    ):
+    ]
+    if v3:
+        extra = [
+            ('v3_residual_only_continues', False, False, False, [8 << 16, 0, 0], False, False, 0, True),
+            ('v3_input_sticky_recorded_with_clean_tail', False, False, False, [0, 0, 0], False, False, 1 << 22, False),
+            ('v3_input_sticky_survives_save_failure', False, False, False, [0, 0, 0], False, True, 1 << 22, False),
+            ('v3_identity_in_failure_sidecar', False, False, False, [0, 0, 0], False, True, 0, False),
+        ]
+        specs = extra if extras_only else specs + extra
+    oracle_names = ('v3_oracle_legal_negative_rail', 'v3_oracle_truncated_output_domain',
+                    'v3_oracle_wide_count_uses_recorded_prediction') if v3 else ()
+    if only:
+        unknown = set(only) - {s[0] for s in specs} - set(oracle_names)
+        if unknown:
+            raise ValueError('unknown acceptance cases: ' + ','.join(sorted(unknown)))
+        specs = [s for s in specs if s[0] in only]
+    for spec in specs:
+        name, guard, fault, cancel, counts, restore_error, write_error = spec[:7]
+        status_extra, active_then_done = spec[7:] if len(spec) > 7 else (0, False)
         events, regs, register_address, page = [], {}, [0], [0]
+        poll_reads = [0]
         observed = None
         completed = 640 if guard or fault else 2441
         class MMIO:
@@ -45,7 +64,9 @@ def check(folder, output):
             def read(self, offset):
                 if self.addr == 3:
                     if offset != 8: return page[0]
-                    return (1<<18) if fault else (0 if guard else 1)
+                    poll_reads[0] += 1
+                    return status_extra | ((1<<18) if fault else
+                        0 if guard or (active_then_done and poll_reads[0] <= 2) else 1)
                 if self.addr == 4: return (512<<4) | 0xb
                 if self.addr == 5 and offset == 8: return completed
                 if self.addr == 6: return counts[0] if offset == 0 else counts[1]
@@ -96,6 +117,8 @@ def check(folder, output):
                     driver.__file__ = str(work/'replay_trial.py')
                     # Preserve a real source file for implementations recording driver hash.
                     (work/'replay_trial.py').write_bytes((folder/'replay_trial.py').read_bytes())
+                    for helper in ('replay_tools.py', 'closed_tools.py', 'residual_tools.py'):
+                        (work/helper).write_bytes((folder/helper).read_bytes())
                     error = None
                     with patch.object(driver.os, 'open', return_value=1), patch.object(driver.os, 'close'), \
                          patch.object(driver.os, 'read', side_effect=read), patch.object(driver.os, 'write', side_effect=write), \
@@ -121,6 +144,15 @@ def check(folder, output):
                         assert (work/'capture.status.json').is_file(), 'save failure needs finalized status sidecar'
                         status = json.loads((work/'capture.status.json').read_text())
                         assert status.get('save_error'), 'disk failure reason missing'
+                        if name == 'v3_input_sticky_survives_save_failure':
+                            assert status.get('input_full_scale_seen') is True, 'input full-scale evidence lost when NPZ save fails'
+                            assert status.get('capture_status', 0) & (1 << 22), 'raw bit22 lost in failure sidecar'
+                        if name == 'v3_identity_in_failure_sidecar':
+                            for key, identity_path in (('hwh_sha256', work/'audio_replay.hwh'),
+                                    ('driver_sha256', folder/'replay_trial.py'),
+                                    ('replay_tools_sha256', folder/'replay_tools.py')):
+                                assert status.get(key) == hashlib.sha256(identity_path.read_bytes()).hexdigest(), key + ' missing or incorrect in failure sidecar'
+                            assert status.get('replay_abi_version') == 3, 'v3 ABI not identified in failure sidecar'
                     else:
                         assert (work/'capture.npz').is_file(), 'post-start failure lost capture'
                         with np.load(work/'capture.npz', allow_pickle=False) as z:
@@ -131,12 +163,18 @@ def check(folder, output):
                         keys = ('prediction_saturations','residual_saturations','gain_saturations','mix_saturations')
                         assert [m.get(k) for k in keys] == expected, 'count unpacking/alias error'
                         assert m.get('clip_counts_raw') == counts, 'raw counters missing or wrong'
-                        assert m.get('driver_evidence_version') == 'a-replay-evidence-v2', 'driver evidence version missing'
+                        versions = ('a-replay-evidence-v2', 'a-replay-evidence-v3') if v3 else ('a-replay-evidence-v2',)
+                        assert m.get('driver_evidence_version') in versions, 'driver evidence version missing'
                         with np.load(work/'capture.npz', allow_pickle=False) as z:
                             assert np.array_equal(z['source_pcm16'], np.zeros(1000,dtype='<i2')), 'source evidence missing'
                         assert m.get('first_frame') == 0 and m.get('completed_frames') == completed
                         assert m.get('source_end_frame_exclusive') == 1000 and m.get('source_schedule_verified') is True
                         assert m.get('early_stop') is (guard or fault), 'actual stop flag wrong'
+                        if name == 'v3_input_sticky_recorded_with_clean_tail':
+                            assert m.get('input_full_scale_seen') is True, 'raw bit22 not decoded'
+                            assert m.get('mic_full_scale_samples') == 0, 'fixture must have a clean captured tail'
+                        if name == 'v3_residual_only_continues':
+                            assert error is None and m.get('stop_reason') == 'completed', 'pre-gain residual alone stopped v3'
                         status = json.loads((work/'capture.status.json').read_text())
                         assert status.get('recovery_ok') is (not restore_error), 'recovery result missing'
                         if restore_error: assert error, 'restoration failure must stop the batch'
@@ -144,9 +182,47 @@ def check(folder, output):
         except Exception as exc:
             cases.append(dict(name=name, passed=False, reason=type(exc).__name__+': '+str(exc),
                               raw_register_words=counts, observed_metadata_counts=observed))
-    result = dict(schema_version=1, suite='c-a-driver-acceptance-v2', hardware_access=False,
+    if v3:
+        pure_spec = importlib.util.spec_from_file_location('closed_tools', folder/'closed_tools.py')
+        pure_closed = importlib.util.module_from_spec(pure_spec)
+        pure_spec.loader.exec_module(pure_closed)
+        with patch.dict(sys.modules, {'closed_tools': pure_closed}):
+            pure_spec = importlib.util.spec_from_file_location('v3_oracle_under_test', folder/'replay_tools.py')
+            tool = importlib.util.module_from_spec(pure_spec)
+            pure_spec.loader.exec_module(tool)
+        for name in oracle_names:
+            if only and name not in only:
+                continue
+            try:
+                ver = None
+                raw = np.zeros((640, 4), dtype=np.int64)
+                q = np.zeros(512, dtype=np.int64)
+                source = np.zeros(1, dtype=np.int16)
+                first = 1000 if name != 'v3_oracle_legal_negative_rail' else 0
+                expected_wide = 0
+                if name == 'v3_oracle_legal_negative_rail':
+                    raw[:, 1] = raw[:, 3] = -2**23
+                if name == 'v3_oracle_wide_count_uses_recorded_prediction':
+                    q[-1] = 1 << 20
+                    raw[:, 1] = raw[:, 3] = 2**23-51
+                    raw[:512, 2] = -256
+                    raw[:512, 3] = 2**23-1
+                    source = np.full(1000, -1, dtype=np.int16)
+                    expected_wide = 512
+                ver = tool.verify_replay(raw, q, False, 0, source, first)
+                assert ver['bit_exact'], 'oracle rejected a valid integer trace'
+                assert ver.get('wide_residual_frames') == expected_wide, 'wide diagnostic disagrees with strict observed mic-pred range'
+                expected_checked = 126 if first else 638
+                assert ver.get('output_checked_frames') == expected_checked, 'truncated output must begin at skip+2'
+                cases.append(dict(name=name, passed=True))
+            except Exception as exc:
+                cases.append(dict(name=name, passed=False, reason=str(exc), observed=ver))
+    result = dict(schema_version=1, suite='c-a-driver-acceptance-v3' if v3 else 'c-a-driver-acceptance-v2', hardware_access=False,
                   driver_sha256=hashlib.sha256((folder/'replay_trial.py').read_bytes()).hexdigest(),
-                  accepted=all(c['passed'] for c in cases), cases=cases)
+                  package_hashes={name:hashlib.sha256((folder/name).read_bytes()).hexdigest()
+                                  for name in ('replay_trial.py','replay_tools.py','audio_replay.bit','audio_replay.hwh')
+                                  if (folder/name).is_file()},
+                  accepted=bool(cases) and all(c['passed'] for c in cases), cases=cases)
     Path(output).write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding='utf8')
     return result
 
@@ -221,12 +297,61 @@ def check_continuous(folder, output):
     return result
 
 
+def check_field_failures(folder, output):
+    """Exercise reviewed Python payloads with a failed driver; no shell or board."""
+    folder = Path(folder).resolve()
+    (ROOT/'tmp').mkdir(exist_ok=True)
+    cases = []
+    for name in ('field_stationary_v3_l8.sh', 'field_human_both.sh', 'tone_arms_v3.sh'):
+        source = (folder/name).read_text(encoding='utf-8')
+        payload = source.split("<<'PY'", 1)[1].split('\n', 1)[1].rsplit('\nPY', 1)[0]
+        calls = []
+        module = types.ModuleType('replay_trial')
+        def failed_driver(*args, **kwargs):
+            calls.append(dict(path=str(args[0]), direct_only=kwargs.get('direct_only'),
+                              zero_coeff=kwargs.get('zero_coeff')))
+            raise RuntimeError('C synthetic gate/trial failure')
+        module.replay_trial = failed_driver
+        with tempfile.TemporaryDirectory(dir=ROOT/'tmp', prefix='c-field-failure-') as work:
+            class RedirectDirectory(ast.NodeTransformer):
+                def visit_Assign(self, node):
+                    if any(isinstance(t, ast.Name) and t.id == 'DIR' for t in node.targets):
+                        node.value = ast.Call(func=ast.Name(id='Path', ctx=ast.Load()),
+                                              args=[ast.Constant(work)], keywords=[])
+                    return node
+            tree = ast.fix_missing_locations(RedirectDirectory().visit(ast.parse(payload)))
+            error = None
+            with patch.dict(sys.modules, {'replay_trial': module}), \
+                    patch.object(sys, 'argv', [name, 'zero']), patch('builtins.input', return_value='CANCEL'), \
+                    patch('time.sleep'), contextlib.redirect_stdout(io.StringIO()):
+                try:
+                    exec(compile(tree, str(folder/name), 'exec'), {'__name__': '__main__'})
+                except SystemExit:
+                    pass
+                except Exception as exc:
+                    error = type(exc).__name__ + ': ' + str(exc)
+            cases.append(dict(name=name, passed=error is None and len(calls) <= 1,
+                              driver_calls=len(calls), calls=calls, error=error,
+                              source_sha256=hashlib.sha256((folder/name).read_bytes()).hexdigest()))
+    result = dict(suite='c-v3-field-failure-exits', hardware_access=False,
+                  scope='Python payload only; synthetic CANCEL/failure, no operator action inferred',
+                  accepted=all(c['passed'] for c in cases), cases=cases)
+    Path(output).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+    return result
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--driver-dir', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--continuous',action='store_true')
+    parser.add_argument('--v3', action='store_true', help='include v3 diagnostic/input/identity controls')
+    parser.add_argument('--extras-only', action='store_true', help='only v3 controls, after unchanged legacy eight passed')
+    parser.add_argument('--only-case', action='append', help='repeat only changed or previously failing cases')
+    parser.add_argument('--field-failures', action='store_true', help='review v3 script failure exits with a stub driver')
     args = parser.parse_args()
-    result = check_continuous(args.driver_dir,args.output) if args.continuous else check(args.driver_dir, args.output)
+    result = (check_field_failures(args.driver_dir,args.output) if args.field_failures else
+              check_continuous(args.driver_dir,args.output) if args.continuous else
+              check(args.driver_dir, args.output, args.v3, args.extras_only, args.only_case))
     print(json.dumps(result, ensure_ascii=False, indent=2))
     sys.exit(0 if result['accepted'] else 1)

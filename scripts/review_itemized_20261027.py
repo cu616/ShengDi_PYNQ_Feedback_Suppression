@@ -19,6 +19,10 @@ COUNT_KEYS = ('prediction_saturations', 'residual_saturations',
               'gain_saturations', 'mix_saturations')
 FIXTURE = 'room_v1_20261026b'
 BIT = '61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa'
+V3_BIT = '48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78'
+V3_IDENTITY = dict(hwh_sha256='9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e',
+                   driver_sha256='6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d',
+                   replay_tools_sha256='0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792')
 CANDIDATE = '6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927'
 ZERO = hashlib.sha256(np.zeros(512, dtype='<i4').tobytes()).hexdigest()
 
@@ -112,15 +116,45 @@ def review_capture(path):
             issues.append('metadata_frame_count_mismatch')
         side = path.with_suffix('.status.json')
         status = json.loads(side.read_text(encoding='utf-8')) if side.exists() else {}
+        is_v3 = meta.get('bit_sha256') == V3_BIT
+        sticky = None
         if not status:
             unknown.append('status_sidecar_missing')
         for key in ('fixture_id', 'bit_sha256', 'first_frame', 'completed_frames',
                     'source_end_frame_exclusive', 'clip_counts_raw', 'coefficients_sha256',
-                    'gain_q12', 'hp_volume', 'stop_reason', *COUNT_KEYS):
+                    'gain_q12', 'hp_volume', 'stop_reason', 'capture_status',
+                    'input_full_scale_seen', *COUNT_KEYS):
             if key in meta and key in status and meta[key] != status[key]:
                 issues.append('status_metadata_mismatch:' + key)
-        if meta.get('fixture_id') != FIXTURE or meta.get('bit_sha256') != BIT:
+        if meta.get('fixture_id') != FIXTURE or meta.get('bit_sha256') not in (BIT, V3_BIT):
             issues.append('fixture_or_bit_identity_mismatch')
+        if meta.get('replay_abi_version') == 3 and not is_v3:
+            issues.append('v3_driver_with_other_bitstream')
+        if meta.get('bit_sha256') == BIT and any(meta.get(k, status.get(k)) == v for k,v in V3_IDENTITY.items()):
+            issues.append('v3_package_component_with_v2_bitstream')
+        if meta.get('bit_sha256') == BIT and 'input_full_scale_seen' in meta:
+            issues.append('v3_input_field_with_v2_bitstream')
+        if is_v3:
+            if meta.get('replay_abi_version') not in (None, 3):
+                issues.append('v3_abi_marker_mismatch')
+            word = meta.get('capture_status')
+            explicit = meta.get('input_full_scale_seen')
+            if type(word) is not int or not 0 <= word < 2**32:
+                unknown.append('v3_capture_status_missing')
+            else:
+                sticky = bool(word & (1 << 22))
+            if type(explicit) is not bool:
+                unknown.append('v3_input_full_scale_field_missing')
+            elif sticky is not None and explicit != sticky:
+                issues.append('input_full_scale_field_status_mismatch')
+            if sticky is True or explicit is True:
+                issues.append('input_full_scale_seen')
+            for key, expected_hash in V3_IDENTITY.items():
+                value = meta.get(key, status.get(key))
+                if value is None:
+                    unknown.append('v3_' + key + '_missing')
+                elif value != expected_hash:
+                    issues.append('v3_version_binding_mismatch:' + key)
         if meta.get('hp_volume') != 40 or rate != 48828.125:
             issues.append('codec_or_rate_mismatch')
         for key in ('logical_taps', 'loaded_taps'):
@@ -140,6 +174,10 @@ def review_capture(path):
             unknown.append('recovery_not_verified')
         if status.get('save_error') or meta.get('save_error'):
             issues.append('capture_save_error_recorded')
+        if meta.get('early_stop') is True or meta.get('stop_reason') not in (None, 'completed'):
+            issues.append('execution_not_completed')
+        if is_v3 and type(meta.get('capture_status')) is int and meta['capture_status'] & (3 << 17):
+            issues.append('v3_config_or_protocol_fault')
         raw_counts = meta.get('clip_counts_raw', status.get('clip_counts_raw'))
         try:
             decoded = unpack_counts(raw_counts) if raw_counts is not None else None
@@ -159,7 +197,9 @@ def review_capture(path):
                         coefficients_sha256=meta.get('coefficients_sha256'),
                         model_sha256=meta.get('model_sha256'), gain_q12=meta.get('gain_q12'),
                         hp_volume=meta.get('hp_volume'), capture_id=meta.get('capture_id'))
-        arithmetic = {}
+        arithmetic = dict(replay_generation=3 if is_v3 else 2)
+        replayed = None
+        skip = 0
         if q is not None:
             if q.shape != (512,) or q.dtype.kind not in 'iu' or np.any(outside_pcm(q)):
                 raise ValueError('invalid 512 signed24 Q20 coefficients')
@@ -173,7 +213,7 @@ def review_capture(path):
             replayed = np.clip(rounded_shift(acc, 20), MINIMUM, MAXIMUM)
             # Missing predecessor history affects only local FIR replay. Never use its
             # zero-filled prefix to invent a full-run first event or saturation count.
-            skip = min(len(q), n) if first != 0 and np.any(q) else 0
+            skip = min(len(q), n) if first != 0 and (is_v3 or np.any(q)) else 0
             arithmetic.update(history_excluded_frames=skip,
                               prediction_evaluated_frames=n-skip,
                               prediction_mismatches=int(np.count_nonzero(replayed[skip:] != prediction[skip:])))
@@ -194,6 +234,8 @@ def review_capture(path):
         else:
             unknown.append('bypass_state_missing')
         overflow = outside_pcm(wide) if bypass is False else np.zeros(n, dtype=bool)
+        arithmetic['wide_residual_frames'] = int(np.count_nonzero(overflow))
+        arithmetic['wide_residual_frames_scope'] = 'whole captured window, actual recorded prediction, strict signed24 bounds'
         indices = np.flatnonzero(overflow)
         first_local = int(indices[0]) if len(indices) else None
         recorded_count = decoded['residual_saturations'] if decoded else None
@@ -227,11 +269,25 @@ def review_capture(path):
             injection = np.zeros(n, dtype=np.int64)
             active = frames < len(source)
             injection[active] = source[frames[active]].astype(np.int64) * 256
-            output = np.clip(injection[2:] + rounded_shift(residual[:-2] * gain, 12), MINIMUM, MAXIMUM)
-            arithmetic['output_evaluated_frames'] = max(n-2, 0)
-            arithmetic['output_mismatches'] = int(np.count_nonzero(output != reference[2:]))
-            if arithmetic['output_mismatches']:
-                issues.append('played_reference_replay_mismatch')
+            start = skip + 2 if is_v3 and first else 2
+            if is_v3 and replayed is None:
+                unknown.append('v3_prediction_replay_unavailable_for_output')
+            else:
+                operand = (mic if bypass else mic-replayed) if is_v3 else residual
+                gained = np.clip(rounded_shift(operand[max(start-2, 0):n-2]*gain, 12), MINIMUM, MAXIMUM)
+                output = np.clip(injection[start:] + gained, MINIMUM, MAXIMUM)
+                mismatch = int(np.count_nonzero(output != reference[start:]))
+                startup = 2 if first == 0 else 0
+                if startup:
+                    mismatch += int(np.count_nonzero(reference[:2] != injection[:2]))
+                arithmetic.update(output_evaluated_frames=max(n-start, 0), output_checked_frames=max(n-start, 0),
+                                  startup_output_checked_frames=startup, output_first_capture_index=start,
+                                  output_mismatches=mismatch,
+                                  output_operand='wide residual' if is_v3 else 'captured clamped residual')
+                if not n-start > 0:
+                    unknown.append('no_output_frames_after_history_exclusion')
+                if mismatch:
+                    issues.append('played_reference_replay_mismatch')
         else:
             unknown.append('source_or_gain_unavailable_for_output_replay')
         rails = (mic == MINIMUM) | (mic == MAXIMUM)
@@ -245,9 +301,13 @@ def review_capture(path):
                            absolute_peak_including_dc_dbfs=db_power(float(np.max(np.abs(mic)/SCALE)**2)))
         if rails.any():
             issues.append('captured_microphone_clipping')
-        flags = dict(input_clipped=bool(rails.any()),
+        protection_counts = None if decoded is None else any(v for k,v in decoded.items()
+                            if not is_v3 or k != 'residual_saturations')
+        flags = dict(input_clipped=bool(rails.any()) or sticky is True or meta.get('input_full_scale_seen') is True,
+                     input_full_scale_seen=sticky,
+                     captured_input_clipped=bool(rails.any()),
                      protection=(True if meta.get('stop_reason') == 'guard' else
-                                 bool(any(decoded.values())) if decoded is not None else None),
+                                 bool(protection_counts) if decoded is not None else None),
                      residual_overflow=bool(len(indices)),
                      acoustic_regeneration='not inferred from rail counts, prediction_saturations=0, or envelope alone')
         intervals = {}
@@ -257,6 +317,7 @@ def review_capture(path):
             for label, lo, hi in boundaries:
                 if hi-lo >= 4:
                     intervals[label] = dict(first_frame=lo, end_frame=hi,
+                                           source_scope='onboard PCM only; external speech/source state requires separate evidence',
                                            microphone=power_metrics(mic[lo-first:hi-first]/SCALE, rate))
         return dict(original_capture=str(path), original_sha256=sha(path),
                     original_status_sha256=sha(side) if side.exists() else None,
@@ -269,8 +330,13 @@ def review_capture(path):
                     decoded_counts=decoded, arithmetic=arithmetic, residual_event=event,
                     measurement=measurement, interval_measurements=intervals, block_measurements=blocks,
                     event_flags=flags, issues=sorted(set(issues)), unknown=sorted(set(unknown)),
+                    execution_completed=(meta.get('stop_reason') == 'completed' and
+                        meta.get('early_stop') is not True and extent_valid and
+                        bool(int(meta.get('capture_status') or 0) & 1) and
+                        not bool(int(meta.get('capture_status') or 0) & (3 << 17))) if type(meta.get('capture_status')) is int else None,
                     captured_numeric_checks_clear=not issues and not unknown,
                     whole_run_adc_headroom_verified=False,
+                    whole_run_input_full_scale_seen=sticky,
                     human_confirmations='not inferred; attach original operator log separately')
 
 
@@ -334,6 +400,9 @@ def main():
                   hardware_operations=0, selected_patterns=a.pattern,
                   results=results, missing_selection=not paths,
                   directory_inventory=[dict(name=x.name, bytes=x.stat().st_size) for x in sorted(root.glob('*.npz'))],
+                  directory_identity={name:sha(root/name) for name in ('audio_replay.bit','audio_replay.hwh',
+                                      'replay_trial.py','replay_tools.py') if (root/name).is_file()},
+                  directory_identity_scope='files at offline review time; original execution requires frozen run/version provenance',
                   missing_patterns=[pattern for pattern in a.pattern if not list(root.glob(pattern))],
                   controlled_source_pairs=source_pairs(results),
                   original_sources_retained=True,

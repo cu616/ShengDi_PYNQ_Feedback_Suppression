@@ -1,0 +1,17 @@
+test_analyze_npz_dispatches_v3_without_overwriting_original (test_replay_v3_consumer.V3ConsumerTests.test_analyze_npz_dispatches_v3_without_overwriting_original) ... ok
+test_bypass_multiplies_microphone (test_replay_v3_consumer.V3ConsumerTests.test_bypass_multiplies_microphone) ... ok
+test_itemized_adapter_requires_v3_identity_binding (test_replay_v3_consumer.V3ConsumerTests.test_itemized_adapter_requires_v3_identity_binding) ... ok
+test_itemized_adapter_v3_sticky_and_output_scope (test_replay_v3_consumer.V3ConsumerTests.test_itemized_adapter_v3_sticky_and_output_scope) ... ok
+test_mixed_driver_bit_and_helper_identity_are_rejected (test_replay_v3_consumer.V3ConsumerTests.test_mixed_driver_bit_and_helper_identity_are_rejected) ... ok
+test_negative_rail_does_not_count_as_wide_overflow (test_replay_v3_consumer.V3ConsumerTests.test_negative_rail_does_not_count_as_wide_overflow) ... ok
+test_observed_prefix_wide_events_survive_replay_exclusion (test_replay_v3_consumer.V3ConsumerTests.test_observed_prefix_wide_events_survive_replay_exclusion) ... ok
+test_post_gain_clamp_precedes_mix (test_replay_v3_consumer.V3ConsumerTests.test_post_gain_clamp_precedes_mix) ... ok
+test_residual_only_is_diagnostic_while_post_gain_still_protects (test_replay_v3_consumer.V3ConsumerTests.test_residual_only_is_diagnostic_while_post_gain_still_protects) ... ok
+test_sticky_input_full_scale_rejects_clean_captured_tail (test_replay_v3_consumer.V3ConsumerTests.test_sticky_input_full_scale_rejects_clean_captured_tail) ... ok
+test_wide_output_matches_scalar_trace_and_old_oracle_differs (test_replay_v3_consumer.V3ConsumerTests.test_wide_output_matches_scalar_trace_and_old_oracle_differs) ... ok
+test_zero_checked_output_frames_are_not_a_pass (test_replay_v3_consumer.V3ConsumerTests.test_zero_checked_output_frames_are_not_a_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.105s
+
+OK

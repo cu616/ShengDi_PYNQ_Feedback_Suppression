@@ -1,0 +1,7 @@
+test_flat_summary_keeps_residual_diagnostic_and_rejects_input_sticky (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_flat_summary_keeps_residual_diagnostic_and_rejects_input_sticky) ... ok
+test_analyze_npz_dispatches_v3_without_overwriting_original (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_analyze_npz_dispatches_v3_without_overwriting_original) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.021s
+
+OK

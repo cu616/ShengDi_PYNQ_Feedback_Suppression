@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "suite": "c-a-driver-acceptance-v3",
+  "hardware_access": false,
+  "driver_sha256": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
+  "accepted": false,
+  "cases": [
+    {
+      "name": "v3_identity_in_failure_sidecar",
+      "passed": false,
+      "reason": "AssertionError: hwh_sha256 missing or incorrect in failure sidecar",
+      "raw_register_words": [
+        0,
+        0,
+        0
+      ],
+      "observed_metadata_counts": null
+    }
+  ]
+}

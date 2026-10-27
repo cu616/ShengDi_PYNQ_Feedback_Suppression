@@ -1,0 +1,9 @@
+test_tail_wide_statistics_do_not_call_pre_gain_range_input_clipping (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_tail_wide_statistics_do_not_call_pre_gain_range_input_clipping) ... ok
+test_analytic_three_band_ratio_and_slope (sim.feedback.test_tail_summary.TailSummaryTests.test_analytic_three_band_ratio_and_slope) ... ok
+test_clipping_zero_and_missing_bands_are_not_finite_performance (sim.feedback.test_tail_summary.TailSummaryTests.test_clipping_zero_and_missing_bands_are_not_finite_performance) ... ok
+test_same_gain_pair_and_read_only_csv (sim.feedback.test_tail_summary.TailSummaryTests.test_same_gain_pair_and_read_only_csv) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.208s
+
+OK
