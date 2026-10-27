@@ -1,3 +1,43 @@
+## 2026-10-27 宽残差下半轮　A　replay 侧已仿真、已综合出时序、已上板，稳态两臂因音响未出声判无效
+
+- ② 让 audio_pl_replay 可 elaborate：真正原因两个，都不是"缺 I2S 源"那么简单。
+  一是 iverilog 不接受一个 ANSI 端口声明里写两个带初值的端口（`output reg [23:0] a=0, b=0`），
+  已把两处拆成独立声明；Vivado 两种写法都接受，属纯解析可移植性改动，语义为零改动。
+  二是 iis_deser/iis_ser 是厂商 VHDL，Icarus 根本编不了 —— 新增 `sim/audio/iis_sim_models.v`，
+  按 VHDL 状态机逐行翻译（状态表、位计数比较值、边沿检测、更新顺序一致，非阻塞赋值复现 VHDL 语义），
+  仅用于仿真；Vivado fileset 仍用 VHDL。模型可信度自证：原本对着 VHDL 写的 `tb_audio_replay.v`
+  不改一行即在 iverilog 下 AUDIO_REPLAY_PASS，同一 tb 在 xsim + 真 VHDL 下也通过。
+- ② 新增 `sim/audio/tb_replay_wide.v`（`RESIDUAL_REPLAY_WIDE_PASS`）三例：h0=−1.5、mic 8,000,000 时
+  prediction −6,000,000 且 **psat=0**、窄残差钳到 0x7FFFFF、宽残差 14,000,000、增益 0.5 → 播放 7,000,000
+  （旧钳位路径只会给 4,194,304）；同一形状增益 1.0 → 16,388,608 越界，**钳位发生在增益后**，
+  gain_clip_count>0、capture_status[21]=1；零系数 + mic=0x7FFFFF → 残差计数全 0 而 bit22=1，
+  证明输入满幅是独立检测。用 `build/scripts/test_audio_replay_wide.tcl` 在 xsim + 真 VHDL 下复跑通过。
+- 顺带修两处测试腐化：`tb_audio_replay` 只装 256 个系数而 RTL 自 39d5ac3 起默认 512（`fresh` 永不置位），
+  已改为 512；`tb_feedback_fir` 的黄金向量是 256 抽头，改为 `.TAPS(256)` 固定，并新增
+  `residual_wide == mic − pred` 的逐样本核对（2304 样本）。
+- ③ 综合实现（Vivado 2018.3，`create_audio_replay.tcl build`）：**WNS +0.548 ns、WHS +0.015 ns、
+  TNS/THS 0、0 失败端点、18128 端点、100 MHz，"All user specified timing constraints are met"**；
+  BRAM 112/140 = 80.00%、DSP 3、LUT 3588。位流 `48e38f78…`、hwh `9411adb5…`。
+  与 v2 基线（+0.287/+0.034/80%）比，setup 更宽、hold 窄 19 ps 但仍为正。
+- ④ 重建向量：`scripts/make_fir_vectors.py` 生成 `tmp/fir_vectors`（3 例 × 768 帧 × 256 抽头），
+  `FEEDBACK_FIR_PASS samples=2304 latency=771`。
+- ⑤ 上板：新包目录 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`，v2 包 audio_live 原样未动。
+  静默自检 58593 帧、`capture_status=0x00008001`、bit22=0、四类计数 0、`coefficient_status=0x200A`、
+  新判据下 bit_exact=true。随后稳态源两臂各 107421 帧、**无保护触发**，但麦克风电平（−38.4/−38.7 dBFS）
+  与静默门禁（−38.2）持平、零系数臂频带占比 0.0695 远低于上次有效场次 0.2281 →
+  **音响声音没有到麦克风，两臂判无效**，不作抵消结论。
+- 证据检查器两处修正（`board/audio_replay/replay_tools.py`）：输出基准改用 mic−prediction 的宽残差
+  （否则宽路径生效处必然报失配）；截断环形缓冲的输出核对起点改为 skip+2（此前把 512 帧不可知历史
+  算成失配，使任何非零模型臂看起来都不 bit_exact，这个问题早于 v3）。同一份板上候选捕获用新判据
+  output_mismatches 0、旧判据 512。
+- 契约：[audio-replay-v3](../contracts/audio-replay-v3.md) 记录位段（bit22）、乘宽后钳位与保护语义；
+  版本索引同步。证据：[wide-residual-v3](../../report/verification/audio-replay/wide-residual-v3/evidence.json)。
+- 工具经验：Vivado 的 `launch_runs` 在后台任务里子进程会消失（停在 "Waiting for synth_1"），
+  须前台执行；同沙箱下 `update_compile_order` 也会静默返回空、块设计引用失败，综合/仿真都要完整访问权限。
+  `docs/log/progress.md` 原有 4 个 NUL 字节导致文本工具判为二进制，本次一并清除，正文未改。
+- 未完成：真人语音两臂（需现场）与音响声路确认。
+
+
 ## 2026-10-27 宽残差轮　A　FIR 半已改并仿真验证、驱动 guard 已改，replay 侧未仿真、未综合
 
 - 按队长批准实施「25 位宽残差过数字增益后再钳位」。
@@ -255,11 +295,11 @@
   话筒→PL→音响；ypass=1 普通扩声、ypass=0 带抵消扩声。导入不发声。
 - 新增 oard/audio_replay/live_pa.ipynb：4 个代码格（1 核对哈希/2 设参数/3 发声/4 汇总），只有格 3 发声。
 - 部署到板卡 /home/xilinx/jupyter_notebooks/base/audio/audio_live/（512 位流 8b2426f4…、
-  模型 model_room_512.json  7fae6af…、live_pa.py 531ffe5…）。
-- 连通性自检（不发人声，−18 dB 旁路 3 s）：completed_frames=146484、status  x00008001、
+  模型 model_room_512.json 7fae6af…、live_pa.py 531ffe5…）。
+- 连通性自检（不发人声，−18 dB 旁路 3 s）：completed_frames=146484、status x00008001、
   三路饱和计数全 0、捕获 plumb_01_b1_g516.npz 已存。
 - 核对接口位段：captured 是 **16 位**，所以 capture_status[16:1]=captured；
-   x00008001 = done + captured=16384（**不是削顶**）， x00020000 = 配置被拒（bit17）。
+  x00008001 = done + captured=16384（**不是削顶**），x00020000 = 配置被拒（bit17）。
 - 更正：本轮早先怀疑"gain_clip 标志与计数不一致"是我数错位宽，RTL 与读数自洽，无缺陷。
 - STATE 覆盖 A 段（新职责、实时扩声现状、接口位段、夹具=0.5 m 房间）。
 ## 2026-10-23　A　按队长要求更新三线分工与人工交接

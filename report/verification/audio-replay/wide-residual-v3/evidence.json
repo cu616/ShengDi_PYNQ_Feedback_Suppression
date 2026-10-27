@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "topic": "wide residual through the digital gain: simulation, synthesis, board bring-up",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "branch": "A",
+  "base_commit": "46edd41",
+  "captain_approval": "approved to implement; pre-gain residual overflow keeps counting but no longer stops on its own; post-gain output and mix saturation still protect; prediction, protocol error, timeout and manual stop unchanged",
+  "identity": {
+    "bit_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+    "hwh_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+    "rtl_audio_pl_replay_sha256": "4d02b019ddfe1c175b4e8d929ac157b8f4276ffc94e6b1e5f5322620f5b31879",
+    "rtl_feedback_fir_sha256": "d57e2f53938ddff2034b6d783a4a46b6243018a3be5fdc9c342acf57ad0a8a3b",
+    "driver_replay_trial_sha256": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
+    "driver_replay_tools_sha256": "0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792",
+    "board_package": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide",
+    "v2_rollback_package_untouched": "/home/xilinx/jupyter_notebooks/base/audio/audio_live (bit 61bb71aa..., hwh 92b499a3..., replay_trial 2127663...)",
+    "contract": "docs/contracts/audio-replay-v3.md"
+  },
+  "why_audio_pl_replay_could_not_be_elaborated": {
+    "symptom": "iverilog: src/rtl/audio_pl_replay.v:13 syntax error, 'Errors in port declarations'",
+    "root_cause_1": "Icarus rejects two initialised ports in ONE ANSI declaration (output reg [23:0] a=0, b=0). Bisected: one initialiser per declaration parses, two do not. Fixed by splitting the two affected declarations; Vivado accepts both spellings, so this is a parse-portability change only.",
+    "root_cause_2": "iis_deser/iis_ser are VHDL (src/vendor/pynq_v2_4/*.vhd) and cannot be compiled by Icarus at all.",
+    "fix": "sim/audio/iis_sim_models.v: line-by-line Verilog translations of both VHDL architectures (same states, bit-counter values, edge detectors, update order; non-blocking assignments reproduce VHDL signal semantics). Simulator-only; the Vivado file set still uses the VHDL.",
+    "model_validation": "the pre-existing sim/audio/tb_audio_replay.v, written against the vendor VHDL under xsim, passes unchanged with these models under Icarus (AUDIO_REPLAY_PASS), and the same testbench also passes under xsim against the real VHDL."
+  },
+  "verification_simulation": {
+    "iverilog": "Icarus Verilog 12.0, -g2012",
+    "tb_residual_wide": "RESIDUAL_WIDE_PASS checked=4 (unchanged from the previous session)",
+    "tb_feedback_fir": "FEEDBACK_FIR_PASS samples=2304 latency=771; extended to also check residual_wide against mic-pred for all 2304 samples",
+    "tb_replay_wide": "RESIDUAL_REPLAY_WIDE_PASS; three cases",
+    "cases": [
+      "A: h0=-1.5 Q20, mic 8,000,000 -> prediction -6,000,000 (prediction_saturated=0), clamped residual 0x7FFFFF, wide residual 14,000,000, gain 0.5 -> played 7,000,000. The old clamped path would have played 4,194,304.",
+      "B: the same shape at gain 1.0 -> wide 16,388,608 exceeds the rail, the POST-gain clamp acts: played 0x7FFFFF, gain_clip_count>0, capture_status[21]=1",
+      "C: zero coefficients and mic=0x7FFFFF -> residual equals the microphone, residual counters stay 0, capture_status[22]=1 and the input counter is non-zero: the input full-scale detector does not depend on the residual"
+    ],
+    "xsim_cross_check": "build/scripts/test_audio_replay_wide.tcl (real vendor VHDL) passes; build/scripts/test_audio_replay.tcl also passes",
+    "test_rot_fixed": "tb_audio_replay loaded 256 coefficients while the RTL default became 512 in 39d5ac3, so `fresh` never set and the test would have failed since then. It now loads 512. tb_feedback_fir instead pins .TAPS(256) because its golden vectors are 256 taps."
+  },
+  "verification_synthesis": {
+    "tool": "Vivado 2018.3, xc7z020clg400-1, build/scripts/create_audio_replay.tcl build",
+    "setup_wns_ns": 0.548,
+    "hold_whs_ns": 0.015,
+    "tns_ns": 0.0,
+    "ths_ns": 0.0,
+    "failing_endpoints": 0,
+    "total_endpoints": 18128,
+    "clock_mhz": 100.0,
+    "constraints": "All user specified timing constraints are met (the same four external I/O delay constraints as before are still missing; that gap is unchanged)",
+    "block_ram_tiles": "112/140 = 80.00%",
+    "dsp48": "3/220 = 1.36%",
+    "slice_luts": "3588/53200 = 6.74%",
+    "slice_registers": "5018/106400 = 4.72%",
+    "worst_path": "completed_count_reg[9] -> ... (counter path, not the multiplier)",
+    "reports": ["wide-residual-v3/vivado-timing.txt", "wide-residual-v3/vivado-utilization.txt", "wide-residual-v3/vivado-drc.txt"],
+    "baseline_for_comparison": "v2 build: WNS +0.287, WHS +0.034, BRAM 80%",
+    "note": "hold slack 0.015 ns is positive but 19 ps tighter than the v2 build; it is met, not comfortable."
+  },
+  "verification_board": {
+    "bringup": {
+      "trial": "audio_wide/bringup_1746892939228991948.npz",
+      "config": "zero coefficients, zero source, gain -14 dB, 1.2 s, fixture room_v1_20261026b",
+      "result": "stop_reason=completed, completed_frames=58593, capture_status=0x00008001 (done+captured(16384)), bit22=0, all four saturations 0, coefficient_status=0x200A (loaded_taps=512), mic -38.2 dBFS, verification bit_exact=true with the v3 oracle",
+      "meaning": "the v3 bitstream + v3 driver load, configure and complete a bounded run on hardware; the wide multiply and the post-gain clamp are exercised but no overflow occurs in a quiet room"
+    },
+    "stationary_two_arm": {
+      "trials": ["audio_wide/wide_gate_1746893045642595463.npz", "audio_wide/wide_zero_1746893075929342181.npz", "audio_wide/wide_cand_1746893109544546531.npz"],
+      "gate": "peak -23.8 dBFS with zero output: PASS",
+      "zero_arm": "completed, 107421 frames, mic -38.4 dBFS, peak -26.5, bit22=0, all saturations 0, band share 0.0695",
+      "candidate_arm": "completed, 107421 frames, mic -38.7 dBFS, peak -26.8, bit22=0, all saturations 0, band share 0.0484, NO guard stop",
+      "share_difference": "+1.6 dB (zero minus candidate)",
+      "verdict": "NOT VALID as an acoustic two-arm comparison. Microphone level in both arms equals the silent gate (-38.2/-38.4/-38.7 dBFS) and the zero-arm band share (0.0695) is far below the previous live session (0.2281), so the speaker's sound is not reaching the microphone. The run proves the digital path and the absence of protection trips; it does not measure cancellation.",
+      "likely_cause": "speaker/amplifier off or its wiring open; needs one physical confirmation"
+    },
+    "human_speech_two_arm": {
+      "status": "NOT RUN",
+      "reason": "needs a person speaking plus a confirmed live speaker/microphone path"
+    }
+  },
+  "evidence_checker_fix": {
+    "file": "board/audio_replay/replay_tools.py",
+    "problem_1": "the expected output was rebuilt from the CAPTURED (clamped) residual, which is no longer what the hardware multiplies; under v3 that would report mismatches exactly where the wide path differs",
+    "problem_2": "the output comparison started at ring frame 2 even for a truncated ring, so the first TAPS frames, whose prediction history is unknowable, were counted as output mismatches. This made every nonzero-model arm look non-bit-exact (it predates v3)",
+    "fix": "expected output = clip(injection + gain(wide residual)) with one clamp after the gain, compared from skip+2 for a truncated ring; wide_residual_frames and output_checked_frames are reported",
+    "local_validation": "software check on a synthetic capture built from the same integer datapath: v3 oracle bit_exact with 597 wide-residual frames, while the old oracle reports 595 mismatches on the same valid capture",
+    "on_board_validation": "the downloaded candidate capture re-verifies as bit_exact=true (output_mismatches 0) with the fix and 512 with the old window; prediction 0, residual 0 in both"
+  },
+  "honest_position": "simulation and synthesis are done with real numbers; the board loads the v3 bitstream and completes runs; the first stationary two-arm attempt is acoustically dead and is reported as invalid, not as a result. No human-speech arm and no field attenuation number yet.",
+  "next_steps": [
+    "confirm the speaker/microphone path is live (audible programme through the fixture), then rerun the stationary two arms",
+    "run the human-speech two arms at 12 cm, -8 dB, same sentence twice, rejecting any trial with capture_status bit22 set",
+    "report the field result and a keep-or-rollback recommendation for v3"
+  ]
+}

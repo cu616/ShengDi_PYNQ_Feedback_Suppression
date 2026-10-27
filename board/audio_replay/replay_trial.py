@@ -313,6 +313,12 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             hp_volume=hp_volume, sample_rate_hz=RATE, pll_readback=pll_readback,
             frames=count, completed_frames=int(completed or 0), first_frame=first,
             capture_status=status,
+            # capture_status bit22 is the independent input full-scale sticky flag added with the
+            # wide-residual change. It is the ONLY counter that can see an overloaded microphone
+            # when the prediction is zero (the residual then equals the microphone and can never
+            # overflow); the residual counter must not be used for that. A trial with this set is
+            # rejected for field evidence rather than being allowed a quiet reinterpretation.
+            input_full_scale_seen=bool(int(status or 0) >> 22 & 1),
             sound_seconds_nominal=budget / RATE, completion_poll_seconds=elapsed,
             prediction_saturations=counts[0], residual_saturations=counts[1],
             gain_saturations=counts[2], mix_saturations=counts[3],

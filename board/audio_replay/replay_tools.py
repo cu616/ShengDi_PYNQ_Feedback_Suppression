@@ -77,18 +77,34 @@ def verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first_frame
     acc = np.convolve(raw[:, 0], np.r_[np.int64(0), q])[:len(raw)]
     prediction = np.clip(rounded_shift(acc, 20), -2**23, 2**23-1)
     residual = raw[:, 1] if bypass else np.clip(raw[:, 1]-prediction, -2**23, 2**23-1)
+    # audio-replay v3 (docs/contracts/audio-replay-v3.md): the gain multiplies the UNCLAMPED
+    # 25-bit difference and the only clamp is after the gain. The captured residual is still the
+    # clamped 24-bit diagnostic value, so the output oracle must be rebuilt from mic - prediction
+    # instead of from the captured residual; otherwise every clipped transient looks like a
+    # datapath mismatch. In bypass the hardware multiplies the sign-extended microphone.
+    wide = raw[:, 1] if bypass else raw[:, 1]-prediction
     skip = q.size if first_frame else 0
     indices = np.arange(first_frame, first_frame+len(raw))
     injected = np.zeros(len(raw), dtype=np.int64)
     valid = indices < len(source_pcm16)
     injected[valid] = np.asarray(source_pcm16, dtype=np.int64)[indices[valid]] * 256
-    expected = np.clip(injected[2:] + gain_pcm(raw[:-2, 3], gain_q12), -2**23, 2**23-1)
     pm = int(np.count_nonzero(raw[skip:, 2] != prediction[skip:]))
     rm = int(np.count_nonzero(raw[skip:, 3] != residual[skip:]))
-    tm = int(np.count_nonzero(raw[2:, 0] != expected))
+    # The played word at ring frame n is gain(wide[n-2]), so it is only verifiable once BOTH the
+    # prediction at n-2 (needs `skip` history frames) and the two-frame schedule are inside the
+    # ring. A truncated ring therefore starts at skip+2, not at 2; checking from frame 2 counted
+    # exactly `skip` frames of unknowable history as output mismatches (a pre-existing artefact
+    # that made every nonzero-model arm look non-bit-exact).
+    out_start = 2 if not first_frame else max(2, skip + 2)
+    frames = np.arange(out_start, len(raw))
+    expected = np.clip(injected[frames] + gain_pcm(wide[frames-2], gain_q12), -2**23, 2**23-1)
+    tm = int(np.count_nonzero(raw[frames, 0] != expected))
     if first_frame == 0:
         tm += int(np.count_nonzero(raw[:2, 0] != injected[:2]))
     return dict(bit_exact=pm == rm == tm == 0, prediction_mismatches=pm,
                 residual_mismatches=rm, output_mismatches=tm,
+                wide_residual_frames=int(np.count_nonzero(np.abs(wide) > 2**23-1)),
                 history_excluded_frames=skip, evaluated_frames=len(raw)-skip,
-                interpretation="played[n]=source[n]+gain(residual[n-2]); arithmetic only")
+                output_checked_frames=len(frames),
+                interpretation="played[n]=source[n]+gain(wide residual[n-2]), one clamp after "
+                               "gain; arithmetic only")

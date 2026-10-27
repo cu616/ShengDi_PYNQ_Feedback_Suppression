@@ -53,6 +53,14 @@
 2. Windows 下 Python 一律加 `-X utf8` 或 `PYTHONUTF8=1`（B 的脚本曾因 `U+2212` 崩）。
 3. 上板前先探活：`ping 192.168.2.99`；本轮出现过一次断网。
 4. 板卡 helper：`_a_work\board_run.py <脚本> --sudo`，密码走 `$env:SHENGDI_SSH_PASSWORD`。
+   **驱动 overlay、读 `/dev/i2c-1` 必须 `--sudo`**；不加时表现为 `PermissionError` 与
+   `Could not open device with index '0'`，不是板卡坏了。
+5. Vivado 在这个环境里的两个坑（2026-10-27 实测）：
+   - **综合/实现要前台跑**：`launch_runs` 放后台任务里，子进程会静默消失，
+     日志停在 `Waiting for synth_1 to finish...`、但工程目录里连 `runme.log` 都没有。
+   - 沙箱受限时 `update_compile_order` **静默返回空**、报“找不到顶层模块”、块设计 `-reference` 失败；
+     这些都不是 RTL 错，需要完整访问权限重跑，别先去改代码。
+   - 结论：报“综合失败”之前先看 `build/work/audio_replay/audio_replay.runs/synth_1/runme.log` 是否存在。
 
 ## 七、今天学到的三条硬经验
 

@@ -6,12 +6,18 @@ module tb_feedback_fir;
     wire coeff_ready,in_ready,out_valid,psat,rsat,protocol_error;
 wire signed [24:0] res_wide;
     wire signed [23:0] pred,res;
-    feedback_fir dut(clk,resetn,coeff_begin,coeff_valid,coeff_data,coeff_ready,
+    // The golden vectors are 256 taps (scripts/make_fir_vectors.py); the RTL default is 512.
+    feedback_fir #(.TAPS(256)) dut(clk,resetn,coeff_begin,coeff_valid,coeff_data,coeff_ready,
         in_valid,bypass,reference_pcm,microphone_pcm,in_ready,out_valid,pred,res,res_wide,psat,rsat,protocol_error);
     reg [23:0] h[0:255],u[0:767],mic[0:767],expected_pred[0:767],expected_res[0:767];
     reg [3:0] flags[0:767];
     string base,filename;
     integer c,n,k,cycles,checked=0;
+    // Exact 25-bit difference oracle for the wide residual output: the vectors were produced by
+    // scripts/make_fir_vectors.py from the Python integer reference, and `pred` is checked against
+    // that same oracle above, so the expected wide value is simply mic - pred (or the
+    // sign-extended microphone in bypass) with no rounding of its own.
+    reg signed [24:0] expected_wide;
     task load_coefficients;
         begin
             @(negedge clk); coeff_begin=1;
@@ -44,6 +50,10 @@ wire signed [24:0] res_wide;
                 if(cycles!=771 || !out_valid) $fatal(1,"latency %0d",cycles);
                 if(pred!==expected_pred[n] || res!==expected_res[n] || psat!==flags[n][1] || rsat!==flags[n][0])
                     $fatal(1,"case %0d frame %0d pred %h/%h residual %h/%h flags %b%b/%b",c,n,pred,expected_pred[n],res,expected_res[n],psat,rsat,flags[n]);
+                expected_wide = flags[n][2] ? $signed({mic[n][23],mic[n]}) :
+                                $signed({mic[n][23],mic[n]})-($signed({pred[23],pred}));
+                if(res_wide!==expected_wide)
+                    $fatal(1,"case %0d frame %0d wide %h/%h (mic %h pred %h bypass %b)",c,n,res_wide,expected_wide,mic[n],pred,flags[n][2]);
                 if(protocol_error) $fatal(1,"unexpected protocol error");
                 checked=checked+1;
                 @(negedge clk);

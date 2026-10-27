@@ -14,10 +14,13 @@
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**：2026-10-27 现场窗口完成四件事——复现历史工作点、首次确认真人扩声、
-稳态源上验证候选有效、真人语音上发现候选不可用。**当前卡点：候选在语音瞬态上触发保护，需 B 决定。**
+**最后动作**：2026-10-27 下半轮把「宽残差过增益」做完并分层验证——replay 侧仿真、综合实现出真实时序、
+`tb_feedback_fir` 回归恢复、v3 位流上板并静默自检通过；稳态源两臂因**音响声音没到麦克风**判无效。
+**当前卡点：音响/麦克风声路未确认，真人语音两臂未跑；v3 的现场效果仍无结论。**
 
-- **唯一操板者，SSH 非交互驱动**。位流 `61bb71aa…`、hwh `92b499a3…`、`replay_trial` `2127663…`。
+- **唯一操板者，SSH 非交互驱动**。**现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`**：
+  位流 `48e38f78…`、hwh `9411adb5…`、`replay_trial` `6b397359…`、`replay_tools` `0d4e1933…`。
+  回退包 `audio_live` 原样未动（v2 位流 `61bb71aa…`、hwh `92b499a3…`、驱动 `2127663…`；v1 位流同目录）。
 - **① 原配置复现成功**（[结果包](../report/verification/audio-replay/reproduction-result-2026-10-27.json)）：
   手机 `1101.m4a`、音量 **8/15**、距麦 **5 cm**、零系数、**−8 dB**、Codec 40、音响 100 cm 侧对。
   两次复现均"能听出放大"，与系统静音对照差异明显且两次一致；
@@ -75,15 +78,25 @@
 - **宽残差兼容清单**（[清单](../report/verification/audio-replay/residual-compat-change-list-2026-10-27.json)）：
   9 项兼容关系已列（RTL、捕获打包、驱动、status schema、既有证据、保护语义、时序、回退）；
   **位流 + 驱动 + schema 必须同版本发布，混搭必须拒绝运行**。未获批准前**不改一行 RTL、不改保护语义**。
-- **宽残差过增益（队长已批准，实施中）**：状态见
-  [实施状态](../report/verification/audio-replay/wide-residual-implementation-status-2026-10-27.json)。
-  已入库并**仿真验证**（`RESIDUAL_WIDE_PASS checked=4`）：`feedback_fir` 新增 25 位宽残差输出，
-  旧 24 位残差与 `residual_saturated` 含义完全不变；`audio_pl_replay` 改乘宽残差并新增
-  **独立的输入满幅检测**（不依赖残差——零系数时残差恒等于麦克风，看不到过载），`capture_status`
-  第 22 位报它；驱动 guard 改为**只按预测/增益/混音停**，增益前残差只作诊断。
-  **未完成**：`audio_pl_replay` 无法被 iverilog elaborate（缺 I2S 源），故 replay 侧**未仿真**；
-  **未综合、无时序**；`tb_feedback_fir` 缺向量文件**未跑回归**；**未上板**。
-  下一轮从「② 让 audio_pl_replay 可 elaborate 并仿真乘后钳」开始。
+- **宽残差过增益已实现并分层验证**（[证据](../report/verification/audio-replay/wide-residual-v3/evidence.json)、
+  契约 [audio-replay-v3](contracts/audio-replay-v3.md)）：`feedback_fir` 输出 25 位未钳残差，
+  旧 24 位残差与 `residual_saturated` 含义不变；`audio_pl_replay` 改乘宽残差、钳位只在增益后做一次，
+  另加**独立输入满幅检测**报在 `capture_status` bit22；驱动 guard 只按预测/增益/混音停。
+  - **仿真**：replay 侧此前编不出来的真因是 (a) iverilog 不接受一个端口声明里两个初值（已拆，语义零改动）；
+    (b) I2S 是厂商 VHDL，新增仅仿真用的 `sim/audio/iis_sim_models.v`。
+    新增 `RESIDUAL_REPLAY_WIDE_PASS` 三例：宽残差 14,000,000 × 0.5 = **7,000,000**（旧钳位路径只会给 4,194,304）；
+    增益 1.0 时由**增益后**钳位；零系数输入满幅只由 bit22 报出、残差计数全 0。
+    iverilog 与 xsim（真 VHDL）双跑通过；`FEEDBACK_FIR_PASS samples=2304`（含宽残差逐样本）；
+    `RESIDUAL_WIDE_PASS checked=4`。
+  - **综合**：WNS **+0.548 ns**、WHS **+0.015 ns**、TNS/THS 0、18128 端点、约束全满足；
+    BRAM 80.00%、DSP 3、LUT 3588（v2 基线 +0.287/+0.034/80%）。
+  - **上板**：静默自检 58593 帧、`capture_status=0x00008001`、bit22=0、四类计数 0、
+    `coefficient_status=0x200A`、新判据 bit_exact；稳态源两臂各 107421 帧、**无保护触发**，
+    但麦克风电平与静默门禁持平（−38.4/−38.7 对 −38.2 dBFS），零臂频带占比 0.0695 远低于上次有效场次 0.2281
+    → **音响声音没到麦克风，两臂判无效**，不得当作抵消效果。
+  - 检查器修正：输出基准改用 mic−prediction 的宽残差，截断环形缓冲的核对起点改为 skip+2
+    （旧窗口把 512 帧不可知历史算成失配，早于 v3 就存在）。
+  - **未完成**：真人语音两臂、音响声路确认、v3 现场效果结论。
 - **协作习惯**见 [A 线协作习惯](lines/a-interaction-notes.md)（新窗口开工先读）。
 - **听众定量项固定未测**（无固定增益录音、AGC 不可控）；定性判断单列有效。
 
@@ -135,6 +148,8 @@
 | 饱和口径纠正 | 候选 ‖h‖₁≈2.2876，归一化 PCM 满幅为1；存在合法历史使预测越界 | B254勘误；撤回“满幅也有10.9 dB余量”，不表示实际已经饱和 |
 | r4未检出 | 两次各4项后 gate_at_noise_floor / gate_tone_not_observed | A失败记录；不据此认定模型无效或唯一原因 |
 | 实际采样率/主模型 | 48828.125 Hz；512 抽头，lag_first=1 | 以部署哈希核对；预测历史与前向两帧调度不要重复计延迟 |
+| v3 宽残差位流时序/资源 | WNS +0.548 ns、WHS +0.015 ns、TNS/THS 0、18128 端点；BRAM 80.00%、DSP 3、LUT 3588、FF 5018 | 100 MHz，约束全满足；位流 `48e38f78…`、hwh `9411adb5…`；hold 比 v2 (+0.034) 窄 19 ps。报告 [wide-residual-v3](../report/verification/audio-replay/wide-residual-v3/evidence.json) |
+| 乘宽前后定点差别 | 同形状越界：宽残差 14,000,000 × 0.5 → 播放 7,000,000；旧钳位路径 → 4,194,304 | 仿真与软件定点算术，非上板实测 |
 | 历史 strong 模型/位流身份 | 模型 c8be7f78…；bit 8b2426f4… | lowband2-return 元数据；不能与其他场次混配 |
 | 包完整性 | 27 个文件哈希匹配 | 本次静默复核，不说明所有实验结论成立 |
 | strong 0 dB 两次记录 | completed_frames=146484，约 3 秒；保存末尾 16384 帧，未报保护 | 只支持对应观察，不构成长期稳定认证 |
@@ -151,8 +166,13 @@
 
 ## 板卡占用
 
-- 上次登记为 A 占用（2026-10-23），路径 /home/xilinx/jupyter_notebooks/base/audio/audio_live。本会话未连接、未确认当前实际占用，不能擅自写空闲；操作前由 A 与现场核实排他控制。
-- 沿用现场接线须核对；B/C 不依据本地副本登录操板。
+- **A 占用中 / 2026-10-27**：现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`（v3 宽残差位流）；
+  回退包 `audio_live` 未动。历史证据目录 `/home/xilinx/{b512_pkg,room_cal520,room_head513,room_tail590}`。
+  其他操作者勿并行控制音频。
+- 当前接线：**0.5 m 房间夹具**（惠普 NS1 Pro + 备用麦，间距 0.5 m，延迟 125 帧）。
+  **2026-10-27 下半轮实测音响声音没有到麦克风**（两臂麦克风电平等于静默门禁），音响电源/接线待现场确认。
+- 规则：谁要操作板卡，先在这里改一行「占用中 / 线 / 时间」，用完改回空闲。
+  单板排他，比任何聊天约定都可靠。
 
 ## 下一步
 

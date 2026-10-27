@@ -10,9 +10,13 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
     output wire sdata_o, bclk, lrclk,
     output reg [31:0] frame_count=0,
     output wire active,
-    output reg [23:0] capture_left=0, capture_right=0,
+    // One initialiser per port declaration: Icarus Verilog cannot parse two in one item
+    // (Vivado accepts both spellings, so this is a parse-portability change only).
+    output reg [23:0] capture_left=0,
+    output reg [23:0] capture_right=0,
     output wire [31:0] capture_status, coefficient_status,
-    output reg [31:0] completed_count=0, gain_clip_count=0,
+    output reg [31:0] completed_count=0,
+    output reg [31:0] gain_clip_count=0,
     output wire [31:0] saturation_counts
 );
     reg [10:0] divider=0;
