@@ -20,5 +20,21 @@
   "new_engineering_consequence": "the limiting factor at 5 cm is now the INPUT, not the loop. With coupling near -11 dB there is a large stability margin, so positive digital gain is plausible provided the microphone input does not clip.",
   "next_measurement": "hold the talker at 20-30 cm so the peak stays below -6 dBFS, then raise the digital gain above -8 dB (0 dB and above) and let the listener judge; the loop margin allows it",
   "process lesson": "when a level reading does not change with the excitation, check the wiring before interpreting it acoustically. This cost three invalid captures today.",
-  "not_claimed": ["no calibrated operating point until the microphone is verified and the input peak is measured at the chosen distance"]
+  "not_claimed": [
+    "no calibrated operating point until the microphone is verified and the input peak is measured at the chosen distance"
+  ],
+  "retracted_by_B_2026_10_27": {
+    "claim": "loop gain = -8 + (-11) = -19 dB, far below unity, so positive digital gain is plausible",
+    "why_wrong": "the -11 dB figure is the in-band ENERGY AVERAGE. Stability is set by the in-band amplitude PEAK of |H|, which B recomputed as +4.40 dB at 321.9 Hz.",
+    "correct_table": {
+      "0 dB": 4.4,
+      "-4 dB": 0.4,
+      "-6 dB": -1.6,
+      "-8 dB": -3.6
+    },
+    "consequence": "at 0 dB the loop gain is +4.4 dB and it must howl; do not push toward 0 dB. Any gain decision must use the 321.9 Hz peak, never the broadband average.",
+    "consistency": "the peak-based margins reproduce both of my measured staircases (silent source: -4 stable 0.19, -3 marginal 0.47, -2 oscillating 1.00; live/phone: 0 full-scale, -4 muddy 0.68, -6 near regeneration 0.37-0.70, -8 stable 0.12-0.16)",
+    "source": "B = da67305"
+  },
+  "also_retracted_2026_10_27": "the phrase '5 cm / -8 dB confirmed usable operating point' is withdrawn: the low-band spectral tilt shows the historical runs were at roughly 78 cm, not 5 cm (see discriminate-success-vs-clip-2026-10-27.json)"
 }
