@@ -1,0 +1,7 @@
+test_invalid_counter_keeps_independent_input_observation (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_invalid_counter_keeps_independent_input_observation) ... ok
+test_reported_candidate_extent_and_event_census_keeps_scope (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_reported_candidate_extent_and_event_census_keeps_scope) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.054s
+
+OK

@@ -1,0 +1,6 @@
+test_summary_numbers_are_consistency_only (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_summary_numbers_are_consistency_only) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
