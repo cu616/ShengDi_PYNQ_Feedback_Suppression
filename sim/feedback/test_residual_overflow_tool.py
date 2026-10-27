@@ -192,6 +192,31 @@ class AnalyzeTest(unittest.TestCase):
         self.assertAlmostEqual(r["valid_window_ms"], expect, places=2)
 
 
+class EnvelopeTest(unittest.TestCase):
+    def test_block_count_and_duration(self):
+        q20 = candidate_q20()
+        n = 4096
+        mic = np.zeros(n, dtype=np.int64)
+        rows = tool.envelope(mic, FS, 1024, len(q20))
+        self.assertEqual(len(rows), 4)
+        self.assertAlmostEqual(1000 * 1024 / FS, 21.0, places=1)
+
+    def test_negative_full_scale_counts_as_rail(self):
+        """−2^23 是合法码值，但它确实"贴在负轨上"，包络里要算进去（与越界判据不同）。"""
+        mic = np.zeros(2048, dtype=np.int64)
+        mic[10:20] = tool.MIN24
+        mic[100:105] = tool.MAX24
+        rows = tool.envelope(mic, FS, 2048, 512)
+        self.assertEqual(rows[0]["rail_samples"], 15)
+
+    def test_dominant_frequency_is_found(self):
+        t = np.arange(2048)
+        mic = np.rint(0.3 * np.sin(2 * np.pi * 400 * t / FS) * tool.SCALE).astype(np.int64)
+        rows = tool.envelope(mic, FS, 2048, 512)
+        self.assertLess(abs(rows[0]["dominant_hz"] - 400.0), 60.0)
+        self.assertGreater(rows[0]["narrow_share"], 0.5)
+
+
 class FailureExitTest(unittest.TestCase):
     def test_missing_file_exits_2(self):
         proc = subprocess.run(

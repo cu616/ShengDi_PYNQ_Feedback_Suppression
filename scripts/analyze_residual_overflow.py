@@ -22,9 +22,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
+
+try:                       # Windows GBK 控制台遇到 U+2212 会崩在输出阶段
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:          # noqa: BLE001
+    pass
 
 REPO = Path(__file__).resolve().parent.parent
 Q = 20
@@ -270,6 +276,33 @@ def analyze(path: Path, model_q20, model_label, gain_db):
     return res
 
 
+def envelope(mic: np.ndarray, fs: float, block: int, taps: int):
+    """分块包络：RMS、峰值、贴轨样本数、主频与窄带占比。
+
+    主频/占比只用来分"讲话的共振峰"还是"环路在某个模态上起振"，
+    不当作再生判据本身。
+    """
+    n = len(mic)
+    rows = []
+    win = np.hanning(block)
+    freqs = np.fft.rfftfreq(block, 1.0 / fs)
+    sel = (freqs >= 100) & (freqs <= 1500)
+    for start in range(0, n - block + 1, block):
+        seg = mic[start:start + block].astype(float) / SCALE
+        rms = 20 * np.log10(np.sqrt(np.mean(seg ** 2)) + 1e-30)
+        peak = 20 * np.log10(np.abs(seg).max() + 1e-30)
+        seg_raw = mic[start:start + block]
+        rails = int(np.count_nonzero((seg_raw >= MAX24) | (seg_raw <= MIN24)))
+        spec = np.abs(np.fft.rfft(seg * win)) ** 2
+        k = int(np.argmax(np.where(sel, spec, 0)))
+        share = float(spec[max(0, k - 1):k + 2].sum() / (spec.sum() + 1e-30))
+        rows.append({"start": start, "end": start + block - 1,
+                     "rms_dbfs": round(float(rms), 1), "peak_dbfs": round(float(peak), 1),
+                     "rail_samples": rails, "dominant_hz": round(float(freqs[k]), 1),
+                     "narrow_share": round(share, 3)})
+    return rows
+
+
 def ps_margin(q20: np.ndarray, label, gain_list=(-6.0, -8.0, -10.0, -12.0, -14.0),
               fs: float = 48828.125) -> None:
     """PS 拓扑的残差裕量：residual/mic = 1/(1+g·e^{-j3ω}·H_raw)。
@@ -307,6 +340,9 @@ def main() -> int:
     ap.add_argument("--gain-db", type=float, default=None,
                     help="覆盖 metadata 的 gain_q12；默认用板上记录")
     ap.add_argument("--ps-margin", action="store_true", help="只算模型裕量表，不读抓包")
+    ap.add_argument("--envelope", action="store_true",
+                    help="额外打印分块包络（RMS/峰值/贴轨/主频/窄带占比）")
+    ap.add_argument("--block", type=int, default=2048, help="包络块长（帧），默认 2048")
     ap.add_argument("--json-out", default=None)
     args = ap.parse_args()
 
@@ -337,6 +373,11 @@ def main() -> int:
     results, bad = [], []
     for item in args.npz:
         r = analyze(Path(item), model_q20, args.model, args.gain_db)
+        if args.envelope:
+            cap, _meta = load_npz(Path(item))
+            mic_codes = np.clip(np.rint(np.asarray(cap["microphone"], float) * SCALE).astype(np.int64),
+                                MIN24, MAX24)
+            r["envelope"] = envelope(mic_codes, r["fs_hz"], args.block, r["model"]["taps"])
         results.append(r)
         p = r["primary_capture_only"]
         print()
@@ -369,6 +410,13 @@ def main() -> int:
             gr = r["growth"]
             print("  增长：窗口 %s ms，只覆盖 %s ms → %s"
                   % (gr["window_ms"], gr["covered_ms"], gr["note"]))
+        if args.envelope and "envelope" in r:
+            print("  [包络] 每 %d 帧（%.2f ms）一块：块起点 RMS 峰值 贴轨 主频 窄带占比"
+                  % (args.block, 1000 * args.block / r["fs_hz"]))
+            for row in r["envelope"]:
+                print("         %6d–%6d  %+7.1f  %+7.1f  %4d  %7.1f Hz  %.3f"
+                      % (row["start"], row["end"], row["rms_dbfs"], row["peak_dbfs"],
+                         row["rail_samples"], row["dominant_hz"], row["narrow_share"]))
         a = r["attribution"]
         print("  归因：%s" % ("可以" if a["allowed"] else "停止（" + "；".join(a["reasons"]) + "）"))
         if not a["allowed"]:
