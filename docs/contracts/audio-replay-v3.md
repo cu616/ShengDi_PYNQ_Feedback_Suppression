@@ -84,12 +84,15 @@ capture_status[31:23]  0
 
 ## 兼容性
 
+- **混搭在位流装载前就被拒绝**（队长 2026-10-28 第 5 项）：驱动里带
+  `EXPECTED_BIT_SHA256` / `EXPECTED_HWH_SHA256`，`verify_paired_bitstream()` 在**下载 overlay 之前**
+  比对同目录的 `audio_replay.bit` 与 `.hwh` 的 sha256，不一致直接 `RuntimeError`，不发声、不留证据。
+  所以下面的混搭情形在 v3 驱动 + 任意旧位流下**跑不起来**，这是有意的。
 - **v3 位流 + v2/v1 驱动**：驱动会把增益前残差溢出当停声条件，遇到语音瞬态仍会早停；
-  数据本身合法，但这不是 v3 想要的语义。**必须同版本配对**。
-- **v3 驱动 + v2/v1 位流**：bit22 恒 0，`input_full_scale_seen` 恒 false；
-  其余位段相同，不会误报，但**拿不到输入过载证据**，不得据此宣称未削顶。
-- 混搭可运行但**不得作为现场证据**；[兼容清单](../../report/verification/audio-replay/residual-compat-change-list-2026-10-27.json)
-  里的「位流 + 驱动 + schema 必须同版本发布」仍然有效。
+  数据本身合法，但这不是 v3 想要的语义。
+- **v3 驱动 + v2/v1 位流**：被上面的校验拒绝。
+- 位流与驱动**必须同版本发布**；[兼容清单](../../report/verification/audio-replay/residual-compat-change-list-2026-10-27.json)
+  里的要求由此从"约定"变成"运行时强制"。
 
 ## 验证状态（分层，勿混）
 

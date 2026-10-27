@@ -4,7 +4,7 @@
   "version": "v3",
   "contract": "docs/contracts/audio-replay-v3.md",
   "branch": "A",
-  "commit": "98dee71",
+  "commit": "pending",
   "sample_rate_hz": 48828.125,
   "taps": 512,
   "lag_first": 1,
@@ -25,11 +25,11 @@
   "hashes": {
     "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
     "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
-    "replay_trial.py": "1b07586f2d924fddc20d79d8faa63c1bc818573147df336c4328cea608314463",
+    "replay_trial.py": "82787262b94b2b081d7da6da1d0429ea51f8bb2048a62e40682d3643a2a7f67c",
     "replay_tools.py": "0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792",
     "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
     "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
-    "test_runtime_stop.py": "ea1a09e0cb1ce97419b3161aa6e2ed7c8b8a0a27d7033a834c26adf42c15a664"
+    "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c"
   },
   "model": {
     "path_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/rewired_512_20261026.json",
@@ -44,7 +44,8 @@
     "gain multiplies the unclamped 25-bit difference; the only clamp is after the gain",
     "capture_status bit22 = independent input full-scale sticky flag",
     "driver stops on bit22 with stop_reason=\"input_clip\" (captain 2026-10-28); pre-gain residual overflow alone still only counts",
-    "evidence adds input_full_scale_seen; replay_tools verifies the output against the wide residual and skips skip+2 of a truncated ring"
+    "evidence adds input_full_scale_seen; replay_tools verifies the output against the wide residual and skips skip+2 of a truncated ring",
+    "driver refuses to start when the bit/hwh next to it is not the declared v3 pair (sha256 constants in replay_trial.py), so a mixed driver/bitstream cannot produce evidence"
   ],
   "unchanged_against_v2": [
     "bitstream register map except bit22",

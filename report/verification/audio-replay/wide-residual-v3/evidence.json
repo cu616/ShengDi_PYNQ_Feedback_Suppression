@@ -11,15 +11,16 @@
     "hwh_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
     "rtl_audio_pl_replay_sha256": "4d02b019ddfe1c175b4e8d929ac157b8f4276ffc94e6b1e5f5322620f5b31879",
     "rtl_feedback_fir_sha256": "d57e2f53938ddff2034b6d783a4a46b6243018a3be5fdc9c342acf57ad0a8a3b",
-    "driver_replay_trial_sha256": "1b07586f2d924fddc20d79d8faa63c1bc818573147df336c4328cea608314463",
+    "driver_replay_trial_sha256": "82787262b94b2b081d7da6da1d0429ea51f8bb2048a62e40682d3643a2a7f67c",
     "driver_replay_tools_sha256": "0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792",
     "board_package": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide",
     "v2_rollback_package_untouched": "/home/xilinx/jupyter_notebooks/base/audio/audio_live (bit 61bb71aa..., hwh 92b499a3..., replay_trial 2127663...)",
     "contract": "docs/contracts/audio-replay-v3.md",
     "driver_replay_trial_sha256_previous": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
-    "driver_stop_semantics_sha256": "ea1a09e0cb1ce97419b3161aa6e2ed7c8b8a0a27d7033a834c26adf42c15a664",
+    "driver_stop_semantics_sha256": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
     "driver_stop_semantics_file": "board/audio_replay/test_runtime_stop.py",
-    "note_on_deployed_copy": "the board still carries the previous driver 6b397359 because the board is offline; the delivered candidate is 1b07586f and must be uploaded before any further hardware run. Bitstream and hwh did not change with this fix."
+    "note_on_deployed_copy": "the board still carries the previous driver 6b397359 because the board is offline; the delivered candidate is 1b07586f and must be uploaded before any further hardware run. Bitstream and hwh did not change with this fix.",
+    "package_manifest": "board/audio_replay/v3/manifest.json"
   },
   "why_audio_pl_replay_could_not_be_elaborated": {
     "symptom": "iverilog: src/rtl/audio_pl_replay.v:13 syntax error, 'Errors in port declarations'",
@@ -312,7 +313,7 @@
     "verification": {
       "kind": "software verification, no hardware, no board",
       "command": "python -X utf8 board/audio_replay/test_runtime_stop.py",
-      "result": "RUNTIME_STOP_TEST PASS (12 checks)",
+      "result": "RUNTIME_STOP_TEST PASS (16 checks)",
       "covers": [
         "quiet run keeps running",
         "bit22 alone -> input_clip",
@@ -326,7 +327,12 @@
         "decode_counts still splits residual high / prediction low"
       ]
     },
-    "not_verified": "the stop itself has not been observed on hardware yet: the board is offline. This is the first thing to re-verify when power is back: inject or force an input full-scale event and confirm stop_reason=\"input_clip\", mute, saved evidence and recovery."
+    "not_verified": "the stop itself has not been observed on hardware yet: the board is offline. This is the first thing to re-verify when power is back: inject or force an input full-scale event and confirm stop_reason=\"input_clip\", mute, saved evidence and recovery.",
+    "package_identity_guard": {
+      "why": "captain 2026-10-28 check item 5: mixing a bitstream and a driver must be refused before start",
+      "how": "replay_trial.verify_paired_bitstream() compares sha256 of the bit and hwh next to the driver against EXPECTED_BIT_SHA256 / EXPECTED_HWH_SHA256 and raises before any overlay download",
+      "tested": "matching pair accepted; v2 bit with v3 driver refused; v2 hwh with v3 bit refused; missing hwh rejected (no hardware needed)"
+    }
   },
   "timing_statement": {
     "wording": "constraints as applied are met",

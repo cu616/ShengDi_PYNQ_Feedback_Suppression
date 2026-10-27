@@ -35,6 +35,32 @@ def decode_counts(packed_word, gain_word, mix_word):
 # capture_status bit that reports the independent input full-scale detector (audio-replay v3).
 INPUT_CLIP_BIT = 22
 
+# The bitstream this driver is written against (audio-replay v3). A driver and a bitstream from
+# different versions may both run, but their semantics differ (v2 stops on a pre-gain residual
+# overflow and has no bit22), so evidence from a mixed pair would mean nothing. Refuse BEFORE
+# arming: no overlay download, no sound.
+EXPECTED_BIT_SHA256 = "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78"
+EXPECTED_HWH_SHA256 = "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e"
+
+
+def verify_paired_bitstream(bit_path):
+    """Refuse to run when the bit/hwh next to this driver is not the declared pair.
+
+    Pure enough to test without hardware: it only reads the two files.
+    """
+    bit_path = Path(bit_path)
+    hwh_path = bit_path.with_suffix(".hwh")
+    if not bit_path.is_file() or not hwh_path.is_file():
+        raise FileNotFoundError("matching bit/hwh required")
+    for path, expected, label in ((bit_path, EXPECTED_BIT_SHA256, "bitstream"),
+                                  (hwh_path, EXPECTED_HWH_SHA256, "hwh")):
+        got = hashlib.sha256(path.read_bytes()).hexdigest()
+        if got != expected:
+            raise RuntimeError(
+                "%s does not match this driver: expected %s, got %s. Driver and bitstream must be "
+                "released together (docs/contracts/audio-replay-v3.md); refusing to start."
+                % (label, expected, got))
+
 
 def runtime_stop(status, clip_word, gain_word, mix_word):
     """Decide whether one poll of the run should stop the sound, and why.
@@ -96,8 +122,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
     if output_path.suffix != ".npz" or output_path.exists() or not output_path.parent.is_dir():
         raise ValueError("choose a NEW .npz path in an existing board directory")
     bit = Path(__file__).resolve().with_name("audio_replay.bit")
-    if not bit.is_file() or not bit.with_suffix(".hwh").is_file():
-        raise FileNotFoundError("matching bit/hwh required")
+    verify_paired_bitstream(bit)
     model, coefficients = load_candidate(model_path, fixture_id, hp_volume, RATE)
     logical_taps = int(len(coefficients))
     if len(coefficients) < HARDWARE_TAPS:
