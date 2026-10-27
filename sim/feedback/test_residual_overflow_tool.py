@@ -43,7 +43,7 @@ def _negative_runs(mask, min_len):
 
 
 def build_fixture(tmp: Path, q20, n=2048, n_overflow=8, overflow_at="tail",
-                  record_res_sat=None, name="fx.npz"):
+                  record_res_sat=None, name="fx.npz", mic_float=None, meta_extra=None):
     """造一份与 RTL 自洽的抓包：pred 由整数重放算出，宽残差与钳位残差都按 RTL 口径。
 
     参考用 150 Hz 低正弦：pred 会连续若干十帧同号，才能在"pred 为负"的位置造出
@@ -74,14 +74,18 @@ def build_fixture(tmp: Path, q20, n=2048, n_overflow=8, overflow_at="tail",
 
     meta = {
         "schema_version": 1, "fixture_id": "fixture_test", "bypass": False,
-        "gain_q12": GAIN_Q12, "first_frame": 1000, "stop_reason": "guard",
+        "gain_q12": GAIN_Q12, "first_frame": 1000, "completed_frames": 1000 + n,
+        "stop_reason": "guard",
         "prediction_saturations": 0,
         "residual_saturations": sat if record_res_sat is None else record_res_sat,
         "gain_saturations": 0, "mix_saturations": 0,
         "bit_sha256": "0" * 64,
     }
+    if meta_extra:
+        meta.update(meta_extra)
     path = tmp / name
-    np.savez(path, reference=ref_codes / tool.SCALE, microphone=mic / tool.SCALE,
+    mic_float = mic / tool.SCALE if mic_float is None else np.asarray(mic_float, float)
+    np.savez(path, reference=ref_codes / tool.SCALE, microphone=mic_float,
              prediction_pcm=pred, residual_pcm=resid, coefficients_q20=q20,
              sample_rate_hz=FS, metadata_json=json.dumps(meta))
     return path, k, sat
@@ -143,12 +147,12 @@ class AnalyzeTest(unittest.TestCase):
         self.assertEqual(sat, 8)
         r = tool.analyze(path, None, None, None)
         p = r["primary_capture_only"]
-        self.assertEqual(p["overflow_samples"], 8)
+        self.assertEqual(p["overflow_samples"]["valid"], 8)
         self.assertEqual(p["first_overflow_index"], k)
         self.assertEqual(p["first_overflow_global_frame"], 1000 + k)
         # 宽残差乘 −8 dB 之后不应再越界，且远低于满幅
-        self.assertEqual(r["post_gain"]["overflow_samples"], 0)
-        self.assertLess(r["post_gain"]["max_abs"], 0.5)
+        self.assertEqual(r["post_gain"]["overflow_samples"]["valid"], 0)
+        self.assertLess(r["post_gain"]["max_abs"]["valid"], 0.5)
         self.assertAlmostEqual(r["post_gain"]["residual_ceiling_x"], 4096 / GAIN_Q12, places=6)
         self.assertTrue(r["attribution"]["allowed"], r["attribution"]["reasons"])
 
@@ -156,9 +160,9 @@ class AnalyzeTest(unittest.TestCase):
         path, k, sat = build_fixture(self.tmp, self.q20, overflow_at="history", name="hist.npz")
         r = tool.analyze(path, None, None, None)
         p = r["primary_capture_only"]
-        self.assertGreaterEqual(p["overflow_in_history_region"], 8)
+        self.assertGreaterEqual(p["overflow_samples"]["history"], 8)
         # 历史区里的越界不能被当成"有效窗口内的首次越界"
-        self.assertEqual(p["overflow_in_valid_window"], 0)
+        self.assertEqual(p["overflow_samples"]["valid"], 0)
         self.assertEqual(p["first_overflow_index"], -1)
         self.assertEqual(r["valid_start_index"], len(self.q20) + 1)
 
@@ -215,6 +219,79 @@ class EnvelopeTest(unittest.TestCase):
         rows = tool.envelope(mic, FS, 2048, 512)
         self.assertLess(abs(rows[0]["dominant_hz"] - 400.0), 60.0)
         self.assertGreater(rows[0]["narrow_share"], 0.5)
+
+
+class EncodingGateTest(unittest.TestCase):
+    """C 提的第 1、2、4 项：字段编码、哈希身份、整窗/有效区分。"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.q20 = candidate_q20()
+        cls.tmp = Path(tempfile.mkdtemp(prefix="ro_enc_"))
+
+    def _codes(self, path, key="microphone"):
+        cap = np.load(path, allow_pickle=False)
+        return cap[key]
+
+    def test_float_positive_full_scale_is_not_turned_into_negative_rail(self):
+        """+1.0 的归一化浮点不能被当成“无符号 24 位的 -2^23”。"""
+        path, _k, _s = build_fixture(self.tmp, self.q20, name="p1.npz",
+                                     mic_float=np.full(2048, 1.0))
+        r = tool.analyze(path, None, None, None)
+        self.assertGreater(r["encoding"]["mic_clamped"], 0)
+        # 到轨就是 +满幅，不是负满幅
+        self.assertAlmostEqual(r["primary_capture_only"]["mic_peak_dbfs"]["whole"], 0.0, places=3)
+        self.assertEqual(r["primary_capture_only"]["residual_rail_samples_neg"], 0)
+
+    def test_float_out_of_range_is_rejected(self):
+        path, _k, _s = build_fixture(self.tmp, self.q20, name="p2.npz",
+                                     mic_float=np.full(2048, 2.0))
+        with self.assertRaises(SystemExit) as ctx:
+            tool.analyze(path, None, None, None)
+        self.assertEqual(ctx.exception.code, 2)
+
+    def test_float_dtype_pcm_field_is_rejected(self):
+        path, _k, _s = build_fixture(self.tmp, self.q20, name="p3.npz")
+        cap = dict(np.load(path, allow_pickle=False))
+        cap["prediction_pcm"] = cap["prediction_pcm"].astype(float)
+        bad = self.tmp / "p3b.npz"
+        np.savez(bad, **cap)
+        with self.assertRaises(SystemExit) as ctx:
+            tool.analyze(bad, None, None, None)
+        self.assertEqual(ctx.exception.code, 2)
+
+    def test_declared_q20_hash_mismatch_stops_attribution(self):
+        path, _k, _s = build_fixture(self.tmp, self.q20, name="hash.npz",
+                                     meta_extra={"coefficients_sha256": "0" * 64})
+        r = tool.analyze(path, None, None, None)
+        self.assertFalse(r["attribution"]["allowed"])
+        self.assertTrue(any("coefficients_sha256" in x for x in r["attribution"]["reasons"]))
+
+    def test_declared_q20_hash_match_keeps_attribution(self):
+        good = tool.q20_sha256(self.q20)
+        path, _k, _s = build_fixture(self.tmp, self.q20, name="hash_ok.npz",
+                                     meta_extra={"coefficients_sha256": good})
+        r = tool.analyze(path, None, None, None)
+        self.assertTrue(r["attribution"]["allowed"], r["attribution"]["reasons"])
+        self.assertEqual(r["encoding"]["coefficients_sha256_declared"], good)
+
+    def test_frame_domain_mismatch_is_rejected(self):
+        path, _k, _s = build_fixture(self.tmp, self.q20, name="domain.npz",
+                                     n=1024, meta_extra={"first_frame": 0,
+                                                         "completed_frames": 2000})
+        with self.assertRaises(SystemExit) as ctx:
+            tool.analyze(path, None, None, None)
+        self.assertEqual(ctx.exception.code, 2)
+
+    def test_whole_and_valid_are_reported_separately(self):
+        """前缀里的高峰值只能出现在“整窗”，不能算进有效区余量。"""
+        path, _k, _s = build_fixture(self.tmp, self.q20, overflow_at="history", name="split.npz")
+        r = tool.analyze(path, None, None, None)
+        p = r["primary_capture_only"]
+        self.assertGreater(p["wide_max_x"]["whole"], p["wide_max_x"]["valid"])
+        self.assertEqual(p["overflow_samples"]["valid"], 0)
+        self.assertGreaterEqual(p["overflow_samples"]["history"], 8)
+        self.assertGreater(p["wide_headroom_db"]["valid"], p["wide_headroom_db"]["whole"])
 
 
 class FailureExitTest(unittest.TestCase):

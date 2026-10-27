@@ -58,13 +58,51 @@ def over24(x: np.ndarray) -> np.ndarray:
     return (x > MAX24) | (x < MIN24)
 
 
-def s24_from_raw(a) -> np.ndarray:
-    """板上抓包有时按无符号 24 位存（0..2^24-1）。按值域自动转成有符号。"""
-    a = np.asarray(a, dtype=np.int64)
-    if a.size and (a.max() > MAX24 or a.min() < MIN24):
-        if a.min() >= 0 and a.max() <= (1 << 24) - 1:
-            return np.where(a >= SCALE, a - (1 << 24), a)
-    return a
+def codes_from_float(x, name: str):
+    """归一化浮点字段（reference / microphone）→ 24 位码值。
+
+    只接受 |x| <= 1.0。超范围就拒绝，**不静默夹**：抓到 2.0 说明字段不是归一化浮点，
+    继续算下去会用错的量归因。恰好 ±1.0 允许（÷2^23 的浮点可能四舍五入到 1.0），
+    但夹了几次要计数上报，不能悄悄吞掉。
+    """
+    a = np.asarray(x, dtype=np.float64)
+    if a.size == 0:
+        die("%s 为空" % name)
+    peak = float(np.max(np.abs(a)))
+    if not np.isfinite(peak):
+        die("%s 含 NaN/Inf" % name)
+    if peak > 1.0 + 1e-6:
+        die("%s 超出归一化范围：|max|=%.6f（该字段应为一化到 ±1.0 的浮点，不是原始码值）"
+            % (name, peak))
+    c = np.rint(a * SCALE).astype(np.int64)
+    clamped = int(np.count_nonzero((c > MAX24) | (c < MIN24)))
+    return np.clip(c, MIN24, MAX24), clamped
+
+
+def codes_from_int(x, name: str) -> np.ndarray:
+    """整数 PCM / Q20 字段 → 有符号 24 位。
+
+    必须是整数 dtype；允许"全非负且超过正满幅"的无符号 24 位打包（板上确实这么存过），
+    但**混合符号又超正满幅**一律拒绝。-2^23 合法。
+    """
+    a = np.asarray(x)
+    if not np.issubdtype(a.dtype, np.integer):
+        die("%s 不是整数 dtype（%s）；PCM/Q20 字段不接受浮点" % (name, a.dtype))
+    v = a.astype(np.int64)
+    if v.size == 0:
+        die("%s 为空" % name)
+    if v.min() < MIN24:
+        die("%s 低于 −2^23（min=%d）" % (name, int(v.min())))
+    if v.max() <= MAX24:
+        return v
+    if v.min() >= 0 and v.max() <= (1 << 24) - 1:
+        return np.where(v >= SCALE, v - (1 << 24), v)     # 无符号 24 位打包
+    die("%s 混合符号且超过正满幅（min=%d max=%d）" % (name, int(v.min()), int(v.max())))
+
+
+def q20_sha256(q: np.ndarray) -> str:
+    """与 models/manifest.json 一致的 Q20 打包哈希（int32 小端）。"""
+    return hashlib.sha256(np.asarray(q, dtype=np.int64).astype("<i4").tobytes()).hexdigest()
 
 
 def rtl_predict(q20: np.ndarray, u_codes: np.ndarray):
@@ -139,7 +177,13 @@ def analyze(path: Path, model_q20, model_label, gain_db):
     if not np.isfinite(fs) or fs <= 0:
         die("%s 的 sample_rate_hz 非法：%s" % (path.name, fs))
 
-    q20_npz = s24_from_raw(cap["coefficients_q20"])
+    # ---- 字段编码：浮点/整数分开处理，非法值拒绝而不是夹
+    q20_npz = codes_from_int(cap["coefficients_q20"], "coefficients_q20")
+    mic, mic_clamped = codes_from_float(cap["microphone"], "microphone")
+    ref, ref_clamped = codes_from_float(cap["reference"], "reference")
+    pred_rec = codes_from_int(cap["prediction_pcm"], "prediction_pcm")
+    resid_rec = codes_from_int(cap["residual_pcm"], "residual_pcm")
+
     q20 = model_q20 if model_q20 is not None else q20_npz
     substituted = model_q20 is not None and not np.array_equal(q20_npz, model_q20)
     bypass = meta.get("bypass")
@@ -147,25 +191,30 @@ def analyze(path: Path, model_q20, model_label, gain_db):
     if gain_db is not None:
         gain_q12 = int(round(4096 * 10 ** (gain_db / 20)))
     first_frame = int(meta.get("first_frame", 0))
-
-    # 浮点字段可能被四舍五入到恰好 1.0；ADC/DAC 的实际码值一定落在 24 位内，先夹回去，
-    # 免得把"浮点取整"当成残差越界。
-    mic = np.clip(s24_from_raw(np.rint(np.asarray(cap["microphone"], float) * SCALE).astype(np.int64)),
-                  MIN24, MAX24)
-    ref = np.clip(s24_from_raw(np.rint(np.asarray(cap["reference"], float) * SCALE).astype(np.int64)),
-                  MIN24, MAX24)
-    pred_rec = s24_from_raw(cap["prediction_pcm"])
-    resid_rec = s24_from_raw(cap["residual_pcm"])
     n = len(mic)
     if n == 0:
         die("%s 没有可分析帧" % path.name)
+    if not (len(ref) == len(pred_rec) == len(resid_rec) == n):
+        die("%s 各字段帧数不一致：mic %d / ref %d / pred %d / resid %d"
+            % (path.name, n, len(ref), len(pred_rec), len(resid_rec)))
+
+    # ---- 帧域核对：抓包是"最后一圈"，必须 first + frames == completed
+    if first_frame < 0:
+        die("%s 的 first_frame 为负：%d" % (path.name, first_frame))
+    completed = meta.get("completed_frames")
+    if completed is not None:
+        completed = int(completed)
+        if first_frame + n != completed:
+            die("%s 帧域不一致：first_frame %d + frames %d = %d ≠ completed_frames %d"
+                "（抓包应为运行末尾那一圈）"
+                % (path.name, first_frame, n, first_frame + n, completed))
 
     taps = len(q20)
     valid_start = taps + 1            # 前 taps+1 帧历史为空，RTL 从零开始填
     if n <= valid_start + 16:
-        die("%s 帧数 %d 不足（需要 > %d）" % (path.name, n, valid_start + 16))
+        die("%s 帧数 %d 不足（需要 > %d）" % (path.name, valid_start + 16))
 
-    # ---- 主路径：完全按板上记录重建宽残差（不依赖模型）
+    # ---- 主路径：完全按板上记录重建宽残差（不依赖模型、不依赖历史）
     wide = mic - pred_rec
     narrow = clamp24(wide)
     ov = over24(wide)
@@ -178,6 +227,14 @@ def analyze(path: Path, model_q20, model_label, gain_db):
         reasons.append("模型与抓包内系数不同：只能作为替代模型的算术推演，不能归因本次事件")
     if bypass is True:
         reasons.append("这一路是 bypass：prediction 不参与输出，残差＝麦克风")
+    if mic_clamped or ref_clamped:
+        reasons.append("归一化字段有 %d/%d 个样本落到 ±满幅后需夹回（可能是 ÷2^23 的浮点取整，"
+                       "也可能是真的到轨）；已计数，不当作越界" % (mic_clamped, ref_clamped))
+    declared = meta.get("coefficients_sha256")
+    actual_hash = q20_sha256(q20_npz)
+    if declared and str(declared).lower() != actual_hash:
+        reasons.append("metadata 声明的 coefficients_sha256=%s… 与实际数组哈希 %s… 不符"
+                       % (str(declared)[:12], actual_hash[:12]))
     if recorded_res_sat is not None and int(recorded_res_sat) != int(ov.sum()):
         reasons.append("重建的越界个数 %d 与板上 residual_saturations=%s 不符"
                        % (int(ov.sum()), recorded_res_sat))
@@ -186,7 +243,7 @@ def analyze(path: Path, model_q20, model_label, gain_db):
         reasons.append("重建的窄残差与板上 residual_pcm 不符 %d/%d 个样本（钳位口径或字段语义不一致）"
                        % (bad, n))
 
-    # ---- 辅路径：模型整数重放，与板上 prediction 比对
+    # ---- 辅路径：模型整数重放（依赖历史，只判有效区）
     pred_rep, pred_sat = rtl_predict(q20, ref)
     mism = int(np.count_nonzero(pred_rep[valid_start:] != pred_rec[valid_start:]))
     if mism and not substituted:
@@ -195,10 +252,16 @@ def analyze(path: Path, model_q20, model_label, gain_db):
     out = rtl_gain(wide, gain_q12)
     out_ov = over24(out)
 
+    v = slice(valid_start, n)
     ov_valid = ov.copy()
     ov_valid[:valid_start] = False
     first = int(np.argmax(ov_valid)) if ov_valid.any() else -1
-    first_out = int(np.argmax(out_ov)) if out_ov.any() else -1
+    out_ov_valid = out_ov.copy()
+    out_ov_valid[:valid_start] = False
+    first_out = int(np.argmax(out_ov_valid)) if out_ov_valid.any() else -1
+
+    def lvl(x):
+        return float(20 * np.log10(max(np.abs(x).max(), 1) / SCALE))
 
     res = {
         "file": path.name,
@@ -210,38 +273,50 @@ def analyze(path: Path, model_q20, model_label, gain_db):
         "capture_span_ms": round(1000 * n / fs, 2),
         "first_frame_global": first_frame,
         "last_frame_global": first_frame + n - 1,
+        "completed_frames": completed,
+        "frame_domain_ok": True,
         "fixture_id": meta.get("fixture_id"),
         "bit_sha256": meta.get("bit_sha256"),
         "bypass": bypass,
         "gain_q12": gain_q12,
         "gain_db": round(20 * np.log10(gain_q12 / 4096), 3) if gain_q12 > 0 else None,
+        "encoding": {"mic_clamped": mic_clamped, "ref_clamped": ref_clamped,
+                     "coefficients_sha256_declared": declared,
+                     "coefficients_sha256_actual": actual_hash},
         "model": {"label": model_label, "substituted": bool(substituted), "taps": taps},
         "recorded_counts": {k: meta.get(k) for k in
                             ("prediction_saturations", "residual_saturations",
                              "gain_saturations", "mix_saturations", "stop_reason")},
         "primary_capture_only": {
-            "overflow_samples": int(ov.sum()),
-            "overflow_in_valid_window": int(ov_valid.sum()),
-            "overflow_in_history_region": int(ov.sum() - ov_valid.sum()),
+            "note": "mic 与板上 prediction 相减，不依赖模型、不依赖历史；"
+                    "但 prediction 在前 taps 帧是「历史填充」，所以归因与余量以有效区为准",
+            "mic_peak_dbfs": {"whole": lvl(mic), "valid": lvl(mic[v])},
+            "pred_peak_dbfs": {"whole": lvl(pred_rec), "valid": lvl(pred_rec[v])},
+            "wide_max_x": {"whole": float(np.abs(wide).max() / SCALE),
+                           "valid": float(np.abs(wide[v]).max() / SCALE)},
+            "wide_headroom_db": {"whole": float(-20 * np.log10(np.abs(wide).max() / SCALE)),
+                                 "valid": float(-20 * np.log10(np.abs(wide[v]).max() / SCALE))},
+            "overflow_samples": {"whole": int(ov.sum()), "valid": int(ov_valid.sum()),
+                                 "history": int(ov.sum() - ov_valid.sum())},
             "first_overflow_index": first,
             "first_overflow_global_frame": (first_frame + first) if first >= 0 else None,
-            "max_wide": float(np.abs(wide).max() / SCALE),
-            "headroom_db": float(-20 * np.log10(np.abs(wide).max() / SCALE)),
-            "mic_peak_dbfs": float(20 * np.log10(np.abs(mic).max() / SCALE)),
-            "pred_peak_dbfs": float(20 * np.log10(max(1, np.abs(pred_rec).max()) / SCALE)),
             "residual_rail_samples_pos": rail_pos,
             "residual_rail_samples_neg": rail_neg,
         },
         "secondary_model_replay": {
+            "note": "依赖 taps 帧历史；只判有效区，前缀的失配单独计数",
             "prediction_mismatches": mism,
+            "mismatches_in_prefix": int(np.count_nonzero(pred_rep[:valid_start] != pred_rec[:valid_start])),
             "evaluated": n - valid_start,
             "local_prediction_saturations": int(pred_sat),
         },
         "post_gain": {
-            "overflow_samples": int(out_ov.sum()),
+            "overflow_samples": {"whole": int(out_ov.sum()), "valid": int(out_ov_valid.sum())},
             "first_overflow_index": first_out,
-            "max_abs": float(np.abs(out).max() / SCALE),
-            "margin_db": float(-20 * np.log10(max(np.abs(out).max(), 1) / SCALE)),
+            "max_abs": {"whole": float(np.abs(out).max() / SCALE),
+                        "valid": float(np.abs(out[v]).max() / SCALE)},
+            "margin_db": {"whole": float(-20 * np.log10(max(np.abs(out).max(), 1) / SCALE)),
+                          "valid": float(-20 * np.log10(max(np.abs(out[v]).max(), 1) / SCALE))},
             "residual_ceiling_x": (4096.0 / gain_q12) if gain_q12 > 0 else None,
         },
         "attribution": {"allowed": not reasons, "model_substituted": bool(substituted),
@@ -262,8 +337,8 @@ def analyze(path: Path, model_q20, model_label, gain_db):
         seg_lo = max(valid_start, first - 8 * win)
         covered_ms = round(1000 * (first - seg_lo) / fs, 2)
         series = []
-        for s in range(seg_lo, first - win + 1, win):
-            seg = wide[s:s + win].astype(float)
+        for st in range(seg_lo, first - win + 1, win):
+            seg = wide[st:st + win].astype(float)
             series.append(round(float(20 * np.log10(np.sqrt(np.mean(seg ** 2)) / SCALE + 1e-30)), 2))
         res["growth"] = {
             "window_ms": round(1000 * win / fs, 2),
@@ -350,7 +425,7 @@ def main() -> int:
     model_q20 = None
     if model_path is not None:
         raw = model_path.read_bytes()
-        model_q20 = s24_from_raw(json.loads(raw.decode("utf-8"))["coefficients_q20"])
+        model_q20 = codes_from_int(json.loads(raw.decode("utf-8"))["coefficients_q20"], "model.coefficients_q20")
         print("模型：%s（%d 抽头，file %s…）"
               % (_rel(model_path), len(model_q20), hashlib.sha256(raw).hexdigest()[:12]))
 
@@ -382,30 +457,45 @@ def main() -> int:
         p = r["primary_capture_only"]
         print()
         print("--- %s" % r["file"])
-        print("  采集：%d 帧 / %.1f ms；有效窗口从第 %d 帧起（%d 帧 / %.1f ms）；全局帧 %d–%d"
+        print("  采集：%d 帧 / %.1f ms；有效窗口从第 %d 帧起（%d 帧 / %.1f ms）；"
+              "全局帧 %d–%d（completed %s）"
               % (r["frames"], r["capture_span_ms"], r["valid_start_index"], r["valid_frames"],
-                 r["valid_window_ms"], r["first_frame_global"], r["last_frame_global"]))
+                 r["valid_window_ms"], r["first_frame_global"], r["last_frame_global"],
+                 r["completed_frames"]))
         gain_txt = ("%+.3f dB" % r["gain_db"]) if r["gain_db"] is not None else "无增益"
         print("  身份：fixture=%s bit=%s… bypass=%s gain_q12=%d (%s)"
               % (r["fixture_id"], str(r["bit_sha256"])[:12], r["bypass"], r["gain_q12"], gain_txt))
+        print("  编码：mic 夹回 %d 个、ref 夹回 %d 个；Q20 实算 %s… / 声明 %s…"
+              % (r["encoding"]["mic_clamped"], r["encoding"]["ref_clamped"],
+                 str(r["encoding"]["coefficients_sha256_actual"])[:12],
+                 str(r["encoding"]["coefficients_sha256_declared"])[:12]))
         print("  板上计数：%s" % r["recorded_counts"])
-        print("  [主] 越界样本 %d（有效窗口 %d，历史区 %d）；残差贴轨 +%d/−%d"
-              % (p["overflow_samples"], p["overflow_in_valid_window"],
-                 p["overflow_in_history_region"], p["residual_rail_samples_pos"],
-                 p["residual_rail_samples_neg"]))
-        print("       |mic|峰值 %+.1f dBFS；|pred|峰值 %+.1f dBFS；|宽残差|max %.4f×满幅（余量 %+.2f dB）"
-              % (p["mic_peak_dbfs"], p["pred_peak_dbfs"], p["max_wide"], p["headroom_db"]))
-        s = r["secondary_model_replay"]
+        print("  [主] 越界样本 %d（有效区 %d / 历史区 %d）；残差贴轨 +%d/−%d"
+              % (p["overflow_samples"]["whole"], p["overflow_samples"]["valid"],
+                 p["overflow_samples"]["history"],
+                 p["residual_rail_samples_pos"], p["residual_rail_samples_neg"]))
+        print("       |mic|峰值  整窗 %+.1f / 有效区 %+.1f dBFS"
+              % (p["mic_peak_dbfs"]["whole"], p["mic_peak_dbfs"]["valid"]))
+        print("       |pred|峰值 整窗 %+.1f / 有效区 %+.1f dBFS"
+              % (p["pred_peak_dbfs"]["whole"], p["pred_peak_dbfs"]["valid"]))
+        print("       宽残差max  整窗 %.4f / 有效区 %.4f ×满幅（余量 %+.2f / %+.2f dB）"
+              % (p["wide_max_x"]["whole"], p["wide_max_x"]["valid"],
+                 p["wide_headroom_db"]["whole"], p["wide_headroom_db"]["valid"]))
+        s2 = r["secondary_model_replay"]
         note = "（系数被覆盖，失配属预期）" if r["attribution"]["model_substituted"] else ""
-        print("  [辅] 模型整数重放：prediction 失配 %d/%d%s，本地预测饱和 %d"
-              % (s["prediction_mismatches"], s["evaluated"], note, s["local_prediction_saturations"]))
+        print("  [辅] 模型整数重放：有效区失配 %d/%d%s，前缀失配 %d，本地预测饱和 %d"
+              % (s2["prediction_mismatches"], s2["evaluated"], note,
+                 s2["mismatches_in_prefix"], s2["local_prediction_saturations"]))
         gg = r["post_gain"]
         ceil_txt = ("%.3f×满幅（=4096/gain_q12）" % gg["residual_ceiling_x"]
                     if gg["residual_ceiling_x"] else "不适用（增益为 0）")
-        print("  [增益后] |out|max %.4f×满幅（余量 %+.2f dB），越界样本 %d；残差最多可到 %s"
-              % (gg["max_abs"], gg["margin_db"], gg["overflow_samples"], ceil_txt))
+        print("  [增益后] |out|max 整窗 %.4f / 有效区 %.4f ×满幅（余量 %+.2f / %+.2f dB），"
+              "越界样本 整窗 %d / 有效区 %d；残差最多可到 %s"
+              % (gg["max_abs"]["whole"], gg["max_abs"]["valid"],
+                 gg["margin_db"]["whole"], gg["margin_db"]["valid"],
+                 gg["overflow_samples"]["whole"], gg["overflow_samples"]["valid"], ceil_txt))
         if p["first_overflow_index"] >= 0:
-            print("  首次越界：抓包内第 %d 帧 / 全局第 %d 帧"
+            print("  首次越界（有效区）：抓包内第 %d 帧 / 全局第 %d 帧"
                   % (p["first_overflow_index"], p["first_overflow_global_frame"]))
             gr = r["growth"]
             print("  增长：窗口 %s ms，只覆盖 %s ms → %s"
