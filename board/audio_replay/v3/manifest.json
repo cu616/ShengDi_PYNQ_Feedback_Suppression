@@ -4,7 +4,7 @@
   "version": "v3",
   "contract": "docs/contracts/audio-replay-v3.md",
   "branch": "A",
-  "commit": "pending",
+  "commit": "snapshot introduced at 05f5c69; identity is the hashes below, see branch A for later commits",
   "sample_rate_hz": 48828.125,
   "taps": 512,
   "lag_first": 1,

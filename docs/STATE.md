@@ -20,7 +20,9 @@
 **当前卡点：门禁基线不稳 + 真人语音两臂未跑；v3 的现场效果仍无结论。**
 
 - **唯一操板者，SSH 非交互驱动**。**现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`**：
-  位流 `48e38f78…`、hwh `9411adb5…`、`replay_trial` `6b397359…`、`replay_tools` `0d4e1933…`。
+  位流 `48e38f78…`、hwh `9411adb5…`、`replay_tools` `0d4e1933…`。
+  **交付驱动 `replay_trial` = `82787262…`（含 bit22 停声与位流配对校验）；旧 `6b397359…` 作废。
+  板上仍是 `6b397359…`，断网未换**——上电后必须先上传新驱动再跑任何运行。
   回退包 `audio_live` 原样未动（v2 位流 `61bb71aa…`、hwh `92b499a3…`、驱动 `2127663…`；v1 位流同目录）。
 - **① 原配置复现成功**（[结果包](../report/verification/audio-replay/reproduction-result-2026-10-27.json)）：
   手机 `1101.m4a`、音量 **8/15**、距麦 **5 cm**、零系数、**−8 dB**、Codec 40、音响 100 cm 侧对。
