@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "topic": "silent analysis of the existing failure captures: the two arms show structurally different events",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "board_runs": "none - analysis only, no audible test, no re-run",
+  "method": "block-wise (2048-frame) microphone envelope, block-wise 300-360 Hz share, rail-sample census with consecutive-run lengths, microphone/reference correlation, residual rail count, all read from the stored npz",
+  "results": {
+    "zero_arm": {
+      "file": "blind1_zero_1746867688283325310.npz",
+      "envelope_dbfs_per_block": [
+        -23.4,
+        -24.9,
+        -25.8,
+        -27.7,
+        -6.3,
+        -0.8,
+        -1.3,
+        -0.9
+      ],
+      "band_share_per_block": [
+        0.049,
+        0.031,
+        0.062,
+        0.156,
+        0.142,
+        0.085,
+        0.001,
+        0.0
+      ],
+      "rail_samples": 3383,
+      "rail_fraction": 0.2065,
+      "longest_rail_runs": [
+        76,
+        75,
+        68,
+        66,
+        66
+      ],
+      "mic_ref_correlation": 0.969
+    },
+    "candidate_arm": {
+      "file": "blind2_cand_1746867731709459239.npz",
+      "envelope_dbfs_per_block": [
+        -38.6,
+        -37.6,
+        -40.2,
+        -39.2,
+        -26.7,
+        -29.7,
+        -33.2,
+        -12.6
+      ],
+      "band_share_per_block": [
+        0.024,
+        0.311,
+        0.021,
+        0.071,
+        0.02,
+        0.04,
+        0.043,
+        0.018
+      ],
+      "rail_samples": 26,
+      "rail_fraction": 0.0016,
+      "longest_rail_runs": [
+        24,
+        2
+      ],
+      "mic_ref_correlation": 0.987
+    }
+  },
+  "reading": {
+    "zero_arm": "the envelope sits at -25 dBFS for four blocks and then steps to -0.8 dBFS and stays there for three blocks (about 0.13 s). A 25 dB step within one block is not something a talker does; sustained full scale for three blocks is the signature of a runaway loop. This arm had the more severe event and completed anyway because no counter watches it.",
+    "candidate_arm": "the envelope never leaves the -40..-12 dBFS range; the full-scale excursion is 24 consecutive frames (0.5 ms) out of 16384, 0.2% of samples. This is a transient, not a sustained runaway.",
+    "why_they_are_not_comparable": "the zero arm shows a sustained step; the candidate arm shows a single short excursion. Reporting 'zero completed, candidate failed' would invert the actual severity.",
+    "respecting_the_captains_caution": "input full scale by itself is NOT taken as proof of regeneration in either arm. For the candidate arm it is explicitly read as a transient. For the zero arm the sustained 25 dB step is the evidence, not the rail count alone."
+  },
+  "limits_of_this_analysis": [
+    "each capture is the final 16384 frames only; for the zero arm that is the tail of a completed run, for the candidate arm it is the window ending at the guard trip",
+    "there is no microphone full-scale counter in the status file, so the rail census comes from the capture rather than from hardware",
+    "the two arms are different speech takes; the talker is not identical between them",
+    "no per-sample protection timeline"
+  ],
+  "conclusion": "the live-speech comparison remains invalid as an arm comparison, but for a new reason than previously stated: the zero arm ran into a sustained runaway that no counter caught, while the candidate was stopped on a 0.5 ms transient. The candidate is not shown to be worse."
+}

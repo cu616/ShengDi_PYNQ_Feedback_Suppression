@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "topic": "compatibility change list for keeping the wide residual through the digital gain",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "status": "PREPARED, NOT APPLIED. The captain has not approved cancelling the residual stop or modifying on-board protection. This list only says what must change together if and when it is approved.",
+  "current_path": {
+    "feedback_fir.v:35": "difference = sign_extend(microphone,25) - sign_extend(prediction,25)",
+    "feedback_fir.v:37-38": "clamped to signed 24-bit",
+    "feedback_fir.v:99": "residual_pcm <= difference_limited",
+    "feedback_fir.v:101": "residual_saturated <= difference_clip",
+    "audio_pl_replay.v:173": "gain_product <= residual * gain_latched",
+    "audio_pl_replay.v:70-72": "gain_rounded clamped, gain_clip_count increments"
+  },
+  "target_path": "25-bit difference -> multiply by the digital gain -> clamp -> output. Because the gain is <= 1.0 in every allowed setting, a residual a few percent over 24-bit comes back inside range after scaling.",
+  "compatibility_matrix": [
+    {
+      "component": "feedback_fir (RTL)",
+      "must_change": true,
+      "detail": "residual_pcm widens to signed 25-bit; difference_clip no longer clamps the residual, it only flags",
+      "breaks_if": "any consumer assumes 24-bit"
+    },
+    {
+      "component": "audio_pl_replay (RTL)",
+      "must_change": true,
+      "detail": "multiply the wide residual; the authoritative overflow count becomes the post-gain clamp (gain_clip_count)",
+      "breaks_if": "the pre-gain flag keeps driving the guard"
+    },
+    {
+      "component": "capture word packing",
+      "must_change": true,
+      "detail": "memory packs 4x24 bit {reference,microphone,prediction,residual}; a 25-bit residual does not fit, so either widen the word or store the clamped value for display plus a separate wide-overflow flag",
+      "breaks_if": "existing npz readers are used unchanged"
+    },
+    {
+      "component": "replay_trial.py / residual_tools.py",
+      "must_change": true,
+      "detail": "unpacking, residual_saturations meaning, and the guard condition",
+      "breaks_if": "driver and bitstream versions are mismatched"
+    },
+    {
+      "component": "status.json schema",
+      "must_change": true,
+      "detail": "residual_saturations would stop meaning 'pre-gain overflow that stopped the run'; add a separate field for the pre-gain flag and keep the post-gain clamp as the stopping counter",
+      "breaks_if": "C compares old and new status files without a version marker"
+    },
+    {
+      "component": "existing evidence",
+      "must_change": false,
+      "detail": "every stored npz stays readable as-is; new runs carry a schema version bump",
+      "breaks_if": "old captures are re-interpreted under the new semantics"
+    },
+    {
+      "component": "protection semantics",
+      "must_change": "captain approval required",
+      "detail": "the open question is whether the guard still stops on pre-gain overflow (safe, but trips on loud speech) or only on the post-gain clamp (lets the gain absorb it)",
+      "breaks_if": "changed without approval"
+    },
+    {
+      "component": "timing / synthesis",
+      "must_change": true,
+      "detail": "24x16 -> 25x16 widens the product by one bit; re-run the feedback_fir testbench and the timing report before any board run",
+      "breaks_if": "timing margin is assumed rather than measured"
+    },
+    {
+      "component": "rollback",
+      "must_change": true,
+      "detail": "keep v2 bitstream 61bb71aa and the current driver as rollback point two; the reproduced zero-coefficient baseline must stay runnable unmodified",
+      "breaks_if": "the new bitstream replaces v2 in place"
+    }
+  ],
+  "compatibility_rule": "bitstream, driver and status schema must be bumped and shipped together; a mixed pair must refuse to run rather than silently reinterpret counters.",
+  "what_i_need_before_applying": [
+    "the captain's decision on the protection semantics question",
+    "B's fixed analysis script, so the same captures are re-read under the new definitions",
+    "a synthesis timing check on the widened multiply"
+  ],
+  "not_done": [
+    "no RTL edited",
+    "no driver edited",
+    "no protection changed",
+    "no audible test"
+  ]
+}
