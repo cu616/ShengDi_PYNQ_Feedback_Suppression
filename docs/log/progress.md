@@ -12,6 +12,11 @@
 
 
 
+
+## 2026-10-27 C 冻结r6基线优先完整流程
+
+从干净d95c3a2生成c-success-reproduction-r6.zip，358489字节，35项载荷/唯一Notebook代码及已测源码字节核对完成；实际打印STOP，取消0试次仍回包保留历史反馈。9.5/60秒纯参数验证范围明确；语音PCM留板，结果分别导出基线/候选。操作单与Notebook文案均不让候选缺项阻断基线，未改A驱动或B系数。[包身份与限制](../../report/verification/audio_closed/sprint-rc0-20261025/reproduction-package-r6-check.json)、[现场操作单](../../board/audio_closed/BATCH_GUIDE.md#2026-10-27-成功工作点集中复现)。无C操板/新现场结论。
+
 ## 2026-10-27 C 按0f工作流整合成功复现与候选依赖
 
 fetch后读取A0f17c74指定规则/计划，保持C。核对r4实际源/帧窗/背景及首四角色无START路由，未把距离或阈值定为唯一原因；第二次仍摘要。r6在已有入口先零系数−8基线，5cm仅静音资格检查、一次距离变更，真人/静音听众两次及条件60秒使用后再同增益候选；缺模型不阻基线，实际人工动作有阶段记录。11个不同软件用例最终通过，初次满幅分支失败及定向修复留证，未全套重验。[审计与完成/失败出口](../../report/verification/audio_closed/batch-control.md#2026-10-27-r6按成功复现顺序整合基线与候选)、[原帧审计](../../report/verification/audio_closed/sprint-rc0-20261025/reproduction-r6-audit.json)。无C操板或新效果。

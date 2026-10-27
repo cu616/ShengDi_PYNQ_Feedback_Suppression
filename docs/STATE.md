@@ -41,9 +41,9 @@
 ### C 测评与工具
 
 **最后动作**：2026-10-27已fetch并按A=0f17c74读取工作流、本线任务、STATE及执行顺序，保持C、不合并整条A。完成r4首包数字参考/源/帧窗/背景与提示路由核对；第二次仍仅摘要。r6在已有入口支持零系数−8dB基线优先、5cm静音资格检查及一次距离变更、两次9.5秒真人与输出静音对照、条件性60秒真人、后续同增益候选两对；11个不同相关软件用例最终通过。
-**当前卡点**：C正在从干净源码冻结r6。真实输入响应、指定音响出声、暂停声源/就位与听感需A现场实际回复；当前两次历史听众成功保留，但受控复现尚未完成。第二次r4原ZIP待A板卡网络恢复取回，不重跑补造；候选缺项只停止候选，不阻断无依赖的零系数基线。
+**当前卡点**：C已从干净源码d95c3a2冻结r6，358489字节；35项载荷/Notebook代码/取消零试次及回包复核完成。真实输入响应、指定音响出声、暂停声源/就位与听感需A现场实际回复；当前两次历史听众成功保留，但受控复现尚未完成。第二次r4原ZIP待A板卡网络恢复取回，不重跑补造；候选缺项只停止候选，不阻断无依赖的零系数基线。
 
-- [本轮审计与分支](../report/verification/audio_closed/batch-control.md#2026-10-27-r6按成功复现顺序整合基线与候选)、[原帧与路由审计](../report/verification/audio_closed/sprint-rc0-20261025/reproduction-r6-audit.json)、[机器记录](../report/verification/audio_closed/sprint-rc0-20261025/reproduction-package-r6-check.json)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-27-成功工作点集中复现)。r4/r5原包、首包与旧判据不改写；C未操板，无新的真人/候选效果结论。
+- [r6最终执行包](../build/packages/c-success-reproduction-r6.zip)、[本轮审计与分支](../report/verification/audio_closed/batch-control.md#2026-10-27-r6按成功复现顺序整合基线与候选)、[原帧与路由审计](../report/verification/audio_closed/sprint-rc0-20261025/reproduction-r6-audit.json)、[机器记录](../report/verification/audio_closed/sprint-rc0-20261025/reproduction-package-r6-check.json)、[唯一操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-27-成功工作点集中复现)。r4/r5原包、首包与旧判据不改写；C未操板，无新的真人/候选效果结论。
 - 首包实际加载的是登记1kHz PCM，保存reference与该源在全局帧上逐样本一致；正向捕获33420..49804，源结束48828，分析33420..48340。宽带未过旧6dB/0.8与可见窄带分量并存，但手机污染及物理输出缺少当时独立确认，不能定两次失败唯一原因是距离或门限。第二摘要约高4.2dB不代表不可检出。
 - 首包4次是2预检+quiet+positive，均数字前向0、实际零系数，没有闭环零/候选对照。冻结r4的这四个角色自动继续，未到真人START分支；打印READY却未请求输入容易误解。A所述自动START机制尚不能由首包重建，可能涉及外层脚本；新入口显式记录每次提示/回复和阶段，实际动作不得自动代答。
 - r5相对10dB统计只保留诊断范围，不能凭受污染首包单独认证路径。r6不降低阈值；分别确认静音下真人输入响应、实际数字参考、指定音响实听出声。路径未知停依赖有声步骤；仅1k耦合估计未知时保留独立基线观察，明确其限制。模型/实际Q20、Codec、gain、帧号、计数和保护仍自动核对。

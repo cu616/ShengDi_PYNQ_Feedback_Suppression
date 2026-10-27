@@ -1,5 +1,5 @@
 {
-  "stage": "source-preflight",
+  "stage": "final-archive",
   "policy": "c-new-layout-1.5.0",
   "workflow": "success_first",
   "workflow_commit": "0f17c74f21360ca8d84240be8a50be35ddeb8cbc",
@@ -76,5 +76,74 @@
   "baseline_field_usable": "not_yet_reproduced",
   "candidate_field_improvement": "not_yet_measured",
   "voice_raw_transfer": false,
-  "quantitative_listener": "not_tested"
+  "quantitative_listener": "not_tested",
+  "source_base": "d95c3a2679bac925efe7499cb5655e62af216d7f",
+  "source_tree_clean": true,
+  "package_bytes": 358489,
+  "package_sha256": "8aff9446023598140803995481f8045a5dc8510793e75d5d18bb28d998f958d8",
+  "immutable_payload_files": 35,
+  "notebook_code_sha256": "f0026f9f08ec927f51efd423861025b86233e34b145b0c4ce2717f7b09913930",
+  "archive_payload_verified": true,
+  "payload_matches_tested_source": true,
+  "baseline_driver_budget_checks": {
+    "checks": [
+      {
+        "budget": 463867,
+        "source_frames": 7324,
+        "headroom_frames": 456543,
+        "validation_driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62"
+      },
+      {
+        "driver_evidence_version": "a-continuous-v1",
+        "mode": "continuous",
+        "fixture_id": "room_v1_20261026b",
+        "label": "run",
+        "bypass": false,
+        "zero_coeff": true,
+        "gain_db": -8.0,
+        "gain_q12": 1631,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "frames_requested": 2929687,
+        "seconds_requested": 60.0,
+        "pl_max_run_frames": 3000000,
+        "pl_contract": "v2",
+        "model_file": "baseline-model.json",
+        "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficients_sha256": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "hwh_sha256": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b",
+        "speaker_confirmed": true,
+        "local_capture_confirmed": true,
+        "stop_file": "/home/xilinx/stop_run",
+        "poll_seconds": 0.02,
+        "timeline": [],
+        "stop_reason": null,
+        "muted": null,
+        "recovered": null,
+        "cleanup_errors": [],
+        "salvage_errors": [],
+        "validation_driver_sha256": "a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441"
+      }
+    ],
+    "scope": "pure driver argument/frame-budget validation, not actual speaker or human confirmation",
+    "hardware_access": false
+  },
+  "compatibility_scope": "Replay pure prefix validates source/frame budget only; zero loading is verified by flow controls and actual per-trial records. Live validation includes zero_coeff/Q20.",
+  "artifact_check_trace": "Provisional checker expected zero_coeff in replay prefix output; corrected checker to the actual interface, no product threshold changed. Provisional ZIP retained in ignored tmp; final source also prints STOP path.",
+  "only_remaining_field_requirement": [
+    "A:actual_human_configuration"
+  ],
+  "cancel_control": {
+    "exit_code": 2,
+    "trials": 0,
+    "binding_created": false,
+    "stop_path_printed": true,
+    "history_feedback_preserved": true,
+    "return_zip_generated": true,
+    "cancel_intake_exit_code": 0,
+    "no_field_effect_claims": true
+  }
 }
