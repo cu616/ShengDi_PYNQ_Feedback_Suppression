@@ -96,5 +96,24 @@
         "800-1000": -7.3
       }
     }
+  },
+  "withdrawn_2026_10_27_later": {
+    "claim": "the historical '5 cm' was actually about 78 cm, so the source was far away",
+    "why_withdrawn": "the inference rested on the assumption that a small loudspeaker keeps the same spectral shape at any playback level. A phone speaker near its limit compresses and changes its low-frequency response, so a +18 dB low-band difference can come from playback LEVEL (or orientation, or the phone's limiter) rather than from distance. The operator's direct account is 5 cm, and 78 cm contradicts ordinary experience.",
+    "what_survives": "the 20-24 dB microphone-level difference between the two success runs and the true 5 cm run is real and still unexplained; the spectral tilt difference is real but does not identify distance",
+    "level_difference_candidates": [
+      "phone playback volume",
+      "phone orientation relative to the microphone",
+      "phone limiter/AGC behaviour at high level",
+      "distance (possible, but should not be 78 cm)"
+    ],
+    "experiment_that_would_settle_it": [
+      "hold the phone at 5 cm and fix the geometric position",
+      "measure mic level and the 50-200 Hz tilt at volumes 8/15, 12/15 and 15/15",
+      "if loud settings reproduce both the +20 dB level jump and the +20 dB tilt, then distance was never involved and the historical case really was 5 cm",
+      "if the tilt stays near +3 dB at every volume, the shape difference has another cause and must be investigated before any distance claim",
+      "all of this needs the phone only - no listener, no speech"
+    ],
+    "status": "blocked: the operator is not at the bench and cannot change the source level right now"
   }
 }
