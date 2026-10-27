@@ -75,6 +75,16 @@
 - **宽残差兼容清单**（[清单](../report/verification/audio-replay/residual-compat-change-list-2026-10-27.json)）：
   9 项兼容关系已列（RTL、捕获打包、驱动、status schema、既有证据、保护语义、时序、回退）；
   **位流 + 驱动 + schema 必须同版本发布，混搭必须拒绝运行**。未获批准前**不改一行 RTL、不改保护语义**。
+- **宽残差过增益（队长已批准，实施中）**：状态见
+  [实施状态](../report/verification/audio-replay/wide-residual-implementation-status-2026-10-27.json)。
+  已入库并**仿真验证**（`RESIDUAL_WIDE_PASS checked=4`）：`feedback_fir` 新增 25 位宽残差输出，
+  旧 24 位残差与 `residual_saturated` 含义完全不变；`audio_pl_replay` 改乘宽残差并新增
+  **独立的输入满幅检测**（不依赖残差——零系数时残差恒等于麦克风，看不到过载），`capture_status`
+  第 22 位报它；驱动 guard 改为**只按预测/增益/混音停**，增益前残差只作诊断。
+  **未完成**：`audio_pl_replay` 无法被 iverilog elaborate（缺 I2S 源），故 replay 侧**未仿真**；
+  **未综合、无时序**；`tb_feedback_fir` 缺向量文件**未跑回归**；**未上板**。
+  下一轮从「② 让 audio_pl_replay 可 elaborate 并仿真乘后钳」开始。
+- **协作习惯**见 [A 线协作习惯](lines/a-interaction-notes.md)（新窗口开工先读）。
 - **听众定量项固定未测**（无固定增益录音、AGC 不可控）；定性判断单列有效。
 
 ### B 数据与算法

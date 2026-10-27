@@ -1,3 +1,16 @@
+## 2026-10-27 宽残差轮　A　FIR 半已改并仿真验证、驱动 guard 已改，replay 侧未仿真、未综合
+
+- 按队长批准实施「25 位宽残差过数字增益后再钳位」。
+  feedback_fir.v 新增 residual_wide_pcm[24:0]（未钳位 25 位差），旧 24 位残差与 rsat 含义不变；
+  audio_pl_replay.v 改乘宽残差（显式符号扩展）、新增独立输入满幅检测与计数、capture_status 第 22 位；
+  replay_trial.py 的 guard 改为只按预测/增益/混音停，增益前残差只作诊断。
+- 新增 sim/audio/tb_residual_wide.v，iverilog -g2012 通过：RESIDUAL_WIDE_PASS checked=4
+  （无越界时宽窄一致；正越界宽残差 8389607 / 窄 8388607 / rsat=1；负向未越界 rsat=0；bypass 符号扩展）。
+- 未完成且如实记录：audio_pl_replay 无法被 iverilog elaborate（缺 I2S 源）故 replay 侧未仿真；
+  未综合无时序（Vivado 2018.3 在 D:\Xilinx）；tb_feedback_fir 缺向量文件未跑；未上板。
+- 新增 docs/lines/a-interaction-notes.md，记录 AI 与 A 的协作习惯（通知节奏、汇报方式、
+  异议处理、文档纪律、现场操作、环境工具、三条硬经验），供后续新窗口开工先读。
+
 ## 2026-10-27 B 脚本轮　A　越界归因跑通、失败捕获静默分析、兼容清单就绪
 
 - 跑通 B 的 analyze_residual_overflow.py（B=3e69ab5）：候选臂归因可以——8 个越界样本、
