@@ -8,7 +8,8 @@
     "src/rtl/feedback_fir.v": "added output reg signed [24:0] residual_wide_pcm, the unclamped 25-bit difference; the 24-bit residual_pcm and residual_saturated keep their original meaning and values",
     "src/rtl/audio_pl_replay.v": "multiply residual_wide instead of the clamped residual, with explicit sign extension; added input-full-scale detection (independent of the residual, which cannot see it when the prediction is zero) with its own counter and sticky flag; capture_status bit 22 now reports it",
     "sim/audio/tb_feedback_fir.v": "ported to the new port so the existing regression can be run",
-    "sim/audio/tb_residual_wide.v": "new targeted testbench"
+    "sim/audio/tb_residual_wide.v": "new targeted testbench",
+    "board/audio_replay/replay_trial.py": "the polling guard now stops only on the prediction half of the packed word plus the post-gain and mix words; the pre-gain residual count is no longer a stop condition but is still read and reported after the run"
   },
   "verification_done": {
     "simulation": "RESIDUAL_WIDE_PASS checked=4 via iverilog -g2012",
@@ -17,21 +18,20 @@
       "positive overflow: residual_wide = 8389607 (exact, past the rail) while residual_pcm = 8388607 (clamped) and residual_saturated = 1 - the legacy diagnostic is untouched",
       "negative side inside the rail: residual_wide = residual = -8387608, flag clear",
       "bypass: residual_wide is the sign-extended microphone"
-    ]
+    ],
+    "driver_change": "replay_trial.py parses (ast.parse) and the guard now reads (clips.read(0) & 0xFFFF) for the prediction half. Not yet exercised on hardware."
   },
   "verification_not_done": {
     "audio_pl_replay_simulation": "iverilog cannot elaborate audio_pl_replay.v (port declaration error at line 13); this module is built by Vivado, so the replay-side change is written but NOT simulated",
     "existing_regression": "tb_feedback_fir requires external vector files (h/u/mic/pred/res/flags .mem) that are not in the tree; not run",
     "synthesis_and_timing": "not run; Vivado 2018.3 is present at D:\\Xilinx\\Vivado\\2018.3\\bin\\vivado.bat, the build scripts are in build/scripts/create_audio_replay.tcl",
-    "driver_guard_change": "NOT started. board/audio_replay/replay_trial.py line 217 still stops on any non-zero clip word, which includes the pre-gain residual counter. Until that is changed the approved semantics are not actually in force.",
     "board_and_field": "not run"
   },
-  "honest_position": "the FIR half is changed and simulation-proven; the replay half is written but unsimulated; the driver still stops on the pre-gain counter, so the approved change is NOT yet effective end to end. No board run, no field window.",
+  "honest_position": "the FIR half is changed and simulation-proven; the replay half is written but unsimulated; the driver guard now implements the approved semantics but has not run on hardware. No board run, no field window.",
   "next_steps": [
-    "change the driver guard to ignore the pre-gain residual half of the packed word",
     "elaborate audio_pl_replay with the real I2S sources and simulate the multiply-then-clamp path",
     "run create_audio_replay.tcl for synthesis and report the real timing",
-    "restore the vector files or regenerate them, then run tb_feedback_fir",
-    "only then board deployment and the single field window"
+    "restore or regenerate the vector files, then run tb_feedback_fir",
+    "board deployment, then the single field window"
   ]
 }

@@ -214,7 +214,13 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         status = command.read(8)
         # Stop on config/protocol fault. Saturation is counted, NEVER called ASG.
         while not (status & (1 | (3 << 17))) and time.monotonic() < deadline:
-            if any((clips.read(0), clips.read(8), source_len.read(8))):
+            # Captain 2026-10-27: a pre-gain residual overflow is diagnostic only. The wide residual
+            # may exceed the old 24-bit rail while the post-gain output is still representable, so
+            # stopping on it interrupts a run that could have continued. The packed word is
+            # {residual[31:16], prediction[15:0]}, so only the prediction half stops the run here;
+            # post-gain (gain_word) and mix (mix_word) overflow still stop it, and the residual count
+            # is still read and reported after the run.
+            if (int(clips.read(0)) & 0xFFFF) or clips.read(8) or source_len.read(8):
                 stop_reason = "guard"
                 break
             time.sleep(0.002)
