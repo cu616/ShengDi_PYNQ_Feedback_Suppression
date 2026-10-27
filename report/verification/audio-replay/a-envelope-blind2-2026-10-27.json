@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "topic": "blind2 candidate capture: per-block envelope, speech/impact versus loop regeneration",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "asked_by": "B (bab2c2e message 【三】): run --envelope and decide whether the loud tail is talking or a climbing loop",
+  "why_a_did_it_itself": "B's bab2c2e script was not in this workspace; the capture B named is local, so the same measurement was run directly instead of waiting for the script",
+  "capture": {
+    "path_in_workspace": "_a_work/failevid/blind2_cand_1746867731709459239.npz",
+    "frames": 16384,
+    "sample_rate_hz": 48828.125,
+    "metadata": {"stop_reason": "guard", "completed_frames": 114718,
+                 "prediction_saturations": 0, "residual_saturations": 8, "gain_q12": 1631},
+    "rail_definition": "microphone |x| >= 0x7FFFFF after rounding to 24-bit; residual |x| >= 0x7FFFFF",
+    "rail_counts": {"microphone": 25, "microphone_longest_run_frames": 23,
+                    "residual": 8, "residual_longest_run_frames": 8},
+    "rail_counts_note": "B quoted 26/24 for the microphone; the 1-sample difference is the rail test (>=0x7FFFFF versus >0x7FFFFE) and does not change anything"
+  },
+  "method": "blocks of 2048 frames (41.9 ms), Hann window, rfft; dominant frequency searched in 50..8000 Hz; narrowband share = energy within +-10 Hz of the dominant peak over the 50..8000 Hz energy; 300-360 Hz share also reported",
+  "blocks": [
+    {"block": 0, "mic_rms_dbfs": -38.6, "mic_peak_dbfs": -28.1, "mic_rail": 0, "res_rail": 0, "mic_f0_hz": 453.0, "mic_narrowband_share": 0.162, "res_f0_hz": 453.0, "res_narrowband_share": 0.128, "share_300_360": 0.024},
+    {"block": 1, "mic_rms_dbfs": -37.6, "mic_peak_dbfs": -27.5, "mic_rail": 0, "res_rail": 0, "mic_f0_hz": 309.9, "mic_narrowband_share": 0.118, "res_f0_hz": 381.5, "res_narrowband_share": 0.114, "share_300_360": 0.312},
+    {"block": 2, "mic_rms_dbfs": -40.2, "mic_peak_dbfs": -29.2, "mic_rail": 0, "res_rail": 0, "mic_f0_hz": 166.9, "mic_narrowband_share": 0.071, "res_f0_hz": 166.9, "res_narrowband_share": 0.061, "share_300_360": 0.021},
+    {"block": 3, "mic_rms_dbfs": -39.2, "mic_peak_dbfs": -27.7, "mic_rail": 0, "res_rail": 0, "mic_f0_hz": 810.6, "mic_narrowband_share": 0.081, "res_f0_hz": 810.6, "res_narrowband_share": 0.077, "share_300_360": 0.071},
+    {"block": 4, "mic_rms_dbfs": -26.7, "mic_peak_dbfs": -19.2, "mic_rail": 0, "res_rail": 0, "mic_f0_hz": 71.5, "mic_narrowband_share": 0.451, "res_f0_hz": 71.5, "res_narrowband_share": 0.447, "share_300_360": 0.020},
+    {"block": 5, "mic_rms_dbfs": -29.7, "mic_peak_dbfs": -20.4, "mic_rail": 0, "res_rail": 0, "mic_f0_hz": 71.5, "mic_narrowband_share": 0.651, "res_f0_hz": 71.5, "res_narrowband_share": 0.653, "share_300_360": 0.040},
+    {"block": 6, "mic_rms_dbfs": -33.2, "mic_peak_dbfs": -22.6, "mic_rail": 0, "res_rail": 0, "mic_f0_hz": 786.8, "mic_narrowband_share": 0.041, "res_f0_hz": 381.5, "res_narrowband_share": 0.058, "share_300_360": 0.043},
+    {"block": 7, "mic_rms_dbfs": -12.6, "mic_peak_dbfs": 0.0, "mic_rail": 25, "res_rail": 8, "mic_f0_hz": 166.9, "mic_narrowband_share": 0.066, "res_f0_hz": 166.9, "res_narrowband_share": 0.066, "share_300_360": 0.018}
+  ],
+  "conclusion": "IMPACT/SPEECH, NOT A CLIMBING LOOP",
+  "reasons": [
+    "the loud tail block has a dominant frequency of 166.9 Hz with a narrowband share of only 0.066, essentially the same as the -40 dBFS quiet block 2 (166.9 Hz, 0.071): broadband energy, not a line",
+    "a loop climbing at the measured resonance would concentrate its energy at about 322 Hz and the narrowband share would grow monotonically; it does not",
+    "the 300-360 Hz share in the tail block is 0.018, the LOWEST of all eight blocks",
+    "the rail contact is 25 microphone samples with a longest run of 23 frames (0.47 ms) and a peak of exactly 0.0 dBFS: a single hard transient, then it is over",
+    "residual rail contact is 8 samples, so prediction was not negative where the microphone railed: the 'model pushed the residual up' path is excluded in this event, consistent with B's reading"
+  ],
+  "run_up": "blocks 4-5 carry a low-frequency burst (dominant 71.5 Hz, narrowband share 0.45/0.65) 80 ms before the loud tail; that is not the loop resonance either and looks like a knock/rumble. The tail follows it by two blocks",
+  "limits": [
+    "23.8 Hz resolution per block; a loop that started inside the 41.9 ms tail block could hide",
+    "this settles 'speech/impact versus loop' for this capture only; it is not a regeneration criterion and must not be reused as one"
+  ],
+  "citable_for_B": [
+    "blind2 candidate: stop=guard, completed 114718 frames, psat=0, rsat=8, first overflow at ring offset 16353 (global 114687), 31 frames after the overflow the run stopped",
+    "the tail that made the run stop is a 0.47 ms broadband impact at 0.0 dBFS peak, dominant 166.9 Hz, narrowband share 0.066",
+    "300-360 Hz share in the tail 0.018, lower than every other block"
+  ],
+  "reproduce": "python -X utf8 report/verification/audio-replay/a-envelope-blind2-2026-10-27.py"
+}
