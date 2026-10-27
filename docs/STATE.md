@@ -82,15 +82,19 @@
 - **宽残差过增益已实现并分层验证**（[证据](../report/verification/audio-replay/wide-residual-v3/evidence.json)、
   契约 [audio-replay-v3](contracts/audio-replay-v3.md)）：`feedback_fir` 输出 25 位未钳残差，
   旧 24 位残差与 `residual_saturated` 含义不变；`audio_pl_replay` 改乘宽残差、钳位只在增益后做一次，
-  另加**独立输入满幅检测**报在 `capture_status` bit22；驱动 guard 只按预测/增益/混音停。
+  另加**独立输入满幅检测**报在 `capture_status` bit22。
+  **驱动侧两件事分开（队长 2026-10-28 授权修复，已完成）**：bit22 置位即停声、
+  `stop_reason="input_clip"`、走既有 disarm/mute/保存/恢复，收尾再查一次防漏；
+  **只**有增益前残差越界不停声（仅计数上报）；预测/增益后/混音仍停。位流未改，只改驱动与契约。
   - **仿真**：replay 侧此前编不出来的真因是 (a) iverilog 不接受一个端口声明里两个初值（已拆，语义零改动）；
     (b) I2S 是厂商 VHDL，新增仅仿真用的 `sim/audio/iis_sim_models.v`。
     新增 `RESIDUAL_REPLAY_WIDE_PASS` 三例：宽残差 14,000,000 × 0.5 = **7,000,000**（旧钳位路径只会给 4,194,304）；
     增益 1.0 时由**增益后**钳位；零系数输入满幅只由 bit22 报出、残差计数全 0。
     iverilog 与 xsim（真 VHDL）双跑通过；`FEEDBACK_FIR_PASS samples=2304`（含宽残差逐样本）；
     `RESIDUAL_WIDE_PASS checked=4`。
-  - **综合**：WNS **+0.548 ns**、WHS **+0.015 ns**、TNS/THS 0、18128 端点、约束全满足；
+  - **综合**：WNS **+0.548 ns**、WHS **+0.015 ns**、TNS/THS 0、18128 端点，**已施加的约束满足**；
     BRAM 80.00%、DSP 3、LUT 3588（v2 基线 +0.287/+0.034/80%）。
+    **不写成"完整时序签核"**：四项外部 I/O 延迟约束仍然缺失，这个缺口自 v1 起就存在、本轮未变。
   - **上板**：静默自检 58593 帧、`capture_status=0x00008001`、bit22=0、四类计数 0、
     `coefficient_status=0x200A`、新判据 bit_exact。
   - **音响声路已证明是通的**：数字增益强制 0 时注入 1 kHz 音调，麦克风 RMS +6.5 dB、1 kHz 频带
@@ -181,7 +185,7 @@
 | 饱和口径纠正 | 候选 ‖h‖₁≈2.2876，归一化 PCM 满幅为1；存在合法历史使预测越界 | B254勘误；撤回“满幅也有10.9 dB余量”，不表示实际已经饱和 |
 | r4未检出 | 两次各4项后 gate_at_noise_floor / gate_tone_not_observed | A失败记录；不据此认定模型无效或唯一原因 |
 | 实际采样率/主模型 | 48828.125 Hz；512 抽头，lag_first=1 | 以部署哈希核对；预测历史与前向两帧调度不要重复计延迟 |
-| v3 宽残差位流时序/资源 | WNS +0.548 ns、WHS +0.015 ns、TNS/THS 0、18128 端点；BRAM 80.00%、DSP 3、LUT 3588、FF 5018 | 100 MHz，约束全满足；位流 `48e38f78…`、hwh `9411adb5…`；hold 比 v2 (+0.034) 窄 19 ps。报告 [wide-residual-v3](../report/verification/audio-replay/wide-residual-v3/evidence.json) |
+| v3 宽残差位流时序/资源 | WNS +0.548 ns、WHS +0.015 ns、TNS/THS 0、18128 端点；BRAM 80.00%、DSP 3、LUT 3588、FF 5018 | 100 MHz，**已施加约束满足**；**四项外部 I/O 延迟约束缺口未闭合，不是完整签核**；位流 `48e38f78…`、hwh `9411adb5…`；hold 比 v2 (+0.034) 窄 19 ps。报告 [wide-residual-v3](../report/verification/audio-replay/wide-residual-v3/evidence.json) |
 | 乘宽前后定点差别 | 同形状越界：宽残差 14,000,000 × 0.5 → 播放 7,000,000；旧钳位路径 → 4,194,304 | 仿真与软件定点算术，非上板实测 |
 | 322 Hz 稳态纯音三点 | open 45.44 / bypass **49.19** / cancel **44.43** dB：环路 +3.75 dB、抵消深度 **6.37 dB**（残差）/ 4.76 dB（声学） | 单频单电平，板上实测，**不是 ASG**；三臂 bit_exact、无削顶 |
 | 真人语音（v3，20 cm、−8 dB） | 零系数 mic −21.6/峰值 −8.5；候选 **−24.0**/峰值 −10.2；两臂 bit22=0、无保护 | 同一段连续语音两臂；听众「没放大人声」 |

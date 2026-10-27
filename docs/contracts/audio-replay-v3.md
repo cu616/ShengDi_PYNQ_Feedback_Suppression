@@ -41,15 +41,30 @@ u[n] = sat24((s[n] << 8) + sat24(round_Q12(g · w[n-2])))
 宽残差 1.0230× 满幅、**增益后只有 0.4074× 满幅（余量 +7.80 dB）**。
 即 v2 停的是一次没有危险输出的数值溢出。v3 后这类试次能继续跑，钳位由增益后负责。
 
-## 输入满幅是独立检测（bit22）
+## 输入满幅是独立检测（bit22），并且**是停声条件**
 
 零系数时 `e = m`，残差恒等于麦克风、永不越界，**残差计数天生看不见输入过载**；
 历史证据里「`residual_saturations=0` 所以没有再生/没有过载」的推论因此无效。
 v3 由 `rx_left == 24'sh7fffff || 24'sh800000` 直接判输入满幅，粘滞到本次 arm 清零，
 报在 `capture_status` **bit22**；计数只累加不导出，导出的是粘滞位。
 
-现场判据：**bit22 置位的试次判无效**（输入已削顶），不得用它证明抗啸叫或增益收益。
-驱动把该位解成 `input_full_scale_seen` 写入证据元数据。
+**把两件事分开写（队长 2026-10-28 要求）**：
+
+| | 可见 | 自动停声 |
+|---|---|---|
+| 输入满幅 | `capture_status` bit22（粘滞），驱动写入 `input_full_scale_seen` | **是**：驱动轮询发现即停，`stop_reason = "input_clip"`，走既有 disarm/mute/保存/恢复路径；收尾再查一次该位，避免末次轮询漏掉 |
+| 增益前残差越界 | `saturation_counts[31:16]` 与 `residual_saturations` | **否**：只计数、只上报，不停声 |
+
+「输入过载可见」不等于「输入过载会自动停声」——v3 交付时两者都有；早期只做了前者。
+
+现场判据：**bit22 置位或 `stop_reason="input_clip"` 的试次判无效**（输入已削顶），
+不得用它证明抗啸叫或增益收益。
+
+### 停声原因全集（驱动侧）
+
+`completed`（跑满） / `guard`（预测饱和、增益后饱和、混音饱和） / `input_clip`（bit22） /
+`fault`（`capture_status` bit17/bit18） / `incomplete`（未跑满且无 fault） / `exception`（异常路径）。
+`completed` 与 `input_clip` 互斥：即使帧数跑满，收尾查到 bit22 也标 `input_clip`。
 
 ## 位段（完整，供 C 校对）
 
@@ -83,9 +98,10 @@ capture_status[31:23]  0
 | 代码生成 | 完成 | `src/rtl/feedback_fir.v`、`src/rtl/audio_pl_replay.v` |
 | 仿真（FIR） | 通过 | `RESIDUAL_WIDE_PASS checked=4`；`FEEDBACK_FIR_PASS samples=2304`（含宽残差逐样本） |
 | 仿真（replay） | 通过 | `RESIDUAL_REPLAY_WIDE_PASS`（iverilog + xsim 双跑，乘后钳/增益后钳/输入满幅三例） |
-| 综合实现 | 见 STATE「关键数字」 | `build/work/audio_replay/timing.txt` |
-| 上板 | 见 STATE | 现场两臂 |
-| 现场 | 见 STATE | 稳态源 + 真人语音两臂 |
+| 软件验证（停声语义） | 通过（12 项） | `board/audio_replay/test_runtime_stop.py`：bit22→`input_clip`、增益前残差单独越界不停、预测/增益/混音仍停 |
+| 综合实现 | 见 STATE「关键数字」 | `build/work/audio_replay/timing.txt`；**已施加约束满足**，四项外部 I/O 延迟约束缺口仍在 |
+| 上板 | 见 STATE | 现场两臂；**bit22 停声这一版驱动尚未上板复验** |
+| 现场 | 见 STATE | 稳态纯音 + 真人语音两臂 |
 
 ## 回退
 

@@ -1,3 +1,23 @@
+## 2026-10-28 队长决定后的驱动修复　A　bit22 变成停声条件（`input_clip`），只改驱动不改位流；软件验证 12 项通过
+
+- 队长 2026-10-28 决定：**v3 作冻结主线**，v2 保留成功基线与回退；并授权直接修
+  「运行轮询不检查 `capture_status` bit22」。
+- 改了什么（`board/audio_replay/replay_trial.py`）：
+  - 新增纯函数 `runtime_stop(status, clip_word, gain_word, mix_word)`：bit22 → `"input_clip"`；
+    预测半字 / 增益后 / 混音 → `"guard"`；**只有增益前残差半字 → 不停**。
+  - 轮询循环每圈重新读 `capture_status`，发现 bit22 走既有 disarm/mute/保存/恢复，`stop_reason="input_clip"`。
+  - **收尾再查一次 bit22**（末次轮询可能漏），且优先于 `completed`。
+  - `input_clip` 与 `guard` 一样在结束时抛错并写明原因。
+  - 未改：RTL、位流、增益前残差只计数、预测/增益后/混音/故障/超时/手动停全部照旧。
+- 软件验证：`board/audio_replay/test_runtime_stop.py` → **RUNTIME_STOP_TEST PASS (12 checks)**，
+  含「残差半字单独越界必须继续跑」「bit22 与其它饱和同时出现时标 input_clip」「decode_counts 拆分不变」。
+- 身份重算：`replay_trial.py` = **`1b07586f…`**（旧 `6b397359…` 作废），`replay_tools.py` = `0d4e1933…`，
+  核对脚本 `test_runtime_stop.py` = `ea1a09e0…`；位流 `48e38f78…` / hwh `9411adb5…` **未变**。
+  **板上仍是旧驱动 `6b397359…`**（断网），上电后必须先上传新驱动再做任何运行。
+- 未做：**bit22 停声本身未上板复验**（断网）；这是恢复后第一件要验的事。
+- 报告口径按队长更正：时序写「**已施加约束满足**」，四项外部 I/O 延迟约束缺口继续披露，
+  不写完整签核；「输入过载可见」与「输入过载自动停声」分开写。
+
 ## 2026-10-27 勘误　A　契约里「g ≤ 1」写错，B 指出；实际寄存器上限是 g ≤ 8
 
 - `docs/contracts/audio-replay-v3.md` 原文写「`g ≤ 1`（`control[31:16] ≤ 32768`，Q4.12）」，

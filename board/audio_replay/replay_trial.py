@@ -31,6 +31,34 @@ def decode_counts(packed_word, gain_word, mix_word):
     return [packed & 0xFFFF, (packed >> 16) & 0xFFFF,
             int(gain_word) & 0xFFFFFFFF, int(mix_word) & 0xFFFFFFFF]
 
+
+# capture_status bit that reports the independent input full-scale detector (audio-replay v3).
+INPUT_CLIP_BIT = 22
+
+
+def runtime_stop(status, clip_word, gain_word, mix_word):
+    """Decide whether one poll of the run should stop the sound, and why.
+
+    Pure function so the semantics can be checked without hardware.
+
+    Two different things are kept apart on purpose (captain 2026-10-28):
+      * INPUT OVERLOAD IS A STOP CONDITION. capture_status bit22 is the only counter that can see
+        an overloaded microphone when the prediction is zero, because the residual then equals the
+        microphone and can never overflow. It stops the run and is reported as "input_clip".
+      * A PRE-GAIN RESIDUAL OVERFLOW IS NOT. The packed word is {residual[31:16],
+        prediction[15:0]}; the wide residual may exceed the old 24-bit rail while the post-gain
+        output is still representable, so its half of the word only keeps counting and is read and
+        reported after the run.
+    Prediction saturation, post-gain saturation and mix saturation keep their existing stop path.
+    """
+    if int(status or 0) >> INPUT_CLIP_BIT & 1:
+        return "input_clip"
+    if int(clip_word or 0) & 0xFFFF:      # prediction half only
+        return "guard"
+    if int(gain_word or 0) or int(mix_word or 0):
+        return "guard"
+    return None
+
 # 阅读主线：参数检查→静音/配置→限时闭环→静音读RAM→恢复→本地保存。
 # RATE来自自定义100MHz/2048分频，不是官方录音常见的48000 Hz。
 RATE = 48828.125
@@ -212,19 +240,17 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         armed = True
         deadline = start + budget / RATE + 2
         status = command.read(8)
-        # Stop on config/protocol fault. Saturation is counted, NEVER called ASG.
-        while not (status & (1 | (3 << 17))) and time.monotonic() < deadline:
-            # Captain 2026-10-27: a pre-gain residual overflow is diagnostic only. The wide residual
-            # may exceed the old 24-bit rail while the post-gain output is still representable, so
-            # stopping on it interrupts a run that could have continued. The packed word is
-            # {residual[31:16], prediction[15:0]}, so only the prediction half stops the run here;
-            # post-gain (gain_word) and mix (mix_word) overflow still stop it, and the residual count
-            # is still read and reported after the run.
-            if (int(clips.read(0)) & 0xFFFF) or clips.read(8) or source_len.read(8):
-                stop_reason = "guard"
+        # Stop on config/protocol fault, on input full scale, on prediction/post-gain/mix
+        # saturation. A pre-gain residual overflow alone never stops the run (see runtime_stop).
+        while time.monotonic() < deadline:
+            status = command.read(8)
+            if status & (1 | (3 << 17)):
+                break
+            reason = runtime_stop(status, int(clips.read(0)), clips.read(8), source_len.read(8))
+            if reason is not None:
+                stop_reason = reason
                 break
             time.sleep(0.002)
-            status = command.read(8)
         # Stop the sound first, then freeze the capture and read every counter AFTER the run.
         control.write(0, 0)
         mute_codec()
@@ -234,7 +260,11 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         clip_word, gain_word, mix_word = clips.read(0), clips.read(8), source_len.read(8)
         counts = decode_counts(clip_word, gain_word, mix_word)
         if stop_reason is None:
-            if status & (3 << 17):
+            # Re-check here as well: an input full-scale event in the last polling interval must
+            # not be lost just because the loop exited on the deadline or on `done`.
+            if int(status or 0) >> INPUT_CLIP_BIT & 1:
+                stop_reason = "input_clip"
+            elif status & (3 << 17):
                 stop_reason = "fault"
             elif not status & 1 or completed != budget:
                 stop_reason = "incomplete"
@@ -394,6 +424,10 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         raise RuntimeError('runtime saturation guard stopped playback; packed_prediction_residual=%d '
                            'gain=%d mix=%d; no further gain authorized'
                            % (int(clip_word), int(gain_word), int(mix_word)))
+    if stop_reason == "input_clip":
+        raise RuntimeError('input full scale (capture_status bit22) stopped playback; the microphone '
+                           'hit the ADC rail, so this trial carries no usable input evidence; '
+                           'reduce the level or move the source back and repeat')
     if error is not None:
         raise error
     if not recovery_ok:
