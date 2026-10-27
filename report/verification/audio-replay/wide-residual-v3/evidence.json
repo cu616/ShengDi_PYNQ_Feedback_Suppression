@@ -52,7 +52,11 @@
     "slice_luts": "3588/53200 = 6.74%",
     "slice_registers": "5018/106400 = 4.72%",
     "worst_path": "completed_count_reg[9] -> ... (counter path, not the multiplier)",
-    "reports": ["wide-residual-v3/vivado-timing.txt", "wide-residual-v3/vivado-utilization.txt", "wide-residual-v3/vivado-drc.txt"],
+    "reports": [
+      "wide-residual-v3/vivado-timing.txt",
+      "wide-residual-v3/vivado-utilization.txt",
+      "wide-residual-v3/vivado-drc.txt"
+    ],
     "baseline_for_comparison": "v2 build: WNS +0.287, WHS +0.034, BRAM 80%",
     "note": "hold slack 0.015 ns is positive but 19 ps tighter than the v2 build; it is met, not comfortable."
   },
@@ -64,27 +68,50 @@
       "meaning": "the v3 bitstream + v3 driver load, configure and complete a bounded run on hardware"
     },
     "speaker_path_check": {
-      "trials": ["audio_wide/spk_silent_1746893401806655548.npz", "audio_wide/spk_tone_1746893434129704964.npz"],
+      "trials": [
+        "audio_wide/spk_silent_1746893401806655548.npz",
+        "audio_wide/spk_tone_1746893434129704964.npz"
+      ],
       "method": "1 kHz sine at 0.3 FS injected with the digital gain forced to 0, so no feedback is involved",
       "result": "silent: mic -38.4 dBFS RMS, 1 kHz band 7.8 dB vs rest 0.6 dB; tone: mic -31.8 dBFS RMS, 1 kHz band 30.0 dB vs rest -0.1 dB",
       "conclusion": "SPEAKER PATH LIVE: +6.5 dB microphone RMS and +30 dB in-band 1 kHz. The board->codec->speaker->air->microphone chain works."
     },
     "level_ladder_no_feedback": {
-      "trials": ["audio_wide/lvl_20_1746893507677042812.npz", "audio_wide/lvl_12_1746893542514280077.npz", "audio_wide/lvl_6_1746893576177346463.npz"],
+      "trials": [
+        "audio_wide/lvl_20_1746893507677042812.npz",
+        "audio_wide/lvl_12_1746893542514280077.npz",
+        "audio_wide/lvl_6_1746893576177346463.npz"
+      ],
       "method": "board white noise (seed 4242) at -20/-12/-6 dBFS peak, digital gain 0",
-      "mic_rms_dbfs": [-38.6, -37.1, -35.1],
-      "mic_peak_dbfs": [-22.7, -24.6, -21.2],
+      "mic_rms_dbfs": [
+        -38.6,
+        -37.1,
+        -35.1
+      ],
+      "mic_peak_dbfs": [
+        -22.7,
+        -24.6,
+        -21.2
+      ],
       "conclusion": "broadband noise couples weakly into this fixture (peak-to-peak only +3.5 dB from -20 to -6 dBFS). A tone is concentrated and shows the path clearly; white noise at -20 dBFS sits below the room floor in any 60 Hz band, which is why the first stationary pair looked flat."
     },
     "stationary_two_arm_run_1_level_minus20dbfs": {
-      "trials": ["audio_wide/wide_gate_1746893045642595463.npz", "audio_wide/wide_zero_1746893075929342181.npz", "audio_wide/wide_cand_1746893109544546531.npz"],
+      "trials": [
+        "audio_wide/wide_gate_1746893045642595463.npz",
+        "audio_wide/wide_zero_1746893075929342181.npz",
+        "audio_wide/wide_cand_1746893109544546531.npz"
+      ],
       "gate": "mic peak -23.8 dBFS with zero output: PASS",
       "zero_arm": "completed 107421 frames, mic -38.4 dBFS, peak -26.5, band share 0.0695, no protection trip",
       "candidate_arm": "completed 107421 frames, mic -38.7 dBFS, peak -26.8, band share 0.0484, no protection trip",
       "verdict": "NOT USABLE: both arms sit on the room floor, so the 1.6 dB share difference is not a cancellation measurement"
     },
     "stationary_two_arm_run_2_level_minus8dbfs": {
-      "trials": ["audio_wide/wide_gate_1746893648082441944.npz", "audio_wide/wide_zero_1746893678210907241.npz", "audio_wide/wide_cand_1746893711548696477.npz"],
+      "trials": [
+        "audio_wide/wide_gate_1746893648082441944.npz",
+        "audio_wide/wide_zero_1746893678210907241.npz",
+        "audio_wide/wide_cand_1746893711548696477.npz"
+      ],
       "gate": "mic -26.4 dBFS RMS, peak -13.8: PASS (input well below the -6 dBFS ceiling)",
       "zero_arm": "completed 107421 frames, mic -27.3 dBFS, peak -13.3, band share 0.0103, bit_exact=true, no protection trip",
       "candidate_arm": "completed 107421 frames, mic -35.1 dBFS, peak -21.5, band share 0.0304, bit_exact=true, no protection trip",
@@ -108,7 +135,11 @@
       "meaning": "the first steady-state measurement in this session that is above the noise: white-noise band shares gave +1.6 / -4.7 / -2.1 dB with a flipping sign and are unusable; the tone gives a stable, sign-consistent 6.37 dB depth"
     },
     "stationary_noise_runs_summary": {
-      "share_differences_db": [1.6, -4.7, -2.1],
+      "share_differences_db": [
+        1.6,
+        -4.7,
+        -2.1
+      ],
       "verdict": "unusable as an instrument at these levels: the sign flips run to run and the arm levels themselves follow the room floor",
       "recommendation": "stop using broadband-noise band share for arm comparison in this fixture; use a tone at the |H| peak (done above) or a louder source that lifts the microphone at least 10 dB above the floor"
     },
@@ -124,7 +155,11 @@
         "zero": "audio_wide/human_speech_zero_1746897709081803394.npz: completed, mic -36.6, peak -23.1, bit22=0, no saturations, bit_exact -> admissible",
         "candidate": "audio_wide/human_speech_cand_1746897790220651889.npz: completed, mic -27.8, peak -16.6, bit22=1, prediction_saturations=0, residual_saturations=7, gain/mix 0, bit_exact",
         "candidate_verdict": "INADMISSIBLE acoustically (input clipped), but this is the field failure signature reproduced: psat=0 with rsat=7. Under v2 the driver stopped on the first residual saturation (2026-10-27 live speech: residual_saturations=8 and playback cut). Under v3 the run CONTINUED and finished all 292968 frames with no guard stop and no audible howl",
-        "listener": {"howl": "no howl", "loudness": "could not tell", "intelligibility": "both arms unintelligible (person at 20 cm)"}
+        "listener": {
+          "howl": "no howl",
+          "loudness": "could not tell",
+          "intelligibility": "both arms unintelligible (person at 20 cm)"
+        }
       },
       "attempt_3_20cm_same_continuous_speech_pair": {
         "why": "the two arms had to hear the same speech, so both 6 s windows were taken inside one continuous 20 s utterance",
@@ -152,7 +187,9 @@
   "corrections": {
     "retracted": "The first reading of run 1 was 'the speaker's sound is not reaching the microphone'. That is WRONG: the 1 kHz tone check shows the speaker path is live (+6.5 dB microphone RMS, +30 dB in-band). The correct explanation is that -20 dBFS broadband noise is buried under the room floor at this fixture, so the microphone level in both arms equals the floor.",
     "how_it_was_found": "injecting a concentrated 1 kHz tone with the digital gain forced to 0 instead of comparing broadband noise RMS against a silent gate",
-    "still_unexplained": "the zero-output gate rose from -38.2 to -26.4 dBFS RMS between the two windows of this session. Nothing on the board side was changed except the source level of the preceding trials. Possible external amplifier gain/limiter state or room change; not resolved. Any field window must measure the gate before AND after the arms to expose such drift."
+    "still_unexplained": "the zero-output gate rose from -38.2 to -26.4 dBFS RMS between the two windows of this session. Nothing on the board side was changed except the source level of the preceding trials. Possible external amplifier gain/limiter state or room change; not resolved. Any field window must measure the gate before AND after the arms to expose such drift.",
+    "contract_gain_bound_erratum": "audio-replay-v3.md originally wrote g <= 1 next to control[31:16] <= 32768 (Q4.12), which is 8.0 not 1.0; B found it (67d28b2). The contract now states g <= 8 with the 41-bit argument (|w| <= 2^24 and g <= 8 give g*w <= 2^39 < 2^40-1), so the arithmetic conclusion is unchanged and only the stated range was wrong. The deployed bitstream is unaffected because the working gain was 1631. The RTL comment at audio_pl_replay.v:195 still carries the old \"gain is <= 1.0\" wording; it was deliberately NOT edited after the build so that the source that produced bitstream 48e38f78 stays identifiable, and the imprecision is registered here instead.",
+    "board_offline_2026_10_27": "after the field window the board stopped answering on 192.168.2.99:22, so the current-fixture |H| peak scan and the distance ladder below could not be run; no measurement is claimed for either."
   },
   "evidence_checker_fix": {
     "file": "board/audio_replay/replay_tools.py",
@@ -168,5 +205,10 @@
     "reject any trial with capture_status bit22 set or microphone peak >= -6 dBFS",
     "the human arms are the only ones that can re-create the pre-gain overflow (loud transient into the microphone), which is what v3 is for",
     "then a keep-or-rollback recommendation for v3"
+  ],
+  "pending_measurements": [
+    "current-fixture |H| peak frequency (open path, tone scan) - not run, board offline",
+    "input peak versus distance ladder 12/15/20/24 cm with output silent - not run, board offline",
+    "fixture identity confirmation by the operator - asked, not yet answered"
   ]
 }
