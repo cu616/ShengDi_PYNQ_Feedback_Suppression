@@ -207,8 +207,79 @@
     "then a keep-or-rollback recommendation for v3"
   ],
   "pending_measurements": [
-    "current-fixture |H| peak frequency (open path, tone scan) - not run, board offline",
     "input peak versus distance ladder 12/15/20/24 cm with output silent - not run, board offline",
-    "fixture identity confirmation by the operator - asked, not yet answered"
-  ]
+    "fresh tone scan of the current-fixture |H| peak - not run, board offline; provenance is already from this fixture by record",
+    "fixture identity confirmation by the operator - CONFIRMED 2026-10-27, same fixture"
+  ],
+  "working_point_analysis": {
+    "asked_by": "B (67d28b2) rejected all three of A's options and proposed a distance ladder plus raising g",
+    "fixture_confirmed": true,
+    "fixture_confirmed_by": "the operator, 2026-10-27: the rig in use is the same physical fixture the model was fitted on (microphone to speaker 100 cm, side-facing, metal plate and cotton). fixture room_v1_20261026b stays valid for this geometry; no rebinding is needed.",
+    "peak_frequency_provenance": "+4.40 dB @ 321.9 Hz comes from the 2026-10-23 field recalibration on this same fixture, so the 322 Hz used for the tone three-point is a current-fixture number by record, not carried over from another rig. A fresh tone scan is still a good check but is not blocking.",
+    "coupling_table": {
+      "how": "closed-loop boost at the |H| peak = 1/(1-g*|H|); this is what raises the microphone level when g goes up, and it is the constraint that binds before stability does",
+      "H_peak_db": 4.4,
+      "rows": [
+        {
+          "gain_db": -14.0,
+          "g": 0.19953,
+          "g_times_H": 0.3311,
+          "closed_loop_boost_db": 3.49,
+          "note": ""
+        },
+        {
+          "gain_db": -12.0,
+          "g": 0.25119,
+          "g_times_H": 0.4169,
+          "closed_loop_boost_db": 4.68,
+          "note": ""
+        },
+        {
+          "gain_db": -10.0,
+          "g": 0.31623,
+          "g_times_H": 0.5248,
+          "closed_loop_boost_db": 6.46,
+          "note": ""
+        },
+        {
+          "gain_db": -8.0,
+          "g": 0.39811,
+          "g_times_H": 0.6607,
+          "closed_loop_boost_db": 9.39,
+          "note": ""
+        },
+        {
+          "gain_db": -6.0,
+          "g": 0.50119,
+          "g_times_H": 0.8318,
+          "closed_loop_boost_db": 15.48,
+          "note": ""
+        },
+        {
+          "gain_db": -4.0,
+          "g": 0.63096,
+          "g_times_H": 1.0471,
+          "closed_loop_boost_db": null,
+          "note": "unstable: g*|H| >= 1"
+        }
+      ],
+      "bypass_critical_gain_db": -4.4
+    },
+    "consequences": [
+      "-4 dB is ABOVE the bypass critical gain (-4.40 dB): g*|H| = 1.047, so it howls with no cancellation at all. B's 'try -6 / -4' must stop at -6 dB.",
+      "raising g by 2 dB (from -8 to -6) raises the closed-loop output at the peak by about 6.1 dB (9.39 -> 15.48 dB), i.e. about 3 dB of microphone headroom lost per 1 dB of g",
+      "measured at 20 cm with g = -8: closed-loop microphone peaks of -23.1 and -8.5 dBFS on two takes of the same sentence. The second is 2.5 dB above the -6 dBFS rule already at g = -8, so at 20 cm the gain cannot go up at all; -6 dB needs roughly twice the distance",
+      "distance alone does not set the peak: two takes at the same 20 cm and the same arm differ by 14.6 dB, so any distance ladder must be repeated per take and gated on the measured peak and bit22, not on the nominal distance"
+    ],
+    "correction_to_B_option_2": {
+      "B_said": "lowering the Codec ADC gain by k equals lowering g, so it is wasted effort",
+      "why_that_is_incomplete": "it is a headroom move, not a gain move. Scaling the ADC by k and the coefficients by k, then the digital gain by 1/k, gives out = (g/k)(k*m - k*p) = g*(m - p): identical loop gain and identical playback level, but the microphone path no longer saturates. The coefficient scaling is exact (B says so himself), so no refit is needed. The point is to stop destroying input information at 12 cm, which no digital stage can undo.",
+      "cost": "identity has to be re-registered (scaled coefficients) and the ADC gain is a calibrated parameter"
+    },
+    "denominators": {
+      "mic_4_76_db": "cancel minus bypass measured on the MICROPHONE at 322 Hz (both arms, same g=1631, same source amplitude 0.15 FS)",
+      "residual_6_37_db": "cancel minus bypass measured on the RESIDUAL at 322 Hz, same arms; in bypass the hardware sets residual = microphone, so this is the played-quantity depth and is not comparable to 4.76 without saying which signal was measured",
+      "open_arm_role": "reference only, never a denominator"
+    }
+  }
 }
