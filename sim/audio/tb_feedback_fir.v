@@ -4,9 +4,10 @@ module tb_feedback_fir;
     reg resetn=0, coeff_begin=0, coeff_valid=0, in_valid=0, bypass=0;
     reg signed [23:0] coeff_data=0, reference_pcm=0, microphone_pcm=0;
     wire coeff_ready,in_ready,out_valid,psat,rsat,protocol_error;
+wire signed [24:0] res_wide;
     wire signed [23:0] pred,res;
     feedback_fir dut(clk,resetn,coeff_begin,coeff_valid,coeff_data,coeff_ready,
-        in_valid,bypass,reference_pcm,microphone_pcm,in_ready,out_valid,pred,res,psat,rsat,protocol_error);
+        in_valid,bypass,reference_pcm,microphone_pcm,in_ready,out_valid,pred,res,res_wide,psat,rsat,protocol_error);
     reg [23:0] h[0:255],u[0:767],mic[0:767],expected_pred[0:767],expected_res[0:767];
     reg [3:0] flags[0:767];
     string base,filename;
