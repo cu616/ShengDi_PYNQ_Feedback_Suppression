@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "topic": "live-speech two-arm comparison: the candidate arm is stopped by the residual saturation guard while the zero arm completes",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "setup": {
+    "source": "live human speech, same sentence twice, talker at about 12 cm, phone paused",
+    "gain_db": -8.0,
+    "hp_volume": 40,
+    "fixture_id": "room_v1_20261026b",
+    "model": "rewired_512_20261026.json (Q20 6118e85d, 512 taps loaded)",
+    "order": "randomised, blind to the talker during playback",
+    "speaker": "100 cm side-facing"
+  },
+  "runs": [
+    {
+      "position": 1,
+      "arm": "zero",
+      "band_300_360_db": 40.9,
+      "error": null,
+      "status": "completed"
+    },
+    {
+      "position": 2,
+      "arm": "candidate",
+      "band_300_360_db": 13.3,
+      "error": "runtime saturation guard stopped playback; packed_prediction_residual=524288",
+      "stop_reason": "guard",
+      "prediction_saturations": 0,
+      "residual_saturations": 8,
+      "loaded_taps": 512
+    }
+  ],
+  "listener_report_verbatim": [
+    "第一次是声音比较响，较为清楚",
+    "第二次就叫了一下就掐断了没怎么听出来"
+  ],
+  "finding": {
+    "operational": "on live speech at 12 cm and -8 dB the candidate arm triggers the residual saturation guard and playback stops; the zero arm runs to completion",
+    "mechanism": "prediction_saturations is 0, so this is not acoustic regeneration. The residual (microphone minus prediction) overflows full scale, which B's unit analysis predicts is possible when the prediction is large relative to the signal",
+    "consequence": "in the field this is unusable: the system cuts out as soon as the person speaks loudly enough",
+    "against_B_preregistration": "B wrote that a candidate arm stopping earlier than the zero arm is a discriminating failure and refutes the candidate. This is that case, although the mechanism is numeric rather than acoustic."
+  },
+  "contrast_with_the_stationary_result": {
+    "stationary_noise_same_gain": "the candidate lowered the 300-360 Hz band by 6.8-7.9 dB and both arms completed",
+    "live_speech_same_gain": "the candidate triggers protection",
+    "reconciliation": "the stationary source has no transients; live speech has high crest factor peaks that push mic-minus-prediction past full scale"
+  },
+  "what_this_establishes": [
+    "the candidate is not usable on live speech at -8 dB / 12 cm in its current form",
+    "the failure is a numerical headroom problem at speech transients, not acoustic howling"
+  ],
+  "what_this_does_not_establish": [
+    "that the candidate cannot help at lower gain or with a scaled prediction path",
+    "that the model estimate itself is wrong"
+  ],
+  "next_step_for_B": "either reduce the prediction gain before subtraction, or clamp the residual earlier, or confirm whether the intended operating level leaves enough headroom for speech crest factors. A's measured crest factor at 12 cm was 21.4 dB (peak -2.2 versus rms -23.6), which is the number that matters."
+}
