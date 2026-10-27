@@ -520,7 +520,7 @@ def assemble_layout(out, candidate_commit=None, repair_binding=None, baseline_fi
         (out/'candidate-compatibility.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     code=('# 成功工作点集中复现：输入与路径确认后执行\n' if baseline_first else '# 新布局集中实验：核对绑定后执行\n')+'from layout_experiment import run\nresult = run()\n'
     nb=dict(nbformat=4,nbformat_minor=5,metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
-        cells=[dict(cell_type='markdown',metadata={},source=['先读 OPERATIONS.md；缺候选/场景身份时只生成停止回包，不操板。']),
+        cells=[dict(cell_type='markdown',metadata={},source=[('先读 OPERATIONS.md；先复现零系数基线，候选缺项只停止候选分支；真人动作必须真实确认。' if baseline_first else '先读 OPERATIONS.md；缺候选/场景身份时只生成停止回包，不操板。')]),
                dict(cell_type='code',metadata={},execution_count=None,outputs=[],source=code.splitlines(True))])
     (out/'layout.ipynb').write_text(json.dumps(nb,ensure_ascii=False,indent=2),encoding='utf8')
     guide=(ROOT/'board/audio_closed/BATCH_GUIDE.md').read_text(encoding='utf8')
