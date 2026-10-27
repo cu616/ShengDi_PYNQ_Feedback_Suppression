@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "topic": "wide residual through the digital gain: simulation, synthesis, board bring-up",
+  "topic": "wide residual through the digital gain: simulation, synthesis, board bring-up, stationary arms",
   "recorded_by": "A",
   "date": "2026-10-27",
   "branch": "A",
@@ -26,7 +26,7 @@
   },
   "verification_simulation": {
     "iverilog": "Icarus Verilog 12.0, -g2012",
-    "tb_residual_wide": "RESIDUAL_WIDE_PASS checked=4 (unchanged from the previous session)",
+    "tb_residual_wide": "RESIDUAL_WIDE_PASS checked=4",
     "tb_feedback_fir": "FEEDBACK_FIR_PASS samples=2304 latency=771; extended to also check residual_wide against mic-pred for all 2304 samples",
     "tb_replay_wide": "RESIDUAL_REPLAY_WIDE_PASS; three cases",
     "cases": [
@@ -60,22 +60,50 @@
     "bringup": {
       "trial": "audio_wide/bringup_1746892939228991948.npz",
       "config": "zero coefficients, zero source, gain -14 dB, 1.2 s, fixture room_v1_20261026b",
-      "result": "stop_reason=completed, completed_frames=58593, capture_status=0x00008001 (done+captured(16384)), bit22=0, all four saturations 0, coefficient_status=0x200A (loaded_taps=512), mic -38.2 dBFS, verification bit_exact=true with the v3 oracle",
-      "meaning": "the v3 bitstream + v3 driver load, configure and complete a bounded run on hardware; the wide multiply and the post-gain clamp are exercised but no overflow occurs in a quiet room"
+      "result": "stop_reason=completed, completed_frames=58593, capture_status=0x00008001, bit22=0, all four saturations 0, coefficient_status=0x200A (loaded_taps=512), mic -38.2 dBFS, bit_exact=true under the v3 oracle",
+      "meaning": "the v3 bitstream + v3 driver load, configure and complete a bounded run on hardware"
     },
-    "stationary_two_arm": {
+    "speaker_path_check": {
+      "trials": ["audio_wide/spk_silent_1746893401806655548.npz", "audio_wide/spk_tone_1746893434129704964.npz"],
+      "method": "1 kHz sine at 0.3 FS injected with the digital gain forced to 0, so no feedback is involved",
+      "result": "silent: mic -38.4 dBFS RMS, 1 kHz band 7.8 dB vs rest 0.6 dB; tone: mic -31.8 dBFS RMS, 1 kHz band 30.0 dB vs rest -0.1 dB",
+      "conclusion": "SPEAKER PATH LIVE: +6.5 dB microphone RMS and +30 dB in-band 1 kHz. The board->codec->speaker->air->microphone chain works."
+    },
+    "level_ladder_no_feedback": {
+      "trials": ["audio_wide/lvl_20_1746893507677042812.npz", "audio_wide/lvl_12_1746893542514280077.npz", "audio_wide/lvl_6_1746893576177346463.npz"],
+      "method": "board white noise (seed 4242) at -20/-12/-6 dBFS peak, digital gain 0",
+      "mic_rms_dbfs": [-38.6, -37.1, -35.1],
+      "mic_peak_dbfs": [-22.7, -24.6, -21.2],
+      "conclusion": "broadband noise couples weakly into this fixture (peak-to-peak only +3.5 dB from -20 to -6 dBFS). A tone is concentrated and shows the path clearly; white noise at -20 dBFS sits below the room floor in any 60 Hz band, which is why the first stationary pair looked flat."
+    },
+    "stationary_two_arm_run_1_level_minus20dbfs": {
       "trials": ["audio_wide/wide_gate_1746893045642595463.npz", "audio_wide/wide_zero_1746893075929342181.npz", "audio_wide/wide_cand_1746893109544546531.npz"],
-      "gate": "peak -23.8 dBFS with zero output: PASS",
-      "zero_arm": "completed, 107421 frames, mic -38.4 dBFS, peak -26.5, bit22=0, all saturations 0, band share 0.0695",
-      "candidate_arm": "completed, 107421 frames, mic -38.7 dBFS, peak -26.8, bit22=0, all saturations 0, band share 0.0484, NO guard stop",
-      "share_difference": "+1.6 dB (zero minus candidate)",
-      "verdict": "NOT VALID as an acoustic two-arm comparison. Microphone level in both arms equals the silent gate (-38.2/-38.4/-38.7 dBFS) and the zero-arm band share (0.0695) is far below the previous live session (0.2281), so the speaker's sound is not reaching the microphone. The run proves the digital path and the absence of protection trips; it does not measure cancellation.",
-      "likely_cause": "speaker/amplifier off or its wiring open; needs one physical confirmation"
+      "gate": "mic peak -23.8 dBFS with zero output: PASS",
+      "zero_arm": "completed 107421 frames, mic -38.4 dBFS, peak -26.5, band share 0.0695, no protection trip",
+      "candidate_arm": "completed 107421 frames, mic -38.7 dBFS, peak -26.8, band share 0.0484, no protection trip",
+      "verdict": "NOT USABLE: both arms sit on the room floor, so the 1.6 dB share difference is not a cancellation measurement"
+    },
+    "stationary_two_arm_run_2_level_minus8dbfs": {
+      "trials": ["audio_wide/wide_gate_1746893648082441944.npz", "audio_wide/wide_zero_1746893678210907241.npz", "audio_wide/wide_cand_1746893711548696477.npz"],
+      "gate": "mic -26.4 dBFS RMS, peak -13.8: PASS (input well below the -6 dBFS ceiling)",
+      "zero_arm": "completed 107421 frames, mic -27.3 dBFS, peak -13.3, band share 0.0103, bit_exact=true, no protection trip",
+      "candidate_arm": "completed 107421 frames, mic -35.1 dBFS, peak -21.5, band share 0.0304, bit_exact=true, no protection trip",
+      "observations": [
+        "the candidate arm is 7.8 dB quieter in total microphone level than the zero arm",
+        "the 300-360 Hz share is 4.7 dB HIGHER in the candidate arm while the absolute in-band level is about 3 dB lower (share is confounded by the total-level difference)",
+        "wide_residual_frames = 0 in every run this session: the pre-gain overflow was never re-created on hardware"
+      ],
+      "verdict": "no cancellation conclusion. The two arms differ, but the share metric is confounded by a 7.8 dB total-level difference and the room gate moved 11.8 dB between the two windows of this session (gate -38.2 dBFS in run 1, -26.4 dBFS in run 2), so single-window arm pairs are not comparable. Needs a supervised window with a stable baseline."
     },
     "human_speech_two_arm": {
       "status": "NOT RUN",
-      "reason": "needs a person speaking plus a confirmed live speaker/microphone path"
+      "reason": "needs a person speaking at ~12 cm plus a confirmed stable speaker/microphone baseline"
     }
+  },
+  "corrections": {
+    "retracted": "The first reading of run 1 was 'the speaker's sound is not reaching the microphone'. That is WRONG: the 1 kHz tone check shows the speaker path is live (+6.5 dB microphone RMS, +30 dB in-band). The correct explanation is that -20 dBFS broadband noise is buried under the room floor at this fixture, so the microphone level in both arms equals the floor.",
+    "how_it_was_found": "injecting a concentrated 1 kHz tone with the digital gain forced to 0 instead of comparing broadband noise RMS against a silent gate",
+    "still_unexplained": "the zero-output gate rose from -38.2 to -26.4 dBFS RMS between the two windows of this session. Nothing on the board side was changed except the source level of the preceding trials. Possible external amplifier gain/limiter state or room change; not resolved. Any field window must measure the gate before AND after the arms to expose such drift."
   },
   "evidence_checker_fix": {
     "file": "board/audio_replay/replay_tools.py",
@@ -83,12 +111,13 @@
     "problem_2": "the output comparison started at ring frame 2 even for a truncated ring, so the first TAPS frames, whose prediction history is unknowable, were counted as output mismatches. This made every nonzero-model arm look non-bit-exact (it predates v3)",
     "fix": "expected output = clip(injection + gain(wide residual)) with one clamp after the gain, compared from skip+2 for a truncated ring; wide_residual_frames and output_checked_frames are reported",
     "local_validation": "software check on a synthetic capture built from the same integer datapath: v3 oracle bit_exact with 597 wide-residual frames, while the old oracle reports 595 mismatches on the same valid capture",
-    "on_board_validation": "the downloaded candidate capture re-verifies as bit_exact=true (output_mismatches 0) with the fix and 512 with the old window; prediction 0, residual 0 in both"
+    "on_board_validation": "the downloaded candidate capture re-verifies as bit_exact=true (output_mismatches 0) with the fix and 512 with the old window; the -8 dBFS candidate arm is bit_exact=true on the board with the fixed oracle"
   },
-  "honest_position": "simulation and synthesis are done with real numbers; the board loads the v3 bitstream and completes runs; the first stationary two-arm attempt is acoustically dead and is reported as invalid, not as a result. No human-speech arm and no field attenuation number yet.",
+  "honest_position": "simulation and synthesis are done with real numbers; the board loads v3, completes bounded runs, and the digital evidence is bit-exact; the speaker path is live; but no run this session produced a pre-gain overflow, no human speech arm has run, and the stationary pairs are confounded by level and baseline drift. No cancellation or gain result is claimed.",
   "next_steps": [
-    "confirm the speaker/microphone path is live (audible programme through the fixture), then rerun the stationary two arms",
-    "run the human-speech two arms at 12 cm, -8 dB, same sentence twice, rejecting any trial with capture_status bit22 set",
-    "report the field result and a keep-or-rollback recommendation for v3"
+    "supervised window: gate -> stationary zero -> stationary candidate -> gate -> human zero -> human candidate, with the same physical state and the gate measured twice",
+    "reject any trial with capture_status bit22 set or microphone peak >= -6 dBFS",
+    "the human arms are the only ones that can re-create the pre-gain overflow (loud transient into the microphone), which is what v3 is for",
+    "then a keep-or-rollback recommendation for v3"
   ]
 }
