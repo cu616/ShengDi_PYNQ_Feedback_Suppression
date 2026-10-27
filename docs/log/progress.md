@@ -13,6 +13,10 @@
 
 
 
+## 2026-10-27 C 补清手机污染与同轮候选判读
+
+按B反馈细分r4首包持续手机播放与尚未知的增益/AGC漂移，不将污染简写为可剔通知音；首包无闭环配对，不作328Hz收益。明确独立源归一化缺失时的未分辨范围、历史成功原件不阻候选、跨增益工作点预测不作实测算法收益。仅更新[审计与解释](../../report/verification/audio_closed/batch-control.md#2026-10-27-补清手机污染与同轮对照边界)，r6代码/模型/ZIP未变，未重跑软件回归或操板。
+
 ## 2026-10-27 C 冻结r6基线优先完整流程
 
 从干净d95c3a2生成c-success-reproduction-r6.zip，358489字节，35项载荷/唯一Notebook代码及已测源码字节核对完成；实际打印STOP，取消0试次仍回包保留历史反馈。9.5/60秒纯参数验证范围明确；语音PCM留板，结果分别导出基线/候选。操作单与Notebook文案均不让候选缺项阻断基线，未改A驱动或B系数。[包身份与限制](../../report/verification/audio_closed/sprint-rc0-20261025/reproduction-package-r6-check.json)、[现场操作单](../../board/audio_closed/BATCH_GUIDE.md#2026-10-27-成功工作点集中复现)。无C操板/新现场结论。

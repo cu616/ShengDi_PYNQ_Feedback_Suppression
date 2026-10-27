@@ -86,7 +86,19 @@
   },
   "source_state": {
     "first": "A reports phone playing; violates clean background premise",
-    "second": "A reports phone paused; summary only, raw unavailable"
+    "second": "A reports phone paused; summary only, raw unavailable",
+    "first_contamination_kind": "Recording playback was not paused during the tone, per A. No evidence identifies an isolated cue or notification.",
+    "registered_phone_source": {
+      "file": "1101.m4a",
+      "displayed_volume": "8/15",
+      "route": "phone_speaker_to_microphone",
+      "nominal_start_seconds": 0.0,
+      "nominal_segment_seconds": 8.0,
+      "actual_phone_sample_timeline": "unknown; registration is not proof of synchronized playback"
+    },
+    "gain_and_agc": "First binding records gain and AGC as unknown/not controllable. Drift has not been demonstrated; a fixed volume display does not prove fixed acoustic output or identical content across windows.",
+    "window_excision": "No timestamped isolated event or verified clean remainder; do not excise arbitrary windows to certify the control.",
+    "third_explanation": "Unsynchronized speech content/envelope can change between windows even without gain or AGC drift. Continuing external playback is not itself evidence of AGC drift."
   },
   "routing": {
     "first_four_roles": [
@@ -132,6 +144,19 @@
   "positive_source_off_tail_frames": 976,
   "positive_tail_scope": "source-on control window; saved 20ms after source is shorter than 50ms transition, not pure acoustic tail",
   "baseline_dependency": "Frozen loader transport is independent; zero_coeff=True sends Q20 all zero. Candidate qualification is deferred until after baseline/human use.",
+  "B_pairing_clarification_20261027": {
+    "r4_closed_loop_zero_candidate_pairs": 0,
+    "r4_328hz_algorithm_gain": "not measured",
+    "quantitative_328hz_condition": "State actual bin/frequency, window and bandwidth, with a valid independent source reference/normalization. If source level, AGC or content is noncomparable and normalization absent, mark dependent gain and FIR attribution unresolved.",
+    "manual_comparability_limit": "A manual COMPARABLE response cannot override contrary source/scene evidence in C final QC. Existing r6 code does not automatically detect phone AGC drift.",
+    "independent_observations": "Retain listener verbatim responses, actual levels, counters, frame coverage and other valid observations even when source-normalized attribution is unresolved.",
+    "r6_voice_scope": "Uncalibrated qualitative listener comparisons, no source-normalized 328Hz gain or measured MSG/ASG.",
+    "historical_success_originals_required_for_candidate": false,
+    "historical_originals_purpose": "Explain historical reproduction differences; their late arrival does not block same-round candidate evaluation.",
+    "cross_gain_statement": "B's candidate@-6 approximately zero@-12 (or proposed zero@-14) is an unverified operating-point prediction, not observed equivalence or a measured FIR gain. Zero at reduced gain remains closed loop and is not an independent source denominator.",
+    "cross_gain_attribution": "Changing model and gain compares operating-point combinations; an actual stable gain difference or ASG needs its own comparable valid endpoint evidence, not the numerical knob gap alone.",
+    "active_flow": "Keep frozen r6: same-session zero-FIR -8 baseline/human reproduction, then optional same--8 candidate pairs. No new trials, model, code or ZIP in this clarification."
+  },
   "controls": {
     "new_methods_finally_passed": 9,
     "affected_legacy_methods_passed": 2,
