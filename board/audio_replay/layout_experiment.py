@@ -693,6 +693,7 @@ def reproduction_results(state):
 
 def _run_reproduction(base,ask,runner,live_runner):
     folder=base/'results'/('reproduction-'+uuid.uuid4().hex[:12]);folder.mkdir(parents=True)
+    print('STOP_FILE',str((folder/'STOP').resolve()),'；短项开始前检查，60秒由驱动轮询；异常优先断音响电源或中断内核。',flush=True)
     state=dict(policy=POLICY,workflow='success_first',calculation_version=VERSION,detector_config=CONFIG,plan=PLAN,
         run_id=folder.name,board_result_dir=str(folder.resolve()),status='prepared',trials=[],pairs=[],conditions=[],prompt_log=[],msg_db=None,asg_db=None,
         grades=dict(execution='not_started',measurement='unknown',algorithm_difference='unknown',listener_effect='not_tested',continuous_operation='not_tested'),
