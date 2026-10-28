@@ -338,7 +338,7 @@
     "fixture_confirmed_by": "the operator, 2026-10-27: the rig in use is the same physical fixture the model was fitted on (microphone to speaker 100 cm, side-facing, metal plate and cotton). fixture room_v1_20261026b stays valid for this geometry; no rebinding is needed.",
     "peak_frequency_provenance": "+4.40 dB @ 321.9 Hz comes from the 2026-10-23 field recalibration on this same fixture, so the 322 Hz used for the tone three-point is a current-fixture number by record, not carried over from another rig. A fresh tone scan is still a good check but is not blocking.",
     "coupling_table": {
-      "how": "closed-loop boost at the |H| peak = 1/(1-g*|H|); this is what raises the microphone level when g goes up, and it is the constraint that binds before stability does",
+      "how": "IN-PHASE UPPER BOUND ONLY: 1/(1-g*|H|) assumes the loop adds in phase. The measured value at -8 dB is +3.75 dB, not +9.39. Do not use this table to predict loudness; B derived a phase of about 39.8 degrees at 322 Hz, and the real curve peaks near g = -6.7 dB at +3.87 dB, with -8 dB only 0.12 dB below that peak.",
       "H_peak_db": 4.4,
       "rows": [
         {
@@ -387,10 +387,11 @@
       "bypass_critical_gain_db": -4.4
     },
     "consequences": [
-      "-4 dB is ABOVE the bypass critical gain (-4.40 dB): g*|H| = 1.047, so it howls with no cancellation at all. B's 'try -6 / -4' must stop at -6 dB.",
-      "raising g by 2 dB (from -8 to -6) raises the closed-loop output at the peak by about 6.1 dB (9.39 -> 15.48 dB), i.e. about 3 dB of microphone headroom lost per 1 dB of g",
-      "measured at 20 cm with g = -8: closed-loop microphone peaks of -23.1 and -8.5 dBFS on two takes of the same sentence. The second is 2.5 dB above the -6 dBFS rule already at g = -8, so at 20 cm the gain cannot go up at all; -6 dB needs roughly twice the distance",
-      "distance alone does not set the peak: two takes at the same 20 cm and the same arm differ by 14.6 dB, so any distance ladder must be repeated per take and gated on the measured peak and bit22, not on the nominal distance"
+      "raising g cannot buy loudness on the zero arm: played/source = 1/|1-gH| runs -14 -> +2.21, -10 -> +3.29, -8 -> +3.75, -6.7 -> +3.87 (peak), -6 -> +3.83; -8 dB is 0.12 dB from the maximum",
+      "-4 dB is above the bypass critical gain (-4.40 dB), so it self-oscillates with no cancellation at all",
+      "what is left of the loudness gap is speaker efficiency, directivity and distance to the listener, which g cannot fix",
+      "whether the CANDIDATE can go louder is unknown: played/source = 1/|1-g(H-Hhat)| needs the phase of H-Hhat, and offline data only has per-point magnitudes (max 0.9247). Report only \"stability margin 5.08 dB higher than the zero arm (a bound difference, not a measured ASG)\"",
+      "clipping follows speech effort, not distance: both 12 cm and 20 cm produced bit22=1"
     ],
     "correction_to_B_option_2": {
       "B_said": "lowering the Codec ADC gain by k equals lowering g, so it is wasted effort",
@@ -401,7 +402,30 @@
       "mic_4_76_db": "cancel minus bypass measured on the MICROPHONE at 322 Hz (both arms, same g=1631, same source amplitude 0.15 FS)",
       "residual_6_37_db": "cancel minus bypass measured on the RESIDUAL at 322 Hz, same arms; in bypass the hardware sets residual = microphone, so this is the played-quantity depth and is not comparable to 4.76 without saying which signal was measured",
       "open_arm_role": "reference only, never a denominator"
-    }
+    },
+    "retracted": {
+      "claim": "g 每提 1 dB, 峰值处闭环约提 3 dB",
+      "why_wrong": "that number came from 1/(1-g*|H|), which assumes the loop adds in phase. The measured boost is 3.75 dB, i.e. |1-gH| = 0.6494 and a phase of about 39.8 degrees. The table below is an in-phase UPPER BOUND, not a prediction.",
+      "retracted_on": "2026-10-28, after B pointed it out (B 86061a7)"
+    },
+    "retracted_distance_claim": {
+      "claim": "lowering the gain to -6 dB would need roughly 24 cm to stop clipping",
+      "why_wrong": "clipping follows speech effort, not distance: 12 cm and 20 cm both produced bit22=1 in the 2026-10-27/28 records, with 20 cm clipping just as well. Moving back does not fix clipping.",
+      "retracted_on": "2026-10-28, after B pointed it out (B 86061a7)"
+    },
+    "decided_working_point": {
+      "configuration": "phone 6/15, 5 cm, PL -8 dB, Codec 40, no ADC change",
+      "why": "it is the only configuration that completed two 60 s runs, and the -8 dB operating point is 0.12 dB from the loudness peak of the zero arm, so there is nothing to gain by moving the gain",
+      "adc_gain_scaling": "kept as a TRIGGER, not a default: scaling ADC by k, coefficients by k and digital gain by 1/k leaves the loop and the output unchanged, so it buys headroom against clipping and zero loudness, at the cost of coefficient re-registration and a level re-calibration",
+      "trigger": "at the demo rehearsal, if bit22=0 and peak <= -6 dBFS keep this configuration; if bit22=1 the configuration MUST change, because the v3 driver stops immediately on input full scale and a mid-demo stop is worse than being too quiet",
+      "if_triggered": "pick k so the peak drops to <= -12 dBFS (6 dB margin), re-register coefficients x k, compensate digital gain x 1/k, and re-run the 322 Hz three-point before the freeze; played/source must match this round bit for bit, otherwise roll back"
+    },
+    "four_pitfalls_kept": [
+      "raising g raises the microphone too (mic = H*played + source), so bit22 must be re-measured at every level, not only at the start",
+      "the zero arm stops because of bit22, NOT because howling was detected: v3 has no howl detector. The record must say \"the zero arm was stopped by input full scale\"",
+      "the bypass arm microphone is 4.76 dB higher than the cancel arm at the same speech level, so bypass reaches the rail first. That is the cost of that arm, not a failure; record it separately",
+      "never manufacture a \"success\" by turning the whole system down"
+    ]
   },
   "captain_decision_2026_10_28": {
     "decision": "v3 is the frozen mainline; v2 stays the successful baseline and the rollback",
@@ -483,5 +507,28 @@
       "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); candidate and zero-arm coefficient hashes recorded separately"
     ],
     "reverify_scope": "only the failed items and what these changes touch"
+  },
+  "reporting_split_v3_working_point": {
+    "source": "B 86061a7, adopted by A 2026-10-28; three quantities must never be quoted interchangeably",
+    "cd_322_db": {
+      "value": 6.37,
+      "what": "residual depth at 322 Hz: bypass residual vs cancel residual. It is what the cancel branch minimises and it measures model fit.",
+      "not": "not a benefit figure"
+    },
+    "loop_boost_db": {
+      "value": 3.75,
+      "what": "bypass microphone (49.19) minus open microphone (45.44): how much the closed loop raises that band, so it is also the most a canceller can recover there",
+      "is_the_audible_benefit_scale": true
+    },
+    "acoustic_difference_db": {
+      "value": 4.76,
+      "what": "bypass microphone (49.19) minus cancel microphone (44.43) = loop boost 3.75 + cancel overshoot 1.01",
+      "not": "not the benefit: quoting 4.76 as benefit overstates it by the 1.01 overshoot"
+    },
+    "overshoot_db": 1.01,
+    "phase_of_H_at_322_derived_by_B": {
+      "how": "|H| = 10^(4.40/20) = 1.6596, g = 0.3981, g|H| = 0.6607; measured boost 3.75 dB gives |1-gH| = 0.6494, cos(phase) = 0.768, phase = +-39.8 degrees",
+      "consequence": "g plus |H| in dB is an amplitude bound only; it cannot predict loudness. An in-phase assumption would have predicted 9.4 dB where 3.75 dB was measured, and the 5.7 dB gap is entirely phase."
+    }
   }
 }
