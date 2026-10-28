@@ -398,6 +398,24 @@
       "verdict": "cancellation_holds (5.45 >= 4.24 - 1.5 and |1.21| <= 1.5)",
       "arms": "gate + three arms all completed, bit22=0, no rail, recovery_ok",
       "repeatability": "previous round the same day: CD 7.08 / boost 4.12 / difference 4.92 / overshoot 0.80; the verdict repeats, the numbers move by about 1 dB"
+    },
+    "listener_two_arm_2026_10_28": {
+      "protocol": "one quiet gate, then the same sentence in two 6 s windows (zero-coefficient arm, then the candidate arm, about 4 s apart). The talker was told BEFORE the run what to judge: which window is louder, whether there is howling, whether speech is intelligible. The first attempt asked for the judgement only after the run and was discarded as an invalid procedure, not as a result.",
+      "measurements": {
+        "zero_mic_dbfs": -29.9,
+        "zero_peak_dbfs": -14.8,
+        "candidate_mic_dbfs": -35.5,
+        "candidate_peak_dbfs": -19.7,
+        "difference_db": -5.6
+      },
+      "all_runs": "gate and both arms completed, bit22=0, no saturation, no rail, recovery_ok",
+      "listener_verbatim": {
+        "loudness": "差不多/听不出 (cannot tell the two apart)",
+        "howling": "无啸叫 (no howling)",
+        "intelligibility": "都能听清 (both intelligible)"
+      },
+      "reading": "the microphone level drops 5.6 dB with cancellation active, but the person doing the speaking cannot hear that as a loudness difference. The likely reason is methodological: the talker is also the listener, so their own direct voice (bone conduction plus direct sound) dominates what they hear, and a change in the played level is masked. The historical sessions used a separate listener 20 cm from the speaker for exactly this reason.",
+      "what_it_does_not_say": "it does NOT say the cancellation is inaudible; it says this listener position cannot resolve it. A separate listener at the speaker, or a recorded A/B of the played signal, is needed to answer the audible-benefit question."
     }
   },
   "corrections": {
@@ -425,9 +443,9 @@
     "then a keep-or-rollback recommendation for v3"
   ],
   "pending_measurements": [
-    "C re-verification of the 2026-10-28 fixes (gate predicate, tone abort, analyzer gaps)",
-    "listener comparison between the two arms at the working point - still not done",
-    "segment B (g = -3 deliberate howl) - not run, needs an explicit authorisation"
+    "audible benefit judged by a listener AT THE SPEAKER (not the talker) - the historical 20 cm position",
+    "C re-verification of the 2026-10-28 fixes",
+    "segment B (g = -3 deliberate howl) - needs authorisation"
   ],
   "working_point_analysis": {
     "asked_by": "B (67d28b2) rejected all three of A's options and proposed a distance ladder plus raising g",
