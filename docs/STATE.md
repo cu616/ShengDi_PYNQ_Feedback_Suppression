@@ -24,10 +24,15 @@
 输入满幅停声与 60 秒**尚未在交付版上复跑**（操作者已离开麦克风）。差量见证据里的 `driver-diff`。
 
 - **唯一操板者，SSH 非交互驱动**。**现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`**：
-  位流 `48e38f78…`、hwh `9411adb5…`、`replay_tools` `5b11b656…`（板上已换成这一版）。
+  位流 `48e38f78…`、hwh `9411adb5…`、**`replay_tools` `bba22102…`**、`test_verify_replay_v3` `7265fa6c…`。
   **交付驱动 `replay_trial` = `c2b2a86a…`**（bit22 停声 + 位流配对校验 + 保存失败仍带全身份）；
-  `82787262…` 与 `6b397359…` 均作废。**这两项硬件复验待操作者回到麦克风后补跑。**
+  `82787262…` 与 `6b397359…` 均作废。**停声与 60 秒这两项硬件复验待操作者回到麦克风后补跑。**
+  系数哈希**分开记**：candidate `6118e85d…`、零臂全零 `e5a00aa9…`（此前 manifest 把零臂哈希填进了候选字段）。
   回退包 `audio_live` 原样未动（v2 位流 `61bb71aa…`、hwh `92b499a3…`、驱动 `2127663…`；v1 位流同目录）。
+- **宽残差计数改用记录里的 prediction**（C 2026-10-28 指出）：截断环的前 512 帧不再漏计。
+  实测验证：拿 2026-10-27 的 **v2** 真实捕获跑新判据 → `wide_residual_frames = 8`，
+  与硬件 `residual_saturations = 8` **逐数一致**；同一份捕获的 8 帧 `output_mismatches` 正是 v2/v3 输出不同处
+  （v2 乘钳位残差），不是判据错误。
 - **① 原配置复现成功**（[结果包](../report/verification/audio-replay/reproduction-result-2026-10-27.json)）：
   手机 `1101.m4a`、音量 **8/15**、距麦 **5 cm**、零系数、**−8 dB**、Codec 40、音响 100 cm 侧对。
   两次复现均"能听出放大"，与系统静音对照差异明显且两次一致；
