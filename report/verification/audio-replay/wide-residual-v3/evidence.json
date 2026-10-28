@@ -416,6 +416,35 @@
       },
       "reading": "the microphone level drops 5.6 dB with cancellation active, but the person doing the speaking cannot hear that as a loudness difference. The likely reason is methodological: the talker is also the listener, so their own direct voice (bone conduction plus direct sound) dominates what they hear, and a change in the played level is masked. The historical sessions used a separate listener 20 cm from the speaker for exactly this reason.",
       "what_it_does_not_say": "it does NOT say the cancellation is inaudible; it says this listener position cannot resolve it. A separate listener at the speaker, or a recorded A/B of the played signal, is needed to answer the audible-benefit question."
+    },
+    "audible_benefit_measured_2026_10_28": {
+      "why_this_replaces_the_listener": "the reference channel of every capture is the word sent to the DAC, i.e. exactly what the speaker plays, so the loudness difference between two arms can be measured instead of judged. The listener attempts on 2026-10-28 all failed for a reason this measurement makes obvious.",
+      "alternating_run": {
+        "protocol": "four back-to-back segments with an identical injected source (fixed-seed noise, same level, 2 s each): zero, candidate, zero, candidate",
+        "played_rms_dbfs": {
+          "zero_0": -42.84,
+          "cand_1": -46.36,
+          "zero_2": -46.74,
+          "cand_3": -47.03
+        },
+        "played_peak_dbfs": {
+          "zero_0": -30.5,
+          "cand_1": -32.27,
+          "zero_2": -33.65,
+          "cand_3": -34.89
+        },
+        "mean_difference_db": 1.38,
+        "same_condition_scatter_db": 3.9,
+        "verdict": "NOT RESOLVABLE: the arm-to-arm difference (1.4 dB on average) is smaller than the scatter between two runs of the SAME arm (3.9 dB), so neither a listener nor this measurement can separate the two conditions at this working point."
+      },
+      "absolute_output": "the played signal sits at -42 to -47 dBFS, i.e. of order one percent of full scale, which is far too quiet to be heard clearly in a room regardless of the listener.",
+      "consistency_with_earlier_listener_records": "every earlier \"listener\" record (2026-10-27 20 cm: no audible amplification; the same day: audible but not obviously louder; the talker-as-listener pair: cannot tell) is consistent with this measurement. The negative judgements were not a hearing problem and not a cancellation failure; the output is simply too quiet and the difference too small relative to run-to-run scatter.",
+      "what_would_change_it": [
+        "a louder input (clipping: the ADC rails, and the v3 driver stops the run)",
+        "more digital gain (the zero arm is already 0.12 dB from its loudness peak at -8 dB, and -4 dB self-oscillates without cancellation)",
+        "a more efficient or closer speaker (not a parameter we control in this fixture)"
+      ],
+      "consequence_for_the_freeze": "the audible-benefit question is answered as a MEASURED NEGATIVE at this working point. It should be stated that way instead of being left open or attributed to listener hearing."
     }
   },
   "corrections": {
@@ -443,7 +472,6 @@
     "then a keep-or-rollback recommendation for v3"
   ],
   "pending_measurements": [
-    "audible benefit judged by a listener AT THE SPEAKER (not the talker) - the historical 20 cm position",
     "C re-verification of the 2026-10-28 fixes",
     "segment B (g = -3 deliberate howl) - needs authorisation"
   ],
