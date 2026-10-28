@@ -1,0 +1,148 @@
+{
+ "schema_version": 1,
+ "source": "report/verification/audio-replay/wide-residual-v3/evidence.json#steady_state_tone_three_point",
+ "measured": {
+  "open_db": 45.44,
+  "bypass_db": 49.19,
+  "cancel_db": 44.43,
+  "cd_db": 6.37,
+  "gain_db": -8.0,
+  "h_peak_db": 4.4,
+  "h_peak_hz": 321.9
+ },
+ "decomposition": {
+  "loop_boost_db": 3.75,
+  "acoustic_diff_db": 4.759999999999998,
+  "cancel_overshoot_db": 1.009999999999998
+ },
+ "inferred": {
+  "h_mag_linear": 1.6595869074375607,
+  "g_linear": 1.081433951297938,
+  "g_times_h_mag": 1.7947336268325267,
+  "phase_deg": 39.82576443233622,
+  "phase_sign_ambiguous": true
+ },
+ "bounds": {
+  "zero_arm_gain_db": -4.4,
+  "candidate_gain_db": 0.68,
+  "max_abs_H_minus_Hhat": 0.9246981739382225,
+  "margin_gap_db": 5.08
+ },
+ "gain_sweep": [
+  {
+   "gain_db": -14.0,
+   "loop_mag_db": -9.6,
+   "played_over_source_db": 2.211014454998494,
+   "candidate_g_times_error": 0.18450154191794738,
+   "candidate_margin_db": 14.68,
+   "zero_arm_linear_model_valid": true,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -12.0,
+   "loop_mag_db": -7.6,
+   "played_over_source_db": 2.72888065672094,
+   "candidate_g_times_error": 0.2322736796357107,
+   "candidate_margin_db": 12.68,
+   "zero_arm_linear_model_valid": true,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -10.0,
+   "loop_mag_db": -5.6,
+   "played_over_source_db": 3.285279543274222,
+   "candidate_g_times_error": 0.29241523778433354,
+   "candidate_margin_db": 10.68,
+   "zero_arm_linear_model_valid": true,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -8.0,
+   "loop_mag_db": -3.6000000000000014,
+   "played_over_source_db": 3.7500000000000004,
+   "candidate_g_times_error": 0.3681289736425314,
+   "candidate_margin_db": 8.680000000000001,
+   "zero_arm_linear_model_valid": true,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -6.7,
+   "loop_mag_db": -2.3000000000000003,
+   "played_over_source_db": 3.870221813133579,
+   "candidate_g_times_error": 0.42756288615158616,
+   "candidate_margin_db": 7.380000000000001,
+   "zero_arm_linear_model_valid": true,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -6.0,
+   "loop_mag_db": -1.6000000000000003,
+   "played_over_source_db": 3.8273839553277655,
+   "candidate_g_times_error": 0.46344691973628793,
+   "candidate_margin_db": 6.6800000000000015,
+   "zero_arm_linear_model_valid": true,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -5.0,
+   "loop_mag_db": -0.6000000000000003,
+   "played_over_source_db": 3.5902870577531982,
+   "candidate_g_times_error": 0.5199959965335159,
+   "candidate_margin_db": 5.6800000000000015,
+   "zero_arm_linear_model_valid": true,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -4.4,
+   "loop_mag_db": -9.643274665532871e-16,
+   "played_over_source_db": 3.3347379250039455,
+   "candidate_g_times_error": 0.5571857489319297,
+   "candidate_margin_db": 5.080000000000002,
+   "zero_arm_linear_model_valid": true,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -4.0,
+   "loop_mag_db": 0.40000000000000063,
+   "played_over_source_db": 3.1149301607115722,
+   "candidate_g_times_error": 0.5834451042737447,
+   "candidate_margin_db": 4.680000000000001,
+   "zero_arm_linear_model_valid": false,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": -3.0,
+   "loop_mag_db": 1.4,
+   "played_over_source_db": 2.3976458452100764,
+   "candidate_g_times_error": 0.6546361740672749,
+   "candidate_margin_db": 3.6800000000000006,
+   "zero_arm_linear_model_valid": false,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": 0.0,
+   "loop_mag_db": 4.4,
+   "played_over_source_db": -0.8102950148688537,
+   "candidate_g_times_error": 0.9246981739382225,
+   "candidate_margin_db": 0.6800000000000005,
+   "zero_arm_linear_model_valid": false,
+   "candidate_ok": true
+  },
+  {
+   "gain_db": 0.68,
+   "loop_mag_db": 5.080000000000001,
+   "played_over_source_db": -1.65651925058561,
+   "candidate_g_times_error": 1.0,
+   "candidate_margin_db": -0.0,
+   "zero_arm_linear_model_valid": false,
+   "candidate_ok": false
+  }
+ ],
+ "loudness_caveat": "g/|1-gH| 只用于同频点相对比较；不是绝对声压，不分频带。",
+ "not_proven": [
+  "ASG",
+  "宽带可听收益",
+  "语音条件下的稳定性",
+  "12 cm 下的合格候选臂"
+ ]
+}
