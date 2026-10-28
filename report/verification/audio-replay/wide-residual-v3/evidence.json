@@ -136,11 +136,16 @@
       "bypass": "loop closed, candidate coefficients loaded but not subtracted: 322 Hz 49.19 dB (+3.75 dB vs open)",
       "cancel": "loop closed, subtraction active: 322 Hz 44.43 dB",
       "cancellation_depth_db": 6.37,
-      "cancellation_depth_how": "residual at 322 Hz in bypass 187.66 dB vs cancel 181.29 dB in the same (un-normalised PCM) units, so +6.37 dB; the residual is what the canceller actually minimises",
       "acoustic_result": "microphone at 322 Hz is 4.76 dB lower in cancel than in bypass, and 1.01 dB lower than with no loop at all: the canceller removes the loop's +3.75 dB boost and slightly more",
       "all_arms": "bit_exact=true, wide_residual_frames=0, bit22=0, no gain/mix/prediction/residual saturation, no clipping, completed",
       "limits": "one frequency, one level, small-signal (loop only +3.75 dB above the no-loop path). This is a cancellation depth at 322 Hz, NOT ASG and NOT the maximum achievable",
-      "meaning": "the first steady-state measurement in this session that is above the noise: white-noise band shares gave +1.6 / -4.7 / -2.1 dB with a flipping sign and are unusable; the tone gives a stable, sign-consistent 6.37 dB depth"
+      "meaning": "first steady-state measurement this session that clears the noise floor. Quote the three numbers separately: CD(322) = 6.37 dB (model fit), loop boost = 3.75 dB (audible-benefit scale), acoustic difference = 4.76 dB (= 3.75 + 1.01 overshoot, not the benefit). Single frequency, single level: not ASG. White-noise band shares gave +1.6 / -4.7 / -2.1 dB with a flipping sign and are unusable.",
+      "cancellation_depth_is": "CD(322), residual depth between the bypass and cancel arms: the quantity the cancel branch minimises. MODEL FIT, not a benefit. See reporting_split_v3_working_point.",
+      "loop_boost_db": 3.75,
+      "loop_boost_is": "bypass microphone 49.19 minus open microphone 45.44: what the closed loop adds in that band, and therefore the most a canceller can recover there. This is the audible-benefit scale.",
+      "acoustic_difference_db": 4.76,
+      "acoustic_difference_is": "bypass microphone minus cancel microphone = loop boost 3.75 + overshoot 1.01. Quoting 4.76 as a benefit overstates it; quote 3.75.",
+      "overshoot_db": 1.01
     },
     "stationary_noise_runs_summary": {
       "share_differences_db": [
