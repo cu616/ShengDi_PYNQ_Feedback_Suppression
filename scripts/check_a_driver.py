@@ -225,8 +225,9 @@ def check(folder, output, v3=False, extras_only=False, only=None):
                 ver = tool.verify_replay(raw, q, False, 0, source, first)
                 assert ver['bit_exact'], 'oracle rejected a valid integer trace'
                 assert ver.get('wide_residual_frames') == expected_wide, 'wide diagnostic disagrees with strict observed mic-pred range'
-                expected_checked = 126 if first else 638
-                assert ver.get('output_checked_frames') == expected_checked, 'truncated output must begin at skip+2'
+                recorded_output = 'recorded prediction' in str(ver.get('wide_prediction_source', ''))
+                expected_checked = 126 if first and not recorded_output else 638
+                assert ver.get('output_checked_frames') == expected_checked, 'output checked domain must match recorded or locally replayed prediction'
                 cases.append(dict(name=name, passed=True))
             except Exception as exc:
                 cases.append(dict(name=name, passed=False, reason=str(exc), observed=ver))

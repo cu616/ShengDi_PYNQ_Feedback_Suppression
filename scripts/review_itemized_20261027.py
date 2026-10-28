@@ -22,8 +22,9 @@ BIT = '61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa'
 V3_BIT = '48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78'
 V3_IDENTITY = dict(hwh_sha256='9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e',
                    driver_sha256='c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493',
-                   replay_tools_sha256='5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d')
-V3_IDENTITY_PROFILES = (V3_IDENTITY, dict(V3_IDENTITY,
+                   replay_tools_sha256='bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246')
+V3_IDENTITY_PROFILES = (V3_IDENTITY,
+    dict(V3_IDENTITY, replay_tools_sha256='5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d'), dict(V3_IDENTITY,
     driver_sha256='6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d',
     replay_tools_sha256='0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792'))
 CANDIDATE = '6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927'
@@ -283,6 +284,7 @@ def review_capture(path):
                 if startup:
                     mismatch += int(np.count_nonzero(reference[:2] != injection[:2]))
                 arithmetic.update(output_evaluated_frames=max(n-start, 0), output_checked_frames=max(n-start, 0),
+                                  output_prediction_source='local model replay after history exclusion' if is_v3 else 'captured clamped residual',
                                   startup_output_checked_frames=startup, output_first_capture_index=start,
                                   output_mismatches=mismatch,
                                   output_operand='wide residual' if is_v3 else 'captured clamped residual')

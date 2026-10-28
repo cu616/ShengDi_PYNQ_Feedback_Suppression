@@ -1,5 +1,24 @@
 # C 测评与房间实验操作单
 
+## 2026-10-28 A41补证后的运行决定
+
+A=`41fd0d6`/driverc2b2a86a…/helperbba22102…的四项工程硬件补报已按A现场证据接收；60秒手机6/15、5cm是变更条件，定性阳性听感保留。C未操板，不把这些记录改称真人或候选收益。[通过项及剩余清单](../../report/verification/audio_closed/batch-control.md#2026-10-28-a41硬件补证与剩余流程验收)。
+
+**本版先不执行有声纯音三臂**。gate保护仍可继续、纯音保护NPZ仍被当成功、3类不合格分析仍出数；先由A在现有`field_human_pair_v3.sh`/`field_stationary_v3.sh`/`tone_arms_v3.sh`/`tone_analyze.sh`修复，不在现场拼代码。无新参数和四项硬件重跑要求。
+
+既有静默入口继续可用：电脑仓库`scripts/review_itemized_20261027.py`复制到已确认的板端`/home/xilinx/jupyter_notebooks/base/audio/audio_wide`，不换A驱动/位流/原件，然后终端运行（不用Notebook）：
+
+```sh
+cd /home/xilinx/jupyter_notebooks/base/audio/audio_wide
+python3 review_itemized_20261027.py --capture-dir . --pattern '*.npz' --out C-v3-derived-41fd0d6.json
+```
+
+预计数秒至数分钟，Ctrl+C停止计算，已有输出拒绝覆盖；只回该目录`C-v3-derived-41fd0d6.json`，PCM留板。目录当前哈希与旧试次身份分开，不补造缺失时间线。需要核完整v2“8次”时，仅提供既有blind2_cand文件实际板端路径/哈希或在其真实目录静默分析，目录未知就停止这项，不新采。
+
+修复并冻结脚本后，现场只安排一轮约30秒的原三臂入口+真实tone_round.json。仍固定原322Hz、amp0.15、−8dB、Codec40及夹具，任何已有前提改变须先记录而非自动升档。A现场真实确认源暂停/就位/开始后才生成一次令牌；保护/取消/恢复失败先停声留证并停止后续臂。拒绝样例在副本上静默构造，标明原件SHA及派生变更。最终保留同轮NPZ/status/manifest/执行日志与派生拒绝记录，一次回包；此段为修复后的范围，**不授权当前未通过脚本运行**。
+
+C模型输出核对仍从skip+2；bba从索引2核对的是记录prediction对应的物理输出，不是前缀模型归因。两类覆盖分别解释，不把更多物理核对帧写成缺前史已消失。
+
 ## 2026-10-28 A交付版复验后操作范围
 
 A=`ac30584`的v3交付快照与manifest共8项哈希一致：bit48e38f78…、HWH9411adb5…、driverc2b2a86a…、helper5b11b656…。C已支持该完整版本和历史完整版本分别复算，禁止跨版混搭。**当前有声编排仍有未通过项**，见[五条结论和一次修复单](../../report/verification/audio_closed/batch-control.md#2026-10-28-a交付版ac30584五条复验)；不要启动旧SUPERSEDED入口或将新脚本存在令牌解释为已获测量放行。

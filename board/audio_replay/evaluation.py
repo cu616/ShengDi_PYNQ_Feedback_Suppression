@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from growth_monitor import MonitorConfig, replay
 
-VERSION = 'c-measurement-2.4.1'
+VERSION = 'c-measurement-2.4.2'
 CONFIG = dict(window_seconds=.016, hop_seconds=.008, growth_seconds=.08,
               confirm_seconds=.016, minimum_rise_db=3.,
               minimum_slope_db_per_second=12., minimum_fit_r2=.9,
@@ -251,6 +251,7 @@ def verify_v3_words(raw, q, bypass, gain, source, first):
                 residual_mismatches=rm, output_mismatches=tm,
                 history_excluded_frames=skip, evaluated_frames=len(raw)-skip,
                 output_checked_frames=max(len(raw)-start, 0), output_first_capture_index=start,
+                output_prediction_source='local model replay after history exclusion',
                 startup_output_checked_frames=2 if first == 0 else 0,
                 wide_residual_frames=int(np.count_nonzero((observed < -2**23) | (observed > 2**23-1))),
                 wide_residual_frames_scope='actual recorded prediction, whole captured window',

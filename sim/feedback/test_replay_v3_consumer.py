@@ -84,7 +84,7 @@ class V3ConsumerTests(unittest.TestCase):
     def test_delivered_and_historical_release_tuples_do_not_mix(self):
         for profile in V3_IDENTITY_PROFILES:
             self.assertEqual(v3_identity_errors(profile), [])
-        mixed = dict(V3_IDENTITY, replay_tools_sha256=V3_IDENTITY_PROFILES[1]['replay_tools_sha256'])
+        mixed = dict(V3_IDENTITY, replay_tools_sha256=V3_IDENTITY_PROFILES[-1]['replay_tools_sha256'])
         self.assertTrue(v3_identity_errors(mixed))
         raw, q, source = trace()
         with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
@@ -131,6 +131,7 @@ class V3ConsumerTests(unittest.TestCase):
         self.assertTrue(checked['bit_exact'])
         self.assertEqual(checked['output_first_capture_index'], 514)
         self.assertEqual(checked['output_checked_frames'], 510)
+        self.assertIn('local model replay', checked['output_prediction_source'])
         self.assertGreater(checked['wide_residual_frames'], 0)
         self.assertGreater(old_verify(raw, q, False, 2048, source, 1024)['output_mismatches'], 0)
 
