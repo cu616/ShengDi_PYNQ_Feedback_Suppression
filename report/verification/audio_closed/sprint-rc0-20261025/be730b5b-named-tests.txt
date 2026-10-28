@@ -1,0 +1,18 @@
+test_float_one_plus_one_ulp_of_q23_is_rejected (B_named.EncodingGateTest.test_float_one_plus_one_ulp_of_q23_is_rejected)
+C 的边界：±(1+2^-23) 不能靠容差放进来再夹回，必须直接拒绝。 ... FAILED: microphone 超出归一化范围：|max|=1.000000119209（容差只有 8.9e-16；该字段应为归一化到 ±1.0 的浮点，不接受超范围后夹回）
+FAILED: microphone 超出归一化范围：|max|=1.000000119209（容差只有 8.9e-16；该字段应为归一化到 ±1.0 的浮点，不接受超范围后夹回）
+ok
+test_exact_one_is_still_accepted (B_named.EncodingGateTest.test_exact_one_is_still_accepted)
+恰好 ±1.0 仍允许（÷2^23 的浮点取整会到这里），只是夹回计数上报。 ... ok
+test_missing_frame_domain_is_reported_unknown (B_named.EncodingGateTest.test_missing_frame_domain_is_reported_unknown)
+缺 first_frame / completed_frames：局部分析照做，全局位置与闭合核对标未知。 ... ok
+test_fractional_frame_index_is_rejected (B_named.EncodingGateTest.test_fractional_frame_index_is_rejected)
+0.5 / 1024.5 这类小数帧号先拒绝，不截断成整数。 ... FAILED: first_frame（frac0.npz） 不是整数：0.5（帧号必须是整数，不能截断）
+FAILED: completed_frames（frac1.npz） 不是整数：1024.5（帧号必须是整数，不能截断）
+FAILED: first_frame（frac2.npz） 不是整数：1000.7（帧号必须是整数，不能截断）
+ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.121s
+
+OK

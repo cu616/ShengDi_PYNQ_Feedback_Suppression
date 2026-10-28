@@ -1,5 +1,13 @@
 # C 测评与房间实验操作单
 
+## 2026-10-28 B残差工具字段解释
+
+B=`e730b5b`的剩余边界已完成[限定验收](../../report/verification/audio_closed/batch-control.md#2026-10-28-be730剩余边界验收)，不更换当前现场入口或驱动。它的返回键是`frame_domain`（ok/unknown）及`frame_domain_note`；旧`frame_domain_ok`只保留在历史证据中，不能将缺键当false或补成通过。
+
+两端齐全且`first_frame+实际帧数=completed_frames`才是闭合ok。缺起点时，全局起止/事件/邻域位置为null，仍可保留局部算术。起点已知但缺completed时，当前程序保留依该起点推导的位置、闭合状态unknown；这些条件位置不证明完整运行覆盖或末尾一圈。C现用离线工具直接读原NPZ，无旧键适配要补，不改原件或为字段重采。
+
+B工具只说明给定输入的算术；它不代替v3身份、bit22输入无效、保护及声学判据。`prediction`的“缺前史”指本地模型重放`pred_rep`，板上记录`pred_rec`没有因为抓包截断而清空历史。局部分析保留不等于现场使用或候选改善通过。
+
 ## 2026-10-27 v3同步与既有数据复算
 
 当前目标是验收A=e132991的v3交付，不重跑现场。A的已冻结目录为`/home/xilinx/jupyter_notebooks/base/audio/audio_wide`：bit48e38f78…、HWH9411adb5…、replay_trial6b397359…、replay_tools0d4e1933…。v2回退`audio_live`与r6原包保持原样，不能交换其中驱动/工具；当前C有声入口未放行，原8项8/8不等于完整v3验收。[通过项及一次性修正单](../../report/verification/audio_closed/batch-control.md#2026-10-27-v3消费端同步与a交付验收)。

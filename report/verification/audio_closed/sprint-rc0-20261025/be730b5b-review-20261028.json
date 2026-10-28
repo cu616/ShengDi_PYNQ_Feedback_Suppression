@@ -1,0 +1,192 @@
+{
+  "B_commit": "e730b5b2399f60cd666c544a269171a05deccad7",
+  "B_script_sha256": "57f4d495db6c7661424170d7f011672e588f5d8ccfba9d5d553e6a5af66fbe2f",
+  "hardware_operations": 0,
+  "B_named_tests": {
+    "executed": 4,
+    "passed": 4,
+    "test_ids": [
+      "EncodingGateTest.test_float_one_plus_one_ulp_of_q23_is_rejected",
+      "EncodingGateTest.test_exact_one_is_still_accepted",
+      "EncodingGateTest.test_missing_frame_domain_is_reported_unknown",
+      "EncodingGateTest.test_fractional_frame_index_is_rejected"
+    ]
+  },
+  "C_changed_scope_probes": {
+    "total": 5,
+    "passed": 5,
+    "cases": [
+      {
+        "case": "both_signs_one_q23_step_outside_rejected_early",
+        "observed": [
+          {
+            "value": 1.0000001192092896,
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          },
+          {
+            "value": -1.0000001192092896,
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          }
+        ],
+        "passed": true
+      },
+      {
+        "case": "exact_endpoints_preserve_sign_and_count",
+        "observed": {
+          "codes": [
+            8388607,
+            -8388608
+          ],
+          "clamped": 1
+        },
+        "passed": true
+      },
+      {
+        "case": "missing_domain_keeps_local_event_and_unknown_global",
+        "observed": {
+          "frame_domain": "unknown",
+          "frame_domain_note": "缺 first_frame 或 completed_frames：只做局部分析，全局帧号与闭合核对为未知",
+          "first_frame_global": null,
+          "last_frame_global": null,
+          "completed_frames": null,
+          "attribution": {
+            "allowed": true,
+            "model_substituted": false,
+            "reasons": []
+          },
+          "first_overflow_index": 600,
+          "first_overflow_global_frame": null,
+          "around_global_frame": null,
+          "cli": {
+            "exit_code": 0,
+            "failed_prefix": false,
+            "prints_unknown": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "fractional_and_claimed_invalid_frame_types_rejected",
+        "observed": [
+          {
+            "name": "start_half",
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          },
+          {
+            "name": "end_half",
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          },
+          {
+            "name": "start_decimal_no_end",
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          },
+          {
+            "name": "bool",
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          },
+          {
+            "name": "non_numeric",
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          },
+          {
+            "name": "nan",
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          },
+          {
+            "name": "inf",
+            "exit_code": 2,
+            "failed_prefix": true,
+            "prints_unknown": false
+          }
+        ],
+        "passed": true
+      },
+      {
+        "case": "partial_domain_retains_known_start_without_closure",
+        "observed": {
+          "frame_domain": "unknown",
+          "frame_domain_note": "缺 first_frame 或 completed_frames：只做局部分析，全局帧号与闭合核对为未知",
+          "first_frame_global": 1000,
+          "last_frame_global": 2023,
+          "completed_frames": null,
+          "first_overflow_global_frame": 1600,
+          "cli": {
+            "exit_code": 0,
+            "failed_prefix": false,
+            "prints_unknown": true
+          }
+        },
+        "passed": true
+      }
+    ]
+  },
+  "C_probe_source_utf8": "\"\"\"Only the e730b5b residual-tool changes; synthetic offline fixtures.\"\"\"\nimport contextlib\nimport hashlib\nimport importlib.util\nimport io\nimport json\nimport pathlib\nimport subprocess\nimport sys\nimport tempfile\nimport unittest\n\nimport numpy as np\n\nroot=pathlib.Path(__file__).resolve().parent\ntempfile.tempdir=str(root/'test-temp')\npathlib.Path(tempfile.tempdir).mkdir(exist_ok=True)\nsys.path.insert(0,str(root/'scripts'))\nspec=importlib.util.spec_from_file_location('B_named',root/'sim/feedback/test_residual_overflow_tool.py')\ntests=importlib.util.module_from_spec(spec);spec.loader.exec_module(tests)\nb=tests.tool\nnames=['EncodingGateTest.'+n for n in (\n    'test_float_one_plus_one_ulp_of_q23_is_rejected',\n    'test_exact_one_is_still_accepted',\n    'test_missing_frame_domain_is_reported_unknown',\n    'test_fractional_frame_index_is_rejected')]\nout=pathlib.Path(sys.argv[1])\nwith out.open('w',encoding='utf-8',newline='\\n') as log:\n    with contextlib.redirect_stdout(log),contextlib.redirect_stderr(log):\n        result=unittest.TextTestRunner(stream=log,verbosity=2).run(\n            unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromNames(names,tests)))\n\nN,S,HI=1024,2**23,2**23-1\ndata=root/'C-synthetic';data.mkdir(exist_ok=True)\n\n\ndef fixture(name, changes=None, drop=(), event=False, float_mic=None):\n    q=np.zeros(512,dtype='<i4');u=np.zeros(N,dtype=np.int64)\n    mic=np.ones(N,dtype=np.int64);pred=np.zeros(N,dtype=np.int64)\n    if event:\n        q[0]=2**20;u[599]=-2;pred[600]=-2;mic[600]=HI\n    meta=dict(first_frame=1000,completed_frames=1000+N,bypass=False,gain_q12=1631,\n              coefficients_sha256=hashlib.sha256(q.tobytes()).hexdigest(),\n              residual_saturations=int(event))\n    meta.update(changes or {})\n    for k in drop:meta.pop(k,None)\n    p=data/(name+'.npz')\n    np.savez(p,reference=u/S,microphone=mic/S if float_mic is None else np.full(N,float_mic),\n             prediction_pcm=pred,residual_pcm=np.clip(mic-pred,-S,HI),coefficients_q20=q,\n             sample_rate_hz=48828.125,metadata_json=json.dumps(meta))\n    return p\n\n\ndef cli(p):\n    c=subprocess.run([sys.executable,str(root/'scripts/analyze_residual_overflow.py'),'--npz',str(p)],capture_output=True)\n    return dict(exit_code=c.returncode,failed_prefix=b'FAILED:' in c.stdout,\n                prints_unknown='全局帧未知'.encode('utf-8') in c.stdout)\n\n\ndef analyze(p):\n    with contextlib.redirect_stdout(io.StringIO()):return b.analyze(p,None,None,None)\n\n\ncases=[]\n\n\ndef record(name,observed,passed):\n    cases.append(dict(case=name,observed=observed,passed=bool(passed)))\n\n\nrows=[dict(value=v,**cli(fixture('outside_'+str(i),float_mic=v)))\n      for i,v in enumerate((1+2**-23,-1-2**-23))]\nrecord('both_signs_one_q23_step_outside_rejected_early',rows,\n       all(x['exit_code']==2 and x['failed_prefix'] for x in rows))\n\ncodes,count=b.codes_from_float(np.array([1.0,-1.0]),'microphone')\nrecord('exact_endpoints_preserve_sign_and_count',dict(codes=codes.tolist(),clamped=count),\n       codes.tolist()==[HI,-S] and count==1)\n\np=fixture('no_global_domain',drop=('first_frame','completed_frames'),event=True)\nr=analyze(p);primary=r['primary_capture_only'];command=cli(p)\nsummary={k:r[k] for k in ('frame_domain','frame_domain_note','first_frame_global','last_frame_global','completed_frames','attribution')}\nsummary.update(first_overflow_index=primary['first_overflow_index'],\n               first_overflow_global_frame=primary['first_overflow_global_frame'],\n               around_global_frame=primary['around_first']['global_frame'],cli=command)\nrecord('missing_domain_keeps_local_event_and_unknown_global',summary,\n       r['frame_domain']=='unknown' and r['first_frame_global'] is None and r['last_frame_global'] is None\n       and primary['first_overflow_index']==600 and primary['first_overflow_global_frame'] is None\n       and primary['around_first']['global_frame'] is None and r['attribution']['allowed']\n       and command['exit_code']==0 and command['prints_unknown'] and 'frame_domain_ok' not in r)\n\nrows=[]\nfor name,changes in [('start_half',dict(first_frame=.5)),('end_half',dict(completed_frames=1024.5)),\n                     ('start_decimal_no_end',dict(first_frame=1000.7,completed_frames=None)),\n                     ('bool',dict(first_frame=True)),('non_numeric',dict(first_frame='bad')),\n                     ('nan',dict(first_frame=float('nan'))),('inf',dict(completed_frames=float('inf')))]:\n    rows.append(dict(name=name,**cli(fixture(name,changes=changes))))\nrecord('fractional_and_claimed_invalid_frame_types_rejected',rows,\n       all(x['exit_code']==2 and x['failed_prefix'] for x in rows))\n\n# A known first frame is still direct evidence even without a completed counter.\n# Inspect this changed branch without demanding that valid facts be discarded.\np=fixture('known_start_missing_end',drop=('completed_frames',),event=True)\nr=analyze(p);primary=r['primary_capture_only']\nrecord('partial_domain_retains_known_start_without_closure',\n       {k:r[k] for k in ('frame_domain','frame_domain_note','first_frame_global','last_frame_global','completed_frames')}\n       | dict(first_overflow_global_frame=primary['first_overflow_global_frame'],cli=cli(p)),\n       r['frame_domain']=='unknown' and r['completed_frames'] is None and\n       r['first_frame_global']==1000 and r['last_frame_global']==2023 and\n       primary['first_overflow_global_frame']==1600)\n\nsource=(root/'scripts/analyze_residual_overflow.py').read_bytes()\nreport=dict(B_commit='e730b5b2399f60cd666c544a269171a05deccad7',\n            B_script_sha256=hashlib.sha256(source).hexdigest(),hardware_operations=0,\n            B_named_tests=dict(executed=result.testsRun,passed=result.testsRun-len(result.failures)-len(result.errors),test_ids=names),\n            C_changed_scope_probes=dict(total=len(cases),passed=sum(x['passed'] for x in cases),cases=cases),\n            C_probe_source_utf8=pathlib.Path(__file__).read_text(encoding='utf-8'))\npathlib.Path(sys.argv[2]).write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\\n').encode('utf-8'))\nprint('B named %d/%d; C changed-scope probes %d/%d' % (report['B_named_tests']['passed'],result.testsRun,\n      report['C_changed_scope_probes']['passed'],len(cases)))\nsys.exit(not result.wasSuccessful() or not all(x['passed'] for x in cases))\n",
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "question": "Are the three remaining B67 boundary failures and replay-history wording corrected in B e730b5b?",
+  "accepted_scope": "The three previously failing numeric boundaries are accepted; the four requested changes are closed for local arithmetic analysis. Not an acoustic or full-v3 admission.",
+  "B_named_tests_log": "be730b5b-named-tests.txt",
+  "unchanged_passed_tests_repeated": false,
+  "full189_regression_run_by_C": false,
+  "static_wording_review": {
+    "header": "states captured prediction has no missing history",
+    "valid_start": "local replay prefix only",
+    "primary_note": "local replay wording present; clarify prediction means pred_rep, not recorded pred_rec",
+    "secondary_note": "explicit local model replay predecessor history"
+  },
+  "C_consumer_compatibility": {
+    "search_scope": [
+      "scripts",
+      "board",
+      "sim/feedback"
+    ],
+    "active_frame_domain_ok_dependencies": 0,
+    "note": "Only historical B67 probe artifact uses old field; keep it pinned to that historical B version. C production reads original NPZ independently."
+  },
+  "documentation_clarifications": [
+    {
+      "id": "partial_domain_actual_fields",
+      "blocking": false,
+      "actual": "Known first_frame with absent completed_frames retains first/last/event global positions; frame_domain remains unknown and CLI says unknown.",
+      "interpretation": "Retain these positions as conditional on the recorded start; do not call end-of-run coverage or domain closure verified. Missing start leaves positions null.",
+      "request": "Align handoff and frame_domain_note with actual partial-field behavior; no forced data deletion or new现场 run."
+    },
+    {
+      "id": "primary_prediction_wording",
+      "blocking": false,
+      "request": "In the primary-path note explicitly name pred_rep as the missing-history replay; recorded pred_rec and mic-pred observations remain intact. No numerical retest required for this text clarification."
+    }
+  ],
+  "evidence_limits": "No A original NPZ replay, no new board operation, no confirmation of unchanged field numbers or candidate improvement. Standard int24/2^23 rails remain exactly representable; endpoint repair counts do not explain ADC rail samples.",
+  "reproduction": {
+    "exact_B_files": [
+      "scripts/analyze_residual_overflow.py",
+      "sim/feedback/test_residual_overflow_tool.py",
+      "models/room_v1/rewired_512_20261026.json"
+    ],
+    "preparation": "Extract Git blob bytes from B e730b5b into one isolated root; save the embedded C_probe_source_utf8 as run_review.py there.",
+    "command": [
+      "python",
+      "run_review.py",
+      "NEW-NAMED-LOG.txt",
+      "NEW-RESULTS.json"
+    ],
+    "probe_source_sha256": "833dec6c624ef25414106a0dd60e7db62fa75be70b305c6bd099012d15e984c6"
+  }
+}

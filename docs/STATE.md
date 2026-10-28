@@ -40,10 +40,10 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-28限定复核B=67d28b2四处工具修正：点名8项全部通过，C同范围11项8过3未过。原四类反例已修，剩余近满幅容差、缺帧域补造和小数帧号截断三处边界；没有操板、重采或全量185项回归。
-**当前卡点**：B仍需修上述三个边界并更正历史前缀文字，C只复验失败项。A=e132991的v3完整流程上次未过，fetch已见A=6a466db但本轮尚未验收其修正版；不把旧失败套到未审新版，不安排整场重跑或改变保护。
+**最后动作**：2026-10-28限定复核B=e730b5b：点名4/4、C改动范围5/5，三个数值边界及前史措辞完成本轮验收。新frame_domain字段无C现用旧名依赖；补清已知起点但缺完成帧时的条件位置。不重跑已过项、189项或现场。
+**当前卡点**：本轮B工具不再阻塞既有静默分析，两个非阻塞文字说明交B同步。A=e132991的v3完整流程上次未过；fetch已见A=e05bb73，本轮未验其新版，须按对应身份交付验收。原NPZ/时间线/声学条件缺项仍按原范围保留，不改变保护或安排整场重跑。
 
-- [B67通过范围与剩余边界](../report/verification/audio_closed/batch-control.md#2026-10-28-b67四处修正版限定复核)、[机器记录](../report/verification/audio_closed/sprint-rc0-20261025/b67d28b2-review-20261028.json)。Q20声明冲突与整窗/有效区分列已过；略超±1最终仍停止归因、退出2，缺口是解码器仍修复非法输入；缺帧域应保留局部分析、停止相应全局时间归因。B已撤回3359贴轨是浮点取整的错误解释。
+- [Be730限定验收](../report/verification/audio_closed/batch-control.md#2026-10-28-be730剩余边界验收)、[机器记录](../report/verification/audio_closed/sprint-rc0-20261025/be730b5b-review-20261028.json)。近满幅直接拒绝、缺帧域保留局部并标未知、小数/所述非法类型拒绝已过；未知闭合不抹去已知起点的条件位置。既有Q20和整窗分列通过项沿用；[B67修复前证据](../report/verification/audio_closed/sprint-rc0-20261025/b67d28b2-review-20261028.json)保留，不将工具验收当现场改善。
 - [v3验收清单与失败出口](../report/verification/audio_closed/batch-control.md#2026-10-27-v3消费端同步与a交付验收)、[机器记录](../report/verification/audio_closed/sprint-rc0-20261025/v3-e132991-acceptance.json)、[只读操作单](../board/audio_closed/BATCH_GUIDE.md#2026-10-27-v3同步与既有数据复算)。v3 bit48e38f78…/HWH9411adb5…/driver6b397359…/helper0d4e1933…与A指定版本一致；v2 audio_live及r6原包保持原样，混搭或身份缺失不用于相应效果归因。
 - C已实现bit22/input_full_scale_seen硬无效，末窗安静不掩盖全程输入到轨；预增益残差仅诊断，预测/增益后/混音保护保留。输出改用宽残差及skip+2，明确wide_residual_frames/output_checked_frames范围；尾段残差比按wide25标注。原件不改写，单项未知只限制依赖结论，不把保护、剪裁或软件通过当啸叫/算法收益。
 - A新增检查缺口已复现：NPZ落盘失败丢输入粘滞位/身份；合法负满幅640帧误报640个宽残差；实际前缀512次宽减法越界报0。人声gate失败仍跑两臂、纯音首项失败仍继续，需修后才用。C只改消费/检查器，未跨线改A驱动、RTL、位流或模型。
