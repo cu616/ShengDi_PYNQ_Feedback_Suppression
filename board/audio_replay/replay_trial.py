@@ -16,6 +16,7 @@ from pynq import MMIO, Overlay
 from pynq.overlays.base import BaseOverlay
 from residual_tools import load_candidate
 from closed_tools import trial_parameters
+import replay_tools
 from replay_tools import verify_replay
 
 FRAMES = 16384
@@ -149,6 +150,9 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         bit_sha256=_file_sha256(bit),
         hwh_sha256=_file_sha256(bit.with_suffix(".hwh")),
         model_sha256=_file_sha256(model_path),
+        # The checker is part of the identity: a capture verified by a different replay_tools is
+        # not the same evidence (C 2026-10-27, "complete version hashes").
+        replay_tools_sha256=_file_sha256(replay_tools.__file__),
         coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
         source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
     )

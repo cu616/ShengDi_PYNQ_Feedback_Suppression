@@ -11,7 +11,7 @@
     "hwh_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
     "rtl_audio_pl_replay_sha256": "4d02b019ddfe1c175b4e8d929ac157b8f4276ffc94e6b1e5f5322620f5b31879",
     "rtl_feedback_fir_sha256": "d57e2f53938ddff2034b6d783a4a46b6243018a3be5fdc9c342acf57ad0a8a3b",
-    "driver_replay_trial_sha256": "130d65c6ba799665918a98e2d34fa418c21bcaf55daa21734104f5d321b7c831",
+    "driver_replay_trial_sha256": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
     "driver_replay_tools_sha256": "5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d",
     "board_package": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide",
     "v2_rollback_package_untouched": "/home/xilinx/jupyter_notebooks/base/audio/audio_live (bit 61bb71aa..., hwh 92b499a3..., replay_trial 2127663...)",
@@ -225,6 +225,53 @@
         ],
         "meaning": "continuity and protection are proven at 60 s; audible PA benefit is NOT demonstrated at this working point, which is the same conclusion as the 20 cm arms on 2026-10-27"
       }
+    },
+    "hardware_verification_matrix": {
+      "why": "C re-verifies a hash, not a story: every hardware check must say which driver hash it ran on",
+      "rows": [
+        {
+          "check": "input full scale stops the run (hand claps 2-3 cm)",
+          "driver": "82787262b94b2b081d7da6da1d0429ea51f8bb2048a62e40682d3643a2a7f67c",
+          "result": "PASS: stop_reason=input_clip, capture_status=0x004019ee, stopped at 3319/146484 frames, recovery_ok"
+        },
+        {
+          "check": "60 s continuous, twice",
+          "driver": "82787262",
+          "result": "PASS both runs (2929687 frames, bit22=0)"
+        },
+        {
+          "check": "mixed pair refused before start",
+          "driver": "82787262",
+          "result": "PASS"
+        },
+        {
+          "check": "silent run completes",
+          "driver": "82787262",
+          "result": "PASS"
+        },
+        {
+          "check": "mixed pair refused before start",
+          "driver": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+          "result": "PASS (re-run on the delivered driver)"
+        },
+        {
+          "check": "silent run completes + status.json carries the full identity",
+          "driver": "c2b2a86a",
+          "result": "PASS: completed, bit22=0, bit_exact, and status.json now contains capture_status, input_full_scale_seen, package_version and driver/bit/hwh/model hashes (C item 1)"
+        },
+        {
+          "check": "input full scale stops the run",
+          "driver": "c2b2a86a",
+          "result": "NOT RE-RUN: the operator had left the microphone, so the clap could not be repeated. The stop path itself is byte-identical to 82787262 except where it is read for the status payload; see driver-diff-clap-verified-to-delivered.txt"
+        },
+        {
+          "check": "60 s continuous on the delivered driver",
+          "driver": "c2b2a86a",
+          "result": "NOT RE-RUN"
+        }
+      ],
+      "diff_evidence": "driver-diff-clap-verified-to-delivered.txt: 34 changed lines between the clap-verified driver and the delivered one; none of them is runtime_stop, the polling loop or the post-run re-check. The single line that mentions INPUT_CLIP_BIT is the status field.",
+      "conclusion": "the delivered driver is NOT yet fully re-verified on hardware. The two checks that need no person pass; the two that need the operator do not, and must be repeated before any demo claim."
     }
   },
   "corrections": {
@@ -252,8 +299,10 @@
     "then a keep-or-rollback recommendation for v3"
   ],
   "pending_measurements": [
-    "C incremental acceptance of this same version - awaiting the re-check of the failed items",
-    "audible amplification at the demo working point - not demonstrated (listener repeated this twice)"
+    "re-observe input_clip stop on the delivered driver c2b2a86a (needs the operator at the microphone)",
+    "60 s continuous on the delivered driver c2b2a86a",
+    "C incremental acceptance of this version",
+    "audible amplification at the demo working point - not demonstrated"
   ],
   "working_point_analysis": {
     "asked_by": "B (67d28b2) rejected all three of A's options and proposed a distance ladder plus raising g",
