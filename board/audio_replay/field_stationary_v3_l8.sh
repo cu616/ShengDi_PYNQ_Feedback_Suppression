@@ -5,6 +5,9 @@
 # SUPERSEDED by field_stationary_v3.sh (2026-10-28): that script gates the branch, requires an operator
 # confirmation token and stops after a protection event. This file is kept only for the
 # 2026-10-27 evidence trail and must not be used for new runs.
+# SUPERSEDED by field_stationary_v3.sh (2026-10-28): that script gates the branch, requires an operator
+# confirmation token and stops after a protection event. This file is kept only for the
+# 2026-10-27 evidence trail and must not be used for new runs.
 # Field window, stationary-source arms, on the v3 (wide-residual) package.
 # Order: input gate (zero output) -> zero-coefficient arm -> candidate arm.
 # Same board-generated white noise (seed 4242, -20 dBFS) for both arms, identical gain/volume.

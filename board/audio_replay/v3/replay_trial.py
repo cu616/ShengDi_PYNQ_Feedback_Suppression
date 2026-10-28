@@ -24,6 +24,9 @@ FRAMES = 16384
 # zero-padded up to this count (see load path); the evidence records both numbers so a
 # padded 256-tap model is never reported as a trained 512-tap model.
 HARDWARE_TAPS = 512
+# Wait between unmuting the codec and arming, so the unmute pop decays before the run starts
+# (observed 2026-10-28: a "du" from the speaker railed the ADC on the first frames).
+CODEC_SETTLE_SECONDS = 0.25
 
 
 def decode_counts(packed_word, gain_word, mix_word):
@@ -283,6 +286,13 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         hp = (hp_volume << 2) | 3
         for addr, value in ((0x401C, 0x21), (0x401E, 0x41), (0x4023, hp), (0x4024, hp)):
             write_reg(addr, [value])
+        # Codec unmute produces an audible pop: on 2026-10-28 the operator heard a "du" from the
+        # speaker and the microphone hit the ADC rail for a few milliseconds at the very first
+        # frames, which trips the input-full-scale stop before any program material arrives.
+        # Let the pop decay BEFORE the run starts, so the protection counters never latch on a
+        # startup transient. This moves no threshold and relaxes nothing: the arm point moves, the
+        # protection stays exactly as strict as before.
+        time.sleep(CODEC_SETTLE_SECONDS)
         start = time.monotonic()
         control.write(0, 1 | (int(bypass) << 1) | (gain_q12 << 16))
         armed = True

@@ -11,7 +11,7 @@
     "hwh_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
     "rtl_audio_pl_replay_sha256": "4d02b019ddfe1c175b4e8d929ac157b8f4276ffc94e6b1e5f5322620f5b31879",
     "rtl_feedback_fir_sha256": "d57e2f53938ddff2034b6d783a4a46b6243018a3be5fdc9c342acf57ad0a8a3b",
-    "driver_replay_trial_sha256": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+    "driver_replay_trial_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
     "driver_replay_tools_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
     "board_package": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide",
     "v2_rollback_package_untouched": "/home/xilinx/jupyter_notebooks/base/audio/audio_live (bit 61bb71aa..., hwh 92b499a3..., replay_trial 2127663...)",
@@ -307,6 +307,51 @@
           "2026-10-28, 60 s at 6/15 before this run: \"能听到、没明显放大\" (audible, not obviously louder)"
         ]
       }
+    },
+    "segment_A_tone_2026_10_28": {
+      "what": "322 Hz three-point in one round at the agreed working point (phone silent, gain -8 dB, Codec 40)",
+      "levels_db": {
+        "open_mic": 185.67,
+        "bypass_mic": 189.79,
+        "cancel_mic": 184.87,
+        "open_residual": 183.37,
+        "bypass_residual": 189.79,
+        "cancel_residual": 182.7
+      },
+      "cd_322_db": 7.08,
+      "loop_boost_db": 4.12,
+      "acoustic_difference_db": 4.92,
+      "overshoot_db": 0.8,
+      "verdict": "cancellation_holds by B rule (4.92 >= 4.12 - 1.5 and |0.80| <= 1.5)",
+      "arms": "all three completed, bit22=0, no rail samples, recovery_ok",
+      "drift_vs_2026_10_27": "CD 6.37 -> 7.08, boost 3.75 -> 4.12, difference 4.76 -> 4.92: same order, about 0.4 dB of run-to-run drift"
+    },
+    "segment_C_speech_2026_10_28": {
+      "what": "six speech takes, three per arm, same sentence and distance, 10 s each, gain -8 dB",
+      "result": "all six completed, bit22=0, no saturation, wide_residual_frames=0, recovery_ok",
+      "takes_with_speech": {
+        "zero": [
+          -24.2,
+          -23.2
+        ],
+        "candidate": [
+          -24.8,
+          -25.5
+        ]
+      },
+      "silent_takes": {
+        "zero_take_1": -38.0,
+        "candidate_take_2": -39.0
+      },
+      "reading": "the two silent takes are gaps in an 86 s continuous utterance and carry no level information; among the four usable takes the candidate runs about 1.5 dB lower, but the takes are not the same utterance segment, so this is not a paired level comparison",
+      "meaning": "at this level live speech does NOT clip the input (six takes, bit22=0 every time), and the candidate ran with no protection trip. No wide-residual overflow occurred, so the specific v3 fix was still not exercised by speech on this day."
+    },
+    "driver_79c4d9f7_full_verification": {
+      "mixed_pair_refused": "PASS",
+      "silent_bringup": "completed, 58593 frames, bit22=0, bit_exact, status.json carries the full identity",
+      "input_full_scale_stop": "PASS: clap -> stop_reason=input_clip, capture_status=0x00408000, 8 samples at the rail, stopped at 38877 of 146484 frames, recovery_ok, no cleanup errors",
+      "sixty_second_continuous": "PASS: 2929687/2929687 frames, capture_status=0x00008001, bit22=0, all four saturations 0, mic RMS -22.1 dBFS, peak -11.9 dBFS, no rail samples, bit_exact, wall 89.2 s",
+      "listener_record": "\"能听出放大\" (can hear the amplification), same working point as the earlier record"
     }
   },
   "corrections": {
@@ -335,7 +380,8 @@
   ],
   "pending_measurements": [
     "C incremental acceptance of this version - awaiting",
-    "audible amplification WITH cancellation at the demo working point - still not demonstrated; the positive listener record above is the zero-coefficient amplification path only"
+    "audible benefit WITH cancellation at the demo working point - the tone three-point says the cancellation holds at 322 Hz, but no listener comparison between arms has been made",
+    "segment B (g = -3 deliberate howl) - not run, needs an explicit authorisation and a person at the amplifier switch"
   ],
   "working_point_analysis": {
     "asked_by": "B (67d28b2) rejected all three of A's options and proposed a distance ladder plus raising g",
@@ -535,5 +581,14 @@
       "how": "|H| = 10^(4.40/20) = 1.6596, g = 0.3981, g|H| = 0.6607; measured boost 3.75 dB gives |1-gH| = 0.6494, cos(phase) = 0.768, phase = +-39.8 degrees",
       "consequence": "g plus |H| in dB is an amplitude bound only; it cannot predict loudness. An in-phase assumption would have predicted 9.4 dB where 3.75 dB was measured, and the 5.7 dB gap is entirely phase."
     }
+  },
+  "codec_unmute_pop_fix": {
+    "date": "2026-10-28, field",
+    "symptom": "the operator heard a \"du\" from the speaker; the microphone hit the ADC rail for a few milliseconds at the very first frames of a run, so the input-full-scale stop fired before any program material arrived. Three consecutive gate attempts stopped after 5 / 650 / 114 frames with 5-87 samples at the rail while the room was otherwise quiet.",
+    "root_cause": "the driver unmuted the codec and armed the run in the same instant, so the unmute pop landed inside the first captured frames.",
+    "fix": "CODEC_SETTLE_SECONDS = 0.25 between the codec unmute and the arm, so the pop decays BEFORE the counters start. No threshold moved and no protection was relaxed: the arm point moved, the protection is exactly as strict as before.",
+    "verification": "after the fix the same tone round and the same 60 s run completed with bit22=0 and no rail samples; the clap still stops the run with input_clip.",
+    "driver_before": "c2b2a86a...",
+    "driver_after": "79c4d9f7..."
   }
 }
