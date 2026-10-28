@@ -222,9 +222,9 @@
 
 ## 板卡占用
 
-- **空闲（2026-10-27 收工；10-27 夜间起板卡断网，SSH 不通，待现场上电）**。
-  下一次操作是 A：**先上传驱动 `82787262…` 再跑任何运行**（板上仍是 `6b397359…`，不带 bit22 停声）。
-  现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`（v3 宽残差位流）；
+- **空闲（2026-10-28 收工，板卡在线）**。下一次操作前先在这里改「占用中 / A / 时间」。
+  现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`：位流 `48e38f78…`、hwh `9411adb5…`、
+  **驱动已是 `82787262…`**（含 bit22 停声与配对校验，2026-10-28 已上板复验）。
   回退包 `audio_live` 原样未动。历史证据目录 `/home/xilinx/{b512_pkg,room_cal520,room_head513,room_tail590}`。
 - 当前夹具（**2026-10-27 现场确认**）：**麦–音响 100 cm 侧对 + 金属板与棉**，
   `fixture_id=room_v1_20261026b`，与 `rewired_512_20261026` 拟合时同一套，不必重绑。
