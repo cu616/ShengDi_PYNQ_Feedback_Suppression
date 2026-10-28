@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "kind": "C-limited-review-of-B-67d28b2",
+  "question": "Which of the four previously reported tool defects are fixed, and what limits still block correct encoding or time attribution?",
+  "B_commit": "67d28b2610f606845d4f16280cfd1607800415ab",
+  "B_script_sha256": "3e37fb34a797361c37b376edbeb9daa0cdf47f98f987673890e8c09abb747f92",
+  "hardware_operations": 0,
+  "B_named_tests": {
+    "executed": 8,
+    "passed": 8,
+    "test_ids": [
+      "EncodingGateTest.test_float_positive_full_scale_is_not_turned_into_negative_rail",
+      "EncodingGateTest.test_float_out_of_range_is_rejected",
+      "EncodingGateTest.test_float_dtype_pcm_field_is_rejected",
+      "EncodingGateTest.test_declared_q20_hash_mismatch_stops_attribution",
+      "EncodingGateTest.test_declared_q20_hash_match_keeps_attribution",
+      "EncodingGateTest.test_frame_domain_mismatch_is_rejected",
+      "EncodingGateTest.test_whole_and_valid_are_reported_separately",
+      "AnalyzeTest.test_history_prefix_is_excluded"
+    ],
+    "log": "b67d28b2-named-tests.txt"
+  },
+  "C_independent_probes": {
+    "B_commit": "67d28b2610f606845d4f16280cfd1607800415ab",
+    "script_sha256": "3e37fb34a797361c37b376edbeb9daa0cdf47f98f987673890e8c09abb747f92",
+    "fixtures": "synthetic boundaries only; no A voice PCM or board operations",
+    "cases": [
+      {
+        "case": "positive_float_one_no_sign_wrap",
+        "expected": "positive rail; clamp count=1024, no strict overflow",
+        "observed": {
+          "encoding": {
+            "mic_clamped": 1024,
+            "ref_clamped": 0,
+            "coefficients_sha256_declared": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+            "coefficients_sha256_actual": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
+          },
+          "primary": {
+            "note": "mic 与板上 prediction 相减，不依赖模型、不依赖历史；但 prediction 在前 taps 帧是「历史填充」，所以归因与余量以有效区为准",
+            "mic_peak_dbfs": {
+              "whole": -1.0354387945871882e-06,
+              "valid": -1.0354387945871882e-06
+            },
+            "pred_peak_dbfs": {
+              "whole": -138.47379800543135,
+              "valid": -138.47379800543135
+            },
+            "wide_max_x": {
+              "whole": 0.9999998807907104,
+              "valid": 0.9999998807907104
+            },
+            "wide_headroom_db": {
+              "whole": 1.0354387945871882e-06,
+              "valid": 1.0354387945871882e-06
+            },
+            "overflow_samples": {
+              "whole": 0,
+              "valid": 0,
+              "history": 0
+            },
+            "first_overflow_index": -1,
+            "first_overflow_global_frame": null,
+            "residual_rail_samples_pos": 1024,
+            "residual_rail_samples_neg": 0
+          },
+          "attribution": {
+            "allowed": false,
+            "model_substituted": false,
+            "reasons": [
+              "归一化字段有 1024/0 个样本落到 ±满幅后需夹回（可能是 ÷2^23 的浮点取整，也可能是真的到轨）；已计数，不当作越界"
+            ]
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "normalized_float_two_rejected",
+        "expected": "FAILED exit2",
+        "observed": {
+          "exit_code": 2,
+          "failed_prefix": true
+        },
+        "passed": true
+      },
+      {
+        "case": "one_PCM_step_outside_normalized_range",
+        "expected": "|x|>1 rejected rather than repaired",
+        "observed": [
+          {
+            "value": 1.0000001192092896,
+            "accepted": true,
+            "decoded": 8388607,
+            "clamped": 1
+          },
+          {
+            "value": -1.0000001192092896,
+            "accepted": true,
+            "decoded": -8388608,
+            "clamped": 1
+          }
+        ],
+        "passed": false
+      },
+      {
+        "case": "all_three_integer_fields_reject_float_dtype",
+        "expected": "each FAILED exit2",
+        "observed": [
+          {
+            "field": "prediction_pcm",
+            "exit_code": 2,
+            "failed_prefix": true
+          },
+          {
+            "field": "residual_pcm",
+            "exit_code": 2,
+            "failed_prefix": true
+          },
+          {
+            "field": "coefficients_q20",
+            "exit_code": 2,
+            "failed_prefix": true
+          }
+        ],
+        "passed": true
+      },
+      {
+        "case": "integer_signed_and_unsigned_boundaries",
+        "expected": "signed rails retained, unsigned24 decoded, mixed rejected",
+        "observed": {
+          "signed": [
+            -8388608,
+            8388607
+          ],
+          "packed": [
+            -1,
+            -8388608
+          ],
+          "mixed_rejected": true
+        },
+        "passed": true
+      },
+      {
+        "case": "declared_hash_conflict_stops_attribution",
+        "expected": "attribution false; CLI exit2",
+        "observed": {
+          "attribution": {
+            "allowed": false,
+            "model_substituted": false,
+            "reasons": [
+              "metadata 声明的 coefficients_sha256=000000000000… 与实际数组哈希 e5a00aa9991a… 不符"
+            ]
+          },
+          "cli": {
+            "exit_code": 2,
+            "failed_prefix": false
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "declared_hash_matches_actual_array",
+        "expected": "matching int32 LE hash; local attribution allowed",
+        "observed": {
+          "encoding": {
+            "mic_clamped": 0,
+            "ref_clamped": 0,
+            "coefficients_sha256_declared": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+            "coefficients_sha256_actual": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
+          },
+          "attribution": {
+            "allowed": true,
+            "model_substituted": false,
+            "reasons": []
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "inconsistent_or_negative_frame_domain_rejected",
+        "expected": "both FAILED exit2",
+        "observed": [
+          {
+            "case": "inconsistent",
+            "exit_code": 2,
+            "failed_prefix": true
+          },
+          {
+            "case": "negative",
+            "exit_code": 2,
+            "failed_prefix": true
+          }
+        ],
+        "passed": true
+      },
+      {
+        "case": "missing_frame_domain_keeps_only_local_scope",
+        "expected": "local arithmetic retained; global range/verification unknown",
+        "observed": {
+          "first_frame_global": 0,
+          "last_frame_global": 1023,
+          "completed_frames": null,
+          "frame_domain_ok": true,
+          "attribution": {
+            "allowed": true,
+            "model_substituted": false,
+            "reasons": []
+          }
+        },
+        "passed": false
+      },
+      {
+        "case": "fractional_frame_domain_rejected",
+        "expected": "FAILED exit2; frame numbers cannot be truncated",
+        "observed": {
+          "exit_code": 0,
+          "failed_prefix": false
+        },
+        "passed": false
+      },
+      {
+        "case": "observed_prefix_and_valid_margins_separated",
+        "expected": {
+          "whole_peak": 1.0000017881393433,
+          "valid_peak": 1.1920928955078125e-07,
+          "valid_headroom": 138.47379800543135
+        },
+        "observed": {
+          "primary": {
+            "note": "mic 与板上 prediction 相减，不依赖模型、不依赖历史；但 prediction 在前 taps 帧是「历史填充」，所以归因与余量以有效区为准",
+            "mic_peak_dbfs": {
+              "whole": -1.0354387945871882e-06,
+              "valid": -138.47379800543135
+            },
+            "pred_peak_dbfs": {
+              "whole": -114.39139835231286,
+              "valid": -138.47379800543135
+            },
+            "wide_max_x": {
+              "whole": 1.0000017881393433,
+              "valid": 1.1920928955078125e-07
+            },
+            "wide_headroom_db": {
+              "whole": -1.5531567106754417e-05,
+              "valid": 138.47379800543135
+            },
+            "overflow_samples": {
+              "whole": 8,
+              "valid": 0,
+              "history": 8
+            },
+            "first_overflow_index": -1,
+            "first_overflow_global_frame": null,
+            "residual_rail_samples_pos": 8,
+            "residual_rail_samples_neg": 0
+          },
+          "post_gain": {
+            "overflow_samples": {
+              "whole": 8,
+              "valid": 0
+            },
+            "first_overflow_index": -1,
+            "max_abs": {
+              "whole": 1.0000017881393433,
+              "valid": 1.1920928955078125e-07
+            },
+            "margin_db": {
+              "whole": -1.5531567106754417e-05,
+              "valid": 138.47379800543135
+            },
+            "residual_ceiling_x": 1.0
+          },
+          "secondary": {
+            "note": "依赖 taps 帧历史；只判有效区，前缀的失配单独计数",
+            "prediction_mismatches": 0,
+            "mismatches_in_prefix": 8,
+            "evaluated": 511,
+            "local_prediction_saturations": 0
+          }
+        },
+        "passed": true
+      }
+    ],
+    "passed": 8,
+    "total": 11,
+    "near_rail_followup": [
+      {
+        "value": 1.0000001192092896,
+        "encoding": {
+          "mic_clamped": 1024,
+          "ref_clamped": 0,
+          "coefficients_sha256_declared": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+          "coefficients_sha256_actual": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
+        },
+        "attribution": {
+          "allowed": false,
+          "model_substituted": false,
+          "reasons": [
+            "归一化字段有 1024/0 个样本落到 ±满幅后需夹回（可能是 ÷2^23 的浮点取整，也可能是真的到轨）；已计数，不当作越界"
+          ]
+        },
+        "exit_code": 2,
+        "failed_prefix": false
+      },
+      {
+        "value": -1.0000001192092896,
+        "encoding": {
+          "mic_clamped": 1024,
+          "ref_clamped": 0,
+          "coefficients_sha256_declared": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+          "coefficients_sha256_actual": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
+        },
+        "attribution": {
+          "allowed": false,
+          "model_substituted": false,
+          "reasons": [
+            "归一化字段有 1024/0 个样本落到 ±满幅后需夹回（可能是 ÷2^23 的浮点取整，也可能是真的到轨）；已计数，不当作越界"
+          ]
+        },
+        "exit_code": 2,
+        "failed_prefix": false
+      }
+    ]
+  },
+  "fix_groups": [
+    {
+      "group": "normalized_float_and_integer_encoding",
+      "original_counterexamples_fixed": true,
+      "remaining": "near-rail tolerance still accepts abs(x)>1"
+    },
+    {
+      "group": "declared_Q20_hash_vs_actual_array",
+      "original_counterexamples_fixed": true,
+      "remaining": null
+    },
+    {
+      "group": "frame_domain",
+      "original_counterexamples_fixed": true,
+      "remaining": "missing global domain invented; fractional frame values truncated"
+    },
+    {
+      "group": "whole_and_valid_scope",
+      "original_counterexamples_fixed": true,
+      "remaining": "numeric split passes; prefix describes missing local replay history, not empty RTL history"
+    }
+  ],
+  "verdict": "original four counterexamples repaired; scoped use only, three related edge cases remain",
+  "required_followup": [
+    {
+      "id": "strict_normalized_range",
+      "file": "scripts/analyze_residual_overflow.py",
+      "line": 74,
+      "evidence": "Both +/-(1+2^-23) decoded and clamped. End-to-end attribution remains false and CLI exits2, so this is not an attribution pass.",
+      "required": "Enforce abs(x)<=1 exactly before conversion, or declare and justify a separate legacy repair mode; never describe abs(x)>1 as an accepted normalized input."
+    },
+    {
+      "id": "unknown_frame_domain",
+      "file": "scripts/analyze_residual_overflow.py",
+      "lines": [
+        193,
+        277
+      ],
+      "evidence": "Without first_frame or completed_frames, output says global0..1023, frame_domain_ok=true, attribution.allowed=true.",
+      "required": "Keep local arithmetic available. Without an observed start leave global positions unknown; missing end verification is partial/unknown. Do not silently default to0 or call the complete frame domain verified."
+    },
+    {
+      "id": "integer_frame_fields",
+      "file": "scripts/analyze_residual_overflow.py",
+      "lines": [
+        193,
+        206
+      ],
+      "evidence": "first_frame=.5 and completed_frames=1024.5 are truncated to0 and1024; CLI exits0.",
+      "required": "Check frame fields are finite nonnegative integer values before conversion; reject inconsistent/fractional input with FAILED exit2."
+    },
+    {
+      "id": "history_wording",
+      "file": "scripts/analyze_residual_overflow.py",
+      "lines": [
+        15,
+        213,
+        292
+      ],
+      "evidence": "Comment still says RTL starts empty at a truncated capture prefix.",
+      "required": "Describe only missing predecessor samples in local model replay. Recorded mic-pred and whole-capture events do not depend on the model replay prefix."
+    }
+  ],
+  "unchanged": {
+    "model_file_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+    "candidate_coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+    "A_driver_RTL_and_protection": true,
+    "C_product_code": true
+  },
+  "field_scope": "No A original NPZ replay, no new acoustic decision. 3359 ADC rail samples remain real; residual_saturations0 at zero coefficients does not establish clean input.",
+  "outside_this_review": "B field recommendations and all185 regression results were not independently retested. Q12<=32768 meaning gain<=8 was already handed to A in C1167ee3.",
+  "reproduction": {
+    "probe_file": "b67d28b2-review-probes.py",
+    "probe_sha256": "cf705d12c973ee62d65a6b7ae98a7fae49de5d3db11c32776f6653b25dd8904d",
+    "exact_B_inputs": [
+      "scripts/analyze_residual_overflow.py",
+      "sim/feedback/test_residual_overflow_tool.py",
+      "models/room_v1/rewired_512_20261026.json"
+    ],
+    "preparation": "Extract those three files as Git blob bytes from B67d28b2 into one isolated root; do not merge B into C.",
+    "probe_command": [
+      "python",
+      "b67d28b2-review-probes.py",
+      "NEW-OUTPUT.json",
+      "EXTRACTED-B-ROOT"
+    ],
+    "named_tests_runner_utf8": "import contextlib\nimport importlib.util\nimport pathlib\nimport sys\nimport tempfile\nimport unittest\n\nroot = pathlib.Path(__file__).resolve().parent\ntempfile.tempdir = str(root / 'test-temp')\npathlib.Path(tempfile.tempdir).mkdir(exist_ok=True)\nsys.path.insert(0, str(root / 'scripts'))\nspec = importlib.util.spec_from_file_location('b_tests', root/'sim/feedback/test_residual_overflow_tool.py')\nmod = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(mod)\nnames = [\n    'EncodingGateTest.test_float_positive_full_scale_is_not_turned_into_negative_rail',\n    'EncodingGateTest.test_float_out_of_range_is_rejected',\n    'EncodingGateTest.test_float_dtype_pcm_field_is_rejected',\n    'EncodingGateTest.test_declared_q20_hash_mismatch_stops_attribution',\n    'EncodingGateTest.test_declared_q20_hash_match_keeps_attribution',\n    'EncodingGateTest.test_frame_domain_mismatch_is_rejected',\n    'EncodingGateTest.test_whole_and_valid_are_reported_separately',\n    'AnalyzeTest.test_history_prefix_is_excluded',\n]\nout = pathlib.Path(sys.argv[1])\nwith out.open('w', encoding='utf-8', newline='\\n') as stream:\n    with contextlib.redirect_stdout(stream), contextlib.redirect_stderr(stream):\n        suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromNames(names, mod))\n        result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)\nprint('B named: %d run, %d failures, %d errors' % (result.testsRun, len(result.failures), len(result.errors)))\nsys.exit(not result.wasSuccessful())\n",
+    "execution_notes": "Eight named B tests and eleven C probes run once; only the two near-rail follow-ups were subsequently added. Portable artifact/root binding added without rerunning passed cases. No full185 run."
+  }
+}

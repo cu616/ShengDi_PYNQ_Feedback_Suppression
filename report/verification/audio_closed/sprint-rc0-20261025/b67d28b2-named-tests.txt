@@ -1,0 +1,18 @@
+test_float_positive_full_scale_is_not_turned_into_negative_rail (b_tests.EncodingGateTest.test_float_positive_full_scale_is_not_turned_into_negative_rail)
++1.0 的归一化浮点不能被当成“无符号 24 位的 -2^23”。 ... ok
+test_float_out_of_range_is_rejected (b_tests.EncodingGateTest.test_float_out_of_range_is_rejected) ... FAILED: microphone 超出归一化范围：|max|=2.000000（该字段应为一化到 ±1.0 的浮点，不是原始码值）
+ok
+test_float_dtype_pcm_field_is_rejected (b_tests.EncodingGateTest.test_float_dtype_pcm_field_is_rejected) ... FAILED: prediction_pcm 不是整数 dtype（float64）；PCM/Q20 字段不接受浮点
+ok
+test_declared_q20_hash_mismatch_stops_attribution (b_tests.EncodingGateTest.test_declared_q20_hash_mismatch_stops_attribution) ... ok
+test_declared_q20_hash_match_keeps_attribution (b_tests.EncodingGateTest.test_declared_q20_hash_match_keeps_attribution) ... ok
+test_frame_domain_mismatch_is_rejected (b_tests.EncodingGateTest.test_frame_domain_mismatch_is_rejected) ... FAILED: domain.npz 帧域不一致：first_frame 0 + frames 1024 = 1024 ≠ completed_frames 2000（抓包应为运行末尾那一圈）
+ok
+test_whole_and_valid_are_reported_separately (b_tests.EncodingGateTest.test_whole_and_valid_are_reported_separately)
+前缀里的高峰值只能出现在“整窗”，不能算进有效区余量。 ... ok
+test_history_prefix_is_excluded (b_tests.AnalyzeTest.test_history_prefix_is_excluded) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.170s
+
+OK
