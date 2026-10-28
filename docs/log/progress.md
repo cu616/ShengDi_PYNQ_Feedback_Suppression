@@ -1,3 +1,22 @@
+## 2026-10-28 上电后硬件复验　A　混搭被拒、输入满幅停声、60 秒两次 completed 全部通过；可听收益仍未成立
+
+- 上传驱动 `82787262…` 到 `audio_wide` 并核对：`replay_tools 0d4e1933…`、位流 `48e38f78…`、
+  hwh `9411adb5…`、`test_runtime_stop c4ac1bfd…` 全部对上。
+- **混搭拒绝（C 第 5 项）**：把 v2 的 bit/hwh 放到 v3 驱动旁边，`replay_trial` 在位流装载前抛错
+  「bitstream does not match this driver: expected 48e38f78…」→ 未 arm、未发声。**PASS**。
+- **新驱动静默自检**：58593 帧、`completed`、bit22=0、`input_full_scale_seen=false`、四类计数 0、bit_exact。**PASS**。
+- **输入满幅停声（队长关键保护 / C 第 2 项）**：距麦 2–3 cm 连续拍手（脚本只监听、增益 0），
+  结果 `stop_reason="input_clip"`、`capture_status=0x004019ee`、bit22=1、满幅样本 20、
+  3319/146484 帧即停、`recovery_ok=true`、`cleanup_errors=[]`。**PASS**。
+- **60 秒连续运行**：第一次在 8/15 会削顶 → 按判据停（31988 帧、bit22=1、mic −21.6）；
+  降到 **6/15** 后先跑 3 秒监听探针（mic −25.0、峰值 −11.6、无满幅）合格，再跑两次 60 秒：
+  两次都 `completed`、2929687/2929687 帧、bit22=0、四类计数 0、bit_exact、无满幅样本。
+  **听众**：第一次要求重听；第二次「**能听到、没明显放大**」→ 连续性/保护成立，**可听扩声收益不成立**。
+- **重要更正**：历史基线「手机 8/15、5 cm」今天在 5 cm 会把 ADC 顶满。历史那次没有输入检测器，
+  它的「四类计数全 0」**从未证明输入干净**；且其记录电平比今天低 7 dB，场景不同。
+  **「8/15 原样复现」这条不能再引用**；6/15 是变更条件，已标记。
+- 脚本入库：`board/audio_replay/{verify_v3_driver,clap_test_v3,listen_probe_v3,long60_v3}.sh`。
+
 ## 2026-10-28 队长决定后的驱动修复　A　bit22 变成停声条件（`input_clip`），只改驱动不改位流；软件验证 12 项通过
 
 - 队长 2026-10-28 决定：**v3 作冻结主线**，v2 保留成功基线与回退；并授权直接修

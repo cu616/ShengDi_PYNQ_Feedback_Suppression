@@ -187,6 +187,43 @@
     "human_speech_two_arm": {
       "status": "NOT RUN",
       "reason": "needs a person speaking at ~12 cm plus a confirmed stable speaker/microphone baseline"
+    },
+    "driver_82787262_on_hardware": {
+      "date": "2026-10-28 after power returned",
+      "package": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide (replay_trial 82787262..., replay_tools 0d4e1933..., bit 48e38f78..., hwh 9411adb5...)",
+      "mixed_pair_refused": {
+        "how": "v2 bit/hwh copied next to the v3 driver in a scratch directory, then replay_trial called",
+        "result": "RuntimeError before the overlay was downloaded: \"bitstream does not match this driver: expected 48e38f78...\"; nothing armed, nothing played",
+        "covers": "C check item 5 on real hardware"
+      },
+      "silent_bringup_new_driver": {
+        "result": "stop_reason=completed, 58593 frames, capture_status=0x00008001, bit22=0, input_full_scale_seen=false, all four saturations 0, bit_exact=true",
+        "meaning": "the new driver still completes a normal run; the stop fix does not disturb the quiet path"
+      },
+      "input_full_scale_stop": {
+        "how": "hand claps 2-3 cm from the microphone during a 3 s listen-only run (digital gain 0, no output)",
+        "result": "stop_reason=\"input_clip\", capture_status=0x004019ee (bit22=1), input_full_scale_seen=true, 12-20 microphone samples at the rail, run stopped at 3319 frames of a 146484 budget (about 68 ms in), driver raised its explicit input_clip error",
+        "recovery": "status.json recovery_ok=true, cleanup_errors=[] -> mute, save and restore all ran",
+        "covers": "C check item 2 and the captain 2026-10-28 key protection, on real hardware"
+      },
+      "sixty_second_continuous": {
+        "note": "the phone playing through the air is the source; the board injects silence",
+        "attempt_at_baseline_volume_8_of_15": {
+          "result": "STOPPED after 31988 frames (~0.65 s): stop_reason=\"input_clip\", bit22=1, 6 microphone samples at the rail, mic RMS -21.6 dBFS",
+          "interpretation": "at 5 cm the historical volume of 8/15 drives the ADC to full scale today. The historical reproduction was made with a driver that had NO input detector, so its \"four saturation counts = 0\" never proved the input was clean. Whether that run also clipped is unknown; its recorded mic RMS was -28.6 dBFS, 7 dB below today, so the scenes are not identical either way."
+        },
+        "level_probe_at_volume_6_of_15": {
+          "result": "listen-only 3 s: mic RMS -25.0 dBFS, peak -11.6 dBFS, bit22=0, no rail samples -> usable",
+          "condition_change": "CHANGED CONDITION: volume 6/15 instead of the historical 8/15, distance still 5 cm. This is not an as-was reproduction of the baseline and must not be reported as one."
+        },
+        "run_1": "stop_reason=completed, 2929687/2929687 frames, capture_status=0x00008001, bit22=0, rsat/psat/gsat/msat 0, mic RMS -24.6 dBFS, peak -13.3 dBFS, no rail samples, bit_exact=true, wall 89.2 s",
+        "run_2": "stop_reason=completed, 2929687/2929687 frames, capture_status=0x00008001, bit22=0, all saturations 0, mic RMS -18.8 dBFS, peak -6.3 dBFS (close to the -6 dBFS rule), no rail samples, bit_exact=true, wall 89.5 s",
+        "listener_verbatim": [
+          "first run: asked to hear it again (\"can we do it once more\") - no judgement given",
+          "second run: \"可以听到，但没有明显放大\" (audible, but no obvious amplification)"
+        ],
+        "meaning": "continuity and protection are proven at 60 s; audible PA benefit is NOT demonstrated at this working point, which is the same conclusion as the 20 cm arms on 2026-10-27"
+      }
     }
   },
   "corrections": {
@@ -213,9 +250,8 @@
     "then a keep-or-rollback recommendation for v3"
   ],
   "pending_measurements": [
-    "input peak versus distance ladder 12/15/20/24 cm with output silent - not run, board offline",
-    "fresh tone scan of the current-fixture |H| peak - not run, board offline; provenance is already from this fixture by record",
-    "fixture identity confirmation by the operator - CONFIRMED 2026-10-27, same fixture"
+    "C incremental acceptance of the v3 package - sent, not returned",
+    "audible amplification at the demo working point - not demonstrated (listener repeated this twice)"
   ],
   "working_point_analysis": {
     "asked_by": "B (67d28b2) rejected all three of A's options and proposed a distance ladder plus raising g",
