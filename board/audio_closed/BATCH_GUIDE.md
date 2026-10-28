@@ -1,5 +1,22 @@
 # C 测评与房间实验操作单
 
+## 2026-10-28 Ac1既有三臂静默复算
+
+**问题/前提**：只补 round `1746930178556850644` 的原件级数值复算，不重新发声。A=`c1a180f` 的单位修复已通过；旧A65建议补丁无需再次应用。bit/HWH/driver79/helperbba及原件保持原样，[三项结论](../../report/verification/audio_closed/batch-control.md#2026-10-28-ac1单位修复与原件静默入口)。
+
+**唯一入口与位置**：电脑从本次C提交取 `scripts/review_itemized_20261027.py`，只复制这一个文件到板端 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`；不复制测试、A驱动或位流。A在该目录终端执行以下完整命令，无Notebook代码格、无令牌生成、无arm/播放，也不代答任何人工确认：
+
+```sh
+cd /home/xilinx/jupyter_notebooks/base/audio/audio_wide
+/usr/local/share/pynq-venv/bin/python review_itemized_20261027.py --capture-dir . --round-manifest tone_round.json --expected-round-id 1746930178556850644 --out C-tone-1746930178556850644.json
+```
+
+预计数秒至数分钟；Ctrl+C只停止分析。入口只读原manifest/三臂NPZ/status，保留哈希和原执行身份，另写C派生JSON。若原manifest归档于同目录其他文件名，仅将 `--round-manifest` 指向那份既有原件；原轮ID不符、源/身份/窗口不合、缺文件或恢复失败均留拒绝记录并退出2。路径未找到就结束本项，不运行现场脚本来补造原件、不覆盖旧结果；结果已存在时换一个派生输出文件名。
+
+**完成标志与回包**：只回板端该目录 `C-tone-1746930178556850644.json`，PCM继续留板。JSON保留原件SHA、原始确认文字和数值核对限制；退出0只表示派生记录的配对门通过，`captured_numeric_checks_clear`及效果结论另判。收到后C一次汇总原整窗FFT四差值、共同含源窗估计与运行资格，不将软件通过当效果通过。
+
+**窗口**：按已有2.0秒源/2.2秒运行编码，末圈应有6619帧源区间；工具用真实元数据与源数组验证，分别报告整窗和共同含源窗。短窗采用已知频率的Hann加权正弦/余弦/DC拟合，保留背景与窗长影响，不保证信噪有效。无需将运行缩到0.336秒以内或修改捕获长度。2.4秒旧交替试次含源0帧，不能从其尾窗得到节目播放电平；当前 `played_level_report.sh` 的全局glob与无源尾窗回退均值不用作有效含源比较。数字电平仍不是声压、听众收益或ASG。
+
 ## 2026-10-28 A65修复后仅静默重算
 
 A=`65b3311`的当前入口`field_ac_segments_v3.sh`已报告完成gate+三测量臂，本轮不再跑新纯音或B段。门禁/保护停止及三类分析资格修复通过，唯一当前数值代码缺陷是Hann幅度归一化；[逐条结论及扩大搜索](../../report/verification/audio_closed/batch-control.md#2026-10-28-a65三条修复及原件扩大搜索)。

@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
@@ -81,6 +82,142 @@ def save(path, raw, q, source, m):
 
 
 class V3ConsumerTests(unittest.TestCase):
+    def make_tone_round(self, folder, source_frames=97656, completed=107421):
+        n = 16384
+        first = completed-n
+        source = np.rint(.125*np.sin(2*np.pi*322*np.arange(source_frames)/FS)*32767).astype('<i2')
+        q = np.zeros(512, dtype=np.int64); q[0] = 1 << 20
+        phase = np.sin(2*np.pi*322*np.arange(first, completed)/FS)
+        entries = []
+        for tag in ('open', 'bypass', 'cancel'):
+            mic = np.rint((.2 if tag == 'bypass' else .1)*phase*2**23).astype(np.int64)
+            resid = np.rint((.05 if tag == 'cancel' else .2 if tag == 'bypass' else .1)*phase*2**23).astype(np.int64)
+            raw = np.column_stack((np.rint(.15*phase*2**23).astype(np.int64), mic, mic-resid, resid))
+            m = metadata(n, first, q, source, bypass=tag == 'bypass', zero_coeff=False,
+                         gain_q12=0 if tag == 'open' else 1631, model_sha256='f'*64)
+            path = Path(folder)/(tag+'.npz')
+            save(path, raw, q, source, m)
+            entries.append(dict(tag=tag, path=str(path), exists=True, error=None))
+        manifest = Path(folder)/'tone_round.json'
+        manifest.write_text(json.dumps(dict(round_id=123, tone_hz=322,
+                            operator_confirmation='SYNTHETIC_TEST_ONLY', files=entries)), encoding='utf-8')
+        return manifest, hashlib.sha256(q.astype('<i4').tobytes()).hexdigest()
+
+    def test_round_manifest_recalculates_both_windows_and_keeps_originals(self):
+        with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
+            manifest, qhash = self.make_tone_round(folder)
+            before = {p.name:itemized.sha(p) for p in Path(folder).iterdir()}
+            with patch.object(itemized, 'CANDIDATE', qhash):
+                result = itemized.review_tone_round(manifest, folder)
+            self.assertTrue(result['pairing_integrity_clear'], result['pairing_issues'])
+            self.assertTrue(result['no_effect_pass_implied'])
+            self.assertFalse(result['captured_numeric_checks_clear'])  # channel-amplitude fixture, not an RTL trace
+            active = result['views']['common_source_active']
+            self.assertEqual((active['first_frame'], active['end_frame']), (91037, 97656))
+            self.assertEqual(active['scheduled_source_frames'], 6619)
+            self.assertFalse(active['includes_source_free_frames'])
+            self.assertTrue(result['views']['original_full_capture']['includes_source_free_frames'])
+            self.assertAlmostEqual(active['three_point']['cd_322_db'], 20*np.log10(4), places=4)
+            self.assertAlmostEqual(active['three_point']['loop_boost_db'], 20*np.log10(2), places=4)
+            self.assertAlmostEqual(active['three_point']['acoustic_difference_db'], 20*np.log10(2), places=4)
+            self.assertAlmostEqual(active['three_point']['overshoot_db'], 0, places=4)
+            self.assertEqual(before, {p.name:itemized.sha(p) for p in Path(folder).iterdir()})
+            json.dumps(result, allow_nan=False)
+
+    def test_round_manifest_tail_only_does_not_invent_active_playback(self):
+        with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
+            manifest, qhash = self.make_tone_round(folder, completed=117187)
+            with patch.object(itemized, 'CANDIDATE', qhash):
+                result = itemized.review_tone_round(manifest, folder)
+            self.assertTrue(result['pairing_integrity_clear'])
+            self.assertFalse(result['views']['common_source_active']['available'])
+            self.assertTrue(result['views']['original_full_capture']['available'])
+            self.assertEqual(result['views']['original_full_capture']['scheduled_source_frames'], 0)
+
+    def test_round_manifest_source_change_blocks_paired_differences(self):
+        with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
+            manifest, qhash = self.make_tone_round(folder)
+            path = Path(folder)/'cancel.npz'
+            with np.load(path, allow_pickle=False) as cap:
+                data = {k:cap[k] for k in cap.files}
+            data['source_pcm16'][100] += 1
+            np.savez(path, **data)
+            with patch.object(itemized, 'CANDIDATE', qhash):
+                result = itemized.review_tone_round(manifest, folder)
+            self.assertFalse(result['pairing_integrity_clear'])
+            self.assertEqual(result['views'], {})
+
+    def test_round_manifest_rejects_a_replaced_round_identity(self):
+        with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
+            manifest, _ = self.make_tone_round(folder)
+            with self.assertRaisesRegex(ValueError, 'round_id'):
+                itemized.review_tone_round(manifest, folder, expected_round_id=456)
+
+    def test_round_manifest_shared_bad_frames_and_failed_status_refuse(self):
+        for fault in ('shared_frames', 'recovery'):
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
+                manifest, qhash = self.make_tone_round(folder)
+                if fault == 'shared_frames':
+                    for path in Path(folder).glob('*.npz'):
+                        with np.load(path, allow_pickle=False) as cap:
+                            data = {k:cap[k] for k in cap.files}
+                        m = json.loads(str(data['metadata_json'].item()));m['frames'] -= 1
+                        data['metadata_json'] = json.dumps(m)
+                        np.savez(path, **data)
+                else:
+                    path = Path(folder)/'cancel.status.json'
+                    side = json.loads(path.read_text(encoding='utf-8'));side['recovery_ok'] = False
+                    path.write_text(json.dumps(side), encoding='utf-8')
+                with patch.object(itemized, 'CANDIDATE', qhash):
+                    result = itemized.review_tone_round(manifest, folder)
+                self.assertFalse(result['pairing_integrity_clear'])
+                self.assertEqual(result['views'], {})
+
+    def test_round_known_tone_peak_units_are_length_independent(self):
+        for n in (4096, 8192):
+            f = FS*27/4096
+            x = .25*np.sin(2*np.pi*f*np.arange(n)/FS)
+            self.assertAlmostEqual(itemized.tone_level(x, FS, f, 'legacy_fft'), 20*np.log10(.25), places=4)
+        # The short source-on window is not an FFT bin; fit at the declared source frequency.
+        x = .25*np.sin(2*np.pi*322*np.arange(6619)/FS + .7)
+        self.assertAlmostEqual(itemized.tone_level(x, FS, 322, 'weighted_sine_fit'), 20*np.log10(.25), places=10)
+
+    def test_round_cli_missing_original_saves_failure_without_audio(self):
+        import subprocess
+        with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
+            output = Path(folder)/'derived.json'
+            cmd = [sys.executable, str(ROOT/'scripts/review_itemized_20261027.py'),
+                   '--capture-dir', folder, '--round-manifest', 'missing.json', '--out', str(output)]
+            result = subprocess.run(cmd, capture_output=True)
+            self.assertEqual(result.returncode, 2)
+            record = json.loads(output.read_text(encoding='utf-8'))
+            self.assertFalse(record['pairing_integrity_clear'])
+            self.assertEqual(record['hardware_operations'], 0)
+            self.assertIsNone(record['manifest_sha256'])
+            self.assertEqual(record['producer_sha256'], itemized.sha(ROOT/'scripts/review_itemized_20261027.py'))
+            digest = itemized.sha(output)
+            self.assertNotEqual(subprocess.run(cmd, capture_output=True).returncode, 0)
+            self.assertEqual(itemized.sha(output), digest)
+
+    def test_existing_pattern_cli_keeps_itemized_output(self):
+        import subprocess
+        with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
+            raw, q, source = trace()
+            capture = Path(folder)/'capture.npz'
+            save(capture, raw, q, source, metadata(len(raw), 1024, q, source))
+            digest = itemized.sha(capture)
+            output = Path(folder)/'derived.json'
+            command = [sys.executable, str(ROOT/'scripts/review_itemized_20261027.py'),
+                       '--capture-dir', folder, '--pattern', capture.name, '--out', str(output)]
+            result = subprocess.run(command, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            data = json.loads(output.read_text(encoding='utf-8'))
+            self.assertEqual(data['artifact_kind'], 'C-derived-review-of-A-itemized-20261027')
+            self.assertEqual(len(data['results']), 1)
+            self.assertEqual(data['results'][0]['original_sha256'], digest)
+            self.assertTrue(data['no_effect_pass_implied'])
+            self.assertEqual(itemized.sha(capture), digest)
+
     def test_delivered_and_historical_release_tuples_do_not_mix(self):
         for profile in V3_IDENTITY_PROFILES:
             self.assertEqual(v3_identity_errors(profile), [])

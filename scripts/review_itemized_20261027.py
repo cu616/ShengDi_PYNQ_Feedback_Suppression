@@ -37,6 +37,15 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def inside(path, root):
+    # Keep the existing board Python usable without requiring Path.is_relative_to (3.9+).
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
 def outside_pcm(x):
     return (x < MINIMUM) | (x > MAXIMUM)
 
@@ -379,20 +388,197 @@ def source_pairs(results):
     return pairs
 
 
+def tone_level(x, rate, frequency, method):
+    """Peak-equivalent dBFS; estimates remain sensitive to noise and window choice."""
+    x = np.asarray(x, dtype=np.float64)
+    if len(x) < 4 or not np.isfinite(x).all():
+        return None
+    window = np.hanning(len(x))
+    if method == 'legacy_fft':
+        frequencies = np.fft.rfftfreq(len(x), 1 / rate)
+        selected = np.abs(frequencies-frequency) <= 2.
+        if not selected.any():
+            return None
+        amplitude = 2*float(np.max(np.abs(np.fft.rfft(x*window))[selected]))/float(window.sum())
+    else:
+        phase = 2*np.pi*frequency*np.arange(len(x))/rate
+        basis = np.column_stack((np.cos(phase), np.sin(phase), np.ones(len(x))))
+        weight = np.sqrt(window)
+        fit, _, rank, _ = np.linalg.lstsq(basis*weight[:, None], x*weight, rcond=None)
+        if rank != 3:
+            return None
+        amplitude = float(np.hypot(fit[0], fit[1]))
+    return float(20*np.log10(amplitude)) if amplitude > 1e-15 else None
+
+
+def three_point_levels(levels):
+    def difference(a, b):
+        return a-b if a is not None and b is not None else None
+    o, b, c = (levels[tag] for tag in ('open', 'bypass', 'cancel'))
+    return dict(cd_322_db=difference(b['residual'], c['residual']),
+                loop_boost_db=difference(b['microphone'], o['microphone']),
+                acoustic_difference_db=difference(b['microphone'], c['microphone']),
+                overshoot_db=difference(o['microphone'], c['microphone']),
+                played_bypass_minus_cancel_db=difference(b['reference'], c['reference']))
+
+
+def review_tone_round(manifest_path, capture_dir, expected_round_id=None):
+    """One existing three-arm round, selected by its original manifest, never a glob."""
+    manifest_path, root = Path(manifest_path).resolve(), Path(capture_dir).resolve()
+    man = json.loads(manifest_path.read_text(encoding='utf-8-sig'))
+    if type(man.get('round_id')) is not int or not isinstance(man.get('operator_confirmation'), str) or not man['operator_confirmation'].strip():
+        raise ValueError('original round identity/confirmation missing; not inferred')
+    if expected_round_id is not None and man['round_id'] != expected_round_id:
+        raise ValueError('original round_id does not match the requested round')
+    entries = man.get('files', [])
+    if len(entries) != 3 or {x.get('tag') for x in entries} != {'open', 'bypass', 'cancel'}:
+        raise ValueError('original manifest must select exactly open/bypass/cancel')
+    problems, data, reviews, provenance = [], {}, {}, {}
+    for entry in entries:
+        tag = entry['tag']
+        declared = Path(entry['path'])
+        path = declared if declared.is_absolute() and declared.is_file() else root/declared.name
+        path = path.resolve()
+        if not inside(path, root) or path.suffix != '.npz' or not path.is_file():
+            raise ValueError('original capture missing/outside capture directory: ' + tag)
+        sidepath = path.with_suffix('.status.json')
+        side = json.loads(sidepath.read_text(encoding='utf-8-sig')) if sidepath.is_file() else {}
+        with np.load(path, allow_pickle=False) as cap:
+            m = json.loads(str(cap['metadata_json']))
+            arrays = dict(reference=pcm_codes(cap['reference'])/SCALE,
+                          microphone=pcm_codes(cap['microphone'])/SCALE)
+            n = len(arrays['microphone'])
+            for key, name in (('prediction_pcm', 'prediction'), ('residual_pcm', 'residual')):
+                a = cap[key]
+                if a.dtype.kind not in 'iu' or a.ndim != 1 or len(a) != n or np.any(outside_pcm(a)):
+                    raise ValueError('invalid integer channel: ' + tag + ':' + key)
+                arrays[name] = a.astype(np.float64)/SCALE
+            if not n or len(arrays['reference']) != n:
+                raise ValueError('unequal/empty channels: ' + tag)
+            source = cap['source_pcm16']
+            q = cap['coefficients_q20']
+            if source.ndim != 1 or source.dtype.kind != 'i' or source.dtype.itemsize != 2:
+                raise ValueError('source must be recorded signed PCM16: ' + tag)
+            if q.shape != (512,) or q.dtype.kind not in 'iu' or np.any(outside_pcm(q)):
+                raise ValueError('invalid recorded Q20: ' + tag)
+            sh = hashlib.sha256(source.astype('<i2').tobytes()).hexdigest()
+            qh = hashlib.sha256(q.astype('<i4').tobytes()).hexdigest()
+            first, end = m.get('first_frame'), m.get('completed_frames')
+            rate = float(m.get('sample_rate_hz', cap['sample_rate_hz']))
+            if type(first) is not int or type(end) is not int or first < 0 or end-first != n:
+                raise ValueError('unverified original frame extent: ' + tag)
+            if m.get('frames') != n or rate != 48828.125:
+                problems.append(tag + ':frame_count_or_rate')
+            if m.get('source_pcm16_sha256') != sh or m.get('coefficients_sha256') != qh or qh != CANDIDATE:
+                problems.append(tag + ':source_or_candidate_identity')
+            if m.get('source_end_frame_exclusive') != len(source) or m.get('source_schedule_verified') is not True:
+                problems.append(tag + ':source_schedule')
+            if m.get('stop_reason') != 'completed' or m.get('early_stop') is not False:
+                problems.append(tag + ':execution_not_completed')
+            word = m.get('capture_status')
+            if type(word) is not int or not word & 1 or word & ((1 << 22) | (3 << 17)) or m.get('input_full_scale_seen') is not False:
+                problems.append(tag + ':input_or_protocol')
+            if any(np.any((x == MINIMUM/SCALE) | (x == MAXIMUM/SCALE)) for x in (arrays['microphone'],)):
+                problems.append(tag + ':captured_input_rail')
+            if side.get('recovery_ok') is not True or side.get('stop_reason') != 'completed' or any(side.get(k) for k in ('save_error', 'error', 'cleanup_errors')):
+                problems.append(tag + ':final_status')
+            for key in ('capture_status', 'input_full_scale_seen', 'first_frame', 'completed_frames',
+                        'coefficients_sha256', 'source_pcm16_sha256', 'driver_sha256', 'replay_tools_sha256'):
+                if key in side and key in m and side[key] != m[key]:
+                    problems.append(tag + ':status_metadata_mismatch:' + key)
+            if entry.get('error') or entry.get('exists') is not True:
+                problems.append(tag + ':manifest_entry_failure')
+            if any(m.get(k) != 0 for k in ('prediction_saturations', 'gain_saturations', 'mix_saturations')):
+                problems.append(tag + ':stopping_counter_unverified')
+            if m.get('bit_sha256') != V3_BIT or not any(all(m.get(k) == v for k,v in profile.items()) for profile in V3_IDENTITY_PROFILES):
+                problems.append(tag + ':version_tuple')
+            if m.get('fixture_id') != FIXTURE or m.get('hp_volume') != 40 or m.get('zero_coeff') is not False or m.get('bypass') is not (tag == 'bypass'):
+                problems.append(tag + ':fixture_or_arm_flags')
+            if m.get('gain_q12') != (0 if tag == 'open' else 1631):
+                problems.append(tag + ':actual_gain')
+            arrays['wide_residual'] = arrays['microphone'] if m['bypass'] else arrays['microphone']-arrays['prediction']
+            data[tag] = dict(arrays=arrays, meta=m, source_hash=sh, first=first, end=end,
+                             rate=rate, source_end=len(source), source_nonzero=bool(np.any(source)))
+        provenance[tag] = dict(original_declared_path=str(declared), original_capture=str(path),
+                               original_sha256=sha(path), status_sha256=sha(sidepath) if sidepath.is_file() else None)
+        reviews[tag] = review_capture(path)
+    for key in ('source_hash', 'first', 'end', 'source_end', 'rate'):
+        if len({r[key] for r in data.values()}) != 1:
+            problems.append('cross_arm_mismatch:' + key)
+    for key in ('fixture_id', 'model_sha256', 'coefficients_sha256', 'driver_sha256', 'replay_tools_sha256', 'hwh_sha256'):
+        values = [r['meta'].get(key) for r in data.values()]
+        if any(v in (None, '') for v in values) or len(set(values)) != 1:
+            problems.append('cross_arm_identity:' + key)
+    frequency = float(man.get('tone_hz', 0))
+    if not 0 < frequency < min(r['rate'] for r in data.values())/2:
+        raise ValueError('manifest tone frequency missing/invalid')
+    start = max(r['first'] for r in data.values())
+    end = min(min(r['end'], r['source_end']) for r in data.values())
+    views = {}
+    if not problems:
+        for name, method in (('original_full_capture', 'legacy_fft'), ('common_source_active', 'weighted_sine_fit')):
+            if name == 'common_source_active' and (end <= start or not all(r['source_nonzero'] for r in data.values())):
+                views[name] = dict(available=False, reason='no shared nonzero scheduled-source capture')
+                continue
+            levels, rms = {}, {}
+            for tag, row in data.items():
+                interval = slice(None) if name == 'original_full_capture' else slice(start-row['first'], end-row['first'])
+                levels[tag] = {k:tone_level(x[interval], row['rate'], frequency, method) for k,x in row['arrays'].items()}
+                rms[tag] = {k:db_power(float(np.mean(x[interval]**2))) for k,x in row['arrays'].items()}
+            views[name] = dict(available=True, method=method, levels_peak_dbfs=levels, rms_dbfs=rms,
+                               first_frame=start if name == 'common_source_active' else data['open']['first'],
+                               end_frame=end if name == 'common_source_active' else data['open']['end'],
+                               scheduled_source_frames=end-start if name == 'common_source_active' else max(0, min(data['open']['end'], data['open']['source_end'])-data['open']['first']),
+                               includes_source_free_frames=name == 'original_full_capture' and data['open']['end'] > data['open']['source_end'],
+                               three_point=three_point_levels(levels),
+                               units='dBFS peak amplitude for tone estimates; RMS includes DC')
+    return dict(schema_version=1, artifact_kind='C-derived-existing-tone-round-v1', hardware_operations=0,
+                r6_native_execution=False, producer_sha256=sha(__file__), original_manifest=str(manifest_path),
+                manifest_sha256=sha(manifest_path), round_id=man.get('round_id'), provenance=provenance,
+                operator_confirmation_raw=man['operator_confirmation'],
+                pairing_issues=sorted(set(problems)), pairing_integrity_clear=not problems,
+                captured_numeric_checks_clear=all(x['captured_numeric_checks_clear'] for x in reviews.values()),
+                capture_reviews=reviews, views=views, original_sources_retained=True, no_effect_pass_implied=True,
+                limits=['Original full capture may mix source-on/off; reported separately from source-active view.',
+                        'Tone projection and FFT remain sensitive to background and finite windows; no automatic SNR/coherence pass.',
+                        'Board PCM timing does not prove an external phone/talker was silent.',
+                        'Played digital level is not calibrated speaker SPL, listener benefit or ASG.'])
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--capture-dir', type=Path, required=True)
-    p.add_argument('--pattern', action='append', required=True,
+    selection = p.add_mutually_exclusive_group(required=True)
+    selection.add_argument('--pattern', action='append',
                    help='repeat for existing capture names; no recursive/private audio export')
+    selection.add_argument('--round-manifest', type=Path, help='original existing open/bypass/cancel manifest; no glob pairing')
+    p.add_argument('--expected-round-id', type=int, help='refuse a replaced manifest from another round')
     p.add_argument('--out', type=Path, required=True)
     a = p.parse_args()
+    if a.expected_round_id is not None and not a.round_manifest:
+        p.error('--expected-round-id requires --round-manifest')
     if a.out.exists():
         p.error('output already exists; choose a new derived result path')
     root = a.capture_dir.resolve()
     if not root.is_dir():
         p.error('existing capture directory not found; no operation performed')
+    if a.round_manifest:
+        manifest_path = a.round_manifest if a.round_manifest.is_absolute() else root/a.round_manifest
+        try:
+            record = review_tone_round(manifest_path, root, a.expected_round_id)
+        except Exception as exc:
+            record = dict(artifact_kind='C-derived-existing-tone-round-v1', hardware_operations=0,
+                          original_manifest=str(manifest_path), no_effect_pass_implied=True,
+                          manifest_sha256=sha(manifest_path) if manifest_path.is_file() else None,
+                          producer_sha256=sha(__file__), r6_native_execution=False, original_sources_retained=True,
+                          pairing_integrity_clear=False, pairing_issues=['review_failed:' + type(exc).__name__ + ':' + str(exc)])
+        a.out.parent.mkdir(parents=True, exist_ok=True)
+        with a.out.open('x', encoding='utf-8') as stream:
+            json.dump(record, stream, ensure_ascii=False, indent=2, allow_nan=False)
+        print('DERIVED_TONE_ROUND_SAVED', a.out, 'board/audio actions 0')
+        return 0 if record['pairing_integrity_clear'] else 2
     paths = sorted({x.resolve() for pattern in a.pattern for x in root.glob(pattern) if x.suffix == '.npz'})
-    if any(not path.is_relative_to(root) for path in paths):
+    if any(not inside(path, root) for path in paths):
         p.error('capture path outside selected directory')
     results = []
     for path in paths:
