@@ -12,7 +12,7 @@
     "rtl_audio_pl_replay_sha256": "4d02b019ddfe1c175b4e8d929ac157b8f4276ffc94e6b1e5f5322620f5b31879",
     "rtl_feedback_fir_sha256": "d57e2f53938ddff2034b6d783a4a46b6243018a3be5fdc9c342acf57ad0a8a3b",
     "driver_replay_trial_sha256": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
-    "driver_replay_tools_sha256": "5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d",
+    "driver_replay_tools_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
     "board_package": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide",
     "v2_rollback_package_untouched": "/home/xilinx/jupyter_notebooks/base/audio/audio_live (bit 61bb71aa..., hwh 92b499a3..., replay_trial 2127663...)",
     "contract": "docs/contracts/audio-replay-v3.md",
@@ -21,7 +21,9 @@
     "driver_stop_semantics_file": "board/audio_replay/test_runtime_stop.py",
     "note_on_deployed_copy": "the board still carries the previous driver 6b397359 because the board is offline; the delivered candidate is 1b07586f and must be uploaded before any further hardware run. Bitstream and hwh did not change with this fix.",
     "package_manifest": "board/audio_replay/v3/manifest.json",
-    "driver_verify_replay_sha256": "165b9849ad91a48217659b315c7f9e6132b14a69676ed47d21e9d15ed8aa9ef5"
+    "driver_verify_replay_sha256": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+    "coefficients_sha256_candidate_q20": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+    "coefficients_sha256_zero_arm_q20": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
   },
   "why_audio_pl_replay_could_not_be_elaborated": {
     "symptom": "iverilog: src/rtl/audio_pl_replay.v:13 syntax error, 'Errors in port declarations'",
@@ -437,5 +439,23 @@
       "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); stale not-run summaries overwritten"
     ],
     "reverify_scope": "C re-checks only the items that failed plus what these changes touch"
+  },
+  "c_review_2026_10_28": {
+    "passed_before": "save-failure 3/3, arithmetic 7/7, orchestration 3/3, Q4.12 wording",
+    "failed_before": [
+      "actual capture prefix overflows reported as 0",
+      "orchestration continued after a protection / failed recovery / failed first tone arm",
+      "tone analysis still emitted a depth for five classes of bad input",
+      "manifest had the zero-arm coefficient hash in the candidate field",
+      "some stale summaries"
+    ],
+    "fixed": [
+      "1 save failure keeps capture_status / input_full_scale_seen / v3 marker / full hashes (incl. replay_tools)",
+      "2 wide residual is now computed from the RECORDED prediction column, so the prefix of a truncated ring is counted exactly instead of being reported as 0; the asymmetric rail test stays; on the real v2 capture the count is 8, equal to the hardware residual_saturations",
+      "3 scripts: gate before the arm, a failed gate / protection / failed recovery / stopped arm ends the branch, the tone round stops at the first failing arm, and the operator confirmation is a token the scripts consume but never create",
+      "4 tone analysis rejects five classes of bad input: missing identity, changed source or gain, conflicting actual length, input at the rail, and any arm that stopped",
+      "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); candidate and zero-arm coefficient hashes recorded separately"
+    ],
+    "reverify_scope": "only the failed items and what these changes touch"
   }
 }

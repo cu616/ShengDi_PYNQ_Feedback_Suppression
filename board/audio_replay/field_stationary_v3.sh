@@ -62,23 +62,33 @@ def run(tag, pcm, zero, seconds, direct_only=False):
     band = (f >= 300) & (f <= 360)
     allb = (f >= 50) & (f <= 20000)
     share = float(np.sum(spec[band]**2) / max(float(np.sum(spec[allb]**2)), 1e-30))
+    # recovery_ok is read from the status file: a failed restore forbids any further run.
+    st_path = out.with_suffix('.status.json')
+    recovery_ok = None
+    if st_path.is_file():
+        try:
+            recovery_ok = bool(json.loads(st_path.read_text()).get('recovery_ok'))
+        except Exception:
+            recovery_ok = None
     row = dict(tag=tag, stop=meta.get('stop_reason'),
                frames=int(meta.get('completed_frames') or 0),
                mic=20*np.log10(max(float(np.sqrt(np.mean(mic**2))), 1e-12)),
                peak=20*np.log10(max(float(np.max(np.abs(mic))), 1e-12)),
                fs=int(np.count_nonzero(np.abs(mic) >= 0.999)),
-               bit22=(st >> 22) & 1, share=share,
+               bit22=(st >> 22) & 1, share=share, recovery_ok=recovery_ok,
                rsat=meta.get('residual_saturations'), psat=meta.get('prediction_saturations'),
                gsat=meta.get('gain_saturations'), msat=meta.get('mix_saturations'),
                conf=CONF, path=str(out))
     print('ARM %-5s stop=%-11s frames=%6d mic=%6.1f peak=%6.1f fs=%d bit22=%d share=%.4f '
-          'rsat=%s psat=%s' % (row['tag'], row['stop'], row['frames'], row['mic'], row['peak'],
-                               row['fs'], row['bit22'], row['share'], row['rsat'], row['psat']))
+          'rsat=%s psat=%s recovery_ok=%s'
+          % (row['tag'], row['stop'], row['frames'], row['mic'], row['peak'], row['fs'],
+             row['bit22'], row['share'], row['rsat'], row['psat'], row['recovery_ok']))
     return row
 
 
 def admissible(row):
-    return row is not None and row['stop'] == 'completed' and row['bit22'] == 0 and row['fs'] == 0
+    return (row is not None and row['stop'] == 'completed' and row['bit22'] == 0
+            and row['fs'] == 0 and row['recovery_ok'] is True)
 
 
 gate = run('gate', np.zeros(2000, dtype=np.int16), True, 0.6, direct_only=True)

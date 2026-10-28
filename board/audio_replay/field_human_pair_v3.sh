@@ -53,24 +53,34 @@ def run(tag, zero, seconds, direct_only=False):
     meta = json.loads(str(data['metadata_json']))
     mic = np.asarray(data['microphone'], dtype=np.float64)
     st = int(meta.get('capture_status') or 0)
+    st_path = out.with_suffix('.status.json')
+    recovery_ok = None
+    if st_path.is_file():
+        try:
+            recovery_ok = bool(json.loads(st_path.read_text()).get('recovery_ok'))
+        except Exception:
+            recovery_ok = None
     row = dict(tag=tag, zero=zero, stop=meta.get('stop_reason'),
                frames=int(meta.get('completed_frames') or 0),
                mic=20*np.log10(max(float(np.sqrt(np.mean(mic**2))), 1e-12)),
                peak=20*np.log10(max(float(np.max(np.abs(mic))), 1e-12)),
                fs=int(np.count_nonzero(np.abs(mic) >= 0.999)), bit22=(st >> 22) & 1,
+               recovery_ok=recovery_ok,
                rsat=meta.get('residual_saturations'), psat=meta.get('prediction_saturations'),
                gsat=meta.get('gain_saturations'), msat=meta.get('mix_saturations'),
                wide=(meta.get('verification') or {}).get('wide_residual_frames'),
                bitexact=(meta.get('verification') or {}).get('bit_exact'), conf=CONF, path=str(out))
     print('HUMAN %-5s stop=%-11s frames=%6d mic=%6.1f peak=%6.1f fs=%d bit22=%d rsat=%s psat=%s '
-          'gsat=%s wide=%s bitexact=%s'
+          'gsat=%s wide=%s bitexact=%s recovery_ok=%s'
           % (row['tag'], row['stop'], row['frames'], row['mic'], row['peak'], row['fs'],
-             row['bit22'], row['rsat'], row['psat'], row['gsat'], row['wide'], row['bitexact']))
+             row['bit22'], row['rsat'], row['psat'], row['gsat'], row['wide'], row['bitexact'],
+             row['recovery_ok']))
     return row
 
 
 def admissible(row):
-    return row is not None and row['stop'] == 'completed' and row['bit22'] == 0 and row['fs'] == 0
+    return (row is not None and row['stop'] == 'completed' and row['bit22'] == 0
+            and row['fs'] == 0 and row['recovery_ok'] is True)
 
 
 gate = run('gate', True, 0.6, direct_only=True)

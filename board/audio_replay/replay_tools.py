@@ -82,7 +82,14 @@ def verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first_frame
     # clamped 24-bit diagnostic value, so the output oracle must be rebuilt from mic - prediction
     # instead of from the captured residual; otherwise every clipped transient looks like a
     # datapath mismatch. In bypass the hardware multiplies the sign-extended microphone.
-    wide = raw[:, 1] if bypass else raw[:, 1]-prediction
+    #
+    # The prediction used here is the RECORDED one (raw[:,2]), not the recomputed convolution.
+    # C 2026-10-27: with a truncated ring the recomputed prediction has no history for the first
+    # `skip` frames, so an overflow that already happened there was reported as 0. The recorded
+    # prediction is exactly what the hardware subtracts, so the wide residual is exact for every
+    # frame, including the prefix. The model itself is still cross-checked separately by `pm`/`rm`
+    # against the recomputed prediction.
+    wide = raw[:, 1] if bypass else raw[:, 1] - raw[:, 2]
     skip = q.size if first_frame else 0
     indices = np.arange(first_frame, first_frame+len(raw))
     injected = np.zeros(len(raw), dtype=np.int64)
@@ -90,30 +97,25 @@ def verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first_frame
     injected[valid] = np.asarray(source_pcm16, dtype=np.int64)[indices[valid]] * 256
     pm = int(np.count_nonzero(raw[skip:, 2] != prediction[skip:]))
     rm = int(np.count_nonzero(raw[skip:, 3] != residual[skip:]))
-    # The played word at ring frame n is gain(wide[n-2]), so it is only verifiable once BOTH the
-    # prediction at n-2 (needs `skip` history frames) and the two-frame schedule are inside the
-    # ring. A truncated ring therefore starts at skip+2, not at 2; checking from frame 2 counted
-    # exactly `skip` frames of unknowable history as output mismatches (a pre-existing artefact
-    # that made every nonzero-model arm look non-bit-exact).
-    out_start = 2 if not first_frame else max(2, skip + 2)
+    # The played word at ring frame n is gain(wide[n-2]). With the recorded prediction the wide
+    # value is exact for every frame, so only the two-frame schedule needs to be respected.
+    out_start = 2
     frames = np.arange(out_start, len(raw))
     expected = np.clip(injected[frames] + gain_pcm(wide[frames-2], gain_q12), -2**23, 2**23-1)
     tm = int(np.count_nonzero(raw[frames, 0] != expected))
     if first_frame == 0:
         tm += int(np.count_nonzero(raw[:2, 0] != injected[:2]))
-    # Wide-residual counting, three corrections from C's 2026-10-27 review:
+    # Wide-residual counting:
     #  (a) the 24-bit rail is ASYMMETRIC: +8388607 and -8388608 are both legal values, so an
-    #      overflow needs `> 8388607` or `< -8388608`. Testing |wide| > 8388607 wrongly counted a
-    #      legal negative full scale as an overflow.
-    #  (b) with a truncated ring the prediction before `skip` has no usable history, so a wide
-    #      value there cannot be recomputed. Those prefix frames were silently dropped from the
-    #      count; they are now reported separately and marked unverifiable instead of being lost.
-    #  (c) when no output frame can be checked at all, the result must NOT read as a pass.
+    #      overflow needs `> 8388607` or `< -8388608`;
+    #  (b) the prefix of a truncated ring is counted, not dropped, because the recorded prediction
+    #      makes it exact;
+    #  (c) a capture with no checkable output frame must not read as a pass (defensive: the shape
+    #      guard above already requires len(raw) > q.size).
     rail_pos, rail_neg = 2**23 - 1, -2**23
     over = (wide > rail_pos) | (wide < rail_neg)
-    prefix_unverifiable = int(np.count_nonzero(over[:skip])) if skip else 0
-    checked_wide = over[skip:] if skip else over
-    wide_count = int(np.count_nonzero(checked_wide))
+    wide_count = int(np.count_nonzero(over))
+    prefix_count = int(np.count_nonzero(over[:skip])) if skip else 0
     no_output_frames = len(frames) == 0
     bit_exact = (pm == rm == tm == 0) and not no_output_frames
     return dict(bit_exact=bit_exact,
@@ -122,8 +124,9 @@ def verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first_frame
                                    "no verifiable output frames in this capture; not a pass"),
                 prediction_mismatches=pm, residual_mismatches=rm, output_mismatches=tm,
                 wide_residual_frames=wide_count,
-                wide_residual_frames_prefix_unverifiable=prefix_unverifiable,
-                wide_residual_count_partial=bool(skip and prefix_unverifiable),
+                wide_residual_frames_prefix=prefix_count,
+                wide_residual_count_partial=False,
+                wide_prediction_source="recorded prediction column (exact for the prefix too)",
                 wide_rail_definition="overflow iff wide > 8388607 or wide < -8388608",
                 history_excluded_frames=skip, evaluated_frames=len(raw)-skip,
                 output_checked_frames=len(frames),

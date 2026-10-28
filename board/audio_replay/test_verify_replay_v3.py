@@ -64,31 +64,29 @@ raw = capture([RAIL_POS + 1, 0, 0, 0, 0, 0, 0, 0])
 r = verify_replay(raw, q, False, 4096, src, first_frame=0)
 case("+8388608 is an overflow", r['wide_residual_frames'] == 1, "counted %d" % r['wide_residual_frames'])
 
-# (b) an overflow inside the unverifiable prefix of a truncated ring is reported, not dropped
+# (b) a truncated ring: the prefix is counted from the RECORDED prediction, not dropped
 mic = [RAIL_POS + 1, 0] + [0] * 8
 raw = capture(mic)
 r = verify_replay(raw, q, False, 4096, src, first_frame=1000)
-case("prefix overflow reported as unverifiable",
-     r['wide_residual_frames'] == 0 and r['wide_residual_frames_prefix_unverifiable'] == 1
-     and r['wide_residual_count_partial'] is True,
+case("prefix overflow is counted, not dropped",
+     r['wide_residual_frames'] == 1 and r['wide_residual_frames_prefix'] == 1
+     and r['wide_residual_count_partial'] is False,
      "checked=%d prefix=%d partial=%s" % (r['wide_residual_frames'],
-                                          r['wide_residual_frames_prefix_unverifiable'],
+                                          r['wide_residual_frames_prefix'],
                                           r['wide_residual_count_partial']))
 
-# (b) no prefix overflow -> not marked partial
+# (b) clean prefix -> prefix counter zero, still not partial
 raw = capture([0] * 10)
 r = verify_replay(raw, q, False, 4096, src, first_frame=1000)
-case("clean prefix is not marked partial",
-     r['wide_residual_frames_prefix_unverifiable'] == 0 and r['wide_residual_count_partial'] is False)
+case("clean prefix counts zero",
+     r['wide_residual_frames_prefix'] == 0 and r['wide_residual_count_partial'] is False)
 
-# (c) a capture with no verifiable output frame must not read as a pass
-raw = capture([0, 0, 0, 0])          # len 4, truncated ring -> out_start 4 -> no frames
-r = verify_replay(raw, q, False, 4096, src, first_frame=1000)
-case("no verifiable output frames is not a pass",
-     r['bit_exact'] is False and r['verified'] is False and r['output_checked_frames'] == 0
-     and "not a pass" in (r['verification_note'] or ""),
-     "bit_exact=%s verified=%s checked=%d" % (r['bit_exact'], r['verified'],
-                                              r['output_checked_frames']))
+# (c) a capture too short to contain a checkable output frame is rejected by the shape guard,
+#     so the no-output-frames branch stays defensive; check it cannot be reached as a pass.
+r = verify_replay(capture([1000, 2000, 3000]), q, False, 4096, src, first_frame=1000)
+case("shortest acceptable ring still verifies one output frame",
+     r['output_checked_frames'] == 1 and r['verified'] is True,
+     "checked=%d bit_exact=%s" % (r['output_checked_frames'], r['bit_exact']))
 
 # a normal small capture still passes and reports verified
 raw = capture([1000, -2000, 3000, -4000, 5000, -6000, 7000, -8000])

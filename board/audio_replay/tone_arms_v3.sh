@@ -54,13 +54,19 @@ def run(tag, bypass, direct_only):
                      local_capture_confirmed=True, direct_only=direct_only)
     except Exception as exc:
         err = repr(exc)[:200]
-    print('TONE %-6s %s' % (tag, err or 'ok'))
-    entries.append(dict(tag=tag, path=str(out), error=err, exists=out.is_file()))
+    ok = out.is_file()
+    print('TONE %-6s %s' % (tag, err or ('ok' if ok else 'no capture')))
+    entries.append(dict(tag=tag, path=str(out), error=err, exists=ok))
+    return ok
 
 
-run('open', False, True)
-run('bypass', True, False)
-run('cancel', False, False)
+# Stop at the FIRST failing arm: a round with a missing arm cannot produce a depth, so there is no
+# point in running the rest (C 2026-10-28: a failed first item must not be followed by more runs).
+for tag, bypass, direct_only in (('open', False, True), ('bypass', True, False),
+                                 ('cancel', False, False)):
+    if not run(tag, bypass, direct_only):
+        print('TONE_ROUND_ABORTED at %s: not running the remaining arms' % tag)
+        break
 
 manifest = dict(round_id=ROUND, tone_hz=TONE_HZ, amplitude_fs=AMP, operator_confirmation=CONF,
                 created=time.time(), files=entries)
