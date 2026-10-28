@@ -1,3 +1,22 @@
+## 2026-10-28 按 C 第二轮复验修三条　A　门禁改成全判据、纯音首臂保护即止、分析器补三类漏检；修后跑一轮真实三臂
+
+- **C 指出的三条都成立，其中第 2 条是真 bug**：
+  1 **门禁只看峰值** → 若门禁本身触发保护但抓到的峰值恰好在 (−60,−6) 内，分支会继续。
+     已改为**先过与真臂相同的全判据**（completed、bit22=0、无满档、recovery_ok）再判电平；
+     `field_ac_segments_v3.sh`、`field_stationary_v3.sh`、`field_human_pair_v3.sh` 三处都改。
+  2 **纯音首臂保护但已落 NPZ 时仍跑后两臂** → `tone_arms_v3.sh` 的"失败即止"只判文件是否存在。
+     已改为按 `stop_reason/bit22/recovery_ok` 判，并标记 **SUPERSEDED**（由 A/C 脚本的 tone 模式统一产出 manifest）。
+  3 **分析器漏检**：改用**实际 `source_pcm16` 数组**做哈希比对（不只信元数据声称的哈希）；
+     `frames` 必须等于数组实际长度、`first_frame+frames==completed_frames`、注入源窗口三臂一致；
+    **必须存在 `status.json` 副车**且 `recovery_ok=true / cleanup_errors=[] / save_error=None / stop_reason=completed`；
+    三个信号统一报 **dBFS（re 24 位满幅）**，差值名称固定为 `cd_322_db / loop_boost_db / acoustic_difference_db / overshoot_db`。
+    测试扩到 **16 项**（含"换源数组""三臂共同错帧数""恢复失败副车""清理错误"）。
+- **修后按 C 要求只跑一轮固定配置三臂 + 真实 manifest**（拒绝样例在副本上派生，不额外发声）：
+  open 47.77 / bypass 52.01 / cancel 46.56 dBFS@322 → **CD 8.43 / 环路提升 4.24 / 声学差 5.45 / 过冲 1.21**
+  → **cancellation_holds**。同一天上一轮是 7.08 / 4.12 / 4.92 / 0.80，**判据重复成立，数字漂移约 1 dB**。
+- 一处自查失误：改门禁时把 `gate = run(...)` 那行一起替换掉了，首跑报 `NameError`；已补回并重跑通过。
+- 未做：听众的两臂辨听对照；B 段（g=−3）故意起振（需授权 + 人守电源）。
+
 ## 2026-10-28 现场第三轮　A　修掉 Codec 解除静音的爆音（门禁误停的真因）；A 段纯音三点判据成立；C 段语音臂全程无保护
 
 - **真因不是环境噪声**：连续三次门禁在第 5 / 650 / 114 帧就报输入满幅，安静的房间里麦克风却读到 −0.0 dBFS。

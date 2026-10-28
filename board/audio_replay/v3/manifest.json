@@ -31,8 +31,8 @@
     "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
     "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
     "test_verify_replay_v3.py": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
-    "tone_round_guard.py": "7590c7f433b2805abc15a577c7e19bbe8bc36cd218b351ffa8def527c22ac7ef",
-    "test_tone_round_guard.py": "273f841dba2047c10fd5133766476d63d0e13d67b740e4b54d333cf4d9637a50"
+    "tone_round_guard.py": "ac93e60c944747aa69342d8bd348f503c820809438888d241638c95bdea75250",
+    "test_tone_round_guard.py": "71c80a3187ee261f1cb8e76291a6c26ec2c29c846bd5a22d7b44b82c50dd7662"
   },
   "model": {
     "path_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/rewired_512_20261026.json",
@@ -77,6 +77,7 @@
       "3 scripts: gate before the arm, a failed gate / protection / failed recovery / stopped arm ends the branch, the tone round stops at the first failing arm, and the operator confirmation is a token the scripts consume but never create",
       "4 tone analysis rejects five classes of bad input: missing identity, changed source or gain, conflicting actual length, input at the rail, and any arm that stopped",
       "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); candidate and zero-arm coefficient hashes recorded separately",
+      "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded",
       "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded",
       "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded"
     ]

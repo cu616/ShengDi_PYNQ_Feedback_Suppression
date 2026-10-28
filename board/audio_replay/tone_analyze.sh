@@ -32,8 +32,8 @@ if problems:
 
 tone = float(man.get('tone_hz') or 322.0)
 tp = three_point(rows, tone)
-for tag, lv in tp['levels'].items():
-    print('TONE_%s mic@%.0f=%.2f pred@%.0f=%.2f residual@%.0f=%.2f'
+for tag, lv in tp['levels_dbfs'].items():
+    print('TONE_%s mic@%.0f=%.2f pred@%.0f=%.2f residual@%.0f=%.2f (dBFS)'
           % (tag, tone, lv['mic'], tone, lv['pred'], tone, lv['residual']))
 print('TONE_THREE cancel-vs-bypass: CD(%.0f)=%+.2f dB residual depth (model fit, NOT benefit); '
       'loop_boost=%+.2f dB (bypass mic - open mic, the audible-benefit scale); '

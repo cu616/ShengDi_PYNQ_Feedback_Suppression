@@ -1,4 +1,6 @@
 #!/bin/bash
+# SUPERSEDED by field_ac_segments_v3.sh (tone mode), which writes the same manifest and
+# aborts on a protection stop rather than on a missing file. Kept for the 2026-10-27 trail.
 # Steady-state three-point tone measurement at one frequency, with a SAME-ROUND manifest.
 # C's 2026-10-27 review (item 4) requires the analysis to pair files that provably come from the
 # same round and to check identity, window and input validity before computing anything.
@@ -54,10 +56,21 @@ def run(tag, bypass, direct_only):
                      local_capture_confirmed=True, direct_only=direct_only)
     except Exception as exc:
         err = repr(exc)[:200]
-    ok = out.is_file()
-    print('TONE %-6s %s' % (tag, err or ('ok' if ok else 'no capture')))
-    entries.append(dict(tag=tag, path=str(out), error=err, exists=ok))
-    return ok
+    wrote = out.is_file()
+    protected = False
+    if wrote:
+        try:
+            m = json.loads(str(np.load(str(out))['metadata_json']))
+            protected = (m.get('stop_reason') != 'completed'
+                         or int(m.get('capture_status') or 0) >> 22 & 1
+                         or m.get('recovery_ok') is False)
+        except Exception:
+            protected = True
+    good = wrote and not protected
+    print('TONE %-6s %s' % (tag, err or ('ok' if good else
+          ('STOPPED' if protected else 'no capture'))))
+    entries.append(dict(tag=tag, path=str(out), error=err, exists=good))
+    return good
 
 
 # Stop at the FIRST failing arm: a round with a missing arm cannot produce a depth, so there is no

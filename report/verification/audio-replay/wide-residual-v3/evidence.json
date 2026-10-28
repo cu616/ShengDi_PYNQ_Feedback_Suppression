@@ -352,6 +352,52 @@
       "input_full_scale_stop": "PASS: clap -> stop_reason=input_clip, capture_status=0x00408000, 8 samples at the rail, stopped at 38877 of 146484 frames, recovery_ok, no cleanup errors",
       "sixty_second_continuous": "PASS: 2929687/2929687 frames, capture_status=0x00008001, bit22=0, all four saturations 0, mic RMS -22.1 dBFS, peak -11.9 dBFS, no rail samples, bit_exact, wall 89.2 s",
       "listener_record": "\"能听出放大\" (can hear the amplification), same working point as the earlier record"
+    },
+    "c_review_2026_10_28_fixes": {
+      "auditor": "C, message of 2026-10-28 (three remaining gaps)",
+      "gap_1_gate_after_protection": {
+        "what": "a gate that tripped a protection could still let the branch continue when its captured peak happened to be inside (-60, -6) dBFS",
+        "fix": "the gate is now accepted only if it satisfies the SAME predicate as a real arm (completed, bit22 clear, no rail sample, recovery_ok) AND the level rule; three scripts changed",
+        "files": [
+          "field_ac_segments_v3.sh",
+          "field_stationary_v3.sh",
+          "field_human_pair_v3.sh"
+        ]
+      },
+      "gap_2_tone_arm_protection": {
+        "what": "tone_arms_v3.sh aborted only when the NPZ was missing, so an arm that tripped protection but still wrote an NPZ was followed by the remaining two arms",
+        "fix": "tone_arms_v3.sh now treats stop_reason != completed / bit22 / recovery_ok false as a stop, and is marked SUPERSEDED by field_ac_segments_v3.sh (tone mode), which writes the same manifest and already aborted correctly"
+      },
+      "gap_3_analyzer": {
+        "what": "the analyzer still missed an actual change in the source ARRAY, a frame count that was wrong in the same way in all three arms, and a failing recovery sidecar; units and the difference names were not aligned",
+        "fix": [
+          "source: the ACTUAL source_pcm16 array is hashed and compared, and each arm is checked against its own claimed hash",
+          "frames: metadata frames must equal the actual array length, first_frame + frames must equal completed_frames, and the injected-source window must be identical across arms",
+          "sidecar: status.json must exist next to each capture and must say recovery_ok true, cleanup_errors empty, save_error null, stop_reason completed",
+          "units: all three signals are reported in dBFS re 24-bit full scale, with the unit stated in the returned dict",
+          "names: cd_322_db / loop_boost_db / acoustic_difference_db / overshoot_db, each with the meaning B fixed"
+        ],
+        "test": "board/audio_replay/test_tone_round_guard.py, 16 checks: the five original classes plus changed-source-array, shared-wrong-frames, failing-sidecar and cleanup-errors"
+      },
+      "one_round_after_fixes": "one fixed-configuration three-arm round with the real manifest, as C asked; no extra audible trials were spent on rejection samples"
+    },
+    "segment_A_tone_round_2_after_fixes": {
+      "round_id": 1746930178556850644,
+      "levels_dbfs_at_322": {
+        "open_mic": 47.77,
+        "bypass_mic": 52.01,
+        "cancel_mic": 46.56,
+        "open_residual": 45.23,
+        "bypass_residual": 52.01,
+        "cancel_residual": 43.58
+      },
+      "cd_322_db": 8.43,
+      "loop_boost_db": 4.24,
+      "acoustic_difference_db": 5.45,
+      "overshoot_db": 1.21,
+      "verdict": "cancellation_holds (5.45 >= 4.24 - 1.5 and |1.21| <= 1.5)",
+      "arms": "gate + three arms all completed, bit22=0, no rail, recovery_ok",
+      "repeatability": "previous round the same day: CD 7.08 / boost 4.12 / difference 4.92 / overshoot 0.80; the verdict repeats, the numbers move by about 1 dB"
     }
   },
   "corrections": {
@@ -379,9 +425,9 @@
     "then a keep-or-rollback recommendation for v3"
   ],
   "pending_measurements": [
-    "C incremental acceptance of this version - awaiting",
-    "audible benefit WITH cancellation at the demo working point - the tone three-point says the cancellation holds at 322 Hz, but no listener comparison between arms has been made",
-    "segment B (g = -3 deliberate howl) - not run, needs an explicit authorisation and a person at the amplifier switch"
+    "C re-verification of the 2026-10-28 fixes (gate predicate, tone abort, analyzer gaps)",
+    "listener comparison between the two arms at the working point - still not done",
+    "segment B (g = -3 deliberate howl) - not run, needs an explicit authorisation"
   ],
   "working_point_analysis": {
     "asked_by": "B (67d28b2) rejected all three of A's options and proposed a distance ladder plus raising g",

@@ -92,9 +92,14 @@ def admissible(row):
 
 
 gate = run('gate', np.zeros(2000, dtype=np.int16), True, 0.6, direct_only=True)
-if gate is None or not (-60.0 < gate['peak'] < -6.0):
-    print('GATE_FAIL: branch stopped, no arm was run (peak %s)'
-          % ('n/a' if gate is None else '%.1f dBFS' % gate['peak']))
+# Full predicate first: a gate that tripped a protection ends the branch regardless of peak.
+if not admissible(gate):
+    print('GATE_FAIL: the gate itself did not pass (stop=%s bit22=%s recovery=%s)'
+          % ('n/a' if gate is None else gate['stop'], 'n/a' if gate is None else gate['bit22'],
+             'n/a' if gate is None else gate['recovery_ok']))
+    raise SystemExit(0)
+if not (-60.0 < gate['peak'] < -6.0):
+    print('GATE_FAIL: quiet gate peak %.1f dBFS outside (-60, -6)' % gate['peak'])
     raise SystemExit(0)
 
 n = int(2.0 * RATE)

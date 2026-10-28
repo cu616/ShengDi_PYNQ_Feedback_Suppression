@@ -88,8 +88,16 @@ def ok(row):
 
 
 gate = run('gate', np.zeros(2000, dtype=np.int16), True, False, 0.6, direct_only=True)
-if not gate or not (-60.0 < gate['peak'] < -6.0):
-    print('GATE_FAIL: nothing else runs (peak %s)' % ('n/a' if not gate else '%.1f' % gate['peak']))
+# The gate must satisfy the SAME predicate as a real arm (completed, bit22 clear, no rail,
+# recovery ok) and only then the level rule. A gate that tripped a protection must end the
+# branch even if its captured peak happens to be in range (C 2026-10-28 gap 1).
+if not ok(gate):
+    print('GATE_FAIL: the gate itself did not pass (stop=%s bit22=%s recovery=%s)'
+          % ('n/a' if not gate else gate['stop'], 'n/a' if not gate else gate['bit22'],
+             'n/a' if not gate else gate['recovery_ok']))
+    raise SystemExit(0)
+if not (-60.0 < gate['peak'] < -6.0):
+    print('GATE_FAIL: quiet gate peak %.1f dBFS outside (-60, -6)' % gate['peak'])
     raise SystemExit(0)
 
 if MODE == 'tone':
