@@ -260,6 +260,49 @@ class EncodingGateTest(unittest.TestCase):
             tool.analyze(bad, None, None, None)
         self.assertEqual(ctx.exception.code, 2)
 
+    def test_float_one_plus_one_ulp_of_q23_is_rejected(self):
+        """C 的边界：±(1+2^-23) 不能靠容差放进来再夹回，必须直接拒绝。"""
+        for sign, name in ((1.0, "ulp_pos.npz"), (-1.0, "ulp_neg.npz")):
+            path, _k, _s = build_fixture(self.tmp, self.q20, name=name,
+                                         mic_float=np.full(2048, sign * (1.0 + 2.0 ** -23)))
+            with self.assertRaises(SystemExit) as ctx:
+                tool.analyze(path, None, None, None)
+            self.assertEqual(ctx.exception.code, 2, name)
+
+    def test_exact_one_is_still_accepted(self):
+        """恰好 ±1.0 仍允许（÷2^23 的浮点取整会到这里），只是夹回计数上报。"""
+        r = tool.analyze(
+            build_fixture(self.tmp, self.q20, name="exact1.npz",
+                          mic_float=np.full(2048, 1.0))[0], None, None, None)
+        self.assertGreaterEqual(r["encoding"]["mic_clamped"], 0)
+
+    def test_missing_frame_domain_is_reported_unknown(self):
+        """缺 first_frame / completed_frames：局部分析照做，全局位置与闭合核对标未知。"""
+        path, _k, _s = build_fixture(self.tmp, self.q20, name="nodomain.npz",
+                                     meta_extra={"first_frame": None,
+                                                 "completed_frames": None})
+        r = tool.analyze(path, None, None, None)
+        self.assertEqual(r["frame_domain"], "unknown")
+        self.assertIsNone(r["first_frame_global"])
+        self.assertIsNone(r["last_frame_global"])
+        self.assertIn("未知", r["frame_domain_note"])
+        # 局部分析仍可用，且不因为缺字段就阻断归因
+        self.assertGreater(r["valid_frames"], 0)
+        if r["primary_capture_only"]["first_overflow_index"] >= 0:
+            self.assertIsNone(r["primary_capture_only"]["first_overflow_global_frame"])
+
+    def test_fractional_frame_index_is_rejected(self):
+        """0.5 / 1024.5 这类小数帧号先拒绝，不截断成整数。"""
+        cases = ({"first_frame": 0.5}, {"completed_frames": 1024.5},
+                 {"first_frame": 1000.7, "completed_frames": None})
+        for i, extra in enumerate(cases):
+            with self.subTest(extra=extra):
+                path, _k, _s = build_fixture(self.tmp, self.q20, name="frac%d.npz" % i,
+                                             meta_extra=extra)
+                with self.assertRaises(SystemExit) as ctx:
+                    tool.analyze(path, None, None, None)
+                self.assertEqual(ctx.exception.code, 2)
+
     def test_declared_q20_hash_mismatch_stops_attribution(self):
         path, _k, _s = build_fixture(self.tmp, self.q20, name="hash.npz",
                                      meta_extra={"coefficients_sha256": "0" * 64})

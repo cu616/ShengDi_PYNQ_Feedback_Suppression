@@ -12,7 +12,8 @@
   * 24 位合法范围 [-2^23, 2^23-1]；**-2^23 是合法负满幅**，越界判据是
     `x > 2^23-1 或 x < -2^23`，不是 `|x| >= 2^23`。
   * 乘增益后按 **半值远离零** 舍入：`(|p|+2^11)>>12`，再恢复符号；不是 Python 的向下取整。
-  * 前 taps+1 帧历史是空的（RTL 从零开始填），这一段不能用来判"余量"或"首次越界"。
+  * 抓包只留运行末尾一圈，所以**本地模型重放缺前史**（需要前 taps 帧）；板上 prediction 本身没有缺，
+    因此"主路径"不受影响，只有辅路径的前 taps+1 帧不能用来判"余量"或"首次越界"。
 
 退出码：0 正常；2 输入不合格 / 身份不符 / 无可分析帧（此时不给"通过"结论）。
 """
@@ -38,6 +39,9 @@ SCALE = 1 << 23                 # PCM 满幅（计数）
 MAX24 = SCALE - 1               # +满幅
 MIN24 = -SCALE                  # −满幅（合法）
 GAIN_Q = 12
+# 归一化浮点的容差：只吸收浮点表示误差，不吸收量级越界。
+# 1+2^-23 = 1.00000012 远超此值 → 直接拒绝（C 的边界用例）。
+FLOAT_TOL = 4.0 * float(np.finfo(np.float64).eps)   # ≈ 8.9e-16
 
 REQUIRED = ("reference", "microphone", "prediction_pcm", "residual_pcm",
             "coefficients_q20", "metadata_json", "sample_rate_hz")
@@ -46,6 +50,36 @@ REQUIRED = ("reference", "microphone", "prediction_pcm", "residual_pcm",
 def die(msg: str, code: int = 2) -> None:
     print("FAILED: " + msg)
     raise SystemExit(code)
+
+
+def as_frame_index(v, name: str) -> int:
+    """帧号必须是整数：0.5 / 1024.5 这类小数先拒绝，**不截断**。
+
+    截断会静默把一个"字段写错了的抓包"当成合法帧域，后面所有全局帧号都跟着错。
+    """
+    if isinstance(v, bool):
+        die("%s 是布尔值：%r（帧号必须是整数）" % (name, v))
+    if isinstance(v, (int, np.integer)):
+        return int(v)
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        die("%s 不是数值：%r" % (name, v))
+    if not np.isfinite(f):
+        die("%s 非有限：%r" % (name, v))
+    if f != int(f):
+        die("%s 不是整数：%r（帧号必须是整数，不能截断）" % (name, v))
+    return int(f)
+
+
+def optional_frame_index(v, name: str, fname: str):
+    """缺字段返回 None（后续按"未知"处理），有值则必须是整数。"""
+    if v is None:
+        return None
+    try:
+        return as_frame_index(v, "%s（%s）" % (name, fname))
+    except SystemExit:
+        raise
 
 
 def clamp24(x: np.ndarray) -> np.ndarray:
@@ -62,8 +96,11 @@ def codes_from_float(x, name: str):
     """归一化浮点字段（reference / microphone）→ 24 位码值。
 
     只接受 |x| <= 1.0。超范围就拒绝，**不静默夹**：抓到 2.0 说明字段不是归一化浮点，
-    继续算下去会用错的量归因。恰好 ±1.0 允许（÷2^23 的浮点可能四舍五入到 1.0），
-    但夹了几次要计数上报，不能悄悄吞掉。
+    继续算下去会用错的量归因。
+
+    容差只吸收**浮点表示误差**（4·eps ≈ 8.9e-16），不吸收量级上的越界：
+    ±(1+2^-23) 属于"超出归一化范围"，直接拒绝，不再夹回后让整轮分析继续跑。
+    恰好 ±1.0 允许；÷2^23 的舍入可能让码值取整到 2^23，那种单个计数的夹回会计数上报。
     """
     a = np.asarray(x, dtype=np.float64)
     if a.size == 0:
@@ -71,9 +108,9 @@ def codes_from_float(x, name: str):
     peak = float(np.max(np.abs(a)))
     if not np.isfinite(peak):
         die("%s 含 NaN/Inf" % name)
-    if peak > 1.0 + 1e-6:
-        die("%s 超出归一化范围：|max|=%.6f（该字段应为一化到 ±1.0 的浮点，不是原始码值）"
-            % (name, peak))
+    if peak > 1.0 + FLOAT_TOL:
+        die("%s 超出归一化范围：|max|=%.12f（容差只有 %.1e；该字段应为归一化到 ±1.0 的浮点，"
+            "不接受超范围后夹回）" % (name, peak, FLOAT_TOL))
     c = np.rint(a * SCALE).astype(np.int64)
     clamped = int(np.count_nonzero((c > MAX24) | (c < MIN24)))
     return np.clip(c, MIN24, MAX24), clamped
@@ -190,7 +227,7 @@ def analyze(path: Path, model_q20, model_label, gain_db):
     gain_q12 = int(meta.get("gain_q12", 0))
     if gain_db is not None:
         gain_q12 = int(round(4096 * 10 ** (gain_db / 20)))
-    first_frame = int(meta.get("first_frame", 0))
+    first_frame = optional_frame_index(meta.get("first_frame"), "first_frame", path.name)
     n = len(mic)
     if n == 0:
         die("%s 没有可分析帧" % path.name)
@@ -198,19 +235,22 @@ def analyze(path: Path, model_q20, model_label, gain_db):
         die("%s 各字段帧数不一致：mic %d / ref %d / pred %d / resid %d"
             % (path.name, n, len(ref), len(pred_rec), len(resid_rec)))
 
-    # ---- 帧域核对：抓包是"最后一圈"，必须 first + frames == completed
-    if first_frame < 0:
+    # ---- 帧域核对：抓包是"最后一圈"，first + frames 必须等于 completed。
+    # 缺字段时**不默认成 0 或闭合**：局部分析照做，但全局位置与闭合规核标记为未知。
+    if first_frame is not None and first_frame < 0:
         die("%s 的 first_frame 为负：%d" % (path.name, first_frame))
-    completed = meta.get("completed_frames")
-    if completed is not None:
-        completed = int(completed)
+    completed = optional_frame_index(meta.get("completed_frames"), "completed_frames", path.name)
+    if first_frame is not None and completed is not None:
         if first_frame + n != completed:
             die("%s 帧域不一致：first_frame %d + frames %d = %d ≠ completed_frames %d"
                 "（抓包应为运行末尾那一圈）"
                 % (path.name, first_frame, n, first_frame + n, completed))
+        frame_domain = "ok"
+    else:
+        frame_domain = "unknown"      # 缺 first_frame 或 completed_frames，闭合核不了
 
     taps = len(q20)
-    valid_start = taps + 1            # 前 taps+1 帧历史为空，RTL 从零开始填
+    valid_start = taps + 1            # 本地重放缺前史，前 taps+1 帧不可信
     if n <= valid_start + 16:
         die("%s 帧数 %d 不足（需要 > %d）" % (path.name, valid_start + 16))
 
@@ -272,9 +312,12 @@ def analyze(path: Path, model_q20, model_label, gain_db):
         "valid_window_ms": round(1000 * (n - valid_start) / fs, 2),
         "capture_span_ms": round(1000 * n / fs, 2),
         "first_frame_global": first_frame,
-        "last_frame_global": first_frame + n - 1,
+        "last_frame_global": (first_frame + n - 1) if first_frame is not None else None,
         "completed_frames": completed,
-        "frame_domain_ok": True,
+        "frame_domain": frame_domain,          # "ok" / "unknown"
+        "frame_domain_note": ("first_frame + frames == completed_frames，全局帧号可用"
+                              if frame_domain == "ok" else
+                              "缺 first_frame 或 completed_frames：只做局部分析，全局帧号与闭合核对为未知"),
         "fixture_id": meta.get("fixture_id"),
         "bit_sha256": meta.get("bit_sha256"),
         "bypass": bypass,
@@ -289,7 +332,8 @@ def analyze(path: Path, model_q20, model_label, gain_db):
                              "gain_saturations", "mix_saturations", "stop_reason")},
         "primary_capture_only": {
             "note": "mic 与板上 prediction 相减，不依赖模型、不依赖历史；"
-                    "但 prediction 在前 taps 帧是「历史填充」，所以归因与余量以有效区为准",
+                    "但抓包只留末尾一圈、本地重放缺前史，前 taps+1 帧的 prediction 不可信，"
+                    "所以归因与余量以有效区为准",
             "mic_peak_dbfs": {"whole": lvl(mic), "valid": lvl(mic[v])},
             "pred_peak_dbfs": {"whole": lvl(pred_rec), "valid": lvl(pred_rec[v])},
             "wide_max_x": {"whole": float(np.abs(wide).max() / SCALE),
@@ -299,12 +343,13 @@ def analyze(path: Path, model_q20, model_label, gain_db):
             "overflow_samples": {"whole": int(ov.sum()), "valid": int(ov_valid.sum()),
                                  "history": int(ov.sum() - ov_valid.sum())},
             "first_overflow_index": first,
-            "first_overflow_global_frame": (first_frame + first) if first >= 0 else None,
+            "first_overflow_global_frame": ((first_frame + first)
+                                            if (first >= 0 and first_frame is not None) else None),
             "residual_rail_samples_pos": rail_pos,
             "residual_rail_samples_neg": rail_neg,
         },
         "secondary_model_replay": {
-            "note": "依赖 taps 帧历史；只判有效区，前缀的失配单独计数",
+            "note": "本地模型重放缺前史（需前 taps 帧），只判有效区；前缀失配单独计数",
             "prediction_mismatches": mism,
             "mismatches_in_prefix": int(np.count_nonzero(pred_rep[:valid_start] != pred_rec[:valid_start])),
             "evaluated": n - valid_start,
@@ -327,7 +372,8 @@ def analyze(path: Path, model_q20, model_label, gain_db):
         lo, hi = max(valid_start, first - 16), min(n, first + 17)
         res["primary_capture_only"]["around_first"] = {
             "index": list(range(lo, hi)),
-            "global_frame": list(range(first_frame + lo, first_frame + hi)),
+            "global_frame": (list(range(first_frame + lo, first_frame + hi))
+                             if first_frame is not None else None),
             "mic": (mic[lo:hi] / SCALE).round(6).tolist(),
             "pred": pred_rec[lo:hi].tolist(),
             "wide": (wide[lo:hi] / SCALE).round(6).tolist(),
@@ -457,11 +503,14 @@ def main() -> int:
         p = r["primary_capture_only"]
         print()
         print("--- %s" % r["file"])
-        print("  采集：%d 帧 / %.1f ms；有效窗口从第 %d 帧起（%d 帧 / %.1f ms）；"
-              "全局帧 %d–%d（completed %s）"
+        if r["frame_domain"] == "ok":
+            where = ("全局帧 %d–%d（completed %s，闭合核对通过）"
+                     % (r["first_frame_global"], r["last_frame_global"], r["completed_frames"]))
+        else:
+            where = "全局帧未知（缺 first_frame / completed_frames，只做局部分析）"
+        print("  采集：%d 帧 / %.1f ms；有效窗口从第 %d 帧起（%d 帧 / %.1f ms）；%s"
               % (r["frames"], r["capture_span_ms"], r["valid_start_index"], r["valid_frames"],
-                 r["valid_window_ms"], r["first_frame_global"], r["last_frame_global"],
-                 r["completed_frames"]))
+                 r["valid_window_ms"], where))
         gain_txt = ("%+.3f dB" % r["gain_db"]) if r["gain_db"] is not None else "无增益"
         print("  身份：fixture=%s bit=%s… bypass=%s gain_q12=%d (%s)"
               % (r["fixture_id"], str(r["bit_sha256"])[:12], r["bypass"], r["gain_q12"], gain_txt))
@@ -495,8 +544,10 @@ def main() -> int:
                  gg["margin_db"]["whole"], gg["margin_db"]["valid"],
                  gg["overflow_samples"]["whole"], gg["overflow_samples"]["valid"], ceil_txt))
         if p["first_overflow_index"] >= 0:
-            print("  首次越界（有效区）：抓包内第 %d 帧 / 全局第 %d 帧"
-                  % (p["first_overflow_index"], p["first_overflow_global_frame"]))
+            g = p["first_overflow_global_frame"]
+            print("  首次越界（有效区）：抓包内第 %d 帧 / %s"
+                  % (p["first_overflow_index"],
+                     ("全局第 %d 帧" % g) if g is not None else "全局帧未知"))
             gr = r["growth"]
             print("  增长：窗口 %s ms，只覆盖 %s ms → %s"
                   % (gr["window_ms"], gr["covered_ms"], gr["note"]))
