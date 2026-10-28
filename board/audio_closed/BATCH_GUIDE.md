@@ -1,5 +1,20 @@
 # C 测评与房间实验操作单
 
+## 2026-10-28 A交付版复验后操作范围
+
+A=`ac30584`的v3交付快照与manifest共8项哈希一致：bit48e38f78…、HWH9411adb5…、driverc2b2a86a…、helper5b11b656…。C已支持该完整版本和历史完整版本分别复算，禁止跨版混搭。**当前有声编排仍有未通过项**，见[五条结论和一次修复单](../../report/verification/audio_closed/batch-control.md#2026-10-28-a交付版ac30584五条复验)；不要启动旧SUPERSEDED入口或将新脚本存在令牌解释为已获测量放行。
+
+板端目录仍为`/home/xilinx/jupyter_notebooks/base/audio/audio_wide`。只把本仓库`scripts/review_itemized_20261027.py`复制到该目录，保留A位流/驱动/模型/原NPZ，然后在终端静默执行：
+
+```sh
+cd /home/xilinx/jupyter_notebooks/base/audio/audio_wide
+python3 review_itemized_20261027.py --capture-dir . --pattern '*.npz' --out C-v3-derived-ac30584.json
+```
+
+该入口不运行Notebook、不arm、不播放。通常数秒至数分钟，Ctrl+C停止离线计算，已有输出拒绝覆盖；只回传本目录`C-v3-derived-ac30584.json`，真人PCM留板。其当前目录哈希与原试次执行身份分别记录，缺项仅限制依赖结论。
+
+匹配候选的文件SHA应01c9102a…、实际Q20应6118e85d…；零臂另记e5a00aa9…及zero_coeff。A当前manifest把零Q20写在候选model字段下，待更正，不据此把零臂认作匹配臂。A当前driver的硬件输入满幅停声/60秒尚待补报；旧driver的成功留证不覆盖新版。C不要求整场重跑；后续有声动作待A修复明确失败分支、冻结相同脚本身份后按既定范围集中执行。
+
 ## 2026-10-28 B残差工具字段解释
 
 B=`e730b5b`的剩余边界已完成[限定验收](../../report/verification/audio_closed/batch-control.md#2026-10-28-be730剩余边界验收)，不更换当前现场入口或驱动。它的返回键是`frame_domain`（ok/unknown）及`frame_domain_note`；旧`frame_domain_ok`只保留在历史证据中，不能将缺键当false或补成通过。

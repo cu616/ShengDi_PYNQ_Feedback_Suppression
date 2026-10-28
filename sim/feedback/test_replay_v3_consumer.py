@@ -12,7 +12,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'board/audio_replay'))
 from evaluation import analyze_npz, classify, verify_v3_words
-from model_comparison import V3_BIT, V3_IDENTITY, protection_evidence, flat_trial
+from model_comparison import V3_BIT, V3_IDENTITY, V3_IDENTITY_PROFILES, v3_identity_errors, protection_evidence, flat_trial
 from replay_tools import verify_replay as old_verify
 from tail_metrics import tail_statistics
 
@@ -81,6 +81,21 @@ def save(path, raw, q, source, m):
 
 
 class V3ConsumerTests(unittest.TestCase):
+    def test_delivered_and_historical_release_tuples_do_not_mix(self):
+        for profile in V3_IDENTITY_PROFILES:
+            self.assertEqual(v3_identity_errors(profile), [])
+        mixed = dict(V3_IDENTITY, replay_tools_sha256=V3_IDENTITY_PROFILES[1]['replay_tools_sha256'])
+        self.assertTrue(v3_identity_errors(mixed))
+        raw, q, source = trace()
+        with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
+            path = Path(folder)/'release.npz'
+            for profile in V3_IDENTITY_PROFILES:
+                save(path, raw, q, source, metadata(len(raw), 1024, q, source, **profile))
+                reviewed = itemized.review_capture(path)
+                self.assertFalse(any('version_binding' in x for x in reviewed['issues']+reviewed['unknown']))
+            save(path, raw, q, source, metadata(len(raw), 1024, q, source, **mixed))
+            self.assertIn('v3_version_binding_mismatch:release_tuple', itemized.review_capture(path)['issues'])
+
     def test_sticky_input_full_scale_rejects_clean_captured_tail(self):
         q, source = np.zeros(512, dtype=np.int64), np.zeros(1, dtype='<i2')
         m = metadata(16384, 50000, q, source, input_full_scale_seen=True, capture_status=0x408001)

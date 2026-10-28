@@ -107,8 +107,9 @@ def check(folder, output, v3=False, extras_only=False, only=None):
                              sample_rate_hz=48828.125, coefficients=[0.]*512,
                              coefficients_q20=[0]*512, bias=0.)
                 (work/'model.json').write_text(json.dumps(model))
-                (work/'audio_replay.bit').write_bytes(b'fake-bit')
-                (work/'audio_replay.hwh').write_bytes(b'fake-hwh')
+                for asset, fallback in (('audio_replay.bit', b'fake-bit'), ('audio_replay.hwh', b'fake-hwh')):
+                    supplied = folder/asset
+                    (work/asset).write_bytes(supplied.read_bytes() if v3 and supplied.is_file() else fallback)
                 with patch.dict(sys.modules, packages):
                     spec = importlib.util.spec_from_file_location('driver_under_test', folder/'replay_trial.py')
                     driver = importlib.util.module_from_spec(spec)
@@ -125,7 +126,17 @@ def check(folder, output, v3=False, extras_only=False, only=None):
                          patch.object(driver.time, 'sleep'), contextlib.redirect_stdout(io.StringIO()):
                         try:
                             if write_error:
-                                with patch.object(driver.np, 'savez_compressed', side_effect=OSError('injected_disk_full')):
+                                def fail_save(*args, **kwargs):
+                                    starts = [i for i,(addr,offset,value) in enumerate(events)
+                                              if addr == 1 and offset == 0 and value & 1]
+                                    assert starts, 'fixture never armed'
+                                    assert any(i > starts[-1] and event == (1,0,0)
+                                               for i,event in enumerate(events)), 'save attempted before post-start PL mute'
+                                    assert any(i > starts[-1] and event == ('restore',0,0)
+                                               for i,event in enumerate(events)), 'save attempted before recovery'
+                                    events.append(('save_attempt',0,0))
+                                    raise OSError('injected_disk_full')
+                                with patch.object(driver.np, 'savez_compressed', side_effect=fail_save):
                                     driver.replay_trial(work/'capture.npz','mock',work/'model.json',np.zeros(1000,dtype='<i2'),
                                         bypass=True,gain_db=-36,seconds=.05,hp_volume=40,
                                         speaker_confirmed=True,local_capture_confirmed=True,before_start=lambda: not cancel)
@@ -148,11 +159,12 @@ def check(folder, output, v3=False, extras_only=False, only=None):
                             assert status.get('input_full_scale_seen') is True, 'input full-scale evidence lost when NPZ save fails'
                             assert status.get('capture_status', 0) & (1 << 22), 'raw bit22 lost in failure sidecar'
                         if name == 'v3_identity_in_failure_sidecar':
-                            for key, identity_path in (('hwh_sha256', work/'audio_replay.hwh'),
+                            for key, identity_path in (('bit_sha256', work/'audio_replay.bit'),
+                                    ('hwh_sha256', work/'audio_replay.hwh'),
                                     ('driver_sha256', folder/'replay_trial.py'),
                                     ('replay_tools_sha256', folder/'replay_tools.py')):
                                 assert status.get(key) == hashlib.sha256(identity_path.read_bytes()).hexdigest(), key + ' missing or incorrect in failure sidecar'
-                            assert status.get('replay_abi_version') == 3, 'v3 ABI not identified in failure sidecar'
+                            assert status.get('package_version') == 'audio-replay-v3' or status.get('replay_abi_version') == 3, 'v3 package not identified in failure sidecar'
                     else:
                         assert (work/'capture.npz').is_file(), 'post-start failure lost capture'
                         with np.load(work/'capture.npz', allow_pickle=False) as z:
@@ -169,10 +181,11 @@ def check(folder, output, v3=False, extras_only=False, only=None):
                             assert np.array_equal(z['source_pcm16'], np.zeros(1000,dtype='<i2')), 'source evidence missing'
                         assert m.get('first_frame') == 0 and m.get('completed_frames') == completed
                         assert m.get('source_end_frame_exclusive') == 1000 and m.get('source_schedule_verified') is True
-                        assert m.get('early_stop') is (guard or fault), 'actual stop flag wrong'
+                        assert m.get('early_stop') is (guard or fault or bool(status_extra & (1<<22))), 'actual stop flag wrong'
                         if name == 'v3_input_sticky_recorded_with_clean_tail':
                             assert m.get('input_full_scale_seen') is True, 'raw bit22 not decoded'
                             assert m.get('mic_full_scale_samples') == 0, 'fixture must have a clean captured tail'
+                            assert m.get('stop_reason') == 'input_clip' and error, 'input full scale did not stop the run'
                         if name == 'v3_residual_only_continues':
                             assert error is None and m.get('stop_reason') == 'completed', 'pre-gain residual alone stopped v3'
                         status = json.loads((work/'capture.status.json').read_text())

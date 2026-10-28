@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from growth_monitor import MonitorConfig, replay
 
-VERSION = 'c-measurement-2.4.0'
+VERSION = 'c-measurement-2.4.1'
 CONFIG = dict(window_seconds=.016, hop_seconds=.008, growth_seconds=.08,
               confirm_seconds=.016, minimum_rise_db=3.,
               minimum_slope_db_per_second=12., minimum_fit_r2=.9,
@@ -92,7 +92,7 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
                   event_flags={}, instability_evidence=[], msg_db=None, asg_db=None,
                   scope='captured window only; no whole-trial stability claim')
     flags = result['event_flags']
-    from model_comparison import protection_evidence, V3_BIT, V3_IDENTITY
+    from model_comparison import protection_evidence, V3_BIT, V3_IDENTITY_PROFILES, v3_identity_errors
     protection,protection_basis=protection_evidence(m)
     flags.update(protection=m.get('guard_tripped') is True or m.get('protection_triggered') is True,
                  early_stop=m.get('early_stop'), execution_error=bool(m.get('error')),
@@ -131,11 +131,11 @@ def classify(metadata, signal=None, rate=48828.125, expected=None):
                 raise ValueError('v3_input_evidence_inconsistent')
             if m.get('replay_abi_version') not in (None, 3):
                 raise ValueError('v3_abi_marker_mismatch')
-            missing = [k for k,v in V3_IDENTITY.items() if m.get(k) != v]
+            missing = v3_identity_errors(m)
             if missing:
                 raise ValueError('v3_version_binding_missing_or_mismatch:' + ','.join(missing))
         elif ('input_full_scale_seen' in m or m.get('replay_abi_version') == 3 or
-              any(m.get(k) == v for k,v in V3_IDENTITY.items())):
+              any(m.get(k) == v for profile in V3_IDENTITY_PROFILES for k,v in profile.items())):
             raise ValueError('v3_package_component_with_other_bitstream')
         if expected:
             mismatches = [k for k, v in expected.items() if m.get(k) != v]

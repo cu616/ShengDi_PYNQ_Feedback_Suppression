@@ -8,11 +8,21 @@ import numpy as np
 from tail_metrics import BANDS, empty_tail
 
 SUMMARY_VERSION = 3
-SUMMARY_REVISION = '3.2.1'
+SUMMARY_REVISION = '3.2.2'
 V3_BIT = '48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78'
 V3_IDENTITY = dict(hwh_sha256='9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e',
-                   driver_sha256='6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d',
-                   replay_tools_sha256='0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792')
+                   driver_sha256='c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493',
+                   replay_tools_sha256='5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d')
+V3_IDENTITY_PROFILES = (V3_IDENTITY, dict(V3_IDENTITY,
+    driver_sha256='6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d',
+    replay_tools_sha256='0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792'))
+
+
+def v3_identity_errors(metadata):
+    """Allow recorded, complete release tuples; never mix their components."""
+    if any(all(metadata.get(k) == v for k,v in profile.items()) for profile in V3_IDENTITY_PROFILES):
+        return []
+    return [k for k in V3_IDENTITY if metadata.get(k) is None] or ['release_tuple']
 MODEL_SELECTION = {'room_v1_20261021':'room_v1/calibrated_20261024.json',
                    'box_v1_20261016':'box_v1/baseline_256.json'}
 BIT_CAPACITIES = {'8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339':512,
@@ -166,7 +176,7 @@ def flat_trial(row, registry=None):
         out['residual_metric_semantics'] = tail.get('residual_semantics', 'wide25_pre_gain_not_available')
     errors=[]
     if bit == V3_BIT:
-        errors.extend('v3_version_binding_missing_or_mismatch:'+k for k,v in V3_IDENTITY.items() if m.get(k) != v)
+        errors.extend('v3_version_binding_missing_or_mismatch:'+k for k in v3_identity_errors(m))
     if retired:errors.append('retired_overlay_no_dac_output')
     if type(out['gain_q12']) is not int or not 0<=out['gain_q12']<=32768:errors.append('actual_gain_q12_missing_or_invalid')
     if type(out['hp_volume']) is not int or not 10<=out['hp_volume']<=40:errors.append('actual_hp_volume_missing_or_invalid')
