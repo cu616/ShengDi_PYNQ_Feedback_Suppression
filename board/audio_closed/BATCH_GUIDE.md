@@ -1,5 +1,22 @@
 # C 测评与房间实验操作单
 
+## 2026-10-28 A65修复后仅静默重算
+
+A=`65b3311`的当前入口`field_ac_segments_v3.sh`已报告完成gate+三测量臂，本轮不再跑新纯音或B段。门禁/保护停止及三类分析资格修复通过，唯一当前数值代码缺陷是Hann幅度归一化；[逐条结论及扩大搜索](../../report/verification/audio_closed/batch-control.md#2026-10-28-a65三条修复及原件扩大搜索)。
+
+给A的[建议补丁](../../report/verification/audio_closed/sprint-rc0-20261025/tone-guard-normalization-65b3311.patch)基于guardac93e60c…，只改两份tone_round_guard.py的level_dbfs和单位标签。C未改A源；由A采纳、核对两个已知单音和更新manifest后，将新模块部署到`/home/xilinx/jupyter_notebooks/base/audio/audio_wide`，位流/驱动/源/原NPZ不动。然后**只对现有真实manifest离线运行**：
+
+```sh
+cd /home/xilinx/jupyter_notebooks/base/audio/audio_wide
+bash tone_analyze.sh
+```
+
+此脚本仅读现有文件/运算，无Notebook格、无arm；通常数秒，Ctrl+C停止分析。tone_round.json是既有脚本约定的默认位置，不代表C已确认该真实文件可读；须核round_id=1746930178556850644及其files真实路径。若默认manifest被覆盖，取原件归档，不重新运行field_ac_segments生成“替代原轮”。保留原JSON、三臂NPZ/status、SHA和副本拒绝记录，输出另存派生记录、注明guard哈希；无需回传真人PCM或重新做四项硬件/60秒。
+
+C现有`scripts/review_itemized_20261027.py`已支持driver79/helperbba整对，可继续在原件旁静默统计；它不是tone_round身份清单替代品，不能从全局glob推定同轮有效配对。源与尾段按全局帧和source_pcm16实际长度分开。
+
+后续83b交替源2s/运行2.4s的末圈全为源停段，不能用played_level_report的该尾窗或全局alt文件均值宣称含源可听扩声被否定。先复用已存在的65含源片段并标清单位、校验范围；取不到原件则保留未知，不增加现场试次来补包格式。
+
 ## 2026-10-28 A41补证后的运行决定
 
 A=`41fd0d6`/driverc2b2a86a…/helperbba22102…的四项工程硬件补报已按A现场证据接收；60秒手机6/15、5cm是变更条件，定性阳性听感保留。C未操板，不把这些记录改称真人或候选收益。[通过项及剩余清单](../../report/verification/audio_closed/batch-control.md#2026-10-28-a41硬件补证与剩余流程验收)。

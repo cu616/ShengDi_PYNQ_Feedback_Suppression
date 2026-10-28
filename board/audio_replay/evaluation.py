@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from growth_monitor import MonitorConfig, replay
 
-VERSION = 'c-measurement-2.4.2'
+VERSION = 'c-measurement-2.4.3'
 CONFIG = dict(window_seconds=.016, hop_seconds=.008, growth_seconds=.08,
               confirm_seconds=.016, minimum_rise_db=3.,
               minimum_slope_db_per_second=12., minimum_fit_r2=.9,
