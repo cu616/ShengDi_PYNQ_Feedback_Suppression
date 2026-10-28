@@ -174,10 +174,17 @@ def validate(rows):
 
 
 def level_dbfs(x, f0, halfwidth=2.0):
-    """Level in dBFS. All three signals are 24-bit PCM after the *2**23 normalisation below, so the
-    three numbers and their differences are in the same unit (C 2026-10-28: units must be stated)."""
+    """Level in dBFS, with the Hann coherent gain divided out.
+
+    The peak bin of a Hann-windowed sinusoid of amplitude A is A*sum(win)/2, so the amplitude is
+    2*|X|/sum(win) and the level is 20*log10(A). Without that division every reading was inflated
+    by 20*log10(N/4) (about 60 dB at N=4096): a 0.25 full-scale tone read +48.16 instead of
+    -12.04. C 2026-10-28 caught this; since all three signals share the same window, the
+    DIFFERENCES between arms were unaffected, only the absolute levels were wrong.
+    """
     x = np.asarray(x, dtype=np.float64) / 2**23
-    spec = np.abs(np.fft.rfft(x * np.hanning(len(x))))
+    win = np.hanning(len(x))
+    spec = 2.0 * np.abs(np.fft.rfft(x * win)) / max(float(np.sum(win)), 1e-12)
     freqs = np.fft.rfftfreq(len(x), 1.0 / RATE)
     band = np.abs(freqs - f0) <= halfwidth
     return 20 * np.log10(max(float(np.max(spec[band])), 1e-12))

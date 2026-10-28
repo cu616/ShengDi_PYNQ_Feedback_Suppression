@@ -108,6 +108,14 @@ def expect_accept(name, man):
 
 expect_accept('good round is accepted', build('good'))
 
+# C 2026-10-28: a 0.25 full-scale tone must read -12.04 dBFS, not +48.16
+from tone_round_guard import level_dbfs  # noqa: E402
+_t = np.arange(N) / RATE
+_quarter = 0.25 * np.sin(2 * np.pi * 322.0 * _t) * 2**23
+_read = level_dbfs(_quarter, 322.0)
+case('0.25 full-scale tone reads -12.04 dBFS',
+     abs(_read + 12.04) < 0.15, 'read %.2f' % _read)
+
 # the five original bad-input classes
 expect_reject('1 missing identity is rejected',
               build('noident', cancel={'identity_override': {'driver_sha256': None}}),

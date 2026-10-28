@@ -417,34 +417,38 @@
       "reading": "the microphone level drops 5.6 dB with cancellation active, but the person doing the speaking cannot hear that as a loudness difference. The likely reason is methodological: the talker is also the listener, so their own direct voice (bone conduction plus direct sound) dominates what they hear, and a change in the played level is masked. The historical sessions used a separate listener 20 cm from the speaker for exactly this reason.",
       "what_it_does_not_say": "it does NOT say the cancellation is inaudible; it says this listener position cannot resolve it. A separate listener at the speaker, or a recorded A/B of the played signal, is needed to answer the audible-benefit question."
     },
-    "audible_benefit_measured_2026_10_28": {
-      "why_this_replaces_the_listener": "the reference channel of every capture is the word sent to the DAC, i.e. exactly what the speaker plays, so the loudness difference between two arms can be measured instead of judged. The listener attempts on 2026-10-28 all failed for a reason this measurement makes obvious.",
-      "alternating_run": {
-        "protocol": "four back-to-back segments with an identical injected source (fixed-seed noise, same level, 2 s each): zero, candidate, zero, candidate",
-        "played_rms_dbfs": {
-          "zero_0": -42.84,
-          "cand_1": -46.36,
-          "zero_2": -46.74,
-          "cand_3": -47.03
-        },
-        "played_peak_dbfs": {
-          "zero_0": -30.5,
-          "cand_1": -32.27,
-          "zero_2": -33.65,
-          "cand_3": -34.89
-        },
-        "mean_difference_db": 1.38,
-        "same_condition_scatter_db": 3.9,
-        "verdict": "NOT RESOLVABLE: the arm-to-arm difference (1.4 dB on average) is smaller than the scatter between two runs of the SAME arm (3.9 dB), so neither a listener nor this measurement can separate the two conditions at this working point."
-      },
-      "absolute_output": "the played signal sits at -42 to -47 dBFS, i.e. of order one percent of full scale, which is far too quiet to be heard clearly in a room regardless of the listener.",
-      "consistency_with_earlier_listener_records": "every earlier \"listener\" record (2026-10-27 20 cm: no audible amplification; the same day: audible but not obviously louder; the talker-as-listener pair: cannot tell) is consistent with this measurement. The negative judgements were not a hearing problem and not a cancellation failure; the output is simply too quiet and the difference too small relative to run-to-run scatter.",
-      "what_would_change_it": [
-        "a louder input (clipping: the ADC rails, and the v3 driver stops the run)",
-        "more digital gain (the zero arm is already 0.12 dB from its loudness peak at -8 dB, and -4 dB self-oscillates without cancellation)",
-        "a more efficient or closer speaker (not a parameter we control in this fixture)"
+    "unit_fix_2026_10_28": {
+      "auditor": "C (C=255214a)",
+      "error": "level_dbfs took the peak bin of the Hann-windowed spectrum without dividing by the window coherent gain, so every absolute level was inflated by 20*log10(N/4) (about 60 dB at N=4096). A 0.25 full-scale tone read +48.16 dBFS instead of -12.04 dBFS.",
+      "fix": "amplitude = 2*|rfft(x*win)| / sum(win); level = 20*log10(amplitude). Verified: a synthetic 0.25 full-scale tone now reads -12.04 dBFS (test_tone_round_guard.py, 17 checks).",
+      "effect_on_conclusions": "NONE on the three-point quantities: all three signals pass through the same window, so CD(322), loop boost, acoustic difference and overshoot are unchanged (8.43 / 4.24 / 5.45 / 1.21 dB). Only the absolute levels were wrong and are now in real dBFS.",
+      "recomputed_absolute_levels_dbfs": {
+        "open_mic": -24.48,
+        "bypass_mic": -20.24,
+        "cancel_mic": -25.69,
+        "open_residual": -27.01,
+        "bypass_residual": -20.24,
+        "cancel_residual": -28.67
+      }
+    },
+    "audible_benefit_claim_retracted_2026_10_28": {
+      "auditor": "C (C=255214a)",
+      "retracted_claim": "the played output was too quiet (-42..-47 dBFS) and the listener benefit is a measured negative",
+      "why_invalid": "the driver saves the LAST 16384 frames of the ring, i.e. 0.336 s. The alternating run was 2.4 s with a 2.0 s source, so the saved window starts at 2.064 s and ends at 2.400 s - entirely AFTER the source ended. The levels therefore describe the decay tail, not program material, and no loudness statement can be made from them.",
+      "what_survives": "the same-window arm difference (1.91 dB over the four arms, gate excluded; C independently got 1.905 dB) may be kept as a same-window comparison, but it is not a loudness measurement either.",
+      "what_was_also_wrong": "the earlier 1.38 dB summary included the gate run in the zero-arm mean; the four-arm mean is 1.91 dB.",
+      "correct_method_for_a_real_measurement": "the run duration must be no longer than the saved window (0.336 s) so that the capture falls inside the source, or the capture length must be made configurable. Neither was done here, and no new audible trial was spent.",
+      "consequence_for_the_freeze": "the audible-benefit question is OPEN again: it is neither a measured negative nor a measured positive. What stands is the 322 Hz three-point verdict (cancellation_holds) and every listener record as a record."
+    },
+    "listener_records_2026_10_27_28": {
+      "status": "kept as records, not used as evidence of the benefit",
+      "records": [
+        "2026-10-27 20 cm: no audible amplification",
+        "2026-10-28 60 s: audible, not obviously louder",
+        "2026-10-28 talker-as-listener pair: cannot tell the two arms apart",
+        "2026-10-28 loudness question: not answered (the two attempts were procedurally invalid: too long a gap, and a source-free capture window)"
       ],
-      "consequence_for_the_freeze": "the audible-benefit question is answered as a MEASURED NEGATIVE at this working point. It should be stated that way instead of being left open or attributed to listener hearing."
+      "why_not_used": "a listener judgement cannot be the instrument for a difference that the same-window numbers cannot separate, and the only quantitative attempt was measured on a source-free window."
     }
   },
   "corrections": {
@@ -472,7 +476,8 @@
     "then a keep-or-rollback recommendation for v3"
   ],
   "pending_measurements": [
-    "C re-verification of the 2026-10-28 fixes",
+    "C re-verification of the unit fix and of the retraction",
+    "a valid played-level comparison: run length <= the 0.336 s saved window, so the capture lands inside the source, or a configurable capture length",
     "segment B (g = -3 deliberate howl) - needs authorisation"
   ],
   "working_point_analysis": {
