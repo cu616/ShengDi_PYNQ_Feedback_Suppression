@@ -291,6 +291,18 @@ class EncodingGateTest(unittest.TestCase):
         if r["primary_capture_only"]["first_overflow_index"] >= 0:
             self.assertIsNone(r["primary_capture_only"]["first_overflow_global_frame"])
 
+    def test_missing_completed_only_keeps_position_but_flags_closure(self):
+        """只缺 completed_frames 时：全局帧位置仍然可用，未知的只是闭合核对。"""
+        path, _k, _s = build_fixture(self.tmp, self.q20, name="noclose.npz",
+                                     meta_extra={"completed_frames": None})
+        r = tool.analyze(path, None, None, None)
+        self.assertEqual(r["frame_domain"], "unknown")
+        self.assertEqual(r["first_frame_global"], 1000)          # 位置保留，不是 null
+        self.assertEqual(r["last_frame_global"], 1000 + r["frames"] - 1)
+        self.assertIsNone(r["completed_frames"])
+        self.assertIn("completed_frames", r["frame_domain_note"])
+        self.assertNotIn("位置未知", r["frame_domain_note"])
+
     def test_fractional_frame_index_is_rejected(self):
         """0.5 / 1024.5 这类小数帧号先拒绝，不截断成整数。"""
         cases = ({"first_frame": 0.5}, {"completed_frames": 1024.5},

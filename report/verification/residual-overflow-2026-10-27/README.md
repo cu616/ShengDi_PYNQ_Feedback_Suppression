@@ -284,7 +284,7 @@ C 点名 8 项全过、原四类反例已修；同范围边界检查 8/11，剩�
 | # | C 的观察 | 修前 | 修后 | 用例 |
 |---|---|---|---|---|
 | 1 | ±(1+2^-23) 仍被容差接收并夹回；最终停止归因、退出 2，**没有错误放行**，但应直接拒绝 | 容差 `1.0 + 1e-6`，1+2^-23（1.000000119）在容差内被夹回，整轮分析继续跑 | 容差收到 `4·eps ≈ 8.9e-16`，只吸收浮点表示误差；±(1+2^-23) 直接 `FAILED:` 退出 2。恰好 ±1.0 仍允许，÷2^23 的取整夹回只计数上报 | `test_float_one_plus_one_ulp_of_q23_is_rejected`（正负两支）、`test_exact_one_is_still_accepted` |
-| 2 | 缺帧域字段仍默认全局 0..1023、`frame_domain_ok=true` | 缺 `first_frame` 时默认 0，`frame_domain_ok` 恒 true，全局帧号照报 | 缺字段 → `frame_domain="unknown"`：局部分析照做、归因不阻断，但 `first_frame_global` / `last_frame_global` / `first_overflow_global_frame` / `around_first.global_frame` 全为 **null**，打印写「全局帧未知」 | `test_missing_frame_domain_is_reported_unknown` |
+| 2 | 缺帧域字段仍默认全局 0..1023、`frame_domain_ok=true` | 缺 `first_frame` 时默认 0，`frame_domain_ok` 恒 true，全局帧号照报 | 缺字段 → `frame_domain="unknown"`：局部分析照做、归因不阻断，**只把真正缺的那一项标未知**（见 §12.1） | `test_missing_frame_domain_is_reported_unknown`、`test_missing_completed_only_keeps_position_but_flags_closure` |
 | 3 | 小数帧号 0.5 / 1024.5 被截成整数、退出 0 | `int(meta.get(...))` 直接截断 | 新增 `as_frame_index`：先查整数性（含 `bool`/非数值/非有限），0.5、1024.5、1000.7 一律退出 2，不截断 | `test_fractional_frame_index_is_rejected`（三支） |
 | 4 | 「RTL 历史为空」这个说法不对 | 文档与注释写「前 taps+1 帧历史是空的（RTL 从零开始填）」 | 改成「**本地模型重放缺前史**」：抓包只留运行末尾一圈，板上 prediction 本身没有缺，缺的是本地重放的前 taps 帧；所以主路径不受影响，只有辅路径前 taps+1 帧不可信 | 无（措辞，已逐处替换） |
 
@@ -293,7 +293,29 @@ C 点名 8 项全过、原四类反例已修；同范围边界检查 8/11，剩�
 越早拒绝，越不会有人拿中间那些"看起来正常"的余量和首次越界去引用。
 
 **帧域未知时为什么不阻断归因**：缺 `completed_frames` 只影响"这是不是运行末尾那一圈"的核对，
-不影响 `mic − prediction` 这个局部算术。所以按 C 的要求：局部分析保留，全局位置与闭合核对标未知。
+不影响 `mic − prediction` 这个局部算术。所以按 C 的要求：局部分析保留，闭合核对标未知。
+
+### 12.1 两处措辞更正（C 在 `e730b5b` 验收时指出；代码本来就对，是我的文字写错了）
+
+**(a) 不是"所有全局字段都 null"，是"缺哪项标哪项"。** 分两种：
+
+| 情况 | `frame_domain` | `first_frame_global` / `last_frame_global` | `completed_frames` | 打印 |
+|---|---|---|---|---|
+| 有 `first_frame`、缺 `completed_frames` | `"unknown"` | **保留真实值**（如 1000 / 3047） | `null` | 「全局帧 1000–3047（缺 completed_frames，闭合核对未知）」 |
+| 缺 `first_frame` | `"unknown"` | `null` | 原样（可能为 null） | 「全局帧位置未知（缺 first_frame，只做局部分析）」 |
+
+所以**未知的只是"闭合核对"这一件事，不是全局位置**——抓包自己带 `first_frame` 时，位置是已知事实，
+不该跟着一起标 null。§12 表格里原来写"全为 null"，是我把两种情况混成一句，已改。
+新增用例 `test_missing_completed_only_keeps_position_but_flags_closure` 专门钉这一条。
+
+**(b) 主路径 note 里的"不可信"指谁。** 原文「前 taps+1 帧的 prediction 不可信」有歧义，已改为：
+
+> 前缀不可信的是**本地重放的 `pred_rep`**（抓包只留末尾一圈，缺前 taps 帧）；
+> 板上的 `pred_rec` 仍是记录事实，不受影响。但本地重放对不上时无法把结论归因到当前系数，
+> 所以首次越界与余量以有效区为准。
+
+区别很重要：`pred_rec` 是板上真实算出来并落盘的，**永远可信**；缺前史只影响我们自己用模型重算的那一路。
+把两者混着说，会让人以为板上的 prediction 也残缺。
 
 **没变的**：模型与系数（`01c9102a…` / `6118e85d…`）、板上结论（宽残差 1.0230×、增益后 0.4074×/+7.80 dB、
 首次越界 16353/全局 114687）、整窗/有效区分列（C 已通过）。`repro.txt` 重跑后 A/B 段数字逐字相同，

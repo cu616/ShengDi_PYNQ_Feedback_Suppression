@@ -246,8 +246,17 @@ def analyze(path: Path, model_q20, model_label, gain_db):
                 "（抓包应为运行末尾那一圈）"
                 % (path.name, first_frame, n, first_frame + n, completed))
         frame_domain = "ok"
+        frame_domain_note = "first_frame + frames == completed_frames，全局帧号可用"
+    elif first_frame is not None:
+        # 位置是已知的（抓包自己带着 first_frame），缺的只是闭合核对
+        frame_domain = "unknown"
+        frame_domain_note = ("缺 completed_frames：全局帧位置可用（first_frame 已给），"
+                             "但「这是不是运行末尾那一圈」无法核对")
     else:
-        frame_domain = "unknown"      # 缺 first_frame 或 completed_frames，闭合核不了
+        # 连起点都没有，全局位置本身未知
+        frame_domain = "unknown"
+        frame_domain_note = ("缺 first_frame：全局帧位置未知；局部分析仍可做，"
+                             "但任何全局帧号都不能报")
 
     taps = len(q20)
     valid_start = taps + 1            # 本地重放缺前史，前 taps+1 帧不可信
@@ -315,9 +324,7 @@ def analyze(path: Path, model_q20, model_label, gain_db):
         "last_frame_global": (first_frame + n - 1) if first_frame is not None else None,
         "completed_frames": completed,
         "frame_domain": frame_domain,          # "ok" / "unknown"
-        "frame_domain_note": ("first_frame + frames == completed_frames，全局帧号可用"
-                              if frame_domain == "ok" else
-                              "缺 first_frame 或 completed_frames：只做局部分析，全局帧号与闭合核对为未知"),
+        "frame_domain_note": frame_domain_note,
         "fixture_id": meta.get("fixture_id"),
         "bit_sha256": meta.get("bit_sha256"),
         "bypass": bypass,
@@ -331,9 +338,10 @@ def analyze(path: Path, model_q20, model_label, gain_db):
                             ("prediction_saturations", "residual_saturations",
                              "gain_saturations", "mix_saturations", "stop_reason")},
         "primary_capture_only": {
-            "note": "mic 与板上 prediction 相减，不依赖模型、不依赖历史；"
-                    "但抓包只留末尾一圈、本地重放缺前史，前 taps+1 帧的 prediction 不可信，"
-                    "所以归因与余量以有效区为准",
+            "note": "mic 与板上 prediction_pcm 相减，不依赖模型、不依赖历史。"
+                    "前缀不可信的是**本地重放的 pred_rep**（抓包只留末尾一圈，缺前 taps 帧）；"
+                    "板上的 pred_rec 仍是记录事实，不受影响。"
+                    "但本地重放对不上时无法把结论归因到当前系数，所以首次越界与余量以有效区为准",
             "mic_peak_dbfs": {"whole": lvl(mic), "valid": lvl(mic[v])},
             "pred_peak_dbfs": {"whole": lvl(pred_rec), "valid": lvl(pred_rec[v])},
             "wide_max_x": {"whole": float(np.abs(wide).max() / SCALE),
@@ -506,8 +514,11 @@ def main() -> int:
         if r["frame_domain"] == "ok":
             where = ("全局帧 %d–%d（completed %s，闭合核对通过）"
                      % (r["first_frame_global"], r["last_frame_global"], r["completed_frames"]))
+        elif r["first_frame_global"] is not None:
+            where = ("全局帧 %d–%d（缺 completed_frames，闭合核对未知）"
+                     % (r["first_frame_global"], r["last_frame_global"]))
         else:
-            where = "全局帧未知（缺 first_frame / completed_frames，只做局部分析）"
+            where = "全局帧位置未知（缺 first_frame，只做局部分析）"
         print("  采集：%d 帧 / %.1f ms；有效窗口从第 %d 帧起（%d 帧 / %.1f ms）；%s"
               % (r["frames"], r["capture_span_ms"], r["valid_start_index"], r["valid_frames"],
                  r["valid_window_ms"], where))

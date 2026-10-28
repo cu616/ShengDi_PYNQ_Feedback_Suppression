@@ -15,17 +15,24 @@ C 复验 `67d28b2`：点名 8 项全过、原四类反例已修，同范围边�
   理由：归一化字段超范围说明**字段语义本身不是我以为的那个**（可能是原始码值或 ÷32768），
   不该走到数值比较阶段才暴露——否则中间那些"看起来正常"的余量与首次越界会被人引用。
 2 **缺帧域字段标 unknown**。修前缺 `first_frame` 默认 0、`frame_domain_ok` 恒 true、全局帧号照报 0..1023。
-  现在缺字段 → `frame_domain="unknown"`，`first_frame_global` / `last_frame_global` /
-  `first_overflow_global_frame` / `around_first.global_frame` 全为 null，打印写「全局帧未知」。
+  现在缺字段 → `frame_domain="unknown"`，**只把真正缺的那一项标未知**：
+  有 `first_frame`、缺 `completed_frames` → 全局帧位置保留真实值（如 1000–3047），只写「闭合核对未知」；
+  缺 `first_frame` → 位置标 null，写「全局帧位置未知」。
   按 C 的分寸：**局部分析保留、归因不阻断**（缺 `completed_frames` 只影响"是不是末尾那一圈"的核对，
   不影响 `mic − prediction` 这个局部算术）。
 3 **帧号先查整数性**。修前 `int()` 直接截断，0.5 / 1024.5 会被当成 0 / 1024 且退出 0。新增
   `as_frame_index`：bool、非数值、非有限、非整数一律拒绝并退出 2。
 4 **措辞**：「RTL 历史为空（从零开始填）」改为「**本地模型重放缺前史**」。抓包只留末尾一圈，
   板上 prediction 本身没有缺，缺的是本地重放的前 taps 帧；所以主路径不受影响，只有辅路径前 taps+1 帧不可信。
+  另把主路径 note 的"prediction 不可信"写明是**本地重放的 `pred_rep`**——板上 `pred_rec` 是落盘的记录事实，
+  永远可信；两者混着说会让人以为板上的 prediction 也残缺。
 
-用例 26 → 30 项；全量 189 项通过；`check_docs` 0/0。`repro.txt` 重跑后 A/B 段数字逐字相同，
+用例 26 → 31 项；全量 190 项通过；`check_docs` 0/0。`repro.txt` 重跑后 A/B 段数字逐字相同，
 C 段身份门反例仍是「归因：停止」+ `exit=2`。模型与系数未动。
+
+**C 验收 `e730b5b` 后补的两处**（点名 4/4、C 改动范围 5/5 通过；代码本来就对，是我的文字写错）：
+① "全为 null"改成"缺哪项标哪项"——有 `first_frame` 时位置保留、只标闭合未知（新增用例钉住）；
+② note 明确 `pred_rep` vs `pred_rec`。C 现用代码没有 `frame_domain_ok` 旧字段依赖，不需要适配器。
 
 ## 2026-10-27 22:00 按 C 的四处缺口修工具；对 v3 上板后两问给结论
 
