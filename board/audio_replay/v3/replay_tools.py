@@ -101,9 +101,30 @@ def verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first_frame
     tm = int(np.count_nonzero(raw[frames, 0] != expected))
     if first_frame == 0:
         tm += int(np.count_nonzero(raw[:2, 0] != injected[:2]))
-    return dict(bit_exact=pm == rm == tm == 0, prediction_mismatches=pm,
-                residual_mismatches=rm, output_mismatches=tm,
-                wide_residual_frames=int(np.count_nonzero(np.abs(wide) > 2**23-1)),
+    # Wide-residual counting, three corrections from C's 2026-10-27 review:
+    #  (a) the 24-bit rail is ASYMMETRIC: +8388607 and -8388608 are both legal values, so an
+    #      overflow needs `> 8388607` or `< -8388608`. Testing |wide| > 8388607 wrongly counted a
+    #      legal negative full scale as an overflow.
+    #  (b) with a truncated ring the prediction before `skip` has no usable history, so a wide
+    #      value there cannot be recomputed. Those prefix frames were silently dropped from the
+    #      count; they are now reported separately and marked unverifiable instead of being lost.
+    #  (c) when no output frame can be checked at all, the result must NOT read as a pass.
+    rail_pos, rail_neg = 2**23 - 1, -2**23
+    over = (wide > rail_pos) | (wide < rail_neg)
+    prefix_unverifiable = int(np.count_nonzero(over[:skip])) if skip else 0
+    checked_wide = over[skip:] if skip else over
+    wide_count = int(np.count_nonzero(checked_wide))
+    no_output_frames = len(frames) == 0
+    bit_exact = (pm == rm == tm == 0) and not no_output_frames
+    return dict(bit_exact=bit_exact,
+                verified=not no_output_frames,
+                verification_note=(None if not no_output_frames else
+                                   "no verifiable output frames in this capture; not a pass"),
+                prediction_mismatches=pm, residual_mismatches=rm, output_mismatches=tm,
+                wide_residual_frames=wide_count,
+                wide_residual_frames_prefix_unverifiable=prefix_unverifiable,
+                wide_residual_count_partial=bool(skip and prefix_unverifiable),
+                wide_rail_definition="overflow iff wide > 8388607 or wide < -8388608",
                 history_excluded_frames=skip, evaluated_frames=len(raw)-skip,
                 output_checked_frames=len(frames),
                 interpretation="played[n]=source[n]+gain(wide residual[n-2]), one clamp after "

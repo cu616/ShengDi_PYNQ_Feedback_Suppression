@@ -25,11 +25,12 @@
   "hashes": {
     "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
     "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
-    "replay_trial.py": "82787262b94b2b081d7da6da1d0429ea51f8bb2048a62e40682d3643a2a7f67c",
-    "replay_tools.py": "0d4e1933b827ca5224aa61f5ca125ce88a6e3d36422b7abb45ddbe688cee4792",
+    "replay_trial.py": "130d65c6ba799665918a98e2d34fa418c21bcaf55daa21734104f5d321b7c831",
+    "replay_tools.py": "5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d",
     "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
     "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
-    "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c"
+    "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+    "test_verify_replay_v3.py": "165b9849ad91a48217659b315c7f9e6132b14a69676ed47d21e9d15ed8aa9ef5"
   },
   "model": {
     "path_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/rewired_512_20261026.json",
@@ -43,9 +44,10 @@
   "changed_against_v2": [
     "gain multiplies the unclamped 25-bit difference; the only clamp is after the gain",
     "capture_status bit22 = independent input full-scale sticky flag",
-    "driver stops on bit22 with stop_reason=\"input_clip\" (captain 2026-10-28); pre-gain residual overflow alone still only counts",
-    "evidence adds input_full_scale_seen; replay_tools verifies the output against the wide residual and skips skip+2 of a truncated ring",
-    "driver refuses to start when the bit/hwh next to it is not the declared v3 pair (sha256 constants in replay_trial.py), so a mixed driver/bitstream cannot produce evidence"
+    "driver stops on bit22 with stop_reason=\"input_clip\"; pre-gain residual overflow alone still only counts",
+    "driver refuses to start when the bit/hwh next to it is not the declared v3 pair (sha256 constants)",
+    "evidence adds input_full_scale_seen; the status.json written on a capture-save failure still carries capture_status, input_full_scale_seen, the v3 marker and every version hash",
+    "replay_tools verifies the output against the wide residual, skips skip+2 of a truncated ring, uses the asymmetric 24-bit rail, reports prefix overflows as unverifiable and refuses to pass with no output frames"
   ],
   "unchanged_against_v2": [
     "bitstream register map except bit22",
@@ -63,5 +65,14 @@
     "bitstream_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
     "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
     "successful_baseline": "zero coefficients, PL -8 dB, Codec 40, phone 5 cm / volume 8 of 15"
+  },
+  "review_2026_10_27_C": {
+    "fixed_in_this_version": [
+      "1 save failure keeps capture_status / input_full_scale_seen / v3 marker / full hashes",
+      "2 wide-residual count: legal -8388608 no longer counted; prefix events reported; no-output-frames is not a pass",
+      "3 gate precedes the arm, a failed gate or a protection stop ends the branch, operator confirmation is a token",
+      "4 tone analysis pairs one explicit round, checks identity/window/input validity, refuses otherwise",
+      "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); stale not-run summaries overwritten"
+    ]
   }
 }

@@ -21,8 +21,12 @@ v1 见 [audio-replay-v1](audio-replay-v1.md)，v2 见 [audio-replay-v2](audio-re
 p[n] = FIR_Q20(u[n-1], u[n-2], ...)          # 24 位
 w[n] = m[n] - p[n]                            # 25 位，未钳，增益前
 e[n] = bypass ? m[n] : sat24(w[n])            # 24 位，仅作诊断/捕获，含义与 v1 完全一致
-u[n] = sat24((s[n] << 8) + sat24(round_Q12(g · w[n-2])))
+u[n] = sat24((s[n] << 8) + sat24(round_shift12(g · w[n-2])))
 ```
+
+**增益单位写准（C 2026-10-27 指出）**：`g` 就是 `control[31:16]`，**无符号 16 位、12 位小数**
+（即 Q4.12：`g_q12/4096`，范围 `0…8.0`）；`round_shift12(x)` 指乘完右移 12 位并四舍五入。
+这里**不存在"Q12 系数"**——系数是 24 位 Q20，与增益字不是同一格式，不能互相套用。
 
 **勘误（2026-10-27，B 指出）**：本节最初写成「`g ≤ 1`（`control[31:16] ≤ 32768`，Q4.12）」，
 两半自相矛盾——Q4.12 下 `32768/4096 = 8.0`，寄存器上限对应的是 **`g ≤ 8`（+18.06 dB）**，不是 1。
@@ -103,7 +107,7 @@ capture_status[31:23]  0
 | 仿真（replay） | 通过 | `RESIDUAL_REPLAY_WIDE_PASS`（iverilog + xsim 双跑，乘后钳/增益后钳/输入满幅三例） |
 | 软件验证（停声语义） | 通过（12 项） | `board/audio_replay/test_runtime_stop.py`：bit22→`input_clip`、增益前残差单独越界不停、预测/增益/混音仍停 |
 | 综合实现 | 见 STATE「关键数字」 | `build/work/audio_replay/timing.txt`；**已施加约束满足**，四项外部 I/O 延迟约束缺口仍在 |
-| 上板 | 见 STATE | 现场两臂；**bit22 停声这一版驱动尚未上板复验** |
+| 上板 | 见 STATE | 现场两臂；**bit22 停声、混搭拒绝、60 秒连续两次已在硬件上验证**（2026-10-28） |
 | 现场 | 见 STATE | 稳态纯音 + 真人语音两臂 |
 
 ## 回退

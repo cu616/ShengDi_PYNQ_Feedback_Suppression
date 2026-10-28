@@ -1,4 +1,7 @@
 #!/bin/bash
+# SUPERSEDED by field_human_pair_v3.sh (2026-10-28): that script gates the branch, requires an operator
+# confirmation token and stops after a protection event. This file is kept only for the
+# 2026-10-27 evidence trail and must not be used for new runs.
 # One human-speech arm on the v3 (wide-residual) package.
 # Usage: bash field_human_v3.sh <zero|cand>
 # The injected source is SILENT (the person is the source), so the DAC carries only gain(residual).

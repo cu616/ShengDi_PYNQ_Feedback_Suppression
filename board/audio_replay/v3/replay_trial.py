@@ -43,6 +43,14 @@ EXPECTED_BIT_SHA256 = "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c
 EXPECTED_HWH_SHA256 = "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e"
 
 
+def _file_sha256(path):
+    """sha256 of a file, or None when it cannot be read. Never raises."""
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    except Exception:
+        return None
+
+
 def verify_paired_bitstream(bit_path):
     """Refuse to run when the bit/hwh next to this driver is not the declared pair.
 
@@ -133,6 +141,17 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             [coefficients, np.zeros(HARDWARE_TAPS - len(coefficients), dtype=np.int64)])
     if zero_coeff:
         coefficients = np.zeros(len(coefficients), dtype=np.int64)
+    # Identity is resolved BEFORE anything can fail, so a capture-save failure still leaves a
+    # complete version record next to the trial (C check: save failure must keep the identity).
+    identity = dict(
+        package_version="audio-replay-v3",
+        driver_sha256=_file_sha256(__file__),
+        bit_sha256=_file_sha256(bit),
+        hwh_sha256=_file_sha256(bit.with_suffix(".hwh")),
+        model_sha256=_file_sha256(model_path),
+        coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
+        source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
+    )
     fd, control, raw = None, None, None
     cleanup_errors, salvage_errors = [], []
     armed, stop_reason, error, save_error = False, None, None, None
@@ -383,10 +402,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             source_frames=int(len(source_pcm16)),
             source_end_frame_exclusive=int(source_pcm16.shape[0]),
             source_schedule_verified=bool(source_loaded_ok),
-            source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
-            bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest(),
-            model_sha256=hashlib.sha256(Path(model_path).read_bytes()).hexdigest(),
-            coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
+            **identity,
             logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
             coefficient_status=int(coeff_status_word),
             zero_padded=bool(len(coefficients) > int(logical_taps)),
@@ -422,6 +438,10 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
     status_path = output_path.with_suffix(".status.json")
     status_payload = dict(
         schema_version=1, driver_evidence_version="a-replay-evidence-v2",
+        **identity,
+        # The two v3 status facts a save failure must not swallow.
+        capture_status=int(status or 0),
+        input_full_scale_seen=bool(int(status or 0) >> INPUT_CLIP_BIT & 1),
         capture=str(output_path), fixture_id=fixture_id,
         recovery_ok=bool(recovery_ok), cleanup_errors=list(cleanup_errors),
         salvage_errors=list(salvage_errors), save_error=save_error,
@@ -435,7 +455,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         prediction_saturations=int(counts[0]), residual_saturations=int(counts[1]),
         gain_saturations=int(counts[2]), mix_saturations=int(counts[3]),
         logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
-        coefficient_status=int(coeff_status_word), bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest())
+        coefficient_status=int(coeff_status_word))
     try:
         status_path.write_text(json.dumps(status_payload, indent=2, ensure_ascii=False),
                                encoding="utf-8")
