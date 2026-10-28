@@ -264,16 +264,44 @@
         {
           "check": "input full scale stops the run",
           "driver": "c2b2a86a",
-          "result": "NOT RE-RUN: the operator had left the microphone, so the clap could not be repeated. The stop path itself is byte-identical to 82787262 except where it is read for the status payload; see driver-diff-clap-verified-to-delivered.txt"
+          "result": "PASS: stop_reason=input_clip, capture_status=0x00406350, 12712/146484 frames, recovery_ok (re-run on the delivered driver)"
         },
         {
           "check": "60 s continuous on the delivered driver",
           "driver": "c2b2a86a",
-          "result": "NOT RE-RUN"
+          "result": "PASS: 2929687/2929687 frames, bit22=0, all saturations 0, bit_exact (delivered driver)"
         }
       ],
       "diff_evidence": "driver-diff-clap-verified-to-delivered.txt: 34 changed lines between the clap-verified driver and the delivered one; none of them is runtime_stop, the polling loop or the post-run re-check. The single line that mentions INPUT_CLIP_BIT is the status field.",
-      "conclusion": "the delivered driver is NOT yet fully re-verified on hardware. The two checks that need no person pass; the two that need the operator do not, and must be repeated before any demo claim."
+      "conclusion": "the delivered driver c2b2a86a now has all four checks: mixed pair refused, silent run completes with full identity in status.json, input full scale stops the run, and 60 s completes."
+    },
+    "driver_c2b2a86a_full_verification": {
+      "date": "2026-10-28, after the operator returned to the microphone",
+      "why": "the delivered driver was only partly re-verified; these are the two checks that need a person",
+      "input_full_scale_stop": {
+        "how": "hand claps 2-3 cm from the microphone during a 3 s listen-only run (digital gain 0)",
+        "result": "stop_reason=\"input_clip\", capture_status=0x00406350 (bit22=1), input_full_scale_seen=true, microphone peak -0.0 dBFS, 15 samples at the rail, stopped at 12712 of 146484 frames",
+        "recovery": "recovery_ok=true, cleanup_errors=[]",
+        "verdict": "PASS on the delivered driver"
+      },
+      "sixty_second_continuous": {
+        "preconditions": "listen-only probe first: mic -32.2 dBFS, peak -19.7 dBFS, bit22=0, no rail samples",
+        "result": "stop_reason=completed, 2929687/2929687 frames, capture_status=0x00008001, bit22=0, rsat/psat/gsat/msat 0, mic RMS -31.4 dBFS, peak -14.3 dBFS, no rail samples, bit_exact=true, wall 89.0 s",
+        "verdict": "PASS on the delivered driver"
+      },
+      "failed_attempts_before_this": [
+        "60 s at phone volume 8/15, 5 cm: stopped after 31988 frames with input_clip (mic RMS -21.6 dBFS). The historical baseline was recorded with a driver that had no input detector, so its zero counters never proved a clean input; the working point was changed to 6/15 and marked as a changed condition.",
+        "first attempts right after the clap test still carried the clapping tail (mic RMS -18.2 dBFS, one sample at the rail) and stopped correctly; they were not source measurements at all."
+      ],
+      "listener_record": {
+        "configuration": "zero coefficients, PL -8 dB, Codec 40, phone 6/15 at 5 cm, speaker 100 cm side-facing",
+        "verbatim": "\"能听出放大\" (can hear the amplification)",
+        "meaning": "the amplification path and level are audible at this working point. It is NOT an anti-howling result: no cancellation was active (zero coefficients), so this says nothing about the candidate model.",
+        "earlier_negative_records": [
+          "2026-10-27, 20 cm human speech: \"感觉都没放大人声\" (no audible amplification)",
+          "2026-10-28, 60 s at 6/15 before this run: \"能听到、没明显放大\" (audible, not obviously louder)"
+        ]
+      }
     }
   },
   "corrections": {
@@ -301,10 +329,8 @@
     "then a keep-or-rollback recommendation for v3"
   ],
   "pending_measurements": [
-    "re-observe input_clip stop on the delivered driver c2b2a86a (needs the operator at the microphone)",
-    "60 s continuous on the delivered driver c2b2a86a",
-    "C incremental acceptance of this version",
-    "audible amplification at the demo working point - not demonstrated"
+    "C incremental acceptance of this version - awaiting",
+    "audible amplification WITH cancellation at the demo working point - still not demonstrated; the positive listener record above is the zero-coefficient amplification path only"
   ],
   "working_point_analysis": {
     "asked_by": "B (67d28b2) rejected all three of A's options and proposed a distance ladder plus raising g",

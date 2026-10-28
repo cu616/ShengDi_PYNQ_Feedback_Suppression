@@ -1,3 +1,20 @@
+## 2026-10-28 交付版补齐硬件复验　A　输入满幅停声与 60 秒在 c2b2a86a 上均通过；听众首次「能听出放大」
+
+- 操作者回到现场后补跑两项（交付驱动 `c2b2a86a…`、bit `48e38f78…`）：
+  - **输入满幅停声 PASS**：距麦 2–3 cm 拍手（只监听、增益 0）→ `stop_reason="input_clip"`、
+    `capture_status=0x00406350`（bit22=1）、峰值 **−0.0 dBFS**、15 个满幅样本、12712/146484 帧即停、
+    `recovery_ok=true`、`cleanup_errors=[]`。
+  - **60 秒连续 PASS**：先跑 3 秒监听探针（mic −32.2、峰值 −19.7、bit22=0、无满幅）合格，
+    再跑 60 秒 → `completed`、2929687/2929687 帧、`capture_status=0x00008001`、bit22=0、四类计数 0、
+    mic RMS −31.4、峰值 −14.3、无满幅样本、bit_exact、墙钟 89.0 s。
+- **听众原话：「能听出放大」**（零系数、−8 dB、Codec 40、手机 6/15、5 cm）。
+  这是扩声通路的定性肯定，**不是抗啸叫收益**（当时没有抵消）。
+  与更早两次否定记录并列保存：10-27 的 20 cm「感觉都没放大人声」、10-28 早些 60 秒「能听到、没明显放大」。
+- 过程中两次失败如实保留：手机 8/15 在 5 cm 会顶满 ADC（31988 帧即停）；拍手尾巴未收时探针/长跑
+  也被正确判停（mic −18.2、1 个满幅样本）——**判据按预期工作，不是板卡故障**。
+- 证据：[wide-residual-v3](../../report/verification/audio-replay/wide-residual-v3/evidence.json) 的
+  `driver_c2b2a86a_full_verification` 与 `hardware_verification_matrix`（四项全 PASS）。
+
 ## 2026-10-28 上电后硬件复验　A　混搭被拒、输入满幅停声、60 秒两次 completed 全部通过；可听收益仍未成立
 
 - 上传驱动 `82787262…` 到 `audio_wide` 并核对：`replay_tools 0d4e1933…`、位流 `48e38f78…`、
