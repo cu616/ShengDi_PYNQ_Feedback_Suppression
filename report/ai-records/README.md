@@ -57,3 +57,44 @@
 采用：在现有工作流及长期角色文件落实成功优先复现、原因判断边界、真实现场确认及失败及时交接。
 明日任务只在既有冻结计划维护，临时提示词由聊天交付供人工转发。按此前授权提交 A 分支，
 main 由队长合并；本次不代表其他 AI 已接收、不操作板卡。此处为授权摘录和执行摘要，不是完整对话。
+
+## 2026-10-29 旧内容保留与版本标注（用户摘录）
+
+用户原话（单条摘录，非完整会话导出）：
+
+> 那么请你清理下游戏额旧的残留内容和旧驱动，并非完全删除，而是做好标注，未来可能会用到
+
+执行范围：按上下文整理工程中的旧说明与驱动入口；原位保留可执行文件、回退载荷与证据，旧操作说明保存在 [归档](../../docs/archive/pre-freeze-guide-2026-10-29.md)。更正 [STATE](../../docs/STATE.md)、版本索引与 v3 manifest 的硬件状态说明，不改变算法、保护、位流或旧哈希。未连接板卡，未向队友自动发消息，未把回包生成写成 C 已验收。
+
+本次改动文件（仓库相对路径，共18项）：
+
+- `README.md`
+- `board/README.md`
+- `board/audio_bringup/README.md`
+- `board/audio_calibrate/README.md`
+- `board/audio_closed/README.md`
+- `board/audio_replay/README.md`
+- `board/audio_replay/v3/manifest.json`
+- `board/audio_residual/README.md`
+- `docs/INDEX.md`
+- `docs/STATE.md`
+- `docs/archive/README.md`
+- `docs/archive/pre-freeze-guide-2026-10-29.md`
+- `docs/log/progress.md`
+- `docs/ref/code-reading-guide.md`
+- `docs/ref/development-plan.md`
+- `docs/ref/repository-guide.md`
+- `docs/ref/workspace-architecture.md`
+- `report/ai-records/README.md`
+
+实际验证：`python scripts/check_docs.py --strict` 扫描118份 Markdown，0错误、0警告；`git diff --check` 通过；v3载荷10/10哈希一致，manifest载荷哈希表与整理前相同；程序/RTL/位流/Notebook/捕获文件无改动；历史manifest与原始证据未改，旧progress正文完整保留。未运行声音或功能回归，说明整理不改变运行逻辑。
+
+提交信息：
+
+```text
+[A] 按队长要求标注旧驱动并归档过期入口
+
+改了什么：保留程序与回退原件，整理发布/历史入口、STATE及manifest说明；旧操作文档可追溯。
+怎么验的：文档严格检查0错误0警告，diff检查通过，v3载荷10/10哈希一致，运行代码及证据未变。
+没做什么：未操板、未新增功能试验，未把派生回包生成写成C已验收。
+```

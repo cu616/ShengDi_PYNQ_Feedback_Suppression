@@ -1,3 +1,11 @@
+## 2026-10-29 队长整理保留版本与旧入口　A 分支文档整理
+
+- 按用户要求保留旧驱动、位流、Notebook、模型与原始证据字节；[上板索引](../../board/README.md) 和 [replay 版本说明](../../board/audio_replay/README.md) 区分发布载荷、历史回退、专项诊断及有缺陷的测量入口。
+- 整理前 STATE、三格操作单及早期代码导航存入 [历史原文](../archive/pre-freeze-guide-2026-10-29.md)；STATE 原地改写，移走过期动作与相反结论，保留扩声阳性观察和未完成指标。旧日志未改写。
+- 更正 v3 manifest 的执行驱动身份与硬件状态说明，清理重复说明项；载荷 hashes 未变。新派生回包已在 A 入库，C 最终回执仍按实际交接确认。
+- 本轮核对的证据是 [三臂派生 JSON](../../report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json) 及 [既有工程记录](../../report/verification/audio-replay/wide-residual-v3/evidence.json)。分析脚本与 C Git 版本的差异可由 UTF-8 BOM＋CRLF 精确解释。
+- 本次没有连接板卡、播放声音、运行功能试验或修改契约语义；验证只覆盖文档结构、JSON、版本索引和历史/发布载荷字节保留。
+
 ## 2026-10-28 全天汇总　A　v3 交付驱动四项硬件全过、322 Hz 三点按源激活窗口判据成立、单位修正、可听收益撤回为"未定"
 
 - **交付态**：位流 `48e38f78…` / hwh `9411adb5…`（全程未变）；驱动 **`79c4d9f7…`**、

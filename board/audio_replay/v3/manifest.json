@@ -61,8 +61,8 @@
   ],
   "hardware_status": {
     "bitstream_executed_on_board": true,
-    "executed_driver_sha256": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
-    "note": "the bitstream has run on the board with the driver 6b397359 (before the input_clip stop fix). The delivered driver 1b07586f has NOT run on hardware yet: the board is offline. First hardware step when power returns: upload 1b07586f, force or inject an input full-scale event, confirm stop_reason=\"input_clip\", mute, saved evidence and recovery."
+    "executed_driver_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+    "note": "Recorded hardware checks for the delivered driver 79c4d9f7: mixed bit/hwh rejection, silent bring-up, input_clip stop/recovery and a zero-coefficient 60-second run. Evidence: report/verification/audio-replay/wide-residual-v3/evidence.json, verification_board.driver_79c4d9f7_full_verification. This describes recorded execution, not live board connectivity or acceptance of speech cancellation benefit. Metadata corrected 2026-10-29; payload hashes unchanged."
   },
   "rollback": {
     "package_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_live",
@@ -77,9 +77,6 @@
       "3 scripts: gate before the arm, a failed gate / protection / failed recovery / stopped arm ends the branch, the tone round stops at the first failing arm, and the operator confirmation is a token the scripts consume but never create",
       "4 tone analysis rejects five classes of bad input: missing identity, changed source or gain, conflicting actual length, input at the rail, and any arm that stopped",
       "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); candidate and zero-arm coefficient hashes recorded separately",
-      "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded",
-      "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded",
-      "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded",
       "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded"
     ]
   }
