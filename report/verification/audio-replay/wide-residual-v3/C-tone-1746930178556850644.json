@@ -1,0 +1,1067 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "C-derived-existing-tone-round-v1",
+  "hardware_operations": 0,
+  "r6_native_execution": false,
+  "producer_sha256": "81297e8aaa7a245a68e70ac265dbc2f970e02ccd4e3b0bf2f966d6936a76366b",
+  "original_manifest": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/tone_round.json",
+  "manifest_sha256": "75fa73e47c81dfb65b777613e0668701eb1f6fef03f54fa92e9e034b5af29694",
+  "round_id": 1746930178556850644,
+  "provenance": {
+    "open": {
+      "original_declared_path": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_open_1746930074902911254.npz",
+      "original_capture": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_open_1746930074902911254.npz",
+      "original_sha256": "ed074336a2ac6b834c4ba1210a2b3bcb94adf2d76f72a5c4243b7139c2e42e1b",
+      "status_sha256": "724a9915c41d7bae5486bc8d618fe5d94971b2a75d425fd65a2f6cee673c172a"
+    },
+    "bypass": {
+      "original_declared_path": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_bypass_1746930108520258533.npz",
+      "original_capture": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_bypass_1746930108520258533.npz",
+      "original_sha256": "34ab13c32691e6679381b551882446dc94efecdde800dd61435b27d3c6c4a35c",
+      "status_sha256": "ac931e47b99fef366a72764f56507d344dbfb3c4620a50841a5b9a2434889384"
+    },
+    "cancel": {
+      "original_declared_path": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_cancel_1746930143439949034.npz",
+      "original_capture": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_cancel_1746930143439949034.npz",
+      "original_sha256": "b2b5e9bea41161a811dc3378e2761f86b2fab75faf5d29f0a41364a05d0e2090",
+      "status_sha256": "1e423d8141d3cbc24f2fc63be49cb2278403019854dc537d4c6294e5c6cc9eee"
+    }
+  },
+  "operator_confirmation_raw": "operator on site 2026-10-28 : fixed-configuration tone round after the C 10-28 fixes",
+  "pairing_issues": [],
+  "pairing_integrity_clear": true,
+  "captured_numeric_checks_clear": true,
+  "capture_reviews": {
+    "open": {
+      "original_capture": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_open_1746930074902911254.npz",
+      "original_sha256": "ed074336a2ac6b834c4ba1210a2b3bcb94adf2d76f72a5c4243b7139c2e42e1b",
+      "original_status_sha256": "724a9915c41d7bae5486bc8d618fe5d94971b2a75d425fd65a2f6cee673c172a",
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "2a5ba28f-219d-4b16-af23-5903559ccf8f",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": true,
+        "fixture_id": "room_v1_20261026b",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 0,
+        "gain_db_actual": null,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 107421,
+        "first_frame": 91037,
+        "capture_status": 32769,
+        "input_full_scale_seen": false,
+        "sound_seconds_nominal": 2.19998208,
+        "completion_poll_seconds": 2.2024072389976936,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 97656,
+        "source_end_frame_exclusive": 97656,
+        "source_schedule_verified": true,
+        "package_version": "audio-replay-v3",
+        "driver_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+        "bit_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+        "hwh_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+        "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+        "replay_tools_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+        "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+        "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "verified": true,
+          "verification_note": null,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "wide_residual_frames": 0,
+          "wide_residual_frames_prefix": 0,
+          "wide_residual_count_partial": false,
+          "wide_prediction_source": "recorded prediction column (exact for the prefix too)",
+          "wide_rail_definition": "overflow iff wide > 8388607 or wide < -8388608",
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "output_checked_frames": 16382,
+          "interpretation": "played[n]=source[n]+gain(wide residual[n-2]), one clamp after gain; arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -22.33309213888102,
+        "mic_peak_dbfs": -13.312216149995354,
+        "mic_full_scale_samples": 0
+      },
+      "identity": {
+        "bit_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+        "fixture_id": "room_v1_20261026b",
+        "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+        "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+        "gain_q12": 0,
+        "hp_volume": 40,
+        "capture_id": "2a5ba28f-219d-4b16-af23-5903559ccf8f",
+        "actual_q20_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927"
+      },
+      "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa",
+      "source_has_nonzero_samples": true,
+      "actual_interval": {
+        "first_frame": 91037,
+        "end_frame": 107421,
+        "captured_frames": 16384,
+        "rate_hz": 48828.125,
+        "extent_verified": true,
+        "missing_waveform_intervals": [
+          [
+            0,
+            91037
+          ]
+        ],
+        "coverage_fraction": 0.15252138781057709
+      },
+      "decoded_counts": {
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0
+      },
+      "arithmetic": {
+        "replay_generation": 3,
+        "history_excluded_frames": 512,
+        "prediction_evaluated_frames": 15872,
+        "prediction_mismatches": 0,
+        "recorded_residual_mismatches": 0,
+        "wide_residual_frames": 0,
+        "wide_residual_frames_scope": "whole captured window, actual recorded prediction, strict signed24 bounds",
+        "output_evaluated_frames": 15870,
+        "output_checked_frames": 15870,
+        "output_prediction_source": "local model replay after history exclusion",
+        "startup_output_checked_frames": 0,
+        "output_first_capture_index": 514,
+        "output_mismatches": 0,
+        "output_operand": "wide residual"
+      },
+      "residual_event": {
+        "observed_residual_overflows": 0,
+        "first_in_capture_index": null,
+        "first_in_capture_global_frame": null,
+        "capture_pre_event_frames": null,
+        "full_run_first_event": "unknown: requires reset/counter coverage and event census consistency",
+        "final_residual_counter": 0,
+        "observed_count_equals_unsaturated_final_counter": true,
+        "counter_semantics": "pred/res16 saturate at65535; gain/mix32; counter coverage is not waveform coverage",
+        "frequency_of_first_event_hz": null
+      },
+      "measurement": {
+        "frames": 16384,
+        "dc": -0.0003255386545788497,
+        "rms_including_dc_dbfs": -22.33301338087436,
+        "centered_rms_dbfs": -22.333092138881025,
+        "spectral_total_power": 0.0042521953965174416,
+        "spectral_total_dbfs": -23.713867870274928,
+        "band_300_360_power": 0.004071586667493592,
+        "band_300_360_dbfs": -23.902363164124356,
+        "band_share": 0.9575257691187549,
+        "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)",
+        "microphone_positive_rail_samples": 0,
+        "microphone_negative_rail_samples": 0,
+        "microphone_rail_samples": 0,
+        "absolute_peak_including_dc_dbfs": -13.312216149995354
+      },
+      "interval_measurements": {
+        "source_on": {
+          "first_frame": 91037,
+          "end_frame": 97656,
+          "source_scope": "onboard PCM only; external speech/source state requires separate evidence",
+          "microphone": {
+            "frames": 6619,
+            "dc": -0.0012091962857843615,
+            "rms_including_dc_dbfs": -18.692913708932586,
+            "centered_rms_dbfs": -18.693383703448813,
+            "spectral_total_power": 0.013495358079051976,
+            "spectral_total_dbfs": -18.698155876029663,
+            "band_300_360_power": 0.01335170453033971,
+            "band_300_360_dbfs": -18.744632870435247,
+            "band_share": 0.9893553362666789,
+            "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+          }
+        },
+        "source_off_after_50ms": {
+          "first_frame": 100098,
+          "end_frame": 107421,
+          "source_scope": "onboard PCM only; external speech/source state requires separate evidence",
+          "microphone": {
+            "frames": 7323,
+            "dc": 7.187377620261011e-06,
+            "rms_including_dc_dbfs": -39.31856947611658,
+            "centered_rms_dbfs": -39.3185713938237,
+            "spectral_total_power": 0.00010793029967367957,
+            "spectral_total_dbfs": -39.668566170981386,
+            "band_300_360_power": 8.197814119477419e-06,
+            "band_300_360_dbfs": -50.863019332750014,
+            "band_share": 0.07595470543733308,
+            "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+          }
+        }
+      },
+      "block_measurements": [
+        {
+          "frames": 2048,
+          "dc": -0.0038200661656446755,
+          "rms_including_dc_dbfs": -18.58565012368954,
+          "centered_rms_dbfs": -18.590228589729783,
+          "spectral_total_power": 0.01381785477730354,
+          "spectral_total_dbfs": -18.59559375970199,
+          "band_300_360_power": 0.01336671332859733,
+          "band_300_360_dbfs": -18.739753660159167,
+          "band_share": 0.9673508329637948,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.002843176480382681,
+          "rms_including_dc_dbfs": -18.666431721684827,
+          "centered_rms_dbfs": -18.669014958816522,
+          "spectral_total_power": 0.01356037119207721,
+          "spectral_total_dbfs": -18.677284222341132,
+          "band_300_360_power": 0.013182305862504042,
+          "band_300_360_dbfs": -18.800086158595033,
+          "band_share": 0.9721198391830117,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -0.0032526638824492693,
+          "rms_including_dc_dbfs": -18.79527594320106,
+          "centered_rms_dbfs": -18.798759031008338,
+          "spectral_total_power": 0.012755381581083424,
+          "spectral_total_dbfs": -18.943065448095698,
+          "band_300_360_power": 0.01239582291936613,
+          "band_300_360_dbfs": -19.0672463650596,
+          "band_share": 0.9718112187054812,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.0021205516532063484,
+          "rms_including_dc_dbfs": -22.48950701886541,
+          "centered_rms_dbfs": -22.492972838868475,
+          "spectral_total_power": 0.003727810569525518,
+          "spectral_total_dbfs": -24.285461646388704,
+          "band_300_360_power": 0.0031937141694655894,
+          "band_300_360_dbfs": -24.957039548783683,
+          "band_share": 0.856726518126722,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.00020277703879401088,
+          "rms_including_dc_dbfs": -39.02112469873288,
+          "centered_rms_dbfs": -39.02255032475444,
+          "spectral_total_power": 0.00011495494342340671,
+          "spectral_total_dbfs": -39.3947234796717,
+          "band_300_360_power": 1.4380330850702542e-05,
+          "band_300_360_dbfs": -48.4223112195164,
+          "band_share": 0.12509536712776523,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -0.00018708559218794107,
+          "rms_including_dc_dbfs": -39.251390810854055,
+          "centered_rms_dbfs": -39.25267039265849,
+          "spectral_total_power": 0.00012442022675399953,
+          "spectral_total_dbfs": -39.0510901149744,
+          "band_300_360_power": 2.1426416837464513e-05,
+          "band_300_360_dbfs": -46.69050450415371,
+          "band_share": 0.17221007706269714,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -2.8004171326756477e-05,
+          "rms_including_dc_dbfs": -40.032285566615954,
+          "centered_rms_dbfs": -40.03231987972224,
+          "spectral_total_power": 8.208159263350227e-05,
+          "spectral_total_dbfs": -40.85754225511604,
+          "band_300_360_power": 3.5917311076573706e-06,
+          "band_300_360_dbfs": -54.44696183928951,
+          "band_share": 0.04375805820063214,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -0.00048299459740519524,
+          "rms_including_dc_dbfs": -38.87243580387348,
+          "centered_rms_dbfs": -38.88025754550004,
+          "spectral_total_power": 0.00012282418708991013,
+          "spectral_total_dbfs": -39.107161015553196,
+          "band_300_360_power": 1.0939891754163623e-05,
+          "band_300_360_dbfs": -49.60986975150852,
+          "band_share": 0.0890695229772241,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        }
+      ],
+      "event_flags": {
+        "input_clipped": false,
+        "input_full_scale_seen": false,
+        "captured_input_clipped": false,
+        "protection": false,
+        "residual_overflow": false,
+        "acoustic_regeneration": "not inferred from rail counts, prediction_saturations=0, or envelope alone"
+      },
+      "issues": [],
+      "unknown": [],
+      "execution_completed": true,
+      "captured_numeric_checks_clear": true,
+      "whole_run_adc_headroom_verified": false,
+      "whole_run_input_full_scale_seen": false,
+      "human_confirmations": "not inferred; attach original operator log separately"
+    },
+    "bypass": {
+      "original_capture": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_bypass_1746930108520258533.npz",
+      "original_sha256": "34ab13c32691e6679381b551882446dc94efecdde800dd61435b27d3c6c4a35c",
+      "original_status_sha256": "ac931e47b99fef366a72764f56507d344dbfb3c4620a50841a5b9a2434889384",
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "4074d0df-f41a-4fd4-aa35-90446a2e1a3c",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "room_v1_20261026b",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 1631,
+        "gain_db_actual": -7.998119738549971,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 107421,
+        "first_frame": 91037,
+        "capture_status": 32769,
+        "input_full_scale_seen": false,
+        "sound_seconds_nominal": 2.19998208,
+        "completion_poll_seconds": 2.2011690859981172,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 97656,
+        "source_end_frame_exclusive": 97656,
+        "source_schedule_verified": true,
+        "package_version": "audio-replay-v3",
+        "driver_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+        "bit_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+        "hwh_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+        "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+        "replay_tools_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+        "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+        "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "verified": true,
+          "verification_note": null,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "wide_residual_frames": 0,
+          "wide_residual_frames_prefix": 0,
+          "wide_residual_count_partial": false,
+          "wide_prediction_source": "recorded prediction column (exact for the prefix too)",
+          "wide_rail_definition": "overflow iff wide > 8388607 or wide < -8388608",
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "output_checked_frames": 16382,
+          "interpretation": "played[n]=source[n]+gain(wide residual[n-2]), one clamp after gain; arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -18.49476127039007,
+        "mic_peak_dbfs": -10.703660509291431,
+        "mic_full_scale_samples": 0
+      },
+      "identity": {
+        "bit_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+        "fixture_id": "room_v1_20261026b",
+        "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+        "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+        "gain_q12": 1631,
+        "hp_volume": 40,
+        "capture_id": "4074d0df-f41a-4fd4-aa35-90446a2e1a3c",
+        "actual_q20_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927"
+      },
+      "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa",
+      "source_has_nonzero_samples": true,
+      "actual_interval": {
+        "first_frame": 91037,
+        "end_frame": 107421,
+        "captured_frames": 16384,
+        "rate_hz": 48828.125,
+        "extent_verified": true,
+        "missing_waveform_intervals": [
+          [
+            0,
+            91037
+          ]
+        ],
+        "coverage_fraction": 0.15252138781057709
+      },
+      "decoded_counts": {
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0
+      },
+      "arithmetic": {
+        "replay_generation": 3,
+        "history_excluded_frames": 512,
+        "prediction_evaluated_frames": 15872,
+        "prediction_mismatches": 0,
+        "recorded_residual_mismatches": 0,
+        "wide_residual_frames": 0,
+        "wide_residual_frames_scope": "whole captured window, actual recorded prediction, strict signed24 bounds",
+        "output_evaluated_frames": 15870,
+        "output_checked_frames": 15870,
+        "output_prediction_source": "local model replay after history exclusion",
+        "startup_output_checked_frames": 0,
+        "output_first_capture_index": 514,
+        "output_mismatches": 0,
+        "output_operand": "wide residual"
+      },
+      "residual_event": {
+        "observed_residual_overflows": 0,
+        "first_in_capture_index": null,
+        "first_in_capture_global_frame": null,
+        "capture_pre_event_frames": null,
+        "full_run_first_event": "unknown: requires reset/counter coverage and event census consistency",
+        "final_residual_counter": 0,
+        "observed_count_equals_unsaturated_final_counter": true,
+        "counter_semantics": "pred/res16 saturate at65535; gain/mix32; counter coverage is not waveform coverage",
+        "frequency_of_first_event_hz": null
+      },
+      "measurement": {
+        "frames": 16384,
+        "dc": -0.00036126485792919993,
+        "rms_including_dc_dbfs": -18.494721192036746,
+        "centered_rms_dbfs": -18.49476127039007,
+        "spectral_total_power": 0.011578844528021211,
+        "spectral_total_dbfs": -19.363347774084122,
+        "band_300_360_power": 0.011355551972465143,
+        "band_300_360_dbfs": -19.447917506763428,
+        "band_share": 0.9807154716504145,
+        "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)",
+        "microphone_positive_rail_samples": 0,
+        "microphone_negative_rail_samples": 0,
+        "microphone_rail_samples": 0,
+        "absolute_peak_including_dc_dbfs": -10.703660509291431
+      },
+      "interval_measurements": {
+        "source_on": {
+          "first_frame": 91037,
+          "end_frame": 97656,
+          "source_scope": "onboard PCM only; external speech/source state requires separate evidence",
+          "microphone": {
+            "frames": 6619,
+            "dc": -0.0015883169283696147,
+            "rms_including_dc_dbfs": -15.033041666552956,
+            "centered_rms_dbfs": -15.033390791002025,
+            "spectral_total_power": 0.031595250659212266,
+            "spectral_total_dbfs": -15.003781948345427,
+            "band_300_360_power": 0.03138564390971205,
+            "band_300_360_dbfs": -15.032689569107964,
+            "band_share": 0.993365877936496,
+            "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+          }
+        },
+        "source_off_after_50ms": {
+          "first_frame": 100098,
+          "end_frame": 107421,
+          "source_scope": "onboard PCM only; external speech/source state requires separate evidence",
+          "microphone": {
+            "frames": 7323,
+            "dc": 0.00010907902314528471,
+            "rms_including_dc_dbfs": -36.76290802618626,
+            "centered_rms_dbfs": -36.763153254072776,
+            "spectral_total_power": 0.00015186731854014449,
+            "spectral_total_dbfs": -38.18535675148113,
+            "band_300_360_power": 2.68702073567727e-05,
+            "band_300_360_dbfs": -45.70728982113363,
+            "band_share": 0.1769321247985942,
+            "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+          }
+        }
+      },
+      "block_measurements": [
+        {
+          "frames": 2048,
+          "dc": -0.00531910388963297,
+          "rms_including_dc_dbfs": -15.062094948305369,
+          "centered_rms_dbfs": -15.066038321731527,
+          "spectral_total_power": 0.030665145944775325,
+          "spectral_total_dbfs": -15.13354964031771,
+          "band_300_360_power": 0.029818108006855762,
+          "band_300_360_dbfs": -15.255199164916803,
+          "band_share": 0.9723778279273483,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.006312585494015366,
+          "rms_including_dc_dbfs": -14.990712203318067,
+          "centered_rms_dbfs": -14.996176613217997,
+          "spectral_total_power": 0.03175792434648039,
+          "spectral_total_dbfs": -14.981478901973297,
+          "band_300_360_power": 0.030946706018459655,
+          "band_300_360_dbfs": -15.093855706871066,
+          "band_share": 0.9744561918099461,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -0.005862398829776794,
+          "rms_including_dc_dbfs": -15.040355346518572,
+          "centered_rms_dbfs": -15.0451219483571,
+          "spectral_total_power": 0.030791098362724218,
+          "spectral_total_dbfs": -15.115748189122522,
+          "band_300_360_power": 0.029969161377624513,
+          "band_300_360_dbfs": -15.233254096791743,
+          "band_share": 0.9733060193106088,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.0014802179066464305,
+          "rms_including_dc_dbfs": -17.58641978806604,
+          "centered_rms_dbfs": -17.586965677755614,
+          "spectral_total_power": 0.015099928900553557,
+          "spectral_total_dbfs": -18.210250976187478,
+          "band_300_360_power": 0.014585100992928363,
+          "band_300_360_dbfs": -18.360905593074428,
+          "band_share": 0.9659052760436295,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.00022083125077188015,
+          "rms_including_dc_dbfs": -30.010337465686305,
+          "centered_rms_dbfs": -30.010549765560768,
+          "spectral_total_power": 0.0005784482504636226,
+          "spectral_total_dbfs": -32.377354881268836,
+          "band_300_360_power": 0.0004872013967512998,
+          "band_300_360_dbfs": -33.12291475300238,
+          "band_share": 0.8422558048378762,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.0010949081042781472,
+          "rms_including_dc_dbfs": -36.295063725206845,
+          "centered_rms_dbfs": -36.31730489411667,
+          "spectral_total_power": 0.00023857342576045105,
+          "spectral_total_dbfs": -36.2237793320692,
+          "band_300_360_power": 8.157031478985123e-05,
+          "band_300_360_dbfs": -40.88467861693922,
+          "band_share": 0.34190863684773964,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -0.0007875600713305175,
+          "rms_including_dc_dbfs": -38.75791656178594,
+          "centered_rms_dbfs": -38.778200727986054,
+          "spectral_total_power": 0.0001412198542537657,
+          "spectral_total_dbfs": -38.50104241055501,
+          "band_300_360_power": 1.985951841187956e-05,
+          "band_300_360_dbfs": -47.02031287240394,
+          "band_share": 0.1406283735160419,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -2.959882840514183e-05,
+          "rms_including_dc_dbfs": -38.29853611459774,
+          "centered_rms_dbfs": -38.298561829699686,
+          "spectral_total_power": 0.0001637051446034601,
+          "spectral_total_dbfs": -37.85937672220393,
+          "band_300_360_power": 1.720907711852558e-05,
+          "band_300_360_dbfs": -47.64242419217973,
+          "band_share": 0.10512239649041454,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        }
+      ],
+      "event_flags": {
+        "input_clipped": false,
+        "input_full_scale_seen": false,
+        "captured_input_clipped": false,
+        "protection": false,
+        "residual_overflow": false,
+        "acoustic_regeneration": "not inferred from rail counts, prediction_saturations=0, or envelope alone"
+      },
+      "issues": [],
+      "unknown": [],
+      "execution_completed": true,
+      "captured_numeric_checks_clear": true,
+      "whole_run_adc_headroom_verified": false,
+      "whole_run_input_full_scale_seen": false,
+      "human_confirmations": "not inferred; attach original operator log separately"
+    },
+    "cancel": {
+      "original_capture": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/ac_tone_cancel_1746930143439949034.npz",
+      "original_sha256": "b2b5e9bea41161a811dc3378e2761f86b2fab75faf5d29f0a41364a05d0e2090",
+      "original_status_sha256": "1e423d8141d3cbc24f2fc63be49cb2278403019854dc537d4c6294e5c6cc9eee",
+      "original_metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "19f8122b-f7f1-48d8-b6cb-89c7ac7230a3",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "room_v1_20261026b",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 1631,
+        "gain_db_actual": -7.998119738549971,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 107421,
+        "first_frame": 91037,
+        "capture_status": 32769,
+        "input_full_scale_seen": false,
+        "sound_seconds_nominal": 2.19998208,
+        "completion_poll_seconds": 2.2019997630013677,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 97656,
+        "source_end_frame_exclusive": 97656,
+        "source_schedule_verified": true,
+        "package_version": "audio-replay-v3",
+        "driver_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+        "bit_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+        "hwh_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+        "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+        "replay_tools_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+        "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+        "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "verified": true,
+          "verification_note": null,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "wide_residual_frames": 0,
+          "wide_residual_frames_prefix": 0,
+          "wide_residual_count_partial": false,
+          "wide_prediction_source": "recorded prediction column (exact for the prefix too)",
+          "wide_rail_definition": "overflow iff wide > 8388607 or wide < -8388608",
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "output_checked_frames": 16382,
+          "interpretation": "played[n]=source[n]+gain(wide residual[n-2]), one clamp after gain; arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -23.4751121980959,
+        "mic_peak_dbfs": -14.645677652219561,
+        "mic_full_scale_samples": 0
+      },
+      "identity": {
+        "bit_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+        "fixture_id": "room_v1_20261026b",
+        "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+        "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+        "gain_q12": 1631,
+        "hp_volume": 40,
+        "capture_id": "19f8122b-f7f1-48d8-b6cb-89c7ac7230a3",
+        "actual_q20_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927"
+      },
+      "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa",
+      "source_has_nonzero_samples": true,
+      "actual_interval": {
+        "first_frame": 91037,
+        "end_frame": 107421,
+        "captured_frames": 16384,
+        "rate_hz": 48828.125,
+        "extent_verified": true,
+        "missing_waveform_intervals": [
+          [
+            0,
+            91037
+          ]
+        ],
+        "coverage_fraction": 0.15252138781057709
+      },
+      "decoded_counts": {
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0
+      },
+      "arithmetic": {
+        "replay_generation": 3,
+        "history_excluded_frames": 512,
+        "prediction_evaluated_frames": 15872,
+        "prediction_mismatches": 0,
+        "recorded_residual_mismatches": 0,
+        "wide_residual_frames": 0,
+        "wide_residual_frames_scope": "whole captured window, actual recorded prediction, strict signed24 bounds",
+        "output_evaluated_frames": 15870,
+        "output_checked_frames": 15870,
+        "output_prediction_source": "local model replay after history exclusion",
+        "startup_output_checked_frames": 0,
+        "output_first_capture_index": 514,
+        "output_mismatches": 0,
+        "output_operand": "wide residual"
+      },
+      "residual_event": {
+        "observed_residual_overflows": 0,
+        "first_in_capture_index": null,
+        "first_in_capture_global_frame": null,
+        "capture_pre_event_frames": null,
+        "full_run_first_event": "unknown: requires reset/counter coverage and event census consistency",
+        "final_residual_counter": 0,
+        "observed_count_equals_unsaturated_final_counter": true,
+        "counter_semantics": "pred/res16 saturate at65535; gain/mix32; counter coverage is not waveform coverage",
+        "frequency_of_first_event_hz": null
+      },
+      "measurement": {
+        "frames": 16384,
+        "dc": -0.00021269424178171903,
+        "rms_including_dc_dbfs": -23.475068465545075,
+        "centered_rms_dbfs": -23.4751121980959,
+        "spectral_total_power": 0.0035018187406284196,
+        "spectral_total_dbfs": -24.55706337402249,
+        "band_300_360_power": 0.003318862358882473,
+        "band_300_360_dbfs": -24.790107584432644,
+        "band_share": 0.947753897246802,
+        "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)",
+        "microphone_positive_rail_samples": 0,
+        "microphone_negative_rail_samples": 0,
+        "microphone_rail_samples": 0,
+        "absolute_peak_including_dc_dbfs": -14.645677652219561
+      },
+      "interval_measurements": {
+        "source_on": {
+          "first_frame": 91037,
+          "end_frame": 97656,
+          "source_scope": "onboard PCM only; external speech/source state requires separate evidence",
+          "microphone": {
+            "frames": 6619,
+            "dc": -0.0010535660278474768,
+            "rms_including_dc_dbfs": -19.924014619328155,
+            "centered_rms_dbfs": -19.924488351605927,
+            "spectral_total_power": 0.010167462218195353,
+            "spectral_total_dbfs": -19.927874327379566,
+            "band_300_360_power": 0.010010006971294769,
+            "band_300_360_dbfs": -19.995656200637587,
+            "band_share": 0.9845138104748689,
+            "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+          }
+        },
+        "source_off_after_50ms": {
+          "first_frame": 100098,
+          "end_frame": 107421,
+          "source_scope": "onboard PCM only; external speech/source state requires separate evidence",
+          "microphone": {
+            "frames": 7323,
+            "dc": 0.00017349608980142628,
+            "rms_including_dc_dbfs": -38.434581746167936,
+            "centered_rms_dbfs": -38.435493478705986,
+            "spectral_total_power": 0.00015086395572004534,
+            "spectral_total_dbfs": -38.21414509076228,
+            "band_300_360_power": 1.028757617150236e-05,
+            "band_300_360_dbfs": -49.876869361548195,
+            "band_share": 0.06819108064879838,
+            "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+          }
+        }
+      },
+      "block_measurements": [
+        {
+          "frames": 2048,
+          "dc": -0.0033011584309861064,
+          "rms_including_dc_dbfs": -20.020994069310994,
+          "centered_rms_dbfs": -20.025752397014344,
+          "spectral_total_power": 0.009917934633106262,
+          "spectral_total_dbfs": -20.03578758373483,
+          "band_300_360_power": 0.009553086180416398,
+          "band_300_360_dbfs": -20.198563043739494,
+          "band_share": 0.9632132630243405,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.0035572914057411253,
+          "rms_including_dc_dbfs": -19.89765916699977,
+          "centered_rms_dbfs": -19.903030197741348,
+          "spectral_total_power": 0.010181645793312525,
+          "spectral_total_dbfs": -19.921820155962223,
+          "band_300_360_power": 0.009754262661303364,
+          "band_300_360_dbfs": -20.108055539711508,
+          "band_share": 0.958024160269858,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -0.0036875827354379,
+          "rms_including_dc_dbfs": -19.898272328909655,
+          "centered_rms_dbfs": -19.90404509149006,
+          "spectral_total_power": 0.010445055021399684,
+          "spectral_total_dbfs": -19.810892679452973,
+          "band_300_360_power": 0.010095013747335652,
+          "band_300_360_dbfs": -19.9589308530004,
+          "band_share": 0.9664873690615442,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.0015748314326629043,
+          "rms_including_dc_dbfs": -23.0942013337387,
+          "centered_rms_dbfs": -23.096398092802175,
+          "spectral_total_power": 0.0032360547653037435,
+          "spectral_total_dbfs": -24.899841372241788,
+          "band_300_360_power": 0.002791528912923924,
+          "band_300_360_dbfs": -25.541578696375574,
+          "band_share": 0.8626333963362035,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -0.00047232373617589474,
+          "rms_including_dc_dbfs": -37.23874821409565,
+          "centered_rms_dbfs": -37.24388149835142,
+          "spectral_total_power": 0.00017320286394704863,
+          "spectral_total_dbfs": -37.61444931105529,
+          "band_300_360_power": 6.411654694509935e-05,
+          "band_300_360_dbfs": -41.9302987501207,
+          "band_share": 0.37018179424966663,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.00023643724853172898,
+          "rms_including_dc_dbfs": -38.88258061072827,
+          "centered_rms_dbfs": -38.88445805923739,
+          "spectral_total_power": 0.00012975932662871704,
+          "spectral_total_dbfs": -38.86861416848943,
+          "band_300_360_power": 7.833291385342e-06,
+          "band_300_360_dbfs": -51.06055718128344,
+          "band_share": 0.06036784860756525,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": 0.0008219757582992315,
+          "rms_including_dc_dbfs": -37.86624181634693,
+          "centered_rms_dbfs": -37.88423158962918,
+          "spectral_total_power": 0.00018687044740942183,
+          "spectral_total_dbfs": -37.2845937460735,
+          "band_300_360_power": 6.2329258955820595e-06,
+          "band_300_360_dbfs": -52.053080364853656,
+          "band_share": 0.03335426217461821,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        },
+        {
+          "frames": 2048,
+          "dc": -0.0004310248768888414,
+          "rms_including_dc_dbfs": -38.95444484751038,
+          "centered_rms_dbfs": -38.960791588387245,
+          "spectral_total_power": 0.00011905177428715911,
+          "spectral_total_dbfs": -39.242641277065566,
+          "band_300_360_power": 7.3282571562360645e-06,
+          "band_300_360_dbfs": -51.34999299223561,
+          "band_share": 0.06155521158853059,
+          "definition": "mean removed; Hann; one-sided bin power; 300<=f<360; normalized by N*sum(w*w)"
+        }
+      ],
+      "event_flags": {
+        "input_clipped": false,
+        "input_full_scale_seen": false,
+        "captured_input_clipped": false,
+        "protection": false,
+        "residual_overflow": false,
+        "acoustic_regeneration": "not inferred from rail counts, prediction_saturations=0, or envelope alone"
+      },
+      "issues": [],
+      "unknown": [],
+      "execution_completed": true,
+      "captured_numeric_checks_clear": true,
+      "whole_run_adc_headroom_verified": false,
+      "whole_run_input_full_scale_seen": false,
+      "human_confirmations": "not inferred; attach original operator log separately"
+    }
+  },
+  "views": {
+    "original_full_capture": {
+      "available": true,
+      "method": "legacy_fft",
+      "levels_peak_dbfs": {
+        "open": {
+          "reference": -26.54720517426902,
+          "microphone": -24.48152725525585,
+          "prediction": -24.451833399678556,
+          "residual": -27.01296238271655,
+          "wide_residual": -27.01296238271655
+        },
+        "bypass": {
+          "reference": -22.263745314934358,
+          "microphone": -20.237980710454707,
+          "prediction": -20.190868435629294,
+          "residual": -20.237980710454707,
+          "wide_residual": -20.237980710454707
+        },
+        "cancel": {
+          "reference": -27.433620529456192,
+          "microphone": -25.687647005524994,
+          "prediction": -25.324102234726592,
+          "residual": -28.671628056662044,
+          "wide_residual": -28.671628056662044
+        }
+      },
+      "rms_dbfs": {
+        "open": {
+          "reference": -23.431907872407777,
+          "microphone": -22.33301338087436,
+          "prediction": -22.028290442081214,
+          "residual": -25.200637251451788,
+          "wide_residual": -25.200637251451788
+        },
+        "bypass": {
+          "reference": -19.498109802431685,
+          "microphone": -18.494721192036746,
+          "prediction": -18.083226255199097,
+          "residual": -18.494721192036746,
+          "wide_residual": -18.494721192036746
+        },
+        "cancel": {
+          "reference": -24.167288107867172,
+          "microphone": -23.475068465545075,
+          "prediction": -22.780465226964033,
+          "residual": -26.79687784301867,
+          "wide_residual": -26.79687784301867
+        }
+      },
+      "first_frame": 91037,
+      "end_frame": 107421,
+      "scheduled_source_frames": 6619,
+      "includes_source_free_frames": true,
+      "three_point": {
+        "cd_322_db": 8.433647346207337,
+        "loop_boost_db": 4.243546544801141,
+        "acoustic_difference_db": 5.449666295070287,
+        "overshoot_db": 1.2061197502691456,
+        "played_bypass_minus_cancel_db": 5.169875214521834
+      },
+      "units": "dBFS peak amplitude for tone estimates; RMS includes DC"
+    },
+    "common_source_active": {
+      "available": true,
+      "method": "weighted_sine_fit",
+      "levels_peak_dbfs": {
+        "open": {
+          "reference": -16.478432960276464,
+          "microphone": -15.737379771957976,
+          "prediction": -15.237462379965873,
+          "residual": -18.77694099562684,
+          "wide_residual": -18.77694099562684
+        },
+        "bypass": {
+          "reference": -12.637172066486865,
+          "microphone": -12.035783959848768,
+          "prediction": -11.395077986687951,
+          "residual": -12.035783959848768,
+          "wide_residual": -12.035783959848768
+        },
+        "cancel": {
+          "reference": -17.25521236978667,
+          "microphone": -16.98601158666499,
+          "prediction": -16.017254217483085,
+          "residual": -20.496696255921538,
+          "wide_residual": -20.496696255921538
+        }
+      },
+      "rms_dbfs": {
+        "open": {
+          "reference": -19.49563229033245,
+          "microphone": -18.692913708932586,
+          "prediction": -18.25042405444848,
+          "residual": -21.638317389994036,
+          "wide_residual": -21.638317389994036
+        },
+        "bypass": {
+          "reference": -15.652848034210589,
+          "microphone": -15.033041666552956,
+          "prediction": -14.412366603896237,
+          "residual": -15.033041666552956,
+          "wide_residual": -15.033041666552956
+        },
+        "cancel": {
+          "reference": -20.267313683436605,
+          "microphone": -19.924014619328155,
+          "prediction": -19.03263168590615,
+          "residual": -23.298867456657234,
+          "wide_residual": -23.298867456657234
+        }
+      },
+      "first_frame": 91037,
+      "end_frame": 97656,
+      "scheduled_source_frames": 6619,
+      "includes_source_free_frames": false,
+      "three_point": {
+        "cd_322_db": 8.46091229607277,
+        "loop_boost_db": 3.7015958121092076,
+        "acoustic_difference_db": 4.950227626816222,
+        "overshoot_db": 1.2486318147070143,
+        "played_bypass_minus_cancel_db": 4.618040303299804
+      },
+      "units": "dBFS peak amplitude for tone estimates; RMS includes DC"
+    }
+  },
+  "original_sources_retained": true,
+  "no_effect_pass_implied": true,
+  "limits": [
+    "Original full capture may mix source-on/off; reported separately from source-active view.",
+    "Tone projection and FFT remain sensitive to background and finite windows; no automatic SNR/coherence pass.",
+    "Board PCM timing does not prove an external phone/talker was silent.",
+    "Played digital level is not calibrated speaker SPL, listener benefit or ASG."
+  ]
+}

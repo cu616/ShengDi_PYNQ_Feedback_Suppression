@@ -449,6 +449,28 @@
         "2026-10-28 loudness question: not answered (the two attempts were procedurally invalid: too long a gap, and a source-free capture window)"
       ],
       "why_not_used": "a listener judgement cannot be the instrument for a difference that the same-window numbers cannot separate, and the only quantitative attempt was measured on a source-free window."
+    },
+    "c_review_json_2026_10_28": {
+      "artifact": "report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json",
+      "sha256": "f380c9178a3d0381c6be13f054c4e01d1c907770a6d6f030395982c5d64581ba",
+      "produced_by": "C scripts/review_itemized_20261027.py 81297e8a..., run on the board against tone_round.json",
+      "round_id": 1746930178556850644,
+      "window": {
+        "first_frame": 91037,
+        "end_frame": 97656,
+        "scheduled_source_frames": 6619,
+        "includes_source_free_frames": false
+      },
+      "source_active_three_point": {
+        "cd_322_db": 8.4609,
+        "loop_boost_db": 3.7016,
+        "acoustic_difference_db": 4.9502,
+        "overshoot_db": 1.2486,
+        "played_bypass_minus_cancel_db": 4.618
+      },
+      "difference_from_my_full_window_numbers": "my analyzer used the whole 16384-frame capture (6619 source-active + 9765 source-free); restricting to the source-active frames moves the numbers by up to 0.54 dB (loop boost 4.24 -> 3.70). C values are the precise ones and are adopted.",
+      "verdict_under_B_rule": "cancellation_holds: 4.95 >= 3.70 - 1.5 and |1.25| <= 1.5",
+      "board_state": "PCM left on the board as instructed; only the JSON was copied"
     }
   },
   "corrections": {
