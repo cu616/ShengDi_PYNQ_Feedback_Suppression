@@ -15,24 +15,35 @@
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**：2026-10-28 现场补跑了交付版 `c2b2a86a…` 的两项硬件复验——**输入满幅停声 PASS**
-（拍手 → `stop_reason="input_clip"`、`capture_status=0x00406350`、峰值 −0.0 dBFS、12712/146484 帧、
-`recovery_ok=true`）与 **60 秒连续 PASS**（2929687/2929687 帧、bit22=0、四类计数 0、峰值 −14.3 dBFS、
-无满幅、bit_exact）。**听众这次给的是「能听出放大」**（零系数、−8 dB、手机 6/15、5 cm）。
-**当前卡点**：C 的增量验收未回；**带抵消的可听收益仍未证明**——这次的「能听出放大」是扩声通路的定性肯定，
-不是抗啸叫收益。
+**最后动作**（2026-10-28）：交付驱动 `79c4d9f7…` **四项硬件检查全过**（混搭在位流装载前被拒、静默自检带全身份、
+输入满幅停声 38877/146484 帧、60 秒 2929687 帧 bit22=0）；**322 Hz 三点按 C 的源激活窗口判据成立**
+（CD 8.46 / 环路提升 3.70 / 声学差 4.95 / 过冲 1.25 dB）；修掉 Codec 解除静音爆音（0.25 s 前移，零阈值改动）；
+补 Hann 相干增益（0.25 满幅 = −12.04 dBFS）。
 
-- **唯一操板者，SSH 非交互驱动**。**现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`**：
-  位流 `48e38f78…`、hwh `9411adb5…`、**`replay_tools` `bba22102…`**、`test_verify_replay_v3` `7265fa6c…`。
-  **交付驱动 `replay_trial` = `c2b2a86a…`**（bit22 停声 + 位流配对校验 + 保存失败仍带全身份）；
-  `82787262…` 与 `6b397359…` 均作废。**交付版的四项硬件检查全部通过**：混搭拒绝、静默自检（status 带全身份）、
-  输入满幅停声、60 秒连续。
-  系数哈希**分开记**：candidate `6118e85d…`、零臂全零 `e5a00aa9…`（此前 manifest 把零臂哈希填进了候选字段）。
+**当前卡点**：**可听收益未定**（原"输出太小/收益为负"结论已撤回）；C 的原件级独立复算未做；
+B 段（g=−3 故意起振）需授权；有效播放电平对照需 ≤0.336 秒运行或把捕获长度做成可配。
+
+- 判据依据：C 的源激活窗口是 **6619/16384 帧**（2.2 秒运行、源 2.0 秒，存窗落在 1.864–2.000 秒），
+  完整输出见 [C-tone JSON](../report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json)；
+  我按整窗算是 8.43/4.24/5.45/1.21，差 ≤0.54 dB，**以 C 为准**。听众反馈（10-27/10-28 的「听不出」「能听出放大」等）
+  保留为记录、**不作收益证据**。四项硬件检查的逐项数值见
+  [evidence.json](../report/verification/audio-replay/wide-residual-v3/evidence.json) 的 `hardware_verification_matrix` 与
+  `driver_79c4d9f7_full_verification`。
+
+- **唯一操板者，SSH 非交互驱动**。现行包 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`：
+  位流 `48e38f78…`、hwh `9411adb5…`、驱动 `replay_trial` **`79c4d9f7…`**、`replay_tools` **`bba22102…`**、
+  `tone_round_guard` **`76413d84…`**、`test_tone_round_guard` **`b32f3486…`**，manifest 共 **10 项**哈希自校验通过。
+  旧驱动 `c2b2a86a…` / `82787262…` / `6b397359…` 均作废。系数哈希**分开记**：candidate `6118e85d…`、零臂全零 `e5a00aa9…`。
   回退包 `audio_live` 原样未动（v2 位流 `61bb71aa…`、hwh `92b499a3…`、驱动 `2127663…`；v1 位流同目录）。
-- **宽残差计数改用记录里的 prediction**（C 2026-10-28 指出）：截断环的前 512 帧不再漏计。
-  实测验证：拿 2026-10-27 的 **v2** 真实捕获跑新判据 → `wide_residual_frames = 8`，
-  与硬件 `residual_saturations = 8` **逐数一致**；同一份捕获的 8 帧 `output_mismatches` 正是 v2/v3 输出不同处
-  （v2 乘钳位残差），不是判据错误。
+- **本轮修掉的真 bug**：Codec **解除静音的爆音**在 arm 的同一下落进首批帧，门禁与运行被误判输入满幅
+  （安静的房间里麦克风读到 −0.0 dBFS、5~87 个满档样本）→ 加 `CODEC_SETTLE_SECONDS = 0.25` 把爆音挪到计数之前，
+  **没有动任何阈值**。修后纯音与 60 秒都干净通过，拍手仍立即停。
+- **判据层修正（C 三轮复验）**：门禁改为**先过与真臂相同的全判据**再判电平；纯音首臂触发保护即止
+  （`tone_arms_v3.sh` 旧逻辑只判文件是否存在，已改并标 SUPERSEDED）；分析器补**实际源数组**比对、
+  `frames` 与实际数组长度/`first_frame+frames==completed_frames`、**必须存在 status.json 副车**；
+  电平单位补 **Hann 相干增益**（0.25 满幅 = **−12.04 dBFS**，此前虚高约 60 dB）；播放电平报告加**无效窗口判定**。
+- **宽残差计数改用记录里的 prediction**（C 指出）：截断环的前 512 帧不再漏计；拿 2026-10-27 的 v2 真实捕获
+  跑新判据得 `wide_residual_frames = 8`，与硬件 `residual_saturations = 8` 逐数一致。
 - **① 原配置复现成功**（[结果包](../report/verification/audio-replay/reproduction-result-2026-10-27.json)）：
   手机 `1101.m4a`、音量 **8/15**、距麦 **5 cm**、零系数、**−8 dB**、Codec 40、音响 100 cm 侧对。
   两次复现均"能听出放大"，与系统静音对照差异明显且两次一致；
