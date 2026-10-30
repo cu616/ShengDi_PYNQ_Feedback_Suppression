@@ -1,5 +1,9 @@
 # 项目进度（时间线，只追加）
 
+## 2026-10-30 C 交独立候选、报告初稿与最小Skill
+
+fetch取得facd3de并完整执行C材料任务，36项派生回包核对一致；从A/B/C固定源码导出独立目录，以A v3完整载荷运行，不合main。9页报告初稿生成并逐页渲染；引用表分清固定频率、普通扩声与零系数60秒。候选10项载荷、模型、导入、独立解压与坏helper拒绝通过；C测试对旧helper的隐式依赖在新组合暴露，改为SHA固定的sim夹具，窗口7/宽残差4通过，首次失败保留。最小Skill及check_docs通过；A/B片段、模板、媒体与真实RAR待收口，未操板或扩平台。[交付入口](../../materials/work/c/release-checklist.md)、[回执](../../materials/work/c/validation.json)、[冲突建议](../../materials/work/c/conflicts.md)、[协作纠错](../../materials/work/c/session-record.md)。
+
 ## 2026-10-28 C 验收Ac1单位修复并交既有原件静默入口
 
 固定Ac1快照10/10与单位3/3通过，四差值仅摘要算术核对；接受源停尾窗扩声负结论撤回，保留听众原话。复用现有C脚本增加原manifest/指定round_id三臂模式，8个新增用例通过，仅重验受影响范围/路径；交A一次只读原件回派生JSON，不新增有声试次。纠正“须≤0.336秒或扩捕获”：原2.2秒记录按参数有6619含源帧，待原件静默核实。played报告全局glob与无源回退仍限定，未冒称原件复算完成。[证据及操作](../../report/verification/audio_closed/batch-control.md#2026-10-28-ac1单位修复与原件静默入口)。

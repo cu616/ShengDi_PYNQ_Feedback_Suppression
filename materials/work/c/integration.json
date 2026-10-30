@@ -1,0 +1,2354 @@
+{
+  "schema_version": 1,
+  "kind": "directory-candidate-not-git-merge",
+  "source_commits": {
+    "A": "facd3de26721873d10af758e6266c1b7c1b246f2",
+    "B": "86061a700a73aef1221097bef4e01564ed6e691a",
+    "C": "330e135bb58d5df93b112a62a0980faa7b402eef"
+  },
+  "c_delivery_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+  "destination": "materials/staging/tmp/submission-candidate-r3",
+  "inputs_missing": [
+    "materials/work/a/integration.json",
+    "materials/work/a/hardware.md",
+    "materials/work/b/integration.json",
+    "materials/work/b/algorithm.md"
+  ],
+  "release_ready": false,
+  "hardware_operations": 0,
+  "files": [
+    {
+      "path": "board/audio_replay/README.md",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/README.md",
+      "sha256": "60d31fc3f3448f391db2b70529b2842ddb068f54d99090bc6305d3d8e6d66599",
+      "source_sha256": "153d619e8e25a79d27c6d8b2091e2c73c2cd3ae4cfb18e3147439d04d667e0c3",
+      "bytes": 6499,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/closed_tools.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/closed_tools.py",
+      "sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "source_sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "bytes": 2636,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/evaluation.py",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "board/audio_replay/evaluation.py",
+      "sha256": "7b2a77a668b27c25ec04679b4d38b5be7e261682714b6b382233c8d56060b2f2",
+      "source_sha256": "7b2a77a668b27c25ec04679b4d38b5be7e261682714b6b382233c8d56060b2f2",
+      "bytes": 23327,
+      "purpose": "C current offline consumer; no driver replacement",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/growth_monitor.py",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "board/audio_replay/growth_monitor.py",
+      "sha256": "877f843e83d604a8cf6dd46cfccb1c908ecf2c5d00520fb3ff08535dbd580d7d",
+      "source_sha256": "877f843e83d604a8cf6dd46cfccb1c908ecf2c5d00520fb3ff08535dbd580d7d",
+      "bytes": 15809,
+      "purpose": "C current offline consumer; no driver replacement",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/live_run.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/live_run.py",
+      "sha256": "a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441",
+      "source_sha256": "a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441",
+      "bytes": 19698,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/model_comparison.py",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "board/audio_replay/model_comparison.py",
+      "sha256": "c7a67c1522609b4d574d5330de1c2cd9445b20fd8dc05bb8e3b2bf1e638a9365",
+      "source_sha256": "c7a67c1522609b4d574d5330de1c2cd9445b20fd8dc05bb8e3b2bf1e638a9365",
+      "bytes": 20120,
+      "purpose": "C current offline consumer; no driver replacement",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/poll_state.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/poll_state.py",
+      "sha256": "90f41a1ae86338f71e6de51ea9aa99a639053121674512a3adffb839366ac03f",
+      "source_sha256": "90f41a1ae86338f71e6de51ea9aa99a639053121674512a3adffb839366ac03f",
+      "bytes": 815,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/replay_tools.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/replay_tools.py",
+      "sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "source_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "bytes": 7701,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/replay_trial.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/replay_trial.py",
+      "sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "source_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "bytes": 25352,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/residual_tools.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/residual_tools.py",
+      "sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "source_sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "bytes": 3253,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/tail_metrics.py",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "board/audio_replay/tail_metrics.py",
+      "sha256": "0f6a7b91d5b1a722b7172eca1b03029e5676fc79b785b6c0988e4070f24b57b2",
+      "source_sha256": "0f6a7b91d5b1a722b7172eca1b03029e5676fc79b785b6c0988e4070f24b57b2",
+      "bytes": 5331,
+      "purpose": "C current offline consumer; no driver replacement",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/test_runtime_stop.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/test_runtime_stop.py",
+      "sha256": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "source_sha256": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "bytes": 5452,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/test_tone_round_guard.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/test_tone_round_guard.py",
+      "sha256": "b32f348605edf8a14bb4a1299c74a0c174a147c1db764321a199e1e46a583ec6",
+      "source_sha256": "b32f348605edf8a14bb4a1299c74a0c174a147c1db764321a199e1e46a583ec6",
+      "bytes": 7617,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/test_verify_replay_v3.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/test_verify_replay_v3.py",
+      "sha256": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "source_sha256": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "bytes": 4396,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/tone_round_guard.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/tone_round_guard.py",
+      "sha256": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+      "source_sha256": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+      "bytes": 11351,
+      "purpose": "A runtime dependency; root bit/hwh deliberately excluded",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/audio_replay.bit",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/audio_replay.bit",
+      "sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "source_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "bytes": 4045674,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/audio_replay.hwh",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/audio_replay.hwh",
+      "sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "source_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "bytes": 403966,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/closed_tools.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/closed_tools.py",
+      "sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "source_sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "bytes": 2636,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/drc.txt",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/drc.txt",
+      "sha256": "02d8005c32614f378de77663c16cda48b9bf2bc2b4e5059c863369d66c06bece",
+      "source_sha256": "02d8005c32614f378de77663c16cda48b9bf2bc2b4e5059c863369d66c06bece",
+      "bytes": 4398,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/manifest.json",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/manifest.json",
+      "sha256": "4d301051483a8d87e5ff53de6346b5255a9596d2230ec2e018cca79fb2fd9aa0",
+      "source_sha256": "4d301051483a8d87e5ff53de6346b5255a9596d2230ec2e018cca79fb2fd9aa0",
+      "bytes": 6142,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/replay_tools.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/replay_tools.py",
+      "sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "source_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "bytes": 7701,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/replay_trial.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/replay_trial.py",
+      "sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "source_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "bytes": 25352,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/residual_tools.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/residual_tools.py",
+      "sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "source_sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "bytes": 3253,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/test_runtime_stop.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/test_runtime_stop.py",
+      "sha256": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "source_sha256": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "bytes": 5452,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/test_tone_round_guard.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/test_tone_round_guard.py",
+      "sha256": "b32f348605edf8a14bb4a1299c74a0c174a147c1db764321a199e1e46a583ec6",
+      "source_sha256": "b32f348605edf8a14bb4a1299c74a0c174a147c1db764321a199e1e46a583ec6",
+      "bytes": 7617,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/test_verify_replay_v3.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/test_verify_replay_v3.py",
+      "sha256": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "source_sha256": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "bytes": 4396,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/timing.txt",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/timing.txt",
+      "sha256": "6040d48a65cd7541c6f92f3c4eb483a813cf764ba44149b4091357149c9dd166",
+      "source_sha256": "6040d48a65cd7541c6f92f3c4eb483a813cf764ba44149b4091357149c9dd166",
+      "bytes": 22581,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/tone_round_guard.py",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/tone_round_guard.py",
+      "sha256": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+      "source_sha256": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+      "bytes": 11351,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "board/audio_replay/v3/utilization.txt",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "board/audio_replay/v3/utilization.txt",
+      "sha256": "7c374bf5adeef031931f3a5b1ca9b8024b9dc13ab228d3b7a9620db18b168e98",
+      "source_sha256": "7c374bf5adeef031931f3a5b1ca9b8024b9dc13ab228d3b7a9620db18b168e98",
+      "bytes": 10951,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "build/scripts/audio_bringup.xdc",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "build/scripts/audio_bringup.xdc",
+      "sha256": "8bf3462f32fe240b8da8d397468026db1ed330c43f49747c648869b7c67eaa67",
+      "source_sha256": "8bf3462f32fe240b8da8d397468026db1ed330c43f49747c648869b7c67eaa67",
+      "bytes": 994,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "build/scripts/create_audio_replay.tcl",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "build/scripts/create_audio_replay.tcl",
+      "sha256": "2f5d419017b9c5fcf9ab405fa835888aa8e99e53a96d836bea8e43f534eec6b7",
+      "source_sha256": "2f5d419017b9c5fcf9ab405fa835888aa8e99e53a96d836bea8e43f534eec6b7",
+      "bytes": 8396,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "build/scripts/test_audio_replay.tcl",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "build/scripts/test_audio_replay.tcl",
+      "sha256": "ba3075b73c3e0072ed6e5885e8a59ef32cca4b5b9a8db426bd5707359699dc01",
+      "source_sha256": "ba3075b73c3e0072ed6e5885e8a59ef32cca4b5b9a8db426bd5707359699dc01",
+      "bytes": 889,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "build/scripts/test_audio_replay_wide.tcl",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "build/scripts/test_audio_replay_wide.tcl",
+      "sha256": "0947be88a4adc730ecd9e547444c01fc36bb76c5e2aac84a8942bf0a1d11dfcc",
+      "source_sha256": "0947be88a4adc730ecd9e547444c01fc36bb76c5e2aac84a8942bf0a1d11dfcc",
+      "bytes": 916,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "build/scripts/test_feedback_fir.tcl",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "build/scripts/test_feedback_fir.tcl",
+      "sha256": "fd3d1fb9aae299afa416775219c1fa73920a91cf63f1e31fed68239933c6b2a8",
+      "source_sha256": "fd3d1fb9aae299afa416775219c1fa73920a91cf63f1e31fed68239933c6b2a8",
+      "bytes": 916,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "docs/contracts/audio-replay-v1.md",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "docs/contracts/audio-replay-v1.md",
+      "sha256": "dd3c99e7dfaa181fc2d0037d11a964fe2577ceb91fe30f612482aad3c63bc3f9",
+      "source_sha256": "0066952937cdca3cdab4e6ad79c96dc26dd9a54b5b3582a1067b471c1d1f9152",
+      "bytes": 3709,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "docs/contracts/audio-replay-v2.md",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "docs/contracts/audio-replay-v2.md",
+      "sha256": "ca6c0ecdccf0dc91cde82c61687275e21343edf7fdf4174a07b351d40b7d9dbd",
+      "source_sha256": "ca6c0ecdccf0dc91cde82c61687275e21343edf7fdf4174a07b351d40b7d9dbd",
+      "bytes": 2156,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "docs/contracts/audio-replay-v3.md",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "docs/contracts/audio-replay-v3.md",
+      "sha256": "6692efbd0cb876817ab2d9a00984036b8ba88ba6c2c48420dbeae3e3475eaed3",
+      "source_sha256": "e8952fcaddd4511abe4728dedc8960f2fea648ed8fe765dfb50b2f348bfa7348",
+      "bytes": 7547,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "docs/contracts/feedback-fir-v1.md",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "docs/contracts/feedback-fir-v1.md",
+      "sha256": "e7cf400958fb850922aed8252f1c65effe4eb97a1542481e80d0df7c1a968176",
+      "source_sha256": "e7cf400958fb850922aed8252f1c65effe4eb97a1542481e80d0df7c1a968176",
+      "bytes": 2287,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/planning/submission-plan.md",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "materials/planning/submission-plan.md",
+      "sha256": "1a8497ff1e7344c2fc11d7d780a0e84c61c7d69e82f47dd32a47bf93e332dbee",
+      "source_sha256": "6ba9918a89afd8468568cd2dae1a3c1ccea5a8f11ed6835702105e38d9b8b9e3",
+      "bytes": 11518,
+      "purpose": "captain assignment and original task provenance",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/planning/video-plan.md",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "materials/planning/video-plan.md",
+      "sha256": "62a524058f417cf354d236010ef6ece68602946c4d72aca08aeac003df7ef6e6",
+      "source_sha256": "62a524058f417cf354d236010ef6ece68602946c4d72aca08aeac003df7ef6e6",
+      "bytes": 10842,
+      "purpose": "captain assignment and original task provenance",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/prompts/c.txt",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "materials/prompts/c.txt",
+      "sha256": "a3e5746934b513c176a87a39adc8705a81be37a3a741045a6642626ad3fbf6be",
+      "source_sha256": "a3e5746934b513c176a87a39adc8705a81be37a3a741045a6642626ad3fbf6be",
+      "bytes": 4467,
+      "purpose": "captain assignment and original task provenance",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "models/room_v1/rewired_512_20261026.json",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "models/room_v1/rewired_512_20261026.json",
+      "sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+      "source_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+      "bytes": 17851,
+      "purpose": "only selected deployable candidate; fixed fixture",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-14-feedback-review.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-14-feedback-review.md",
+      "sha256": "269398b04007cea8d7d50066e6124835a4fb34239fb87548b020202a52212ebd",
+      "source_sha256": "269398b04007cea8d7d50066e6124835a4fb34239fb87548b020202a52212ebd",
+      "bytes": 2015,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-14-remote-capture.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-14-remote-capture.md",
+      "sha256": "4fda62b48a7502d303534571d17b9ad6586da4c1f44bd9955c1c0ae037540f45",
+      "source_sha256": "4fda62b48a7502d303534571d17b9ad6586da4c1f44bd9955c1c0ae037540f45",
+      "bytes": 2191,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-14-vivado-board-setup.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-14-vivado-board-setup.md",
+      "sha256": "2b0fde9e321695d920175af252d37608ad2861ce6cc13a44270f72f9a9e9afd8",
+      "source_sha256": "2b0fde9e321695d920175af252d37608ad2861ce6cc13a44270f72f9a9e9afd8",
+      "bytes": 2298,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-15-clock-timing-review.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-15-clock-timing-review.md",
+      "sha256": "a28a28cf056e9bf16716df2aa66b3ec2ca20fc02cdcfc16f2b67575c4d77bcd5",
+      "source_sha256": "a28a28cf056e9bf16716df2aa66b3ec2ca20fc02cdcfc16f2b67575c4d77bcd5",
+      "bytes": 5902,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-15-muted-tx-diagnostic.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-15-muted-tx-diagnostic.md",
+      "sha256": "9964fb615fb0f94300764e85f7765de193d61dce9d4893c551682f01eef273e2",
+      "source_sha256": "9964fb615fb0f94300764e85f7765de193d61dce9d4893c551682f01eef273e2",
+      "bytes": 4014,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-15-phone-input-headphone-trial.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-15-phone-input-headphone-trial.md",
+      "sha256": "8b3dd8a143e7967c54636fc1f8fa180de41103777f079d27486747a6e054bf7b",
+      "source_sha256": "250f63a0964818dca49500e1e6267c0f3d37184d09a9fa8fba06d4aad91facbe",
+      "bytes": 7118,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-15-pl-bringup.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-15-pl-bringup.md",
+      "sha256": "d75e5c94e41f674de7970d94cb5c3e54035207910057decca41ed106dae5063e",
+      "source_sha256": "d75e5c94e41f674de7970d94cb5c3e54035207910057decca41ed106dae5063e",
+      "bytes": 3680,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-15-pl-known-tone.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-15-pl-known-tone.md",
+      "sha256": "05a2a34064d1a777aebdd4f2d59318972589f6f62c39fc6690d949949bead95a",
+      "source_sha256": "05a2a34064d1a777aebdd4f2d59318972589f6f62c39fc6690d949949bead95a",
+      "bytes": 4857,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-16-open-loop-calibration.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-16-open-loop-calibration.md",
+      "sha256": "5a6d2d0d67a9421062ae64e199afbb1f76220f34e13bf3abd140b924a2cd91dd",
+      "source_sha256": "5a6d2d0d67a9421062ae64e199afbb1f76220f34e13bf3abd140b924a2cd91dd",
+      "bytes": 5296,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-17-core-comments.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-17-core-comments.md",
+      "sha256": "28cde03931a62d87530277b102a0eb49ce018fc91c0d394aebd7086f0261daff",
+      "source_sha256": "28cde03931a62d87530277b102a0eb49ce018fc91c0d394aebd7086f0261daff",
+      "bytes": 1225,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-17-handoff-sync.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-17-handoff-sync.md",
+      "sha256": "f4aded5dae966c61cb925b80fd42df02a348d2e92d24d2924a8a1791670af708",
+      "source_sha256": "f4aded5dae966c61cb925b80fd42df02a348d2e92d24d2924a8a1791670af708",
+      "bytes": 1903,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-17-workspace-map.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-17-workspace-map.md",
+      "sha256": "cb6498d8e7da445ea58b4d0e86b3640b6a8685be9caa5464f51918f0d0873b60",
+      "source_sha256": "cb6498d8e7da445ea58b4d0e86b3640b6a8685be9caa5464f51918f0d0873b60",
+      "bytes": 817,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-18-fir-optimization.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-18-fir-optimization.md",
+      "sha256": "d5f9a979a592a3b35a4f69ee048f615d239d4699e0fc91bd99eb64c90f697aaf",
+      "source_sha256": "d5f9a979a592a3b35a4f69ee048f615d239d4699e0fc91bd99eb64c90f697aaf",
+      "bytes": 2444,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-18-residual-integration.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-18-residual-integration.md",
+      "sha256": "df5d2ef60012684200a43da6ad149b1910c7159e4109291ec34273999a9032f3",
+      "source_sha256": "df5d2ef60012684200a43da6ad149b1910c7159e4109291ec34273999a9032f3",
+      "bytes": 1136,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-19-closed-integration.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-19-closed-integration.md",
+      "sha256": "1bd67c459d579dd3fce4456ef177fd374b7a1c67a2610eba301b70911b545dfc",
+      "source_sha256": "1bd67c459d579dd3fce4456ef177fd374b7a1c67a2610eba301b70911b545dfc",
+      "bytes": 1078,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-19-docs-sync.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-19-docs-sync.md",
+      "sha256": "a0265ff42ea75eb29cee43449871ca3f811980661a29b50160bd4bce75f68778",
+      "source_sha256": "a0265ff42ea75eb29cee43449871ca3f811980661a29b50160bd4bce75f68778",
+      "bytes": 657,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/2026-10-20-algorithm-path-analysis.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/2026-10-20-algorithm-path-analysis.md",
+      "sha256": "009ebfa4f06d254ca9fe7ea4b57e453fbaab6b25b55fed09e6118eb1f0daadb8",
+      "source_sha256": "009ebfa4f06d254ca9fe7ea4b57e453fbaab6b25b55fed09e6118eb1f0daadb8",
+      "bytes": 3627,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/README.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/README.md",
+      "sha256": "c48d3073b78218b926ebee4bd99209174667ff73355e7c0f8f29b158f9b17a52",
+      "source_sha256": "5f0da4b84694c0f7667e64401d739ee251d3d4418119ab8ac7c46d9611ce7f07",
+      "bytes": 680,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/ai-records/closed-batch-control.md",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "report/ai-records/closed-batch-control.md",
+      "sha256": "a8f07f76951c136c24babf205d608088aa4ecdba84d171ffb26ba66af576a821",
+      "source_sha256": "975076df3d05fc59785029800cfe3f86714f0d99a987c3e2879b70a1845546db",
+      "bytes": 80704,
+      "purpose": "original AI collaboration and correction records; no fabricated interaction",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/b-request-2026-10-25/b-refmic-6captures.zip",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/b-request-2026-10-25/b-refmic-6captures.zip",
+      "sha256": "0a4fb68c7f47e4215e77260b51cf17acc4ef8fca1bcc48cdcdfa1dd6ab905b61",
+      "source_sha256": "0a4fb68c7f47e4215e77260b51cf17acc4ef8fca1bcc48cdcdfa1dd6ab905b61",
+      "bytes": 2592358,
+      "purpose": "existing non-speech calibration input and provenance; no new recording",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799426007669601.npz",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799426007669601.npz",
+      "sha256": "4ca28bb850af0510b2d743bf064258079d6ef4dabe027e31fcaf780925a76caf",
+      "source_sha256": "4ca28bb850af0510b2d743bf064258079d6ef4dabe027e31fcaf780925a76caf",
+      "bytes": 433686,
+      "purpose": "existing non-speech calibration input and provenance; no new recording",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799460431974953.npz",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799460431974953.npz",
+      "sha256": "af2caffc351e23c607b82a12dbc3f1a56c1f3c8f78c41bc63f65db5793b6ac24",
+      "source_sha256": "af2caffc351e23c607b82a12dbc3f1a56c1f3c8f78c41bc63f65db5793b6ac24",
+      "bytes": 433198,
+      "purpose": "existing non-speech calibration input and provenance; no new recording",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799495671311695.npz",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799495671311695.npz",
+      "sha256": "b78fb85620d86237eacfb89b28c86b11f8fd612e905351989f35f91f9ce8cdbc",
+      "source_sha256": "b78fb85620d86237eacfb89b28c86b11f8fd612e905351989f35f91f9ce8cdbc",
+      "bytes": 435215,
+      "purpose": "existing non-speech calibration input and provenance; no new recording",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799530870174448.npz",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799530870174448.npz",
+      "sha256": "e4406408525cad2590a17cd1be8f804e7d6c135dc9b03ca3c1594c8f72a6a03a",
+      "source_sha256": "e4406408525cad2590a17cd1be8f804e7d6c135dc9b03ca3c1594c8f72a6a03a",
+      "bytes": 432227,
+      "purpose": "existing non-speech calibration input and provenance; no new recording",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799566241828611.npz",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799566241828611.npz",
+      "sha256": "0aebf36f7f2f1cd4d767229aba34b1432e7feedaee16136d3f552af1c947cf4c",
+      "source_sha256": "0aebf36f7f2f1cd4d767229aba34b1432e7feedaee16136d3f552af1c947cf4c",
+      "bytes": 434292,
+      "purpose": "existing non-speech calibration input and provenance; no new recording",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799601922597315.npz",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799601922597315.npz",
+      "sha256": "138c40cf16d97c02269de2ac0d19d1029ad2a6c37f0f3a377b2ecf5aac40d34e",
+      "source_sha256": "138c40cf16d97c02269de2ac0d19d1029ad2a6c37f0f3a377b2ecf5aac40d34e",
+      "bytes": 433881,
+      "purpose": "existing non-speech calibration input and provenance; no new recording",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/live-human-first-confirmed-2026-10-27.json",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/live-human-first-confirmed-2026-10-27.json",
+      "sha256": "e6251e851158d57fe1eebd42f6aaf89c7db793acfc9fbdd98a9bb6bf8c884c22",
+      "source_sha256": "e6251e851158d57fe1eebd42f6aaf89c7db793acfc9fbdd98a9bb6bf8c884c22",
+      "bytes": 2399,
+      "purpose": "historical success/failure provenance",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/reproduction-result-2026-10-27.json",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/reproduction-result-2026-10-27.json",
+      "sha256": "3fd88054ddd4c308b58af0911660a3866d09460ccd92a79183bc56718da8e877",
+      "source_sha256": "3fd88054ddd4c308b58af0911660a3866d09460ccd92a79183bc56718da8e877",
+      "bytes": 4734,
+      "purpose": "historical success/failure provenance",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/residual-overflow-result-2026-10-27.json",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/residual-overflow-result-2026-10-27.json",
+      "sha256": "659373a72f45677ec4e69934d48e038e1dda4ee6462e14136875184e5add4969",
+      "source_sha256": "659373a72f45677ec4e69934d48e038e1dda4ee6462e14136875184e5add4969",
+      "bytes": 6445,
+      "purpose": "historical success/failure provenance",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json",
+      "sha256": "f380c9178a3d0381c6be13f054c4e01d1c907770a6d6f030395982c5d64581ba",
+      "source_sha256": "f380c9178a3d0381c6be13f054c4e01d1c907770a6d6f030395982c5d64581ba",
+      "bytes": 46959,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/wide-residual-v3/driver-diff-clap-verified-to-delivered.txt",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/wide-residual-v3/driver-diff-clap-verified-to-delivered.txt",
+      "sha256": "3814d0aba0361b3991d70c961af286a515d990ded0dcebc593970e392d58ce34",
+      "source_sha256": "3814d0aba0361b3991d70c961af286a515d990ded0dcebc593970e392d58ce34",
+      "bytes": 3929,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/wide-residual-v3/evidence.json",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/wide-residual-v3/evidence.json",
+      "sha256": "c7a5b5a6c82d9287ccdc1d518baa94c6a17b6188c69c0eaf13b2767078acc897",
+      "source_sha256": "c7a5b5a6c82d9287ccdc1d518baa94c6a17b6188c69c0eaf13b2767078acc897",
+      "bytes": 56467,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/wide-residual-v3/vivado-drc.txt",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/wide-residual-v3/vivado-drc.txt",
+      "sha256": "02d8005c32614f378de77663c16cda48b9bf2bc2b4e5059c863369d66c06bece",
+      "source_sha256": "02d8005c32614f378de77663c16cda48b9bf2bc2b4e5059c863369d66c06bece",
+      "bytes": 4398,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/wide-residual-v3/vivado-timing.txt",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/wide-residual-v3/vivado-timing.txt",
+      "sha256": "6040d48a65cd7541c6f92f3c4eb483a813cf764ba44149b4091357149c9dd166",
+      "source_sha256": "6040d48a65cd7541c6f92f3c4eb483a813cf764ba44149b4091357149c9dd166",
+      "bytes": 22581,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "report/verification/audio-replay/wide-residual-v3/vivado-utilization.txt",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "report/verification/audio-replay/wide-residual-v3/vivado-utilization.txt",
+      "sha256": "7c374bf5adeef031931f3a5b1ca9b8024b9dc13ab228d3b7a9620db18b168e98",
+      "source_sha256": "7c374bf5adeef031931f3a5b1ca9b8024b9dc13ab228d3b7a9620db18b168e98",
+      "bytes": 10951,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "scripts/answer_new_layout_325.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "scripts/answer_new_layout_325.py",
+      "sha256": "a94a7ed357285a836f9b3def3bad41d25325367e821a87e99b34c8ecad1cad09",
+      "source_sha256": "a94a7ed357285a836f9b3def3bad41d25325367e821a87e99b34c8ecad1cad09",
+      "bytes": 31912,
+      "purpose": "offline fit, reference or transitive local dependency",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "scripts/audit_units_and_saturation.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "scripts/audit_units_and_saturation.py",
+      "sha256": "959e39d981e6d0e47062a00d2ca3e9070bf5eb5950272c94bd79ad3a94e3df6e",
+      "source_sha256": "959e39d981e6d0e47062a00d2ca3e9070bf5eb5950272c94bd79ad3a94e3df6e",
+      "bytes": 8909,
+      "purpose": "offline fit, reference or transitive local dependency",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "scripts/diagnose_peak_margin.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "scripts/diagnose_peak_margin.py",
+      "sha256": "5f2b57418f15a4e28922c50549c7d1bf2ede5f9c5b84bb8b466850d8bb225472",
+      "source_sha256": "5f2b57418f15a4e28922c50549c7d1bf2ede5f9c5b84bb8b466850d8bb225472",
+      "bytes": 15380,
+      "purpose": "offline fit, reference or transitive local dependency",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "scripts/fit_newlayout_candidate.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "scripts/fit_newlayout_candidate.py",
+      "sha256": "1fc79a3aed8725b893809776c31913f6142a6271ef81d628872f536af386ee8d",
+      "source_sha256": "1fc79a3aed8725b893809776c31913f6142a6271ef81d628872f536af386ee8d",
+      "bytes": 19603,
+      "purpose": "offline fit, reference or transitive local dependency",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "scripts/make_fir_vectors.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "scripts/make_fir_vectors.py",
+      "sha256": "07134f7830c809fc00f13ecf6e1b24f399eb773e2c17b07f65f1e9ee8c37b050",
+      "source_sha256": "07134f7830c809fc00f13ecf6e1b24f399eb773e2c17b07f65f1e9ee8c37b050",
+      "bytes": 1762,
+      "purpose": "offline fit, reference or transitive local dependency",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "scripts/reproduce_b_screening.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "scripts/reproduce_b_screening.py",
+      "sha256": "83134340e7c6fedcb880b2c82c31d709712f069a98e85c0dad1ec0361949972b",
+      "source_sha256": "83134340e7c6fedcb880b2c82c31d709712f069a98e85c0dad1ec0361949972b",
+      "bytes": 47184,
+      "purpose": "offline fit, reference or transitive local dependency",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "scripts/review_itemized_20261027.py",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "scripts/review_itemized_20261027.py",
+      "sha256": "3e7b5b367a719cd0ed14ddf2ccf6a2e38d2e8756adfd212f0bef37a1ac612732",
+      "source_sha256": "3e7b5b367a719cd0ed14ddf2ccf6a2e38d2e8756adfd212f0bef37a1ac612732",
+      "bytes": 39883,
+      "purpose": "C current source/window/golden-reference checks",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "scripts/verify_r4_waveforms.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "scripts/verify_r4_waveforms.py",
+      "sha256": "a24e2cd677a20b57d6446df8f8f9c9a798dc7b991e4724eae5aca53118ec93ff",
+      "source_sha256": "a24e2cd677a20b57d6446df8f8f9c9a798dc7b991e4724eae5aca53118ec93ff",
+      "bytes": 30139,
+      "purpose": "offline fit, reference or transitive local dependency",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "sim/audio/iis_sim_models.v",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "sim/audio/iis_sim_models.v",
+      "sha256": "509510dbae8e56c7a69c877e8b43e6c756ead585ba4e396567446ce7a01bde1f",
+      "source_sha256": "509510dbae8e56c7a69c877e8b43e6c756ead585ba4e396567446ce7a01bde1f",
+      "bytes": 6831,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "sim/audio/tb_audio_replay.v",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "sim/audio/tb_audio_replay.v",
+      "sha256": "9048ce5441a670bffa3cc462570250442916309ab9f6dde7e9572c43e6f301ab",
+      "source_sha256": "9048ce5441a670bffa3cc462570250442916309ab9f6dde7e9572c43e6f301ab",
+      "bytes": 8652,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "sim/audio/tb_feedback_fir.v",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "sim/audio/tb_feedback_fir.v",
+      "sha256": "b02a367dd836bd638fac0f36efd28b5a2636fa02adfb4b2b721ff723c0a569b2",
+      "source_sha256": "b02a367dd836bd638fac0f36efd28b5a2636fa02adfb4b2b721ff723c0a569b2",
+      "bytes": 4293,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "sim/audio/tb_replay_wide.v",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "sim/audio/tb_replay_wide.v",
+      "sha256": "f200b14961e56eabcb7bccf02fb6a318ec68b5322bf1912e54dd4304cf9b558e",
+      "source_sha256": "f200b14961e56eabcb7bccf02fb6a318ec68b5322bf1912e54dd4304cf9b558e",
+      "bytes": 10300,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "sim/feedback/test_itemized_20261027.py",
+      "owner": "C",
+      "source_commit": "330e135bb58d5df93b112a62a0980faa7b402eef",
+      "source_path": "sim/feedback/test_itemized_20261027.py",
+      "sha256": "8a3543eed2381bdd7edbfacc410df5f3406ae69f2d82ce73fb042e6e5b16d639",
+      "source_sha256": "8a3543eed2381bdd7edbfacc410df5f3406ae69f2d82ce73fb042e6e5b16d639",
+      "bytes": 17671,
+      "purpose": "C current source/window/golden-reference checks",
+      "dependencies": [
+        "Python+NumPy; A v3 identity and B selected model"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "sim/feedback/test_unit_scale_guard.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "sim/feedback/test_unit_scale_guard.py",
+      "sha256": "b0b3489fc298160e3ac8f6e57a48b09c1dea8e9afac5908835338901fdc2d4b4",
+      "source_sha256": "b0b3489fc298160e3ac8f6e57a48b09c1dea8e9afac5908835338901fdc2d4b4",
+      "bytes": 5388,
+      "purpose": "Q20/PCM unit counterexample in selected combination",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/feedback/__init__.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "src/feedback/__init__.py",
+      "sha256": "39f733ab47069c23d35edd520271cc17a15787dec4fee4cc78c6c3297570ffff",
+      "source_sha256": "39f733ab47069c23d35edd520271cc17a15787dec4fee4cc78c6c3297570ffff",
+      "bytes": 69,
+      "purpose": "algorithm source, offline only; no B hardware copied",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/feedback/calibration.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "src/feedback/calibration.py",
+      "sha256": "6f6d42c73c1e801af4ac4317aa6f856a095d70ada2e1012ee23ebc675a1ce364",
+      "source_sha256": "6f6d42c73c1e801af4ac4317aa6f856a095d70ada2e1012ee23ebc675a1ce364",
+      "bytes": 10427,
+      "purpose": "algorithm source, offline only; no B hardware copied",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/feedback/cancellation.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "src/feedback/cancellation.py",
+      "sha256": "b2dc7f353959d9e2f3e33fe0f89076f0bd2da859db38f81623ce3470fc32a01f",
+      "source_sha256": "b2dc7f353959d9e2f3e33fe0f89076f0bd2da859db38f81623ce3470fc32a01f",
+      "bytes": 2957,
+      "purpose": "algorithm source, offline only; no B hardware copied",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/feedback/closed_loop_sim.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "src/feedback/closed_loop_sim.py",
+      "sha256": "d7da5d0232313143521096fb353654fae45ac303fc075b691288cf5a61990083",
+      "source_sha256": "d7da5d0232313143521096fb353654fae45ac303fc075b691288cf5a61990083",
+      "bytes": 9299,
+      "purpose": "algorithm source, offline only; no B hardware copied",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/feedback/path_analysis.py",
+      "owner": "B",
+      "source_commit": "86061a700a73aef1221097bef4e01564ed6e691a",
+      "source_path": "src/feedback/path_analysis.py",
+      "sha256": "670a354735f8c59b879f55100dd53251676f49b792302c8cdef82ace8b49208c",
+      "source_sha256": "670a354735f8c59b879f55100dd53251676f49b792302c8cdef82ace8b49208c",
+      "bytes": 30016,
+      "purpose": "algorithm source, offline only; no B hardware copied",
+      "dependencies": [
+        "Python+NumPy; A signed24/Q20 contract"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "B unit-scale 9 tests and selected pure imports; model loader and Q20 identity",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/rtl/audio_pl_replay.v",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "src/rtl/audio_pl_replay.v",
+      "sha256": "4d02b019ddfe1c175b4e8d929ac157b8f4276ffc94e6b1e5f5322620f5b31879",
+      "source_sha256": "4d02b019ddfe1c175b4e8d929ac157b8f4276ffc94e6b1e5f5322620f5b31879",
+      "bytes": 12314,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/rtl/feedback_fir.v",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "src/rtl/feedback_fir.v",
+      "sha256": "d57e2f53938ddff2034b6d783a4a46b6243018a3be5fdc9c342acf57ad0a8a3b",
+      "source_sha256": "d57e2f53938ddff2034b6d783a4a46b6243018a3be5fdc9c342acf57ad0a8a3b",
+      "bytes": 6529,
+      "purpose": "v3 source/build/contract; preserve A semantics",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "team source/evidence; final license and anonymity review by captain",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/vendor/pynq_v2_4/LICENSE",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "src/vendor/pynq_v2_4/LICENSE",
+      "sha256": "6d822a20e645291ace79180f0ae94f604b9d5fb81165e302b2c7b8cd7bf83fc3",
+      "source_sha256": "6d822a20e645291ace79180f0ae94f604b9d5fb81165e302b2c7b8cd7bf83fc3",
+      "bytes": 1506,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "preserve BSD notice",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/vendor/pynq_v2_4/README.md",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "src/vendor/pynq_v2_4/README.md",
+      "sha256": "30ca643ac28902114d2872bb282e9ada0d69e5fcd66a133b23734aa900858076",
+      "source_sha256": "30ca643ac28902114d2872bb282e9ada0d69e5fcd66a133b23734aa900858076",
+      "bytes": 469,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "preserve BSD notice",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/vendor/pynq_v2_4/iis_deser.vhd",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "src/vendor/pynq_v2_4/iis_deser.vhd",
+      "sha256": "af72dd1856a870e63b4e8cd5c69ea2ceeedae35fb788d9029db568711e533b12",
+      "source_sha256": "af72dd1856a870e63b4e8cd5c69ea2ceeedae35fb788d9029db568711e533b12",
+      "bytes": 4461,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "preserve BSD notice",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "src/vendor/pynq_v2_4/iis_ser.vhd",
+      "owner": "A",
+      "source_commit": "facd3de26721873d10af758e6266c1b7c1b246f2",
+      "source_path": "src/vendor/pynq_v2_4/iis_ser.vhd",
+      "sha256": "0ca9f3da00c5c411cbabb8b32792444366178227c7a5d0005ed26665156268d8",
+      "source_sha256": "0ca9f3da00c5c411cbabb8b32792444366178227c7a5d0005ed26665156268d8",
+      "bytes": 4342,
+      "purpose": "frozen v3 payload, vendor notice or hardware evidence",
+      "dependencies": [
+        "Vivado 2018.3/PYNQ-Z2 for build or hardware; Python+NumPy for pure checks"
+      ],
+      "public_review": "preserve BSD notice",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "A golden reference 7 checks; build/hardware inherited from A evidence, not rerun by C",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "skill/README.md",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "skill/README.md",
+      "sha256": "813d65c5656be38813e72581f39b4d6f0a754199d0bab189abd4f3eceb0bb896",
+      "source_sha256": "813d65c5656be38813e72581f39b4d6f0a754199d0bab189abd4f3eceb0bb896",
+      "bytes": 1158,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "skill/audio-evidence/SKILL.md",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "skill/audio-evidence/SKILL.md",
+      "sha256": "1b554284f04f06e5625c438fc04c7940ec704700670f2e3c9a540a9e51c10e4b",
+      "source_sha256": "1b554284f04f06e5625c438fc04c7940ec704700670f2e3c9a540a9e51c10e4b",
+      "bytes": 3532,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "skill/audio-collaboration-lessons.md",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "skill/audio-collaboration-lessons.md",
+      "sha256": "8a43d14fc2df3d2557051bafb3e87c916eb15a5363c15f3f18097059a5944d3f",
+      "source_sha256": "8a43d14fc2df3d2557051bafb3e87c916eb15a5363c15f3f18097059a5944d3f",
+      "bytes": 2513,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "sim/feedback/test_replay_v3_consumer.py",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "sim/feedback/test_replay_v3_consumer.py",
+      "sha256": "f0e74e5801959acd5b5a6090815cf129f18ee98c841db996ef18b801b2962228",
+      "source_sha256": "f0e74e5801959acd5b5a6090815cf129f18ee98c841db996ef18b801b2962228",
+      "bytes": 23158,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "sim/feedback/fixtures/legacy-replay-tools-v2.py",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "sim/feedback/fixtures/legacy-replay-tools-v2.py",
+      "sha256": "e3c748e07a6e87e9dd1522eebe11a24e171407039d35142590e70a85dc6bb767",
+      "source_sha256": "e3c748e07a6e87e9dd1522eebe11a24e171407039d35142590e70a85dc6bb767",
+      "bytes": 4957,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/verify_candidate.py",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/verify_candidate.py",
+      "sha256": "126c17ea7159eab7af15f09848d8269ed32e552e0a5c67e4ca200de96f76d64a",
+      "source_sha256": "126c17ea7159eab7af15f09848d8269ed32e552e0a5c67e4ca200de96f76d64a",
+      "bytes": 2513,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/review_return.py",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/review_return.py",
+      "sha256": "de75d46399b5573d83ffd003f63c48e3c17d2c8ee0fc21d93b89f61d3d86c530",
+      "source_sha256": "de75d46399b5573d83ffd003f63c48e3c17d2c8ee0fc21d93b89f61d3d86c530",
+      "bytes": 4855,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/assemble_candidate.py",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/assemble_candidate.py",
+      "sha256": "732bf7e9a6fc7b6d796f2e8c18f2956b08209b26287e76e278ea72b23c24d9ac",
+      "source_sha256": "732bf7e9a6fc7b6d796f2e8c18f2956b08209b26287e76e278ea72b23c24d9ac",
+      "bytes": 12329,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/technical-report.md",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/technical-report.md",
+      "sha256": "6ee21a63ceef43713b207e83ce057bdbf0ec36cca552c5b409b613ceec057365",
+      "source_sha256": "6ee21a63ceef43713b207e83ce057bdbf0ec36cca552c5b409b613ceec057365",
+      "bytes": 18397,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/validate_delivery.py",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/validate_delivery.py",
+      "sha256": "79de6b1fde2769919c2341b233bc949f72c3a9632735a4b3154dff9ab8fdadb0",
+      "source_sha256": "79de6b1fde2769919c2341b233bc949f72c3a9632735a4b3154dff9ab8fdadb0",
+      "bytes": 7066,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/render_report.py",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/render_report.py",
+      "sha256": "1231948b0fe64e2f2c2f373ec423858972180688557df17fd83a0b2a21da202f",
+      "source_sha256": "1231948b0fe64e2f2c2f373ec423858972180688557df17fd83a0b2a21da202f",
+      "bytes": 7066,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/claims.md",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/claims.md",
+      "sha256": "81bec8d9e5550a4776875aa558a756d1395df0bb69f139d5df30e829234e8853",
+      "source_sha256": "81bec8d9e5550a4776875aa558a756d1395df0bb69f139d5df30e829234e8853",
+      "bytes": 3046,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/conflicts.md",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/conflicts.md",
+      "sha256": "955f4012ebbc7aef9be21fba3f722437ecfd6519ddd12d0cf45e781cc37a08ce",
+      "source_sha256": "955f4012ebbc7aef9be21fba3f722437ecfd6519ddd12d0cf45e781cc37a08ce",
+      "bytes": 4454,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/conflict-context.diff",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/conflict-context.diff",
+      "sha256": "fc57735f9486247ec7cb3a304ae15cb00c6bf14703d7ee89654f3bea49cd0229",
+      "source_sha256": "fc57735f9486247ec7cb3a304ae15cb00c6bf14703d7ee89654f3bea49cd0229",
+      "bytes": 106022,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/release-checklist.md",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/release-checklist.md",
+      "sha256": "04463137e68bd4fda54fef9bd7146417b5c1229d7c8e55f97b76e810b0a90da3",
+      "source_sha256": "ae116b22269310b79f2fad499a8e2dcac0f7954057fe0c82f694b0b2f115d860",
+      "bytes": 3926,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/tone-return.json",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/tone-return.json",
+      "sha256": "f380c9178a3d0381c6be13f054c4e01d1c907770a6d6f030395982c5d64581ba",
+      "source_sha256": "f380c9178a3d0381c6be13f054c4e01d1c907770a6d6f030395982c5d64581ba",
+      "bytes": 46959,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "materials/work/c/tone-review.json",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/tone-review.json",
+      "sha256": "f9c7e83b8271a0c73f9b47a904fc25a84a4cd0a5bfaf905c4b8efdda3628b07a",
+      "source_sha256": "f9c7e83b8271a0c73f9b47a904fc25a84a4cd0a5bfaf905c4b8efdda3628b07a",
+      "bytes": 5471,
+      "purpose": "C submission material/skill or isolated historical test oracle",
+      "dependencies": [
+        "selected candidate sources"
+      ],
+      "public_review": "team authored; report is a draft",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "README.md",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/assemble_candidate.py",
+      "sha256": "811098591758a2bea93de9a14b44129998f94b14d2f9dabfb821c8a3b58f2684",
+      "bytes": 1352,
+      "purpose": "candidate entry and directory mapping",
+      "dependencies": [],
+      "public_review": "team authored",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    },
+    {
+      "path": "validation.json",
+      "owner": "C",
+      "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
+      "source_path": "materials/work/c/validate_delivery.py",
+      "generated": true,
+      "sha256": "be46570684b242ff2c892822b246810655193bbbb0a8711804ecf805a6f9b0d9",
+      "bytes": 12852,
+      "purpose": "actual software/extraction and report QA receipt; historical failure retained in development repository",
+      "dependencies": [
+        "frozen candidate and original validation-initial.json"
+      ],
+      "public_review": "contains local development paths; final package anonymity review pending",
+      "verification": {
+        "identity": "final inventory SHA256; see materials/work/c/candidate-check.json in C delivery",
+        "relevant_suite": "C round/source/window 7 tests and wide arithmetic 4 tests; pure imports/compile as applicable",
+        "scope": "suite result applies only to exercised paths; other source/build evidence is explicitly inherited, not newly run"
+      }
+    }
+  ],
+  "exclusions": [
+    {
+      "pattern": "*.zip, old packages",
+      "reason": "duplicate deliveries; original history preserved"
+    },
+    {
+      "pattern": "board/audio_replay root *.bit/*.hwh and v2/rollback payloads",
+      "reason": "avoid old payload ambiguity; v3 pair only"
+    },
+    {
+      "pattern": "other models and diagnostics with + names",
+      "reason": "not the selected fixture/model; original history preserved"
+    },
+    {
+      "pattern": "raw/private, speech PCM, authorization, credentials, .git, worktrees, caches",
+      "reason": "not public source deliverables"
+    },
+    {
+      "pattern": "references/**/*.pdf",
+      "reason": "third-party redistribution not established; retain official references"
+    },
+    {
+      "pattern": "old REQUESTS, STATE and historical run notebooks",
+      "reason": "do not restore superseded state or operational entry points"
+    }
+  ],
+  "required_checks": [
+    "ten v3 manifest hashes",
+    "model file/Q20/fixture",
+    "imports and selected A/B/C numerical tests",
+    "skill positive/negative examples"
+  ],
+  "unexecuted": [
+    "new hardware execution",
+    "full FPGA rebuild",
+    "full external I/O timing sign-off"
+  ]
+}

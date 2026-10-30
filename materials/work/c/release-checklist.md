@@ -2,6 +2,10 @@
 
 本轮固定输入A=facd3de、B=86061a7、C=330e135；[逐文件白名单](integration.json)、[冲突决策建议](conflicts.md)、[引用口径](claims.md)、[报告正文](technical-report.md)。机器执行结果以 [validation.json](validation.json) 为准。
 
+冻结源稿提交为ff8e77d，120项源码/材料从该C提交及固定A/B导出；随后附1项实际生成检查回执，并在integration.json注明生成脚本来源。最终121项及十项载荷的干净解压核对见 [candidate-check.json](candidate-check.json)。临时ZIP仅用于解压测试，不是参赛RAR。[本轮实际提交文件](changed-files.txt)列出C改动；未将候选目录或PDF加入Git。
+
+重建采用两步：先按下节命令从ff8e77d导出源码候选，再使用有NumPy/pypdf的Python运行 `materials/work/c/validate_delivery.py --candidate <候选目录>`。此命令生成开发目录validation.json；可将该真实回执复制为候选根validation.json，按其实际SHA在integration.json登记为generated、source_path=materials/work/c/validate_delivery.py。回执包含实际设备/路径，跨设备不会字节相同；运行载荷十项必须相同。二次运行使用新候选目录，保留首次失败/解压目录，不覆盖旧证据。
+
 ## 本轮目录与命令
 
 候选目录以integration.json的destination为准，正式冻结使用 `materials/staging/tmp/submission-candidate-r3/`。r1/r2为保留的首次检查样本；r3修正文档历史引用及C测试对“旧helper”的隐式路径依赖，运行载荷字节未变。旧helper仅在sim/feedback/fixtures中作固定反例，不放运行目录。临时导出放在tmp子目录，避免仓库文档检查将副本当另一套现行文档。从固定Git对象白名单导出，包含源码、模型、构建、验证、许可及证据；没有合并main。用 `python materials/work/c/assemble_candidate.py --local-ref <C源提交> --output <全新目录>` 重建，C源提交见integration.json的c_delivery_commit；已有目录拒绝覆盖。然后运行 `python materials/work/c/verify_candidate.py --candidate <全新目录>`。
