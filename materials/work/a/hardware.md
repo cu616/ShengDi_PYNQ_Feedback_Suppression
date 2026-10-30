@@ -81,3 +81,27 @@ v3 的语义要点：**增益乘的是未钳位的宽残差，钳位只在增益
 
 逐文件的哈希、用途、依赖见 [integration.json](integration.json)。该清单只列**本线交付所需**的文件，
 不整目录混装：根目录旧位流、其它 Python 驱动一律不进交付包。
+
+## 7. 主线合并时与 C 的同名文件冲突（交队长确认，不用 ours/theirs 抹平）
+
+队长预演显示 A+C 有冲突。以下五个文件是**同名不同内容**，两方用途不同，建议**逐文件取一边**：
+
+| 文件 | A 侧（现行） | C 侧（分支上） | 建议 |
+|---|---|---|---|
+| `board/audio_replay/replay_trial.py` | 25 352 B：含 `bit22` 输入满幅停声、位流配对校验、`CODEC_SETTLE_SECONDS`、全身份块 | 16 266 B：**无** `bit22`、无配对校验、无爆音前移、无身份块 | **取 A**。C 侧是旧驱动副本；取它会丢掉已验收的保护 |
+| `board/audio_replay/replay_tools.py` | 7 701 B：宽残差用**记录的 prediction**、非对称轨、`prefix` 计数、`verified` | 4 957 B：无宽残差口径 | **取 A** |
+| `src/rtl/audio_pl_replay.v` | 12 314 B：v3 语义（宽残差→增益→单次钳位、`bit22` 粘滞位） | 10 769 B：v2 语义旧副本 | **取 A**；位流 `48e38f78…` 只与 A 侧 RTL 对应 |
+| `board/audio_replay/closed_tools.py` | 2 636 B | 2 633 B（差异 3 B） | 先看差异再定；功能相同则取 A，避免无意义抖动 |
+| `board/audio_replay/README.md` | 5 212 B | 7 229 B（C 侧更详细） | **取 C 的说明文字 + 保留 A 的现行路径**，由队长定 |
+
+`docs/STATE.md` 的冲突按线处理：**每条线各取自己分支的最新段**（A/B/C 三段互不覆盖），
+不要整体取某一边——三段的“最后动作/当前卡点”本来就是各线自述。
+
+**合并后必须做的定向检查**（不做完整上板重验）：
+1. 用合并后的 `replay_trial.py` + `replay_tools.py` 跑 `verify_delivered_v3.sh`：
+   配对校验应拒绝混搭、静默自检应带全身份、`bit22=0`；
+2. 确认 `audio_replay.bit` / `.hwh` 的 sha256 仍等于 `v3/manifest.json` 中的值（合并不得改动载荷）；
+3. 三套软件测试仍全过（停声 16、核对 7、纯音守卫 17）。
+
+任一项不满足就停下交队长，不要“先合了再说”。
+
