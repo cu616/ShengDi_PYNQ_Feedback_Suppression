@@ -1,5 +1,9 @@
 # 项目进度（时间线，只追加）
 
+## 2026-10-30 C 保留推送失败并导出离线提交包
+
+HTTPS推C遇连接重置及443连接失败，原SSH限时尝试报publickey拒绝；未改origin、可见性或历史。为本轮C提交导出可验证Git bundle，最终候选与报告仍保留本机，未声称远端已同步。[取件与缺件](../../materials/work/c/release-checklist.md)。
+
 ## 2026-10-30 C 交独立候选、报告初稿与最小Skill
 
 fetch取得facd3de并完整执行C材料任务，36项派生回包核对一致；从A/B/C固定源码导出独立目录，以A v3完整载荷运行，不合main。9页报告初稿生成并逐页渲染；引用表分清固定频率、普通扩声与零系数60秒。候选10项载荷、模型、导入、独立解压与坏helper拒绝通过；C测试对旧helper的隐式依赖在新组合暴露，改为SHA固定的sim夹具，窗口7/宽残差4通过，首次失败保留。最小Skill及check_docs通过；A/B片段、模板、媒体与真实RAR待收口，未操板或扩平台。[交付入口](../../materials/work/c/release-checklist.md)、[回执](../../materials/work/c/validation.json)、[冲突建议](../../materials/work/c/conflicts.md)、[协作纠错](../../materials/work/c/session-record.md)。

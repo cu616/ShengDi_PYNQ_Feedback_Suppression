@@ -6,6 +6,12 @@
 
 重建采用两步：先按下节命令从ff8e77d导出源码候选，再使用有NumPy/pypdf的Python运行 `materials/work/c/validate_delivery.py --candidate <候选目录>`。此命令生成开发目录validation.json；可将该真实回执复制为候选根validation.json，按其实际SHA在integration.json登记为generated、source_path=materials/work/c/validate_delivery.py。回执包含实际设备/路径，跨设备不会字节相同；运行载荷十项必须相同。二次运行使用新候选目录，保留首次失败/解压目录，不覆盖旧证据。
 
+## 远端交接受阻与离线取件
+
+本轮C提交已在本机完成，但推送尚未成功：HTTPS分别报连接重置/443连接失败，原SSH报Permission denied (publickey)。没有更改origin配置、远端可见性或提交历史，也没有推main。网络/认证恢复后仅需 `git push origin C`；若远端C已前进，按既有rebase及冲突流程处理。
+
+备份为本机忽略目录下 [C离线Git包](../../staging/tmp/c-line-delivery.bundle)，仅包含origin/C=330e135之后的本轮C提交。接收方须已有330e135的历史，可先 `git bundle verify <离线包路径>`，再在独立集成工作树用 `git fetch <离线包路径> C` 读取提交；main的合入仍由队长决定。该bundle不是最终工程RAR，也不包含报告PDF、候选目录或原片。PDF与候选另从本机materials取件，不能声称已经自动同步到队长电脑。
+
 ## 本轮目录与命令
 
 候选目录以integration.json的destination为准，正式冻结使用 `materials/staging/tmp/submission-candidate-r3/`。r1/r2为保留的首次检查样本；r3修正文档历史引用及C测试对“旧helper”的隐式路径依赖，运行载荷字节未变。旧helper仅在sim/feedback/fixtures中作固定反例，不放运行目录。临时导出放在tmp子目录，避免仓库文档检查将副本当另一套现行文档。从固定Git对象白名单导出，包含源码、模型、构建、验证、许可及证据；没有合并main。用 `python materials/work/c/assemble_candidate.py --local-ref <C源提交> --output <全新目录>` 重建，C源提交见integration.json的c_delivery_commit；已有目录拒绝覆盖。然后运行 `python materials/work/c/verify_candidate.py --candidate <全新目录>`。
