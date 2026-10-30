@@ -6,11 +6,13 @@
 
 重建采用两步：先按下节命令从ff8e77d导出源码候选，再使用有NumPy/pypdf的Python运行 `materials/work/c/validate_delivery.py --candidate <候选目录>`。此命令生成开发目录validation.json；可将该真实回执复制为候选根validation.json，按其实际SHA在integration.json登记为generated、source_path=materials/work/c/validate_delivery.py。回执包含实际设备/路径，跨设备不会字节相同；运行载荷十项必须相同。二次运行使用新候选目录，保留首次失败/解压目录，不覆盖旧证据。
 
-## 远端交接受阻与离线取件
+## 远端交接与离线取件
 
-本轮C提交已在本机完成，但推送尚未成功：HTTPS分别报连接重置/443连接失败，原SSH报Permission denied (publickey)。没有更改origin配置、远端可见性或提交历史，也没有推main。网络/认证恢复后仅需 `git push origin C`；若远端C已前进，按既有rebase及冲突流程处理。
+2026-10-30已通过Windows现用本机代理127.0.0.1:7897成功推送origin/C，首次成功范围为330e135至862fd2e。此前HTTPS直接连接失败、Windows SSH公钥拒绝；排查系统代理设置后，以命令级HTTPS映射和http.proxy推送成功。没有更改origin、远端可见性、持久Git配置或提交历史，也没有推main。
 
-备份为本机忽略目录下 [C离线Git包](../../staging/tmp/c-line-delivery.bundle)，仅包含origin/C=330e135之后的本轮C提交。接收方须已有330e135的历史，可先 `git bundle verify <离线包路径>`，再在独立集成工作树用 `git fetch <离线包路径> C` 读取提交；main的合入仍由队长决定。该bundle不是最终工程RAR，也不包含报告PDF、候选目录或原片。PDF与候选另从本机materials取件，不能声称已经自动同步到队长电脑。
+本机后续可使用 git -c url.https://github.com/.insteadOf=git@github.com: -c http.proxy=http://127.0.0.1:7897 push origin C；该地址来自此设备当时启用的Windows代理，不是其他电脑的通用配置。远端有新C提交时仍按既有rebase/冲突流程处理。
+
+已验证的 [C离线Git包](../../staging/tmp/c-line-delivery.bundle)继续作为备份，仅包含origin/C原基点330e135之后的本轮C提交。接收方须已有330e135历史，可先 git bundle verify <离线包路径>，再在独立集成工作树用 git fetch <离线包路径> C 读取；main合入仍由队长决定。该bundle不是工程RAR，不包含PDF、候选目录或原片。PDF与候选仍需从本机materials取件，Git推送成功不表示最终文件已自动复制到队长电脑。
 
 ## 本轮目录与命令
 

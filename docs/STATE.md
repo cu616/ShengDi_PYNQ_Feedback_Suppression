@@ -40,7 +40,7 @@
 
 ### C 测评与工具
 
-**最后动作**：2026-10-30接收facd3de任务，以A v3为运行底座导出独立候选；完成既有回包36项身份/窗口/算术核对、9页报告初稿及最小Skill。冻结源稿C=ff8e77d；本轮未操板、未改A驱动/RTL或B算法、未合main。C本地提交已完成，HTTPS连接失败、SSH公钥拒绝，尚未推送成功；离线Git包见交付清单。
+**最后动作**：2026-10-30接收facd3de任务，以A v3为运行底座导出独立候选；完成既有回包36项身份/窗口/算术核对、9页报告初稿及最小Skill。冻结源稿C=ff8e77d；本轮未操板、未改A驱动/RTL或B算法、未合main。已通过Windows现用127.0.0.1:7897代理成功推送origin/C（330e135至862fd2e）；仅命令级使用代理与HTTPS映射，origin和持久配置未改。离线Git包仍保留。
 **当前卡点**：A/B integration.json与hardware/algorithm片段、官方报告模板、最终媒体未到；本机未找到RAR工具，真实RAR尚未生成。10类具体冲突已交材料建议，由人转发队长决定，不恢复REQUESTS派活。
 
 - [交付、实际检查与缺件](../materials/work/c/release-checklist.md)、[逐文件来源](../materials/work/c/integration.json)、[机器回执](../materials/work/c/validation.json)、[一次性冲突建议](../materials/work/c/conflicts.md)。A/B及顶部全局段仍是本C分支旧快照，冻结技术现状请读[最新A STATE](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/A/docs/STATE.md)，不得用本分支旧驱动覆盖A。
