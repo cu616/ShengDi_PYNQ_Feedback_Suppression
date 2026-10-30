@@ -1,3 +1,26 @@
+## 2026-10-31 主线集成　A　main+A+B+C 在独立工作树合并完成，硬件字节锁定；main 暂不推送（5 项 C 侧冻结检查过期待确认）
+
+- 起点与版本：origin/main `479a570` → 合 A `e939bf0`（`96aa37e`）→ 合 B `683493c`（`50de049`）→ 合 C `51ebc38`（`7ae0ad8`），
+  分支 `codex/integrate-abc`，独立工作树 `_a_work/wt-int`；根目录 38 处未提交改动全程未动、未 reset/clean。
+- **冲突处理（17 个文件，无 ours/theirs 批量覆盖）**：
+  - 硬件基线：`src/rtl/audio_pl_replay.v`、`replay_trial.py`、`replay_tools.py`、`closed_tools.py` **取 A 现行版本**；
+    C 侧是 v3 之前的副本（缺 `bit22` 停声、爆音前移、身份块、宽残差口径）。合并后 v3 载荷 **10/10 哈希一致**。
+  - 模型：`models/*` 四份**取我方（与 B 分支字节相同）**，C 侧为旧变体。
+  - 报告：`2026-10-22-512-taps.md`、`audio-replay/README.md`、`model-package/README.md` 取我方（经比对为 C 的超集）；
+    `model-package/03-metric.txt` **取 C**（同一批数字，C 补了"尾段不能当判据"的三栏与模型身份）。
+  - 文档：`STATE` 按线各取自己最新段（表头/关键数字/A/C 段用 A 现行，B 段用 B 的 10-30 版，C 段用 C 的）；
+    `REQUESTS.md` 维持 A 的删除决定（内容早在 `docs/archive/tasks/`），5 处断链改指归档索引；
+    `.gitattributes` 两侧 `-text` 规则取并集；`board/audio_replay/README.md` 保留 A 入口并加 B/C 材料链接，不恢复 C 的旧操作页。
+- **验证（真跑）**：`check_docs.py` 0 错误 0 警告（162 个 md）；v3 载荷 10/10；A 三套测试 16+7+17 全过；
+  驱动/工具四个模块导入通过；全量 `sim/feedback` **379 项通过 374**。
+- **未通过 5 项全部是 C 侧过期钉死，不是合并损坏**：
+  - `tools/delivery-freeze.json` 的 `source_sha256`：`board/audio_replay/sprint_selftest.py` 钉 `6fcd4da6…` 实际 `70e28d05…`、
+    `scripts/assemble_experiment.py` 钉 `30581d0e…` 实际 `a8b0f5c0…`——**在 C 分支上就已经对不上**，LF/CRLF/BOM 三种编码均不匹配；
+  - `sim/feedback/test_tail_summary.py:94` 断言 `len(registry)==4`，B 现行 `models/manifest.json` 是 5 项（新增 `01c9102a…`）。
+- 因此**未推送 main**，等 C 确认重钉或改断言；集成分支本身已可构建可运行。
+- 环境侧记录：沙箱下 `tempfile.mkdtemp` 以 `mode=0700` 建的目录不可访问、子进程输出按 GBK 编码，
+  用 `_a_work/run_suite.py` 把这两点局部绕过（**未改任何测试与断言**）；ACL 诊断脚本判定该目录**不是**权限问题（`NOT_THIS_CLASS`）。
+
 ## 2026-10-30 转入参赛材料制作　A　交付硬件白名单/说明、一次现场拍摄操作单、素材记录模板与单段演示入口（板卡不可达，入口仅静态检查）
 
 - 按队长 [A 拍摄与硬件交付任务](../../materials/prompts/a.txt) 与 [video-plan](../../materials/planning/video-plan.md)、

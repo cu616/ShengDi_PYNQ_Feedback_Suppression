@@ -16,14 +16,9 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**（2026-10-30）：接收队长拍摄任务，转入真人演示与硬件可集成版本；主驱动 `79c4d9f7…`、RTL、位流 `48e38f78…` 未变。
-已交 [integration.json](../materials/work/a/integration.json)（32 项硬件白名单）、
-[hardware.md](../materials/work/a/hardware.md)（PS/PL 分工、保护归属、构建复现）、
-[shooting-plan.md](../materials/work/a/shooting-plan.md)（一次现场窗口操作单）、
-[takes.md](../materials/work/a/takes.md)、入口 `demo_take_v3.sh`。
-
-**当前卡点**：板卡此刻不可达，`demo_take_v3.sh` **未在板上执行**（仅静态检查），现场开头先冒烟；
-素材与首剪待 10-31；可听收益未定；C 的原件级复算未做；B 段（g=−3）需授权。
+**最后动作**（2026-10-31）：按队长授权在独立工作树完成主线集成，分支 `codex/integrate-abc`，以 origin/main `479a570` 为起点依次合入 A `e939bf0`、B `683493c`、C `51ebc38`（三次 `--no-ff` 合并各留一条记录）。**未推送 main**：合并后全量测试 374/379 通过，剩余 5 项全部落在 C 自己的交付冻结检查上，需 C 确认。硬件侧保持字节锁定：v3 载荷 10/10 哈希一致、RTL 与驱动均为 A 的现行版本，B/C 携带的旧 RTL、旧驱动未覆盖。
+**当前卡点**：① 等 C 回答两处过期钉死——`tools/delivery-freeze.json` 的 `source_sha256` 里 `board/audio_replay/sprint_selftest.py`（钉 `6fcd4da6…`，实际 `70e28d05…`）与 `scripts/assemble_experiment.py`（钉 `30581d0e…`，实际 `a8b0f5c0…`）在 **C 分支上就已经对不上**；② `test_tail_summary.py:94` 断言 `len(registry)==4`，而 B 现行 `models/manifest.json` 是 **5** 项（新增 `01c9102a…`）。这两项确认前不进 main。
+另：板卡不可达，`demo_take_v3.sh` 未在板上执行；素材与首剪待现场；可听收益未定；B 段（g=−3）需授权。
 
 - 发布载荷以 [v3/manifest.json](../board/audio_replay/v3/manifest.json) 的整组哈希为准，维护源码与历史顶层包不要整目录混传。板卡部署位置及回退位置见“板卡占用”。
 - 最新驱动已记录混搭拒绝、静默自检、输入满幅停声恢复与连续运行四项硬件检查，见 [工程证据](../report/verification/audio-replay/wide-residual-v3/evidence.json) 的 `driver_79c4d9f7_full_verification`。无改动不重跑。
