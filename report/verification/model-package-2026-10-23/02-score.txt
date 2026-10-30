@@ -1,0 +1,54 @@
+   seg_0.npz      mic -25.14 dBFS  delay 125  ok
+   seg_1.npz      mic -25.09 dBFS  delay 125  ok
+   seg_2.npz      mic -24.98 dBFS  delay 125  ok
+   seg_3.npz      mic -24.86 dBFS  delay 125  ok
+   seg_4.npz      mic -25.14 dBFS  delay 125  ok
+   seg_5.npz      mic -25.16 dBFS  delay 125  ok
+数据 D:/Always/QianSai/manifest：可用 6 段，每段 15360 帧，fs=48828.125
+   seg_0.npz      mic -14.55 dBFS  delay 124  延迟 124 != 本批多数 125，剔除
+   seg_1.npz      mic -14.29 dBFS  delay 125  ok
+   seg_2.npz      mic -14.58 dBFS  delay 124  延迟 124 != 本批多数 125，剔除
+   seg_3.npz      mic -37.71 dBFS  delay   0  静音/待机，剔除
+   seg_4.npz      mic -37.45 dBFS  delay   0  静音/待机，剔除
+   seg_5.npz      mic -12.93 dBFS  delay 125  ok
+   seg_6.npz      mic -14.27 dBFS  delay 125  ok
+   seg_7.npz      mic -14.78 dBFS  delay 125  ok
+   seg_8.npz      mic -37.78 dBFS  delay   0  静音/待机，剔除
+跨场次 D:/Always/QianSai/candidate_room_v1_256_final(1)：可用 4 段
+共同有效窗口：每段掐掉前 513 点，参与统计 14847 帧/段
+
+ 模型 model_256          taps=256 lag_first=1 系数=q20 sha256=aea6dc0645be6677  Q20 量化误差 max 4.76e-07
+ 模型 model_512          taps=512 lag_first=1 系数=q20 sha256=854fb75dbb6c6b46  Q20 量化误差 max 4.76e-07
+ 模型 candidate_room_v1_256_final taps=256 lag_first=1 系数=q20 sha256=1a14992382dbf452  Q20 量化误差 max 4.68e-07
+
+ 模型                   数据           RMS      峰值 |   100-0   300-1    1-3k    3-6k    6-8k    8-8k   8-12k
+ model_256            本场         -9.87   -7.27 |    -0.3    -2.5    -5.4   -11.3   -16.2   -18.2   -18.0
+ model_256            跨场         -8.85   -8.57 |    +1.2    -4.0    -7.8   -10.4   -13.1   -13.8    -6.9
+ model_512            本场        -11.16  -10.46 |    -1.1    -3.7    -6.6   -13.1   -17.9   -23.3   -19.3
+ model_512            跨场        -10.88   -8.49 |    -4.5    -9.3   -11.2   -11.5   -13.4   -14.6    -6.7
+ candidate_room_v1_256_final 本场         -5.70   -5.07 |    -0.6    -2.3    -5.2    -7.2    -5.7    -8.9    -4.4
+ candidate_room_v1_256_final 跨场         -7.15   -6.56 |    -1.7    -3.7    -8.2    -8.9    -7.6    -6.8    -6.1
+
+=== 候选 − 基线 · 本场（负=更好）===
+  RMS  -1.28 dB   峰值  -3.19 dB
+    100-  300 Hz   -0.76 dB
+    300- 1000 Hz   -1.19 dB
+   1000- 3000 Hz   -1.20 dB
+   3000- 6000 Hz   -1.77 dB
+   6000- 8000 Hz   -1.70 dB
+   8200- 8600 Hz   -5.09 dB
+   8600-12000 Hz   -1.36 dB
+=== 候选 − 基线 · 跨场（更接近现场）（负=更好）===
+  RMS  -2.03 dB   峰值  +0.08 dB
+    100-  300 Hz   -5.62 dB
+    300- 1000 Hz   -5.32 dB
+   1000- 3000 Hz   -3.47 dB
+   3000- 6000 Hz   -1.14 dB
+   6000- 8000 Hz   -0.28 dB
+   8200- 8600 Hz   -0.73 dB
+   8600-12000 Hz   +0.19 dB
+
+读法：数值是残差与观测的能量比，负=减小。分段独立预测，段边界不参与统计。
+      宽带 RMS 由高能量频段主导，必须同时看 300-1000 与 8200-8600。
+
+写入 report/verification/model-package-2026-10-23/score.json

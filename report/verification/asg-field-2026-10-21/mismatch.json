@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "kind": "calibration_mismatch_diagnosis",
+  "data_dir": "D:\\Always\\QianSai",
+  "sample_rate_hz": 48828.125,
+  "usable_band_hz": [
+    154.97207641601562,
+    10967.254638671875
+  ],
+  "usable_bins": 666,
+  "calibration": {
+    "peak_abs_H_db": 26.064870912366995,
+    "peak_abs_H_at_hz": 381.4697265625,
+    "coherence_at_peak": 0.9697561568760965,
+    "bypass_howl_at_gain_db": -26.064870912366995
+  },
+  "beta": {
+    "value": 0.39514496674739674,
+    "db": -8.064870912366995,
+    "source": "由实测旁路起振 -18.00 dB 反推：beta = 10^((18.00 - 26.06)/20)",
+    "interpretation": "实时耦合 = beta × 标定耦合；beta<1 表示实测比标定弱"
+  },
+  "shipped_model": {
+    "taps": 256,
+    "peak_abs_H_hat_db": 25.4736807729125,
+    "peak_abs_H_minus_H_hat_db": 21.63113520771708
+  },
+  "subbands": [
+    {
+      "low_hz": 150.0,
+      "high_hz": 200.0,
+      "ratio": 3.901049166069362,
+      "ratio_db": 11.823628477746023,
+      "residual_max_db": 12.62726483322455,
+      "cd_worst_db": -13.921981989188023
+    },
+    {
+      "low_hz": 200.0,
+      "high_hz": 300.0,
+      "ratio": 1.419307757584591,
+      "ratio_db": 3.0415315304152624,
+      "residual_max_db": 17.881420575414097,
+      "cd_worst_db": -15.186984083631174
+    },
+    {
+      "low_hz": 300.0,
+      "high_hz": 400.0,
+      "ratio": 1.4114764421448311,
+      "ratio_db": 2.9934726814421984,
+      "residual_max_db": 20.9934726814422,
+      "cd_worst_db": -3.6778382105353398
+    },
+    {
+      "low_hz": 400.0,
+      "high_hz": 500.0,
+      "ratio": 1.573715437918513,
+      "ratio_db": 3.9385241041153805,
+      "residual_max_db": 21.63113520771708,
+      "cd_worst_db": -6.65260037595973
+    },
+    {
+      "low_hz": 500.0,
+      "high_hz": 700.0,
+      "ratio": 1.9733296471730735,
+      "ratio_db": 5.903992814924381,
+      "residual_max_db": 20.714368246916038,
+      "cd_worst_db": -6.224644485335393
+    },
+    {
+      "low_hz": 700.0,
+      "high_hz": 1000.0,
+      "ratio": 1.7962590657713564,
+      "ratio_db": 5.087379460892,
+      "residual_max_db": 14.478747858339666,
+      "cd_worst_db": -5.63204255230198
+    },
+    {
+      "low_hz": 1000.0,
+      "high_hz": 3000.0,
+      "ratio": 1.8665472782715606,
+      "ratio_db": 5.420779895237482,
+      "residual_max_db": 10.570652628300126,
+      "cd_worst_db": -15.961436651065455
+    }
+  ],
+  "cd_negative": {
+    "segments": [
+      {
+        "low_hz": 154.97207641601562,
+        "high_hz": 10967.254638671875,
+        "width_hz": 10812.28256225586
+      }
+    ],
+    "fraction_of_band": 1.0
+  },
+  "phase_gated": {
+    "cancel": [
+      {
+        "frequency_hz": 262.26043701171875,
+        "loop_gain_db": 16.10964508764185,
+        "howl_at_gain_db": -16.10964508764185
+      },
+      {
+        "frequency_hz": 691.4138793945312,
+        "loop_gain_db": 14.283697563709465,
+        "howl_at_gain_db": -14.283697563709465
+      },
+      {
+        "frequency_hz": 1347.0649719238281,
+        "loop_gain_db": 5.719456462921249,
+        "howl_at_gain_db": -5.719456462921249
+      },
+      {
+        "frequency_hz": 3623.96240234375,
+        "loop_gain_db": 3.089026334070979,
+        "howl_at_gain_db": -3.089026334070979
+      },
+      {
+        "frequency_hz": 2110.004425048828,
+        "loop_gain_db": 2.7303187375702502,
+        "howl_at_gain_db": -2.7303187375702502
+      },
+      {
+        "frequency_hz": 7677.0782470703125,
+        "loop_gain_db": -0.07171559558803106,
+        "howl_at_gain_db": 0.07171559558803106
+      },
+      {
+        "frequency_hz": 3015.9950256347656,
+        "loop_gain_db": -0.8584906055240858,
+        "howl_at_gain_db": 0.8584906055240858
+      },
+      {
+        "frequency_hz": 7021.427154541016,
+        "loop_gain_db": -1.0814609354972307,
+        "howl_at_gain_db": 1.0814609354972307
+      }
+    ],
+    "bypass": [
+      {
+        "frequency_hz": 417.2325134277344,
+        "loop_gain_db": 17.293402904350017,
+        "howl_at_gain_db": -17.293402904350017
+      },
+      {
+        "frequency_hz": 977.5161743164062,
+        "loop_gain_db": 5.643131699462899,
+        "howl_at_gain_db": -5.643131699462899
+      },
+      {
+        "frequency_hz": 1692.7719116210938,
+        "loop_gain_db": -2.9646680145306963,
+        "howl_at_gain_db": 2.9646680145306963
+      },
+      {
+        "frequency_hz": 3850.4600524902344,
+        "loop_gain_db": -3.93769714106661,
+        "howl_at_gain_db": 3.93769714106661
+      },
+      {
+        "frequency_hz": 3266.3345336914062,
+        "loop_gain_db": -4.186021854778791,
+        "howl_at_gain_db": 4.186021854778791
+      },
+      {
+        "frequency_hz": 2360.3439331054688,
+        "loop_gain_db": -5.13816382701854,
+        "howl_at_gain_db": 5.13816382701854
+      },
+      {
+        "frequency_hz": 7212.162017822266,
+        "loop_gain_db": -6.047590043694461,
+        "howl_at_gain_db": 6.047590043694461
+      },
+      {
+        "frequency_hz": 7855.892181396484,
+        "loop_gain_db": -6.617460583905893,
+        "howl_at_gain_db": 6.617460583905893
+      }
+    ]
+  },
+  "schemes": {
+    "peak_bypass_db": 18.000000000000004,
+    "schemes": {
+      "128 抽头 + 全带抵消": {
+        "asg_db": -0.22754762398165695,
+        "effective_peak_db": 18.22754762398166,
+        "howl_at_gain_db": -18.22754762398166,
+        "peak_at_hz": 238.4185791015625,
+        "below_numeric_floor": false,
+        "note": ""
+      },
+      "256 抽头 + 全带抵消": {
+        "asg_db": -3.631135207717076,
+        "effective_peak_db": 21.63113520771708,
+        "howl_at_gain_db": -21.63113520771708,
+        "peak_at_hz": 441.0743713378906,
+        "below_numeric_floor": false,
+        "note": ""
+      },
+      "512 抽头 + 全带抵消": {
+        "asg_db": -4.927429965927978,
+        "effective_peak_db": 22.92742996592798,
+        "howl_at_gain_db": -22.92742996592798,
+        "peak_at_hz": 393.3906555175781,
+        "below_numeric_floor": false,
+        "note": ""
+      },
+      "分频段（只留 CD>0，上界）": {
+        "asg_db": 0.0,
+        "effective_peak_db": 18.000000000000004,
+        "howl_at_gain_db": -18.000000000000004,
+        "peak_at_hz": 381.4697265625,
+        "below_numeric_floor": false,
+        "note": "保留 0.0% 的频段；FIR 无法在频域任意开关，这是理想上界"
+      },
+      "幅度匹配 alpha=beta": {
+        "asg_db": 13.53382497413884,
+        "effective_peak_db": 4.466175025861164,
+        "howl_at_gain_db": -4.466175025861164,
+        "peak_at_hz": 417.2325134277344,
+        "below_numeric_floor": false,
+        "note": "系数整体乘 beta，等价于按实测幅度重新标定"
+      },
+      "完美估计器（真值 H，不可实现）": {
+        "asg_db": null,
+        "effective_peak_db": -600.0,
+        "howl_at_gain_db": 600.0,
+        "peak_at_hz": 154.97207641601562,
+        "below_numeric_floor": true,
+        "note": "诊断用上界，不是方案"
+      }
+    }
+  },
+  "refit": {
+    "taps": 256,
+    "effective_peak_db": 4.466175025861162,
+    "howl_at_gain_db": -4.466175025861162,
+    "asg_db": 13.533824974138842,
+    "peak_at_hz": 417.2325134277344,
+    "equivalent_to": "把 beta 倍的耦合当作新的标定，重算系数"
+  }
+}

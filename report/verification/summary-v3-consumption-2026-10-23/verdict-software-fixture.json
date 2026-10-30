@@ -1,0 +1,42 @@
+{
+ "summary": "tmp/c-v3/b-request-software-summary-v3.json",
+ "schema_version": 3,
+ "calculation_version": "c-measurement-2.1.0",
+ "evidence_kind": [
+  "software_fixture"
+ ],
+ "rows": 2,
+ "model_pairs": 1,
+ "effect_eligible_rows": 0,
+ "effect_eligible_real_pairs": 0,
+ "consumable_as_is": true,
+ "blocking_issues": [],
+ "gaps": {},
+ "categories": {
+  "no_instability_observed_in_window": 2
+ },
+ "row_blocking_reasons": {
+  "tail_or_safety_or_positive_control_not_validated": 2
+ },
+ "model_registry_hits": 2,
+ "coef_hash_matches_raw_array": 1,
+ "coef_hash_matches_padded512": 1,
+ "field_coverage": {
+  "gain_q12": 2,
+  "hp_volume": 2,
+  "bit_sha256": 2,
+  "coefficients_sha256": 2,
+  "model_role": 2,
+  "logical_taps": 2,
+  "loaded_taps": 2,
+  "tail_valid": 2,
+  "tail_rms_dbfs": 2,
+  "tail_slope_db_per_s": 2,
+  "effect_eligible": 2,
+  "protection_triggered": 2,
+  "band_300-1000": 2,
+  "band_1000-3000": 2,
+  "band_8200-8600": 2
+ },
+ "note": "本脚本只判字段与门禁自洽性，不判抗啸叫性能，也不把软件夹具当实测。"
+}

@@ -1,0 +1,42 @@
+   seg_0.npz      mic -25.14 dBFS  ref -24.05 dBFS  delay 125  ok
+   seg_1.npz      mic -25.09 dBFS  ref -24.05 dBFS  delay 125  ok
+   seg_2.npz      mic -24.98 dBFS  ref -24.04 dBFS  delay 125  ok
+   seg_3.npz      mic -24.86 dBFS  ref -24.01 dBFS  delay 125  ok
+   seg_4.npz      mic -25.14 dBFS  ref -24.06 dBFS  delay 125  ok
+   seg_5.npz      mic -25.16 dBFS  ref -24.04 dBFS  delay 125  ok
+数据 D:/Always/QianSai/manifest：可用 6 段，每段 15360 帧，采样率 48828.125
+
+   seg_0.npz      mic -14.55 dBFS  ref -14.91 dBFS  delay 124  延迟 124 != 本批多数 125，剔除
+   seg_1.npz      mic -14.29 dBFS  ref -14.20 dBFS  delay 125  ok
+   seg_2.npz      mic -14.58 dBFS  ref -14.90 dBFS  delay 124  延迟 124 != 本批多数 125，剔除
+   seg_3.npz      mic -37.71 dBFS  ref -600.00 dBFS  delay   0  静音/待机，剔除
+   seg_4.npz      mic -37.45 dBFS  ref -600.00 dBFS  delay   0  静音/待机，剔除
+   seg_5.npz      mic -12.93 dBFS  ref -13.27 dBFS  delay 125  ok
+   seg_6.npz      mic -14.27 dBFS  ref -14.23 dBFS  delay 125  ok
+   seg_7.npz      mic -14.78 dBFS  ref -15.20 dBFS  delay 125  ok
+   seg_8.npz      mic -37.78 dBFS  ref -600.00 dBFS  delay   0  静音/待机，剔除
+跨场次对照 D:/Always/QianSai/candidate_room_v1_256_final(1)：4 段
+
+ 模型           数据             RMS      峰值 |   100-0   300-1    1-3k    3-6k    6-8k    8-8k   8-12k
+ fit本场256     本场           -9.91   -7.46 |    -0.4    -2.3    -5.4   -11.2   -16.3   -18.4   -17.9
+ fit本场256     对照场          -8.87   -8.57 |    -0.0    -4.1    -7.9   -10.6   -12.6   -14.4    -6.6
+ fit对照256     本场           -8.48   -7.34 |    -0.5    -2.2    -5.3    -9.7   -12.2   -13.9    -9.2
+ fit对照256     对照场         -10.67   -8.48 |    -1.4    -3.9    -8.3   -12.3   -17.7   -20.7   -17.5
+ fit本场512     本场          -11.24  -10.78 |    -0.8    -4.0    -6.6   -13.4   -18.1   -23.4   -19.5
+ fit本场512     对照场         -11.00   -8.47 |    -5.7    -9.5   -11.6   -11.9   -13.1   -15.2    -6.4
+ fit对照512     本场           -9.23   -9.15 |    -0.7    -4.0    -6.3   -10.6   -12.6   -15.1    -9.2
+ fit对照512     对照场         -14.99   -8.45 |    -5.2   -10.1   -13.1   -15.6   -22.4   -25.5   -22.2
+ fit本场680     本场          -11.64  -10.04 |    -0.9    -4.5    -7.0   -14.0   -18.5   -23.5   -20.0
+ fit本场680     对照场         -11.51   -8.45 |    -6.6   -12.1   -12.8   -12.4   -13.1   -15.1    -6.5
+ fit对照680     本场           -9.41   -8.81 |    -0.9    -4.3    -6.6   -10.8   -12.6   -15.1    -9.2
+ fit对照680     对照场         -16.84   -8.44 |    -8.4   -12.9   -15.4   -17.4   -23.5   -26.4   -23.2
+
+=== 抽头收益（相对最小抽头，负=更好）===
+  512 vs  256  RMS  -1.33 dB  300-1000  -1.65 dB  3-6k  -2.15 dB
+  680 vs  256  RMS  -1.73 dB  300-1000  -2.11 dB  3-6k  -2.81 dB
+ 单 MAC 每抽头 3 拍 + 3 拍收尾；帧预算 2048 拍 -> 上限 681 抽头
+
+读法：数值是残差与 mic 的能量比，负=减小。宽带 RMS 会被高能量频段主导，
+      必须同时看 300-1000 与 8200-8600 这两段，它们才是决定起振的地方。
+
+写入 report/verification/a-package-2026-10-23/score.json

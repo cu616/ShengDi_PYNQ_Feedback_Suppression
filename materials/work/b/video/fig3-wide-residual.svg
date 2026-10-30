@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif">
+  <title>声堤 · 宽残差：钳位点放在增益之前还是之后（按实测数值重绘）</title>
+  <desc>同一份板上抓包：宽残差 1.0230 倍满幅，乘 −8 dB 后 0.4074 倍。v2 在 1.0 处钳断并停声，v3 保留 25 位到增益之后。</desc>
+
+  <defs>
+    <style>
+      .h  { font-size:44px; font-weight:600; fill:#16181d; }
+      .s  { font-size:26px; fill:#68717e; }
+      .t  { font-size:30px; fill:#16181d; }
+      .tb { font-size:30px; font-weight:600; fill:#16181d; }
+      .m  { font-size:30px; fill:#16181d; font-family:Consolas, Menlo, monospace; }
+      .mb { font-size:30px; font-weight:600; fill:#1f5f7a; font-family:Consolas, Menlo, monospace; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#ffffff"/>
+  <text x="90" y="100" class="h">钳位点：放在增益之前，还是之后</text>
+  <text x="90" y="146" class="s">同一份板上抓包（2026-10-27），数值按实测重绘：宽残差 1.0230× 满幅，数字增益 −8 dB（Q12 = 1631）</text>
+
+  <!-- 坐标轴 -->
+  <g transform="translate(300,240)">
+    <line x1="0" y1="0" x2="1300" y2="0" stroke="#3d4653" stroke-width="3"/>
+    <line x1="0" y1="-14" x2="0" y2="14" stroke="#3d4653" stroke-width="3"/>
+    <line x1="591" y1="-16" x2="591" y2="16" stroke="#3d4653" stroke-width="3"/>
+    <line x1="1300" y1="-14" x2="1300" y2="14" stroke="#3d4653" stroke-width="3"/>
+    <text x="0" y="48" class="s" text-anchor="middle">0</text>
+    <text x="591" y="48" class="s" text-anchor="middle">1.0（满幅）</text>
+    <text x="1300" y="48" class="s" text-anchor="middle">2.2×</text>
+    <text x="650" y="-30" class="s">× 满幅</text>
+
+    <!-- 满幅竖线 -->
+    <line x1="591" y1="-120" x2="591" y2="520" stroke="#a32323" stroke-width="2" stroke-dasharray="8 8" opacity="0.5"/>
+  </g>
+
+  <!-- 行 1：宽残差 -->
+  <text x="90" y="400" class="tb">宽残差 w</text>
+  <text x="90" y="440" class="s">25 位，未钳</text>
+  <rect x="300" y="372" width="604" height="56" fill="#fbeaea" stroke="#a32323" stroke-width="2.5"/>
+  <rect x="300" y="372" width="591" height="56" fill="#a32323" opacity="0.85"/>
+  <text x="920" y="410" class="mb" fill="#a32323">1.0230×</text>
+  <text x="1140" y="410" class="s">超出满幅 0.20 dB</text>
+
+  <!-- 行 2：v2 -->
+  <text x="90" y="530" class="tb">v2</text>
+  <text x="90" y="570" class="s">先钳再乘</text>
+  <rect x="300" y="502" width="591" height="56" fill="#a32323" opacity="0.85"/>
+  <text x="620" y="540" class="m" fill="#ffffff">被钳在 1.0000</text>
+  <path d="M600 558 L600 620" stroke="#a32323" stroke-width="2" stroke-dasharray="6 6"/>
+  <text x="620" y="612" class="m" fill="#a32323">×1631/4096</text>
+  <rect x="300" y="632" width="235" height="56" fill="#a32323" opacity="0.55"/>
+  <text x="560" y="670" class="mb" fill="#a32323">0.3980×　→　记录一次残差饱和　→　停声</text>
+
+  <!-- 行 3：v3 -->
+  <text x="90" y="780" class="tb">v3</text>
+  <text x="90" y="820" class="s">先乘再钳</text>
+  <rect x="300" y="752" width="604" height="56" fill="#eaf3f8" stroke="#1f5f7a" stroke-width="2.5"/>
+  <rect x="300" y="752" width="591" height="56" fill="#1f5f7a" opacity="0.25"/>
+  <text x="920" y="790" class="m" fill="#1f5f7a">保留 1.0230</text>
+  <path d="M600 808 L600 858" stroke="#1f5f7a" stroke-width="2" stroke-dasharray="6 6"/>
+  <text x="620" y="850" class="m" fill="#1f5f7a">×1631/4096</text>
+  <rect x="300" y="870" width="242" height="56" fill="#1f5f7a" opacity="0.7"/>
+  <text x="568" y="908" class="mb">0.4074×　→　还有 +7.80 dB 余量　→　继续跑完</text>
+
+  <!-- 结论块 -->
+  <rect x="90" y="975" width="1740" height="70" rx="10" fill="#e8f5ec" stroke="#15663a" stroke-width="2"/>
+  <text x="114" y="1020" class="t">差别不是“音质差 0.2 dB”，而是“整轮实验作废”：v2 把一次输出只有 0.41、还有 7.8 dB 余量的情况当成了危险。</text>
+
+  <!-- 角标 -->
+  <rect x="90" y="176" width="470" height="46" rx="8" fill="#e8f5ec" stroke="#15663a" stroke-width="2"/>
+  <text x="110" y="209" font-size="23" fill="#15663a">数值来自板上抓包 · 按实测重绘</text>
+</svg>

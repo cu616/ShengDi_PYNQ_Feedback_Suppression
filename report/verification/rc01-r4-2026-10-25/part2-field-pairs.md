@@ -1,0 +1,218 @@
+# Part 二：r4 两组 FIR 配对的元数据限定判读
+
+> 输入：`build/packages/c-r4-to-b-r1.zip`（C 提交 `896657b`，376395 字节，
+> sha256 `474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367`，本机已核）。
+> 唯一配对入口：`summary-v3.json → fir_switch_pairs`（**2 组**）；单项源内响应取 `summary.json → trials → source_response`。
+> **数值来自原汇总；5 个原件已到，B 侧已完成独立的整数算术与波形复算，结论一致（见 §8）。**
+> 原件包：`r4-review-return.zip`（A 提交 `63f6a69`，2082636 B，
+> sha256 `e9aedd0d…787b48`）；本侧复核输出在 `waveform/{waveform.txt,waveform.json}`。
+> 本文件不产生 MSG/ASG，不写"全程音质"或"抗啸叫通过"。
+
+## 1 配对资格（先查资格，再读数）
+
+四份试次全部满足 C 的 `pair_check`，`configuration_matches = true`、`window_comparison_valid = true`、`reasons = []`：
+
+| 项 | repeat 1 OFF | repeat 1 ON | repeat 2 OFF | repeat 2 ON |
+|---|---|---|---|---|
+| capture | `dbb60f98` | `05a1c814` | `841abaa2` | `e1361e19` |
+| `bypass` | True | False | True | False |
+| `gain_q12` | 817 | 817 | 817 | 817 |
+| `hp_volume` / 模型 | 40 / `calibrated_20261024` | 同 | 同 | 同 |
+| `protection` | False | False | False | False |
+| `recovery_ok` | True | True | True | True |
+| `stop_reasons` | `[]` | `[]` | `[]` | `[]` |
+| `measurement_kind` | forced_source_response | 同 | 同 | 同 |
+| `source_response.valid` | True | True | True | True |
+| 响应窗（帧） | 107174–121582 | 同 | 同 | 同 |
+| `source_response.frames` | **14408** | 14408 | 14408 | 14408 |
+| `category` / `reasons` | unknown / `['source_or_transition_overlap']` | 同 | 同 | 同 |
+| `gate_mic_over_ref_db` | −0.973 | −1.059 | −0.283 | −0.398 |
+
+- 两臂帧区间**完全相同**（107174–121582），不是"各取一段再对"。
+- 对内门禁漂移 **0.086 / 0.115 dB**，远在 1.5 dB 门禁内；**跨 repeat 的 OFF 臂定音读数不同**：
+  −0.973 → −0.283（差 0.690 dB），ON 臂 −1.059 → −0.398（差 0.661 dB）。
+  这只是**两次试次的定音读数不同**，不能据此断定房间或宽带通路变过（见 §4.5）。
+- 14408 帧 = 尾部有效源内子窗（≈0.295 s @48.83 kHz），**整次运行仍是 2.52 s**。
+- 四个试次都没有保护、没有削顶事件（`prediction/residual/gain/mix_saturations` 全 False）。
+
+## 2 两次 ON−OFF（原值，不取平均）
+
+| 统计量 | repeat 1 | repeat 2 | 两次方向 | 两次差 |
+|---|---|---|---|---|
+| 总响应（`on_minus_off_response_rms_db`） | **−0.171 dB** | **−0.244 dB** | 同向（ON 更安静） | 0.073 dB |
+| 300–1000 Hz | **−0.756 dB** | **+0.051 dB** | **不一致** | **0.807 dB** |
+| 1000–3000 Hz | **−0.120 dB** | **−0.445 dB** | 同向 | 0.326 dB |
+| 8200–8600 Hz | **+0.379 dB** | **+0.253 dB** | 同向（ON 更大） | 0.126 dB |
+
+原始 dBFS（便于核对差值）：
+
+| | OFF 总 | ON 总 | OFF 300–1k | ON 300–1k | OFF 1k–3k | ON 1k–3k | OFF 8.2–8.6k | ON 8.2–8.6k |
+|---|---|---|---|---|---|---|---|---|
+| repeat 1 | −25.455 | −25.626 | −37.203 | −37.959 | −35.107 | −35.227 | −33.798 | −33.419 |
+| repeat 2 | −25.342 | −25.586 | −37.585 | −37.534 | −34.976 | −35.421 | −33.759 | −33.506 |
+
+## 3 与修订参考（`revision-1.md`）的对照
+
+| 频带 | 修订预测（留出 8192，合格 bin 白谱稳态） | 实测 repeat 1 | 实测 repeat 2 | 符号是否一致 |
+|---|---|---|---|---|
+| 合格 bin 参考 / 总 | −0.42 dB | −0.171 | −0.244 | **一致（都更安静）** |
+| 300–1000 | −1.15 dB | −0.756 | **+0.051** | 一次一致、一次相反 |
+| 1000–3000 | −0.22 dB | −0.120 | −0.445 | **一致** |
+| 8200–8600 | +0.31 dB | +0.379 | +0.253 | **一致** |
+
+三点必须同时成立才算"对上了"：方向、量级、以及**统计量可比**。方向：4 项里 3 项两次都同向，
+低频一次反向；量级：实测普遍比预测小（总 −0.17/−0.24 vs −0.42，低频 −0.76/+0.05 vs −1.15）；
+**统计量不可比**，见 §4。
+
+## 4 统计量与覆盖的差异（不能直接加减）
+
+1. **口径不同**：预测是"过门控 bin 上的白谱稳态参考"（`|T_on|²/|T_off|²` 在 29% 的 bin 上积分），
+   实测是"整段 8200–8600 / 300–1000 的麦克风带功率"（含未进门控的 bin，也含全部噪声）。
+   **两者不是同一统计量**，差值小或符号不同，都可能只是口径差，不能直接判成"预测错"或"模型没用"。
+2. **时间窗不同**：预测是稳态（Welch 平均）；实测是 2.52 s 运行里的 14408 帧尾部子窗（0.295 s），
+   且是**受迫响应**，不是在测自激。
+3. **电平不同（候选解释，未验证）**：H 标定在 −12 dBFS 注入，本场源是 −24 dBFS。
+   电平不同**不能**直接证明 H 随电平变化，更不能证明低频受影响更大——本轮没有同夹具多电平的
+   成对标定。**记为未知**；要用它必须另给一组多电平标定。
+4. **8.4k 覆盖**：预测在 8200–8600 只有 **5/67** 个 bin 过门（峰顶 8368 Hz 相干 0.770 被挡），
+   而实测是整带功率——实测那两个 `+0.379 / +0.253` **不能反过来当作"8.4k 恶化"的证据**，
+   也不能算作对预测的确认。方向碰巧一致，但两者看的不是同一批频点。
+5. **跨 repeat 的差异，原因未知**：OFF 臂 `gate_mic_over_ref_db` 两次是 −0.973 / −0.283（差 0.690 dB），
+   但这是**两次不同定音试次各自的读数**，不是同一次试次内的重复测量。它说明"两次的定音读数不同"，
+   **不能证明房间或宽带通路改变**，也**不能确定**这 0.690 dB 是低频 0.807 dB 摆动的原因。
+   两者量级相近只是提示，不是因果。**本条记为待核实的假设，原因写未知。**
+   要判它，需要同一批次内的重复定音（同一天、同一小时内多次 −20 dBFS 定音）或第三场同夹具标定。
+
+## 5 能说 / 不能说
+
+**可以说（限定在原汇总、这两组配对）**
+- 两次配对资格齐备、帧区间一致、无保护/削顶/早停；两次的总响应都是 ON 略安静（−0.171 / −0.244 dB）。
+- 1000–3000 与 8200–8600 两次方向一致（都更安静 / 都更大），与修订预测同向。
+- 300–1000 两次方向不一致；在**不引入任何分辨率门槛**的前提下，只能说"这两次没给出稳定方向"。
+- 四次运行的**有效源内响应窗**内都没有触发保护、没有削顶、没有早停（原件侧已核对）。
+  这是一条**运行事实**，不是稳定性证据。
+
+**不能说**
+- 不能说"差值小所以不可分辨"——那是拿门禁或散布当分辨率，C 已明确否掉；只能说这批没给出稳定方向。
+- 不能说 MSG / ASG：`measured_msg_db`、`measured_asg_db` 在 summary 里都是 `null`，
+  `coverage_scope` 原文是"saved source-on response windows only; no acoustic stability claim"。
+- 不能说"整体抗啸叫成功"：本协议测的是受迫响应，**不提供 ASG 或稳定性识别证据**。
+- **不能引用"OFF 臂余量 +6.60 dB，所以本来就稳"**（原稿有此句，已撤回）：
+  门控网格上的 `1/max|H|` 只是**采样网格小增益界**，网格有 71% 的缺口（8.4k 带 92.5%），
+  它证明不了物理系统全频稳定。可以说的只有："r4 两次有效源内响应记录未触发保护"。
+- 不能把 8200–8600 的正号写成"模型在 8.4k 变差"：预测该带只覆盖 5 个边沿 bin。
+- 不能把两次 repeat 的散布（0.073 / 0.807 / 0.326 / 0.126 dB）当成新的分辨率门槛；它只描述**这一批**。
+
+## 6 通过 / 未通过 / 未测
+
+| 类别 | 内容 |
+|---|---|
+| **通过** | ① 配对资格（配置、帧区间、保护、恢复、源内响应有效、门禁漂移 ≤1.5 dB）；② 两次原值与方向如实列出；③ 统计量与覆盖差异单列；④ **波形侧独立复核**：5/5 哈希、4 试次 prediction/residual/output 全 0 失配、60 s 尾环 prediction/residual 全 0 失配、两组配对由原件重算后与汇总差 ≤7.1e−15 dB |
+| **未通过** | 无（低频方向不一致是观测结果，不是判据失败） |
+| **未测** | 60 s 尾环的 **output** 检查（包里没有 `source_pcm16`，本侧无法重算；C 侧报 0 失配，不等于本侧已验）；MSG/ASG（协议不产生）；真人听感/听众；全程声学稳定（本协议明确不声称）；8.4k 峰顶（门控未覆盖）；跨场次可迁移；A 另一轮真人会话（§9，条件未核实） |
+
+## 7 与 N1–N3 的关系
+
+- N1：这里的"两次都没叫"**不能**当成 `max|gL|<1` 的反证或证明——它只是在该工作点、
+  该 2.52 s 窗内没有保护触发；门控网格的缺口仍然存在（8.4k 只有 7.5%）。
+- N2：本文件的"总响应"是**整段麦克风 RMS 差**，与预测的"合格 bin 白谱稳态参考"不是同一统计量；
+  §4 已单列，两者不互相换算。
+- N3：机器标签见 `run-rev1/prediction.json` 的 `revision=1` / `pre_registered=false`；
+  本文件不修改任何原汇总数值。
+
+## 8 波形侧独立复核（原件已到）
+
+原件包 `r4-review-return.zip`（A `63f6a69`）本机核对 **2082636 B / sha256 `e9aedd0d…787b48`**，
+与 C 给的固定值一致。工具：`scripts/verify_r4_waveforms.py`（唯一实现），输出 `waveform/waveform.txt`、`waveform/waveform.json`。
+
+判据（逐条都要过）：
+
+| 层 | 判据 | 结果 |
+|---|---|---|
+| 包完整性 | manifest 里 5 个文件的 sha256 与字节数逐条重算 | **5/5 一致** |
+| 整数算术 · 4 个 replay 试次 | `prediction = clip(round_shift(Σq[k]·played[n−1−k],20))`，剔除前 512 帧（环外历史） | **0 / 15872 失配 ×4** |
+| 同上 | `residual = mic`（bypass）或 `clip(mic − prediction)` | **0 / 15872 ×4** |
+| 同上 | `output = clip(source·256 + gain_q12(residual[n−2]))`，只用**记录的** residual（与 FIR 无关） | **0 / 16382 ×4** |
+| 60 s 尾环 | `prediction` / `residual`（用 `calibrated_20261024` 的 Q20） | **0 / 15872** |
+| 60 s 尾环 | `output` | **未测**：包里没有 `source_pcm16`，本侧无法重算 |
+| 响应窗 | `begin=max(first+512, 0.2fs)=107174`、`stop=min(end, len(src)−0.01fs)=121582` → **14408 帧** | 与汇总一致 |
+| 配对 | 由原件重算的总与三带 ON−OFF，对 `summary-v3 → fir_switch_pairs` | 最大差 **7.1e−15 dB** |
+| 与 C 的复核对照 | 逐文件电平与分带对 `a-63f6a69-waveform-review.json` | 差 **0.00e+00 dB**，失配计数两侧全 0 |
+
+四次的原始电平（`waveform.txt` §4）：OFF −25.455 / ON −25.626（repeat 1）、OFF −25.342 / ON −25.586（repeat 2），
+四次满幅样本数都是 0。**所以本轮两组配对不是"汇总抄写"，而是从原件重算出来的同一批数字。**
+
+一处必须写清的口径差别：60 s 尾环的 output 我只能算 prediction 和 residual——包里没带 `source_pcm16`，
+`injected` 无法重建。C 侧报该文件 output 也是 0 失配，但那是 C 的证据，**本侧记为未测，不并进"通过"**。
+
+### 8.1 入口判定（R-007 的剩余项）
+
+`main` 原来只按"包完整性"返回，其余问题只打印不拦截——于是"算出来有失配"也能退出 0，
+产物看起来像合格结果。现在四项**同时**成立才返回 0，否则返回 2：
+
+| 门 | 代码 | 挡的是什么 |
+|---|---|---|
+| 文件齐全 | `package_integrity` / `package_incomplete` / `missing_file` | 清单内条目的哈希或字节数不符；角色件数不是 2 FIR-off + 2 FIR-on + 1×60 s |
+| **每个被使用的文件** | `unverified_file` | 只遍历清单条目不够：文件在磁盘上、被实际读取、却被从清单删掉时，它从未被核验过。现在**每个被读取的文件都必须登记在清单里且哈希/字节一致**（4 试次 + 60 s 共 5 个） |
+| 模型身份 | `model_identity` / `model_binding` | `taps` 必须等于 `coefficients_q20` 的项数；`loaded_taps` 必须等于同一项数；试次记录的 `coefficients_sha256` 必须等于该 Q20 哈希 |
+| **因果约定** | `model_convention` | `lag_first` 必须是 1（部署位流的约定）。**算术改用模型声明的 `lag_first`，不再写死 1**——写死会让"只改 lag_first（Q20 不变）"这种情况仍然算得过 |
+| 算术 | `arithmetic` | 4 试次 prediction/residual/output 与 60 s 的 prediction/residual 必须 0 失配 |
+| 显式对照 | `summary_missing` / `summary_mismatch` / `pair_count` / `pair_identity` / `pair_window` / `c_review_*` | 必须存在、可解析、差值 ≤ **1e−3 dB**；且**按 capture 身份绑定**：汇总里的 `off/on_capture_id` 必须能对上本包的实际捕获、臂别（off=bypass、on=非 bypass）、`gain_q12`、以及两臂响应窗逐帧相同；四个试次各被用一次 |
+
+关于最后一条：`configuration_matches` / `window_comparison_valid` 只作**一致性检查**（必须为 true，否则不一致），
+**不作为身份依据**——身份由 capture id、臂别、gain、帧窗独立核对，数值也由这两个实际捕获重算，而不是照抄汇总。
+
+不合格时会打印"判定：**不合格**（N 项）"并逐条列代码，`waveform.json` 里 `ok=false` + `failures`——
+**这份产物不能当合格测量结果**。容差 1e−3 dB 的依据：同口径下本侧与汇总/复核只差浮点末位（实测 ≤7.1e−15）。
+
+C 的八个用例（`tools/check_b_waveform_cli.py`）本侧都有对应的 subprocess 回归
+（`test_r4_waveform.py::CliVerdictTest`，10 项）：正例必须 0，八种坏输入必须全非 0。
+
+用 C 的检查器（`948f836` 的 `tools/check_b_waveform_cli.py`）在本机对 `8b01999` 跑：
+
+```
+B_WAVEFORM_CLI_REVIEW passed | positive=passed | bad_rejected=8/8
+exit 0   脚本 sha256 a24e2cd6…b57
+```
+
+| 用例 | 退出 | 首条诊断 |
+|---|---|---|
+| original | **0** | 判定合格 |
+| prediction_mismatch | **2** | `arithmetic`：prediction 1 帧失配 |
+| missing_unlisted_tail | **2** | `missing_file` + `package_incomplete`（角色 2/2/0） |
+| wrong_frozen_model | **2** | `model_binding` ×5 + 60 s `arithmetic` 250 帧 |
+| wrong_summary_value | **2** | `summary_mismatch`：1.000e+00 dB > 1e−3 |
+| missing_requested_summary | **2** | `summary_missing` |
+| **used_file_unlisted** | **2** | `unverified_file`：`09-fir-on.npz` 不在 manifest 内（未经哈希核验） |
+| **model_lag_first_changed** | **2** | `model_convention`：模型声明 `lag_first=2`，部署约定是 1 |
+| **summary_capture_identity_changed** | **2** | `pair_identity`：汇总里的 capture id 在本包找不到 |
+
+正例的数字与 `05657e5`/`12e5ce2` 完全一致——只改判定与身份绑定，没碰任何测量。
+
+### 8.2 发现并修掉的一处实现错误
+
+第一版脚本用 `cap.get("bypass")` 判断臂别，而 `bypass` 只存在于 `metadata_json` 里、npz 数组没有这个键，
+于是 bypass 臂被当成 FIR-on 臂算，residual 整段 15872/15872 失配——看起来像"原件有问题"，其实是检查器错了。
+现在臂别由调用方从 metadata 传入，并加了回归（`test_r4_waveform.py::test_wrong_bypass_flag_is_detected`，
+故意传错臂别必须报失配）。**这条也说明：residual 的失配先怀疑检查器，再怀疑数据。**
+
+## 9 另一轮真人会话（−14 dB 触发保护）：单独登记，不下结论
+
+A 另有一轮**真人讲话**的会话，在 **−14 dB** 出现保护。它与 r4 是两件事，本文件**分开登记**：
+
+| 项 | 状态 |
+|---|---|
+| 是否同一夹具/同一音量/同一位流 | **未核实**（无原件、无 metadata） |
+| 激励条件（真人 vs 白噪、电平、时长） | **未核实** |
+| 保护前的 `observed_growth`、主频、削顶 | **未核实** |
+| 处理 | 挂起：等 A 给那次的 npz + metadata，先核现场与激励条件 |
+
+两条口径同时成立，缺一条就会得出错误结论：
+
+1. **不能拿参考余量否定这个事件**。`+6.605 dB` 是门控网格上的小增益界，网格有 71% 缺口，
+   它证明不了全频稳定；真人讲话的能量分布、房间状态与白噪标定不同，落到未覆盖频段完全可能。
+2. **也不能据"保护触发"直接判啸叫或判模型失效**。保护还受定音门禁、削顶、单次尖峰、
+   音响待机、增益档位影响；确认是环路失稳需要看 `observed_growth` 的单调性与主频是否落在
+   预测的高环路增益点，并排除上述非环路原因。
+
+在拿到那次的原件之前，本轮**不把它写成"模型在 −14 dB 失效"，也不写成"参考余量已排除"**。

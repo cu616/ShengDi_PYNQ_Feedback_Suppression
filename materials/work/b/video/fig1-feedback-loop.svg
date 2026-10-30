@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif">
+  <title>声堤 · 信号流（原理示意）</title>
+  <desc>从源到音响、经声学通路回到麦克风，再由 FIR 预测并在残差处相减的闭环框图。原理示意，不是实测数据。</desc>
+
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3d4653"/>
+    </marker>
+    <marker id="ared" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a32323"/>
+    </marker>
+    <style>
+      .bx  { fill:#ffffff; stroke:#3d4653; stroke-width:3; }
+      .bd  { fill:#eaf3f8; stroke:#1f5f7a; stroke-width:4; }
+      .bs  { fill:#f7f8fa; stroke:#68717e; stroke-width:2.5; stroke-dasharray:12 9; }
+      .t   { font-size:34px; fill:#16181d; }
+      .tb  { font-size:34px; font-weight:600; fill:#16181d; }
+      .ts  { font-size:30px; fill:#16181d; }
+      .s   { font-size:25px; fill:#68717e; }
+      .e   { stroke:#3d4653; stroke-width:3.5; fill:none; marker-end:url(#a); }
+      .ed  { stroke:#68717e; stroke-width:2.5; fill:none; stroke-dasharray:10 8; marker-end:url(#a); }
+      .er  { stroke:#a32323; stroke-width:4; fill:none; marker-end:url(#ared); }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#ffffff"/>
+
+  <!-- 标题 -->
+  <text x="90" y="96" class="tb" font-size="46">声堤 · 信号流</text>
+  <text x="90" y="142" class="s" font-size="27">每一帧 20.48 µs　·　FIR 512 抽头　·　Q20 定点</text>
+
+  <!-- 分区 -->
+  <text x="90" y="196" class="s" font-size="24">FPGA（PL）—— 每个采样都做</text>
+  <line x1="90" y1="208" x2="1290" y2="208" stroke="#dfe3e9" stroke-width="2"/>
+  <text x="1350" y="196" class="s" font-size="24">ARM（PS）—— 只在开始 / 结束</text>
+  <line x1="1350" y1="208" x2="1830" y2="208" stroke="#dfe3e9" stroke-width="2"/>
+
+  <!-- 第一行（正向链，y = 300…440） -->
+  <rect class="bx" x="90" y="300" width="240" height="140" rx="12"/>
+  <text x="114" y="356" class="t">源 s[n]</text>
+  <text x="114" y="398" class="s">激励 / 播放表</text>
+
+  <rect class="bd" x="370" y="300" width="280" height="140" rx="12"/>
+  <text x="394" y="356" class="t">混音 + 钳位</text>
+  <text x="394" y="398" class="s">u = s + g·w</text>
+
+  <rect class="bx" x="690" y="300" width="220" height="140" rx="12"/>
+  <text x="714" y="356" class="t">DAC / I2S</text>
+  <text x="714" y="398" class="s">24 位</text>
+
+  <rect class="bx" x="950" y="300" width="200" height="140" rx="12"/>
+  <text x="974" y="356" class="t">音响</text>
+  <text x="974" y="398" class="s">放出 u</text>
+
+  <rect class="bx" x="1190" y="300" width="320" height="140" rx="12"/>
+  <text x="1214" y="356" class="t">空气 · 通路 H</text>
+  <text x="1214" y="398" class="s">184 帧 ≈ 3.77 ms</text>
+
+  <rect class="bx" x="1550" y="300" width="280" height="140" rx="12"/>
+  <text x="1574" y="356" class="t">麦克风</text>
+  <text x="1574" y="398" class="s">m = H·u + s</text>
+
+  <path class="e" d="M330 370 H 366"/>
+  <path class="e" d="M650 370 H 686"/>
+  <path class="e" d="M910 370 H 946"/>
+  <path class="e" d="M1150 370 H 1186"/>
+  <path class="e" d="M1510 370 H 1546"/>
+
+  <!-- 第二行（返回链，y = 620…760） -->
+  <rect class="bd" x="90" y="620" width="600" height="140" rx="12"/>
+  <text x="114" y="672" class="ts">FIR 预测　p[n] = Σ h[k]·u[n−1−k]</text>
+  <text x="114" y="716" class="s">512 抽头 · Q20 · 3N+3 = 1539 拍</text>
+
+  <rect class="bd" x="730" y="620" width="250" height="140" rx="12"/>
+  <text x="754" y="672" class="t">数字增益 g</text>
+  <text x="754" y="716" class="s">Q4.12</text>
+
+  <rect class="bd" x="1020" y="620" width="270" height="140" rx="12"/>
+  <text x="1044" y="672" class="t">残差 w[n]</text>
+  <text x="1044" y="716" class="s">m − p，25 位</text>
+
+  <!-- 麦克风 → 残差 -->
+  <path class="e" d="M1690 440 V 530 H 1155 V 616"/>
+  <text x="1180" y="516" class="s">参考 = 实际播放值 u</text>
+
+  <!-- 残差 → 增益 → FIR -->
+  <path class="e" d="M1020 690 H 986"/>
+  <path class="e" d="M730 690 H 696"/>
+
+  <!-- FIR → 混音 -->
+  <path class="e" d="M260 620 V 530 H 520 V 444"/>
+
+  <!-- ARM -->
+  <rect class="bs" x="1350" y="620" width="480" height="140" rx="12"/>
+  <text x="1374" y="680" class="ts">装系数 / 配增益 / 读状态 / 落盘</text>
+  <text x="1374" y="724" class="s">不参与逐样本运算</text>
+
+  <!-- 抵消标注 -->
+  <text x="730" y="580" class="s" font-size="27" fill="#a32323">这条支路就是「抵消」</text>
+  <path class="er" d="M850 594 V 616"/>
+
+  <!-- 底部：两个延迟 -->
+  <text x="90" y="840" class="tb" font-size="34">两个延迟必须分清</text>
+  <text x="90" y="898" class="ts">调度延迟　<tspan fill="#1f5f7a" font-weight="600">2 帧 = 41 µs</tspan>　—　FIR 算完还要一级增益寄存，赶不上本次帧边界</text>
+  <text x="90" y="948" class="ts">声学延迟　<tspan fill="#1f5f7a" font-weight="600">184 帧 = 3.77 ms</tspan>　—　声音真的走那段空气</text>
+  <text x="90" y="1000" class="ts">一圈 ≈ 186 帧 ≈ 3.81 ms　→　这才是决定“多久叫起来”的量</text>
+
+  <!-- 角标 -->
+  <rect x="1580" y="986" width="260" height="56" rx="8" fill="#f0ecfa" stroke="#5b3fa8" stroke-width="2"/>
+  <text x="1604" y="1024" font-size="25" fill="#5b3fa8">原理示意 · 非实测</text>
+</svg>

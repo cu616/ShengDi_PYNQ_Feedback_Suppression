@@ -1,0 +1,34 @@
+written report/verification/live-h-2026-10-22/analysis.json
+开环采集分析（16384 帧，pred 来源：board）
+  fixture box_v1_20261016, hp_volume 40, mic RMS -17.881929555960152 dBFS
+
+【时域】不依赖窗长与门控
+  max|mic| 4000755 码 → max|mic-pred| 1075878 码：峰值比 -11.41 dB
+  RMS 比 -14.06 dB（负=抑制，正=放大）
+
+【频域】窗长扫描（门控 0.80）
+  nperseg  段数  max|H|          max|H-Heff|     ASG      CD最差
+     1024    31  +24.49@ 429Hz    +5.72@ 477Hz  +18.77   +15.30@ 668Hz
+     2048    15  +26.32@ 381Hz   +11.25@ 381Hz  +15.06   +14.83@ 668Hz
+     4096     7  +28.01@ 405Hz   +18.67@ 298Hz   +9.34    +1.05@4995Hz
+
+【门控敏感性】同一份数据，只改相干门控
+  相干>=0.0  499 bins  max|H-Heff| +57.01 dB  CD最差  -14.53 dB
+  相干>=0.5  29 bins  max|H-Heff| +22.86 dB  CD最差   +1.29 dB
+  相干>=0.7  23 bins  max|H-Heff| +15.94 dB  CD最差   +8.39 dB
+  相干>=0.8  20 bins  max|H-Heff| +11.25 dB  CD最差  +14.83 dB
+  相干>=0.9  12 bins  max|H-Heff|  +7.50 dB  CD最差  +15.84 dB
+
+【逐子带】
+    100-  300 Hz  无可用 bin
+    300-  600 Hz  12 bins  max|H| +26.32  max|H-Heff| +11.25  CD最差  +15.06  相干 0.94
+    600- 1000 Hz   3 bins  max|H| +18.85  max|H-Heff|  +3.68  CD最差  +14.83  相干 0.88
+   1000- 3000 Hz   5 bins  max|H| +12.62  max|H-Heff|  -5.61  CD最差  +18.23  相干 0.93
+   3000- 8000 Hz  无可用 bin
+   8000-12000 Hz  无可用 bin
+
+【CD<=0 的频段】（nperseg 2048）
+  无（CD<=0 的 bin 数 0/20）
+
+【预测的闭环阈值】（仅线性小信号，非实测 ASG）
+  旁路起振 -26.32 dB  |  抵消起振 -11.25 dB  |  ASG +15.06 dB

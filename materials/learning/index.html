@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>声堤 · 从零读懂这个项目（离线教程）</title>
+<meta name="description" content="用可操作的动画讲清声反馈、反馈抵消、FIR、定点与宽残差、标定与测量。断网可用。">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ 侧栏 ============ -->
+<nav class="rail" aria-label="章节导航">
+  <h1>声堤 · 离线教程</h1>
+  <div class="sub">声反馈抑制与稳定裕度提升<br>PYNQ-Z2 原型 · 内部学习资料</div>
+
+  <div class="grp">开始</div>
+  <ol>
+    <li><a href="#s0">0　怎么用这一页</a></li>
+    <li><a href="#s1">1　啸叫是怎么长出来的</a></li>
+    <li><a href="#s2">2　抵消改变了什么</a></li>
+  </ol>
+  <div class="grp">看懂机器</div>
+  <ol>
+    <li><a href="#s3">3　真实信号流</a></li>
+    <li><a href="#s4">4　FIR 与 512 抽头</a></li>
+    <li><a href="#s5">5　定点数：Q20 与宽残差</a></li>
+    <li><a href="#s6">6　标定：系数从哪来</a></li>
+  </ol>
+  <div class="grp">看懂证据</div>
+  <ol>
+    <li><a href="#s7">7　真实成功</a></li>
+    <li><a href="#s8">8　真实失败与弃选</a></li>
+    <li><a href="#s9">9　没做、不打算这么做</a></li>
+    <li><a href="#s10">10　指标：别把四种 dB 混着说</a></li>
+  </ol>
+  <div class="grp">用起来</div>
+  <ol>
+    <li><a href="#s11">11　怎么讲、怎么答</a></li>
+    <li><a href="#s12">12　术语表与复现</a></li>
+  </ol>
+
+  <div class="tools">
+    <a href="#s0">⏱ 10 分钟概览</a><br>
+    <a href="#" id="reset-all">↺ 重置全部演示</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ 顶部 ============ -->
+<header class="topbar">
+  <div class="title">声堤 <span>· 从零读懂这个项目</span></div>
+  <div class="entry">
+    <a href="#s0" data-mode="quick">10 分钟概览</a>
+    <a href="#s1" data-mode="full">深入阅读</a>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<h2 id="s0"><span class="num">0</span>怎么用这一页</h2>
+
+<p class="lead">这一页假设你会数电、能读一点 Python，但不要求你学过 DSP。它不讲"我们做了多少事"，只讲"这台东西为什么能工作、在哪里会坏"。</p>
+
+<p>全部内容可以在断网状态打开，不需要安装任何东西。所有动画都在你自己的浏览器里算，不联网、不播放声音。</p>
+
+<div class="card">
+  <div class="card-title">四类内容，看颜色区分</div>
+  <ul>
+    <li><strong>紫色虚线框（教学模拟）</strong>：我在页面里用简化模型算出来的，用来让你"看见"机制。<strong>它不是实测</strong>，数值只演示趋势。</li>
+    <li><strong>绿色左边框（实测）</strong>：板上或离线跑出来的真数据。每张卡都写清版本、场景、测点、来源文件。</li>
+    <li><strong>红色左边框（真实失败）</strong>：我们实际踩过、并且付出了时间的坑。这些比成功更有教学价值。</li>
+    <li><strong>灰色左边框（未实施）</strong>：想过、算过、但没做，或者明确不做。不画成已实现。</li>
+  </ul>
+</div>
+
+<div class="callout key">
+  <p>两个入口：<strong>10 分钟概览</strong>只读每节开头的粗体段落和两张图，够你在答辩时讲清主线；<strong>深入阅读</strong>按顺序读，包括每个失败案例。下面正式开始。</p>
+</div>
+
+<h3>先给你一句结论，后面全部在解释它</h3>
+
+<div class="formula">
+  普通扩声的上限是　<i>g</i> <span class="op">&lt;</span>
+  <span class="frac"><span class="n">1</span><span class="d">|<i>H</i>|<span class="sub">max</span></span></span>；　
+  抵消把它换成了　<i>g</i> <span class="op">&lt;</span>
+  <span class="frac"><span class="n">1</span><span class="d">|<i>H</i> − <i>Ĥ</i>|<span class="sub">max</span></span></span>
+</div>
+
+<p>左边那个 <i>H</i> 是"空气把音响的声音送回麦克风"的本事，右边那个 <i>Ĥ</i> 是我们对它的<b>估计</b>。也就是说：<strong>这个作品的本质，是把一个"扩声"问题改写成了一个"建模"问题。</strong>扩声的天花板本来由房间决定，改写之后由"我们估得准不准"决定——这是我们唯一能动手的地方。</p>
+
+<!-- ============================================================ -->
+<h2 id="s1"><span class="num">1</span>啸叫是怎么长出来的</h2>
+
+<p class="essentials"><strong>一句话：麦克风不只收到你，还收到"刚才放出来的自己"；这一份被放大后又放出去，每一圈都乘同一个大于 1 的数，于是指数增长。</strong></p>
+
+<h3>1.1 先把环路画出来</h3>
+
+<p>把设备摆好：麦克风、功放、音响。你说话，声音进麦克风，功放把它放大 <i>g</i> 倍，音响放出来。到这里一切正常。</p>
+
+<p>问题出在下一步：音响放出来的声音，会<b>绕一圈回到麦克风</b>。空气不会分辨"这是人说的还是音响放的"，它照样收。于是麦克风里的信号变成两件事的和：</p>
+
+<div class="formula">
+  <i>m</i> = <i>H</i> · <i>u</i> <span class="op">+</span> <i>s</i>
+</div>
+
+<p>这里 <i>u</i> 是"音响实际放出去的东西"，<i>H</i> 是"从音响到麦克风这一路上，声音被衰减/延迟/染色的总效果"，<i>s</i> 是你真正想放大的那部分（人声直达）。<i>H</i> 就是<b>声学反馈通路</b>。</p>
+
+<p>而 <i>u</i> 又是拿 <i>m</i> 乘出来的：<i>u</i> = <i>g</i> · <i>m</i>。把两式代进去：</p>
+
+<div class="formula">
+  <i>u</i> = <i>g</i>(<i>H</i>·<i>u</i> + <i>s</i>)　⟹　<i>u</i> =
+  <span class="frac"><span class="n"><i>g</i> · <i>s</i></span><span class="d">1 − <i>g</i>·<i>H</i></span></span>
+</div>
+
+<p>分母 <i>g</i>·<i>H</i> 就叫<b>环路增益</b>。它是这一整页唯一真正重要的量。</p>
+
+<div class="callout key">
+  <p>分母 → 0 时，输出 → ∞。这不是"放大器坏了"，是<b>正反馈</b>：系统在用自己的输出喂自己。数学上这叫"闭环极点跑到单位圆外"，工程上你听到的就是啸叫。</p>
+</div>
+
+<h3>1.2 为什么是"指数"，不是"慢慢变响"</h3>
+
+<p>把环路想成一圈一圈走。每一圈，信号乘上 |<i>g</i>·<i>H</i>|。走 <i>n</i> 圈之后是 |<i>g</i>·<i>H</i>|<span class="sup"><i>n</i></span> 倍：</p>
+
+<ul>
+  <li>|<i>g</i>·<i>H</i>| = 0.9：走 60 圈剩 0.9<span class="sup">60</span> ≈ 0.002，听不见。你只会觉得"有点余音"。</li>
+  <li>|<i>g</i>·<i>H</i>| = 1.0：走多少圈都一样大，一直振着。这就是<b>临界</b>。</li>
+  <li>|<i>g</i>·<i>H</i>| = 1.1：走 60 圈变 1.1<span class="sup">60</span> ≈ 304 倍，也就是 <b>+50 dB</b>。</li>
+</ul>
+
+<p>而"一圈"要多久？就是声音从音响出发、绕到麦克风、再被处理、再放出去的时间。<b>我们的环路总延迟约 184 帧 ≈ 3.77 ms</b>（这个数字后面 §3 会算给你看）。所以 60 圈只要 <b>0.23 秒</b>。这就是为什么啸叫"突然就来了"——它不是渐变，是指数。</p>
+
+<!-- 演示 1 -->
+<section class="demo" id="d-loop" aria-labelledby="d-loop-t">
+  <div class="demo-head">
+    <span class="tag">教学模拟</span>
+    <h4 id="d-loop-t">演示 1 · 反馈环路：增益、相位与模型误差</h4>
+    <span class="hint">拖动滑杆看环路怎么从"安静"变成"自激"</span>
+  </div>
+  <div class="demo-body">
+    <p style="margin-top:0;font-size:14px;color:var(--ink-2)">
+      这个演示只模拟<b>一个频率</b>（321.9 Hz，就是我们夹具里最敏感的那个点）上的纯音。
+      音响到麦克风用"幅度 + 相位 + 延迟"三个量概括，这正是 |<i>H</i>| 在单频上的全部内容。
+    </p>
+
+    <div class="ctrls">
+      <div class="ctrl">
+        <label for="lp-h">通路幅度 |<i>H</i>| <output id="lp-h-o"></output></label>
+        <input id="lp-h" type="range" min="-12" max="12" step="0.1" value="4.4" aria-describedby="lp-h-o">
+      </div>
+      <div class="ctrl">
+        <label for="lp-g">数字增益 <i>g</i> <output id="lp-g-o"></output></label>
+        <input id="lp-g" type="range" min="-20" max="6" step="0.1" value="-8" aria-describedby="lp-g-o">
+      </div>
+      <div class="ctrl">
+        <label for="lp-p">通路相位 <output id="lp-p-o"></output></label>
+        <input id="lp-p" type="range" min="-180" max="180" step="0.1" value="39.8" aria-describedby="lp-p-o">
+      </div>
+      <div class="ctrl">
+        <label for="lp-eps">模型幅度误差 <output id="lp-eps-o"></output></label>
+        <input id="lp-eps" type="range" min="0" max="120" step="1" value="100" aria-describedby="lp-eps-o">
+      </div>
+      <div class="ctrl">
+        <label for="lp-dphi">模型相位误差 <output id="lp-dphi-o"></output></label>
+        <input id="lp-dphi" type="range" min="-90" max="90" step="1" value="0" aria-describedby="lp-dphi-o">
+      </div>
+      <div class="ctrl">
+        <label for="lp-cancel">抵消开关 <output id="lp-cancel-o"></output></label>
+        <input id="lp-cancel" type="range" min="0" max="1" step="1" value="0" aria-describedby="lp-cancel-o">
+      </div>
+    </div>
+
+    <div class="plot-wrap">
+      <canvas id="lp-plot" width="900" height="260" role="img"
+              aria-label="环路输出包络随时间的曲线图，纵轴为 dBFS，横轴为毫秒"></canvas>
+      <p class="plot-cap">输出包络 |<i>u</i>|，纵轴固定为 −60…+6 dBFS（<b>不自动缩放</b>，否则任何曲线都像"被压住了"）。横轴固定 0…300 ms。</p>
+    </div>
+
+    <div class="readout">
+      <div class="cell"><div class="k">环路增益 |gH| 或 |g(H−Ĥ)|</div><div class="v" id="lp-loop">—</div></div>
+      <div class="cell"><div class="k">played / source</div><div class="v" id="lp-ratio">—</div></div>
+      <div class="cell"><div class="k">300 ms 后电平</div><div class="v" id="lp-level">—</div></div>
+      <div class="cell"><div class="k">状态</div><div class="v" id="lp-state">—</div></div>
+    </div>
+    <div class="verdict" id="lp-verdict" role="status" aria-live="polite"></div>
+
+    <div class="legend">
+      <span><i class="swatch" style="background:#1f5f7a"></i>环路输出</span>
+      <span><i class="swatch dash"></i>满幅（0 dBFS）</span>
+      <span><i class="swatch" style="background:#a32323"></i>自激</span>
+    </div>
+
+    <div class="btnrow">
+      <button type="button" class="primary" data-lp="pause">暂停 / 继续</button>
+      <button type="button" data-lp="reset">重置到默认</button>
+      <button type="button" data-lp="preset-zero">预设：零系数 −8 dB（当前工作点）</button>
+      <button type="button" data-lp="preset-cand">预设：候选模型 −8 dB</button>
+      <button type="button" data-lp="preset-0db">预设：零系数 0 dB（必啸叫）</button>
+    </div>
+    <p class="plot-cap" style="margin-top:8px">
+      键盘：<kbd>Tab</kbd> 到滑杆后用 <kbd>←</kbd><kbd>→</kbd> 微调，<kbd>Home</kbd><kbd>End</kbd> 跳两端；按钮可用 <kbd>空格</kbd>。
+    </p>
+    <p class="plot-cap">
+      三个预设里，<b>零系数</b>用的 +4.40 dB / 40° / <i>g</i> = −8 dB 来自实测反算；
+      <b>候选</b>那个是把"CD = 6.37 dB"和"cancel 臂几乎回到 open 电平"两条实测折成一个等效模型（<i>ε</i> = 71 %、Δ<i>φ</i> = −26°），
+      <b>不是模型文件里的真实参数</b>——真实模型的 512 个系数没法用两个滑杆表示。
+    </p>
+  </div>
+</section>
+
+<h3>1.3 所以"把音量开大一点"为什么不行</h3>
+
+<p>普通扩声只有 <i>g</i> 一个旋钮。要更响 → <i>g</i> 大 → 环路增益大 → 啸叫。于是<b>可用增益被"最敏感的那一个频率"锁死</b>：</p>
+
+<div class="formula">
+  <i>g</i> &lt; <span class="frac"><span class="n">1</span><span class="d">|<i>H</i>|<span class="sub">max</span></span></span>
+</div>
+
+<p>我们这套夹具实测 |<i>H</i>| 的峰值是 <strong>+4.40 dB @ 321.9 Hz</strong>（线性 1.66 倍）。代进去：<i>g</i> &lt; 0.60，也就是 <strong>−4.40 dB</strong>。</p>
+
+<div class="callout key">
+  <p>换句话说：<b>不装任何东西时，这台设备最多只能把声音放大到 −4.40 dB——比原声还小 4.4 dB。</b></p>
+  <p>这就解释了现场那句"音响不如音源响"：它不是设备不行，是物理上不允许。你要么接受比原声小，要么让环路增益降下来。</p>
+</div>
+
+<p>如果你只想要"更响"，理论上有两条路：换更好的扬声器/摆位（提高效率，不改环路），或者让环路增益降下来（这条就是本作品）。</p>
+
+<!-- ============================================================ -->
+<h2 id="s2"><span class="num">2</span>抵消改变了什么</h2>
+
+<p class="essentials"><strong>一句话：不装模型时，稳定性由 |<i>H</i>| 决定；装了模型后，稳定性由 |<i>H</i> − <i>Ĥ</i>| 决定。前者是房间给的，后者是我们能改的。</strong></p>
+
+<h3>2.1 少减一样东西</h3>
+
+<p>思路很朴素：既然啸叫是"回传的那一份"造成的，那就<b>把回传的那一份算出来，从麦克风信号里减掉</b>再放大。</p>
+
+<p>问题是：回传的那一份没法直接测。麦克风里混着人声和回传，它不告诉你是哪一份。但有一个东西我们知道——<b>音响刚才放了什么</b>。软件里播放的每一个采样都是明明白白的。所以：</p>
+
+<div class="formula">
+  <i>p</i>[<i>n</i>] = Σ <i>h</i>[<i>k</i>] · <i>u</i>[<i>n</i>−1−<i>k</i>]　　（用过去的播放值预测"它绕回来会变成什么"）
+</div>
+
+<div class="formula">
+  <i>w</i>[<i>n</i>] = <i>m</i>[<i>n</i>] − <i>p</i>[<i>n</i>]　　（残差：减掉预测之后剩下的）
+</div>
+
+<div class="formula">
+  <i>u</i>[<i>n</i>] = sat( <i>s</i>[<i>n</i>] + <i>g</i> · <i>w</i>[<i>n</i>−2] )　　（把残差放大，播出去）
+</div>
+
+<p>注意最后一步：放大的是<b>残差</b>，不是麦克风原信号。这就是"抵消"和"普通扩声"的全部区别。普通扩声放的是 <i>m</i>，我们放的是 <i>m − p</i>。</p>
+
+<h3>2.2 关键的一步代数</h3>
+
+<p>设 <i>Ĥ</i> 是我们的模型（<i>h</i>[<i>k</i>] 那串系数就是它）。把三式串起来，只关心"环路"这一圈：</p>
+
+<div class="formula">
+  <i>u</i> = <i>s</i> + <i>g</i>(<i>H</i>·<i>u</i> − <i>Ĥ</i>·<i>u</i>)　⟹　<i>u</i> =
+  <span class="frac"><span class="n"><i>s</i></span><span class="d">1 − <i>g</i>(<i>H</i> − <i>Ĥ</i>)</span></span>
+</div>
+
+<p>和 §1 的式子对比一下，唯一变化是分母里的 <i>H</i> 变成了 (<i>H</i> − <i>Ĥ</i>)。<b>整个作品的立足点就在这一处替换。</b></p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>情形</th><th class="num">环路增益</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td>不装模型（<i>Ĥ</i> = 0）</td><td class="num"><i>g</i>·<i>H</i></td><td>由房间决定，我们改不了</td></tr>
+    <tr><td>模型完全准确（<i>Ĥ</i> = <i>H</i>）</td><td class="num"><b>0</b></td><td>理论上可以无限放大</td></tr>
+    <tr><td>模型有误差</td><td class="num"><i>g</i>·(<i>H</i> − <i>Ĥ</i>)</td><td>误差越小，能用的 <i>g</i> 越大</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>第二行是教科书结论，也是很多宣传里"消除啸叫"的来源。但第三行才是现实：<b>误差永远不会恰好为零</b>，所以我们从来不说"消除"，只说"把裕度提高"。</p>
+
+<h3>2.3 用滑杆自己验证这件事</h3>
+
+<p>回到演示 1。做三个实验，各花 20 秒：</p>
+
+<ol>
+  <li><b>只开环路</b>：抵消滑杆放到 0，<i>g</i> 从 −8 dB 慢慢推到 0 dB。你会看到曲线从"平"变成"爬"。在 −4.4 dB 附近它开始爬——这就是 §1.3 说的物理上限。</li>
+  <li><b>开抵消，模型准</b>：抵消放到 1，模型幅度误差 100%（误差 0 就是完美模型）、相位误差 0。再把 <i>g</i> 推到 0 dB：曲线会明显低很多，而且不爬。<b>注意：这个演示里"完美模型"是可以设出来的，现实里做不到。</b></li>
+  <li><b>只把相位调错</b>：模型幅度保持准确，只把相位误差推到 40°。注意 <i>g</i> 一点没变，你会看到抵消效果立刻下降一大截。<b>这就是为什么我们的模型必须"延迟对到帧"</b>——延迟错一点，等于相位错很多。</li>
+</ol>
+
+<div class="callout warn">
+  <p><b>别把这里的数字当结论。</b>演示用的是"单频 + 三段简化"的模型，真实系统是宽带、有量化、有保护、有饱和。它只能用来看"趋势对不对"，不能推出任何实际 dB 值。所有实际数字见 §7–§10，且都标了口径。</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s3"><span class="num">3</span>真实信号流</h2>
+
+<p class="essentials"><strong>一句话：一帧 = 2048 个时钟 = 20.48 µs；FIR 用 1539 拍算完预测；残差要等到两帧之后才变成新的播放值；而声音从音响绕回麦克风要 184 帧。</strong></p>
+
+<h3>3.1 一帧是什么</h3>
+
+<p>音频不像文件那样"整段处理"，它是<b>一帧一帧流过去</b>的。我们的 I2S 每帧左右各一个 24 位采样，采样率 48828.125 Hz，所以一帧 20.48 µs。FPGA 跑 100 MHz，一帧正好 2048 个时钟。</p>
+
+<div class="formula">
+  2048 clk ÷ 100 MHz = 20.48 µs　⟹　<i>f</i><span class="sub">s</span> = 1 / 20.48 µs = 48828.125 Hz
+</div>
+
+<p>这 2048 拍是<b>每帧的全部预算</b>。FIR 要在这 2048 拍里算完，否则就来不及送出去。这条约束后面会决定"最多能做多少抽头"。</p>
+
+<h3>3.2 完整的一条路</h3>
+
+<figure style="margin:22px 0">
+<svg viewBox="0 0 940 416" class="plot" role="img" aria-label="声堤的信号流图：源经混音、DAC、音响、空气、麦克风、ADC，再由 FIR 预测、在残差处相减，经数字增益回到混音">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3d4653"/>
+    </marker>
+    <marker id="ar-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a32323"/>
+    </marker>
+  </defs>
+  <style>
+    .bx { fill:#fff; stroke:#3d4653; stroke-width:1.4; }
+    .bd { fill:#eaf3f8; stroke:#1f5f7a; stroke-width:1.6; }
+    .bs { fill:#f7f8fa; stroke:#68717e; stroke-width:1.2; stroke-dasharray:5 4; }
+    .lb { font:13px -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; fill:#16181d; }
+    .sm { font:11.5px -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; fill:#68717e; }
+    .tt { font:600 14px -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; fill:#16181d; }
+    .fl { stroke:#3d4653; stroke-width:1.4; fill:none; marker-end:url(#ar); }
+    .flr { stroke:#a32323; stroke-width:1.6; fill:none; marker-end:url(#ar-r); }
+    .fld { stroke:#68717e; stroke-width:1.2; fill:none; stroke-dasharray:5 4; marker-end:url(#ar); }
+  </style>
+
+  <!-- 分区 -->
+  <text class="tt" x="8" y="14">PL（FPGA）—— 每个采样都做</text>
+  <line x1="8" y1="22" x2="620" y2="22" stroke="#dfe3e9"/>
+  <text class="tt" x="660" y="14">PS（ARM）—— 只在开始 / 结束</text>
+  <line x1="660" y1="22" x2="932" y2="22" stroke="#dfe3e9"/>
+
+  <!-- 第一行：正向链 -->
+  <rect class="bx" x="10" y="40" width="92" height="46" rx="5"/>
+  <text class="lb" x="22" y="60">源 s[n]</text>
+  <text class="sm" x="22" y="76">播放表 / 激励</text>
+
+  <rect class="bd" x="128" y="40" width="100" height="46" rx="5"/>
+  <text class="lb" x="140" y="60">混音 + 钳位</text>
+  <text class="sm" x="140" y="76">u = s + g·w</text>
+
+  <rect class="bx" x="254" y="40" width="90" height="46" rx="5"/>
+  <text class="lb" x="266" y="60">DAC / I2S</text>
+  <text class="sm" x="266" y="76">24 位</text>
+
+  <rect class="bx" x="370" y="40" width="84" height="46" rx="5"/>
+  <text class="lb" x="382" y="60">音响</text>
+  <text class="sm" x="382" y="76">放出 u</text>
+
+  <rect class="bx" x="480" y="40" width="124" height="46" rx="5"/>
+  <text class="lb" x="492" y="60">空气 · 通路 H</text>
+  <text class="sm" x="492" y="76">184 帧 ≈ 3.77 ms</text>
+
+  <rect class="bx" x="630" y="40" width="92" height="46" rx="5"/>
+  <text class="lb" x="642" y="60">麦克风</text>
+  <text class="sm" x="642" y="76">m = H·u + s</text>
+
+  <rect class="bx" x="748" y="40" width="90" height="46" rx="5"/>
+  <text class="lb" x="760" y="60">ADC / I2S</text>
+  <text class="sm" x="760" y="76">24 位</text>
+
+  <path class="fl" d="M102 63 H124"/>
+  <path class="fl" d="M228 63 H250"/>
+  <path class="fl" d="M344 63 H366"/>
+  <path class="fl" d="M454 63 H476"/>
+  <path class="fl" d="M604 63 H626"/>
+  <path class="fl" d="M722 63 H744"/>
+
+  <!-- 第二行：返回链（右 → 左） -->
+  <rect class="bd" x="482" y="142" width="120" height="52" rx="5"/>
+  <text class="lb" x="494" y="163">残差 w[n]</text>
+  <text class="sm" x="494" y="180">m − p，25 位</text>
+
+  <rect class="bd" x="326" y="142" width="130" height="52" rx="5"/>
+  <text class="lb" x="338" y="163">数字增益 g</text>
+  <text class="sm" x="338" y="180">Q4.12，过增益后才钳</text>
+
+  <rect class="bd" x="10" y="142" width="290" height="52" rx="5"/>
+  <text class="lb" x="22" y="163">FIR 预测 p[n] = Σ h[k]·u[n−1−k]</text>
+  <text class="sm" x="22" y="180">512 抽头 · Q20 · 3N+3 = 1539 拍</text>
+
+  <path class="fl" d="M748 86 V 112 H 542 V 138"/>
+  <text class="sm" x="556" y="108">参考 = 实际播放值 u</text>
+
+  <path class="fl" d="M482 168 H 458"/>
+  <path class="fl" d="M326 168 H 302"/>
+  <path class="fl" d="M155 142 V 112 H 178 V 88"/>
+
+  <!-- ARM -->
+  <rect class="bs" x="620" y="246" width="312" height="52" rx="5"/>
+  <text class="lb" x="632" y="267">ARM：装系数 / 配增益 / 读状态 / 落盘</text>
+  <text class="sm" x="632" y="284">不参与逐样本运算</text>
+  <path class="fld" d="M815 246 V 88"/>
+
+  <!-- 抵消标注 -->
+  <text class="sm" x="330" y="216" fill="#a32323" font-size="12.5">↑ 这条支路就是“抵消”</text>
+  <path d="M326 208 H 456" stroke="#a32323" stroke-width="1.2" stroke-dasharray="4 3" fill="none"/>
+
+  <!-- 底部说明 -->
+  <text class="tt" x="10" y="330">两个延迟要分清</text>
+  <text class="lb" x="10" y="354">· 调度延迟 <tspan fill="#1f5f7a" font-weight="600">2 帧 = 41 µs</tspan>　—　FIR 算完还要一级增益寄存，赶不上本次帧边界</text>
+  <text class="lb" x="10" y="376">· 声学延迟 <tspan fill="#1f5f7a" font-weight="600">184 帧 = 3.77 ms</tspan>　—　声音真的走那段空气</text>
+  <text class="lb" x="10" y="398">两者相加 ≈ 186 帧 ≈ 3.81 ms，这才是“一圈”的时间</text>
+</svg>
+<figcaption class="plot-cap">图 3-1　声堤的真实信号流。蓝色框是数字域，白框是接口/声学域，虚线框是 ARM 侧。</figcaption>
+</figure>
+
+<h3>3.3 三个容易记错的细节</h3>
+
+<h4>① 参考必须是"实际播出去的"，不是"本来想播的"</h4>
+
+<p>FIR 的输入 <i>u</i> 必须是 DAC 真正收到的值，包括增益、包括钳位。如果用"没乘增益的源信号"去当参考，模型学到的就不是真实通路，误差会系统性地偏。<b>这一条写在契约里，是硬约束。</b></p>
+
+<h4>② <i>lag_first</i> = 1：最新一个抽头对的是"上一帧"</h4>
+
+<p>RTL 里的写法是：计算开始时把读指针放在<b>刚写进去的那个位置之前</b>，然后递减。所以第 <i>k</i> 个抽头乘的是 <i>u</i>[<i>n</i>−1−<i>k</i>]：</p>
+
+<div class="formula">
+  <i>p</i>[<i>n</i>] = <i>h</i>[0]·<i>u</i>[<i>n</i>−1] + <i>h</i>[1]·<i>u</i>[<i>n</i>−2] + … + <i>h</i>[511]·<i>u</i>[<i>n</i>−512]
+</div>
+
+<p>而"当前这一帧的 <i>u</i>[<i>n</i>]"是<b>算完才写进历史</b>的——不是为了省事，是为了"最老那个样本还没被覆盖时，计算已经完成"。顺序写反了，512 抽头会自己吃掉自己。</p>
+
+<h4>③ 两帧调度：算得出来，但赶不上这一帧</h4>
+
+<p>FIR 在一帧内就出结果（1539 拍 &lt; 2048 拍），但结果还要经过"乘增益、寄存、等下一次帧边界装进混音"。一次帧边界不够，要两次：</p>
+
+<div class="formula">
+  <i>u</i>[<i>n</i>] = sat( <i>s</i>[<i>n</i>] + sat( round<span class="sub">12</span>( <i>g</i> · <i>w</i>[<i>n</i>−2] ) ) )
+</div>
+
+<div class="callout warn">
+  <p><b>这里的 "−2" 很容易写错。</b>曾经有一版文档把调度写成 1 帧，导致所有"环路延迟"的推算都少 20 µs，进而把"起振频点间隔"算错。凡是写延迟，一律以<b>契约里的这条式子</b>为准，不要从代码注释反推。</p>
+</div>
+
+<h3>3.4 PS 和 PL 谁干什么</h3>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>角色</th><th>负责</th><th>不负责</th></tr></thead>
+  <tbody>
+    <tr><td><b>PL（FPGA）</b></td><td>逐样本：FIR 预测、残差相减、乘增益、钳位、混音、I2S 收发、饱和计数</td><td>不知道"这次实验是什么"，不做决策</td></tr>
+    <tr><td><b>PS（ARM）</b></td><td>装系数、配增益和帧数、读状态字、把捕获缓冲落盘、决定何时停</td><td>不碰逐样本运算，不实时干预</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>这样分的好处是：实时路径上没有操作系统、没有调度抖动，最坏情况由时序分析保证；而"要跑多久、用什么系数、什么时候停"这些慢逻辑放在 Linux 侧，改起来不用重新综合。</p>
+
+<!-- ============================================================ -->
+<h2 id="s4"><span class="num">4</span>FIR 与 512 抽头</h2>
+
+<p class="essentials"><strong>一句话：FIR 就是"把过去若干帧按权重加起来"，3 个抽头能手算，512 个抽头就必须排队一个一个乘——于是有了 1539 拍的预算问题。</strong></p>
+
+<h3>4.1 先用 3 个抽头把它算完</h3>
+
+<p>取一组能心算的系数（这组是教学用的，不是我们的模型）：</p>
+
+<div class="formula">
+  <i>h</i> = [ +0.5,　−0.25,　+0.125 ]
+</div>
+
+<p>那么：</p>
+
+<div class="formula">
+  <i>p</i>[<i>n</i>] = 0.5·<i>u</i>[<i>n</i>−1] − 0.25·<i>u</i>[<i>n</i>−2] + 0.125·<i>u</i>[<i>n</i>−3]
+</div>
+
+<p>假设过去三帧的播放值是 <i>u</i>[<i>n</i>−1] = 0.8、<i>u</i>[<i>n</i>−2] = −0.4、<i>u</i>[<i>n</i>−3] = 0.2，那么：</p>
+
+<div class="formula">
+  0.5×0.8 = <b>+0.400</b>　　(−0.25)×(−0.4) = <b>+0.100</b>　　(0.125)×0.2 = <b>+0.025</b><br>
+  累加 = 0.400 + 0.100 + 0.025 = <b>0.525</b>
+</div>
+
+<p>如果这一帧麦克风读到 <i>m</i> = 0.600，那么残差 <i>w</i> = 0.600 − 0.525 = <b>0.075</b>。也就是说：模型认为"这 0.525 里大部分是我自己放出去绕回来的"，减完之后只剩 0.075 是"新东西"。</p>
+
+<!-- 演示 2 -->
+<section class="demo" id="d-fir" aria-labelledby="d-fir-t">
+  <div class="demo-head">
+    <span class="tag">教学模拟</span>
+    <h4 id="d-fir-t">演示 2 · FIR 逐抽头累加，与 512 抽头的排队</h4>
+    <span class="hint">单步走一遍乘法累加，再看时间预算怎么被吃满</span>
+  </div>
+  <div class="demo-body">
+
+    <h4 style="margin-top:0">A. 3 抽头：一步一个乘加</h4>
+
+    <div class="ctrls">
+      <div class="ctrl">
+        <label for="fir-u1">u[n−1] <output id="fir-u1-o"></output></label>
+        <input id="fir-u1" type="range" min="-1" max="1" step="0.05" value="0.8">
+      </div>
+      <div class="ctrl">
+        <label for="fir-u2">u[n−2] <output id="fir-u2-o"></output></label>
+        <input id="fir-u2" type="range" min="-1" max="1" step="0.05" value="-0.4">
+      </div>
+      <div class="ctrl">
+        <label for="fir-u3">u[n−3] <output id="fir-u3-o"></output></label>
+        <input id="fir-u3" type="range" min="-1" max="1" step="0.05" value="0.2">
+      </div>
+      <div class="ctrl">
+        <label for="fir-m">本帧麦克风 m <output id="fir-m-o"></output></label>
+        <input id="fir-m" type="range" min="-1" max="1" step="0.05" value="0.6">
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="fir-table">
+        <thead>
+          <tr><th>抽头 <i>k</i></th><th class="num">系数 <i>h</i>[<i>k</i>]</th><th class="num">样本 <i>u</i>[<i>n</i>−1−<i>k</i>]</th><th class="num">乘积</th><th class="num">累加器</th><th>状态</th></tr>
+        </thead>
+        <tbody><!-- JS 填 --></tbody>
+      </table>
+    </div>
+
+    <div class="readout">
+      <div class="cell"><div class="k">预测 <i>p</i>[<i>n</i>]</div><div class="v" id="fir-p">—</div></div>
+      <div class="cell"><div class="k">残差 <i>w</i> = <i>m</i> − <i>p</i></div><div class="v" id="fir-w">—</div></div>
+      <div class="cell"><div class="k">当前进度</div><div class="v" id="fir-step">—</div></div>
+    </div>
+
+    <div class="verdict" id="fir-verdict" role="status" aria-live="polite">按"单步"开始，看累加器怎么一格一格长起来。</div>
+
+    <div class="btnrow">
+      <button type="button" class="primary" data-fir="step">单步（走一个抽头）</button>
+      <button type="button" data-fir="auto">自动播放</button>
+      <button type="button" data-fir="reset">复位</button>
+    </div>
+
+    <h4>B. 512 抽头：为什么必须排队</h4>
+
+    <p style="font-size:14.5px">
+      硬件只有一个乘法器（我们只用了 3 个 DSP，其中 1 个就是这个乘），所以 512 个抽头只能<b>一个一个乘</b>。
+      每个抽头分三拍：读存储器 → 乘法 → 累加。512 个抽头就是 3×512 = 1536 拍，加收尾 3 拍 = <b>1539 拍</b>。
+    </p>
+
+    <div class="plot-wrap">
+      <canvas id="fir-budget" width="900" height="140" role="img"
+              aria-label="一帧 2048 拍的预算条，其中 1539 拍被 FIR 占用"></canvas>
+      <p class="plot-cap">一帧 2048 拍的时间预算（横轴固定 0…2048 拍）。剩下的 509 拍留给混音、I2S、状态更新。</p>
+    </div>
+
+    <div class="readout">
+      <div class="cell"><div class="k">每帧预算</div><div class="v">2048 拍</div></div>
+      <div class="cell"><div class="k">512 抽头需要</div><div class="v">1539 拍</div></div>
+      <div class="cell"><div class="k">算完还剩</div><div class="v ok">509 拍</div></div>
+      <div class="cell"><div class="k">理论抽头上限</div><div class="v warn">≈ 681</div></div>
+    </div>
+
+    <div class="callout warn" style="margin-bottom:0">
+      <p><b>681 是"每帧算得完"的上限，不是芯片容量上限。</b>FIR 的系数和历史各是 512×24 位，才 24.6 kbit，装两个块 RAM 都用不满；板上 BRAM 报到 80%，主要来自播放缓冲和捕获缓冲。<b>这两件事混在一起说过，是个真实的错误，见 §8。</b></p>
+    </div>
+  </div>
+</section>
+
+<h3>4.2 为什么是 512，不是 256 也不是 1024</h3>
+
+<p>抽头数 = <b>能记住多久的过去</b>。每抽头 1 帧，512 抽头 = 512 帧 = 10.5 ms。但这里面有一部分是"白花"的：</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>项</th><th class="num">时长</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td>声学纯延迟</td><td class="num">184 帧 ≈ 3.77 ms</td><td>声音真的要走这段路，必须留出位置</td></tr>
+    <tr><td>可用拖尾记忆</td><td class="num">328 帧 ≈ 6.72 ms</td><td>房间混响、桌面反射——这才是模型真正要学的东西</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>所以"512 抽头"听上去有 10.5 ms，实际只有 6.7 ms 在记混响。这也解释了一个反直觉的现象：<b>64 或 128 抽头完全无效</b>——不是"记得少"，而是<b>根本够不到直达声</b>（184 帧之后才开始有信号）。</p>
+
+<p>那为什么不干脆 1024 或 2048？因为 3×1024+3 = 3075 拍 &gt; 2048，一帧算不完。要做得先改架构（加乘法器并行度，或降低每抽头周期数），那是"换设计"，不是"改参数"。这条线我们明确没走（§9）。</p>
+
+<div class="callout key">
+  <p>实测告诉我们：<b>从 512 加到 680（还能算完）只多 0.6~0.7 dB。</b>也就是说在这个夹具上，"加抽头"这条路的天花板很低。真正缺的不是记忆长度，而是<b>模型对不对</b>（§6、§8）。</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s5"><span class="num">5</span>定点数：Q20 与宽残差</h2>
+
+<p class="essentials"><strong>一句话：PCM 的满幅是 ±1.0，系数的满幅是 ±8.0，这两个 8 不是同一个东西；把"残差"在乘增益之前就钳到 1.0，会让系统在明明还有 7.8 dB 余量的时候停声。</strong></p>
+
+<h3>5.1 三个数制，先分清</h3>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>东西</th><th>位宽/格式</th><th class="num">满幅</th><th>怎么换算成"数"</th></tr></thead>
+  <tbody>
+    <tr><td>PCM 采样（麦克风、播放、残差）</td><td>24 位有符号</td><td class="num">±1.0</td><td>码值 ÷ 2<span class="sup">23</span>；范围 −2<span class="sup">23</span> … +2<span class="sup">23</span>−1</td></tr>
+    <tr><td>FIR 系数</td><td>24 位有符号，<b>Q20</b></td><td class="num">±8.0</td><td>码值 ÷ 2<span class="sup">20</span>；所以 24 位能表示到 ±8，不是 ±1</td></tr>
+    <tr><td>数字增益</td><td>16 位无符号，<b>Q4.12</b></td><td class="num">8.0（+18.06 dB）</td><td>码值 ÷ 4096</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout warn">
+  <p>把"系数的 ±8"当成"信号的 ±8"去算饱和，是一个真实发生过的错误（§8.5）。判断"会不会饱和"时，永远先问一句：<b>这个 8 指的是哪一个？</b></p>
+</div>
+
+<h3>5.2 一次预测在硬件里具体怎么做</h3>
+
+<ol>
+  <li><b>乘</b>：24 位系数 × 24 位样本 = 48 位乘积，符号扩展到 58 位。</li>
+  <li><b>累加</b>：512 个乘积相加，仍然在 58 位里。为什么够？最坏 |累加| ≤ 512 × 2<span class="sup">23</span> × 8 × 2<span class="sup">20</span>，远小于 2<span class="sup">57</span>。</li>
+  <li><b>舍入（Q20 → 整数）</b>：取绝对值、加 2<span class="sup">19</span>、右移 20 位，再还原符号。加半个 LSB 再截断 = <b>四舍五入，且负数也远离零</b>。</li>
+  <li><b>饱和</b>：结果超出 ±2<span class="sup">23</span> 就夹到边界，同时置一个"预测饱和"标志。</li>
+</ol>
+
+<div class="formula">
+  round<span class="sub">20</span>(<i>x</i>) = sign(<i>x</i>) · ⌊ (|<i>x</i>| + 2<span class="sup">19</span>) / 2<span class="sup">20</span> ⌋
+</div>
+
+<p>为什么非要"取绝对值再加"？因为 Python 的 <code>&gt;&gt;</code> 对负数是向下取整：−1.5 会变成 −2 而不是 −1，半值方向就不对称了。硬件里没有这个问题，但<b>我们用 Python 复现时必须照着硬件的写法写</b>，否则离线验证和板上永远差 1 个 LSB，而且只在负数半值上差——极难查。</p>
+
+<h3>5.3 残差：为什么要 25 位</h3>
+
+<p>残差是 <i>m</i> − <i>p</i>。这两个量各自都可能接近满幅：麦克风可以被喊到削顶，预测也可以很大。两个各接近 ±1.0 的数相减，结果可以到 ±2.0。所以硬件用 <b>25 位</b>算这个差：</p>
+
+<div class="formula">
+  <i>w</i>[<i>n</i>] = <i>m</i>[<i>n</i>] − <i>p</i>[<i>n</i>]　∈　[−2<span class="sup">24</span>, 2<span class="sup">24</span>)
+</div>
+
+<h3>5.4 旧做法错在哪：钳得太早</h3>
+
+<p>旧版本（v2）拿到这个 25 位的差，<b>立刻</b>钳到 24 位，然后才乘数字增益。看起来没问题——反正后面还要乘 0.4，先钳应该没关系？</p>
+
+<p>关系很大。因为"能不能钳"要看<b>最终输出</b>会不会溢出，而不是中间量。举个实例：</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>量</th><th class="num">v2（先钳后乘）</th><th class="num">v3（先乘后钳）</th></tr></thead>
+  <tbody>
+    <tr><td>25 位宽残差 <i>w</i></td><td class="num">1.0230 × 满幅</td><td class="num">1.0230 × 满幅</td></tr>
+    <tr><td>乘 −8 dB 之后</td><td class="num">0.4074 × 满幅</td><td class="num">0.4074 × 满幅</td></tr>
+    <tr><td>中间是否越界</td><td class="num bad" style="color:#a32323">是（1.023 &gt; 1.0），钳断</td><td class="num" style="color:#15663a">是，但保留</td></tr>
+    <tr><td>最终输出</td><td class="num">0.398 × 满幅（被削过）</td><td class="num">0.4074 × 满幅（原值）</td></tr>
+    <tr><td>驱动行为</td><td class="num" style="color:#a32323">记一次饱和 → <b>停声</b></td><td class="num" style="color:#15663a">只计数 → 继续跑完</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>注意最后一行：<b>差别不是"音质差 0.2 dB"，而是"整轮实验作废"。</b>v2 把一次"中间量过线但输出只有 0.41、还有 7.8 dB 余量"的情况，当成了危险，直接停。</p>
+
+<!-- 演示 3 -->
+<section class="demo" id="d-wide" aria-labelledby="d-wide-t">
+  <div class="demo-head">
+    <span class="tag">教学模拟</span>
+    <h4 id="d-wide-t">演示 3 · 宽残差：先钳还是后钳，差在哪</h4>
+    <span class="hint">调麦克风和预测的幅度，看两条路径分别什么时候"越界"</span>
+  </div>
+  <div class="demo-body">
+    <p style="margin-top:0;font-size:14px;color:var(--ink-2)">
+      下面所有数字都是<b>真实的定点整数运算</b>（按 RTL 的位宽和舍入规则算），不是浮点近似。
+      预设按钮给的是 2026-10-27 那次现场失败的近似数值。
+    </p>
+
+    <div class="ctrls">
+      <div class="ctrl">
+        <label for="wr-m">麦克风峰值 <output id="wr-m-o"></output></label>
+        <input id="wr-m" type="range" min="-20" max="0" step="0.1" value="-0.01">
+      </div>
+      <div class="ctrl">
+        <label for="wr-p">预测峰值（带符号） <output id="wr-p-o"></output></label>
+        <input id="wr-p" type="range" min="-40" max="0" step="0.1" value="-32.7">
+      </div>
+      <div class="ctrl">
+        <label for="wr-sign">预测极性 <output id="wr-sign-o"></output></label>
+        <input id="wr-sign" type="range" min="0" max="1" step="1" value="1">
+      </div>
+      <div class="ctrl">
+        <label for="wr-g">数字增益 <output id="wr-g-o"></output></label>
+        <input id="wr-g" type="range" min="-20" max="0" step="0.5" value="-8">
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>量（码值 / 满幅倍数）</th><th class="num">数值</th><th>是否越界</th></tr></thead>
+        <tbody id="wr-rows"><!-- JS 填 --></tbody>
+      </table>
+    </div>
+
+    <div class="readout">
+      <div class="cell"><div class="k">v2 输出</div><div class="v" id="wr-v2">—</div></div>
+      <div class="cell"><div class="k">v3 输出</div><div class="v" id="wr-v3">—</div></div>
+      <div class="cell"><div class="k">v2 会停声？</div><div class="v" id="wr-stop">—</div></div>
+      <div class="cell"><div class="k">v3 剩余余量</div><div class="v" id="wr-head">—</div></div>
+    </div>
+
+    <div class="verdict" id="wr-verdict" role="status" aria-live="polite"></div>
+
+    <div class="btnrow">
+      <button type="button" class="primary" data-wr="field">预设：现场那次（<i>m</i> 贴满幅，<i>p</i> 反相小量）</button>
+      <button type="button" data-wr="quiet">预设：正常电平（都不越界）</button>
+      <button type="button" data-wr="huge">预设：输出真的过载（连 v3 也钳）</button>
+      <button type="button" data-wr="reset">重置</button>
+    </div>
+
+    <div class="callout" style="margin-bottom:0">
+      <p><b>这个演示只回答算术问题</b>：给定 <i>m</i>、<i>p</i>、<i>g</i>，两条路径各算出什么。它<b>不</b>说明"现场那次为什么会削顶"——那要看输入电平，是另一件事（§8.4）。</p>
+    </div>
+  </div>
+</section>
+
+<h3>5.5 改了之后，保护还在不在</h3>
+
+<p>很重要的一点：<b>v3 不是"关掉保护"。</b>它只是把"哪个量代表物理越界"改对了。现在的停声条件是：</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>事件</th><th>可见位置</th><th>会自动停声吗</th></tr></thead>
+  <tbody>
+    <tr><td>输入满幅（麦克风顶到 ADC 边界）</td><td><code>capture_status</code> bit22（粘滞）</td><td style="color:#a32323"><b>是</b>，<code>stop_reason = input_clip</code></td></tr>
+    <tr><td>增益前残差越界</td><td><code>saturation_counts[31:16]</code></td><td style="color:#15663a">否，只计数（v3 起）</td></tr>
+    <tr><td>增益后 / 混音越界</td><td><code>capture_status[21]</code></td><td style="color:#a32323"><b>是</b></td></tr>
+    <tr><td>预测饱和</td><td><code>saturation_counts[15:0]</code></td><td style="color:#a32323"><b>是</b></td></tr>
+    <tr><td>协议错误 / 超时 / 手动</td><td>状态字</td><td style="color:#a32323"><b>是</b></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout key">
+  <p>注意第一行：<b>输入满幅是独立检测的，不走残差。</b>因为零系数时残差恒等于麦克风，永远"越不了界"——用残差计数去看输入过载，天生看不见。这个盲区是 §8.4 那个坑的根源。</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s6"><span class="num">6</span>标定：系数从哪来</h2>
+
+<p class="essentials"><strong>一句话：开环放一段已知的信号，同时记下"放了什么"和"收到了什么"，解一个最小二乘；换摆位就得重来，因为 <i>H</i> 变了。</strong></p>
+
+<h3>6.1 六步</h3>
+
+<ol>
+  <li><b>断环</b>：让播放的信号不进入回路（零系数、开环），这样"收到的"里面只有"放出去的"这一个来源。</li>
+  <li><b>激励</b>：放一段白噪声，6 段、每段 16384 帧，段间停一下重起。<b>必须是宽带的</b>，否则某些频率根本没被激发。</li>
+  <li><b>对齐</b>：把每段的"参考 → 麦克风"延迟算出来。这一步不能省，见 §8.2。</li>
+  <li><b>拟合</b>：解 <i>H</i> 的 512 个抽头。用最小二乘（带一点点 ridge 正则，防止病态）。</li>
+  <li><b>验证</b>：留出段只评一次。同一场次的交叉验证不算"新场验证"。</li>
+  <li><b>量化与装载</b>：浮点系数 → Q20 整数 → 写进模型文件 → 核 SHA256 → 装到板。</li>
+</ol>
+
+<h3>6.2 为什么是"离线拟合 + 固定系数"，而不是 LMS</h3>
+
+<p>教科书里反馈抵消最常用的方法是自适应滤波（NLMS 一族）：边跑边更新系数。听起来更聪明，但在<b>闭环</b>里有一个致命问题：</p>
+
+<div class="callout warn">
+  <p>自适应算法需要"干净的参考"——也就是"如果没有任何反馈，信号本来该是什么样"。可在闭环里，播放信号本身就含反馈分量，参考不干净。于是算法会把"反馈"也当成"要学的通路"，解发生<b>偏移</b>（bias）。学得越久，偏得越远。</p>
+</div>
+
+<p>所以要让它稳定工作，得额外加去相关手段（延迟、频移、预白化……），每一样都会降低音质或增加复杂度。我们选择了另一条路：</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th></th><th>离线标定 + 固定系数（我们）</th><th>在线自适应（LMS/NLMS，未做）</th></tr></thead>
+  <tbody>
+    <tr><td>适合场景</td><td>摆位固定（本作品的前提）</td><td>摆位会变</td></tr>
+    <tr><td>闭环偏移</td><td>不存在（断环下标的）</td><td>存在，需要额外手段</td></tr>
+    <tr><td>换房间</td><td><b>必须重标</b></td><td>理论上自己收敛</td></tr>
+    <tr><td>算力</td><td>标定在 PC 上，板上只做固定 FIR</td><td>板上要留更新通路和稳定判据</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><b>"必须重标"不是缺点，是前提。</b>正因为我们接受"位置固定"这个前提，才能用最省算力、最可预测的方式工作。简介里那句"面向麦克风与扬声器位置相对固定的语音扩声场景"，说的就是这件事。</p>
+
+<h3>6.3 场景一变，模型就废：一个真实例子</h3>
+
+<p>2026-10-26 我们换了摆位（音响离麦克风 100 cm、侧对、上方加了金属板），但板上装的还是按旧摆位（0.5 m 正对）拟合的系数。用新采的数据一算，结果很难看：</p>
+
+<div class="card failure">
+  <div class="card-title">旧系数在新摆位上"反向工作"</div>
+  <p style="margin-top:0">在 325 Hz 处，<b>CD = −4.27 dB</b>。CD 是"抵消深度"，负值意味着<b>残差比原信号还大</b>——模型不是没帮上忙，是在放大。</p>
+  <dl class="meta-card">
+    <dt>原因</dt><dd>旧系数是按 124/125 帧的路径延迟拟合的，新摆位的路径是 184 帧。滤波器整套比实际路径"早到"约 57 帧（1.2 ms）。</dd>
+    <dt>证据</dt><dd>旧系数的冲激响应峰在第 128 抽头，新拟合的在第 184 抽头。</dd>
+    <dt>修法</dt><dd>不是平移系数（会砍掉尾部记忆、打散高频），而是<b>按新摆位重拟合</b>。</dd>
+    <dt>来源</dt><dd><code>report/verification/newlayout-325-2026-10-26/</code></dd>
+  </dl>
+</div>
+
+<p>这个例子最值得记的一点：<b>模型错的时候，它不会"效果差一点"，它会主动帮倒忙。</b>因为它在用一个相位错误的预测去做减法，减掉的是有用信号、加回去的是反馈。</p>
+
+<h3>6.4 延迟必须对到"帧"</h3>
+
+<p>1 帧在 321.9 Hz 上是多少度？</p>
+
+<div class="formula">
+  Δφ = 360° × <i>f</i> / <i>f</i><span class="sub">s</span> = 360° × 321.9 / 48828 ≈ <b>2.37°</b>
+</div>
+
+<p>看起来很小。但在 8.4 kHz 上，1 帧就是 <b>62°</b>——足够把"完全抵消"变成"几乎全反"。</p>
+
+<p>更麻烦的是采集本身：同一批六份数据里，有三份的参考延迟是 184 帧、三份是 185 帧。<b>差一帧，跨段累加时高频就全错。</b>所以脚本里第一步永远是"逐段对齐到同一个整数延迟"，然后再做统计。</p>
+
+<!-- ============================================================ -->
+<h2 id="s7"><span class="num">7</span>真实成功</h2>
+
+<p class="essentials"><strong>一句话：目前站得住的成功只有三件——单频三点证明抵消在工作、宽残差让一次本该作废的真人试次跑完、板卡通路和连续运行正常。可听收益还没证明。</strong></p>
+
+<div class="card measured">
+  <div class="card-title">实测 1 · 322 Hz 三点：抵消确实在工作</div>
+  <p style="margin-top:0">同一夹具、同一源电平（0.15 FS）、同一数字增益（−8 dB），只改一个开关，量 322 Hz 这一个频点。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>臂</th><th class="num">322 Hz 电平</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td>open</td><td class="num">45.44 dB</td><td>数字增益强制 0，没有环路</td></tr>
+      <tr><td>bypass</td><td class="num">49.19 dB</td><td>环路闭合，模型装了但没减</td></tr>
+      <tr><td>cancel</td><td class="num">44.43 dB</td><td>减法生效</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>从这三个数能读出三件不同的事，<b>不能混成一个数报</b>：</p>
+  <ul>
+    <li><b>CD = 6.37 dB</b>：bypass 的残差与 cancel 的残差之比。它衡量<b>模型拟合得准不准</b>，是抵消支路真正在最小化的量。</li>
+    <li><b>环路提升 = 49.19 − 45.44 = 3.75 dB</b>：闭环把这一带抬高了多少。<b>抵消最多能收回这么多。</b></li>
+    <li><b>声学差 = 49.19 − 44.43 = 4.76 dB</b>：两臂的麦克风差。它等于 3.75 加上 cancel 比 open 还低的 1.01 dB。</li>
+  </ul>
+  <p>最后那 1.01 dB 是"抵消干净了、还略微过头"，<b>不能算成收益</b>。所以可听收益的量级是 3.75 dB，不是 6.37，也不是 4.76。</p>
+  <dl class="meta-card">
+    <dt>版本</dt><dd>v3 位流 <code>48e38f78…</code>，候选系数 <code>6118e85d…</code></dd>
+    <dt>场景</dt><dd>麦—音响 100 cm 侧对、金属板+棉、hp 40、<i>g</i> = −8 dB</dd>
+    <dt>测点</dt><dd>322 Hz 单频、单电平；纯音三点，不是宽带</dd>
+    <dt>来源</dt><dd><code>report/verification/audio-replay/wide-residual-v3/evidence.json</code></dd>
+    <dt>边界</dt><dd>单频单电平的<b>抵消深度</b>，不是 ASG，也不是可听收益</dd>
+  </dl>
+</div>
+
+<div class="card measured">
+  <div class="card-title">实测 2 · 宽残差让一次该作废的试次跑完了</div>
+  <p style="margin-top:0">2026-10-27 真人语音、20 cm、<i>g</i> = −8 dB：<code>prediction_saturations = 0</code>，但 <code>residual_saturations = 7</code>。</p>
+  <p>在 v2 下，这个签名会让驱动<b>立刻停声</b>（前一天的真人试次就是这样：残差饱和 8 次，播放被切）。在 v3 下，这一轮<b>跑完了全部 292968 帧</b>，没有保护停机，也没有听到啸叫。</p>
+  <dl class="meta-card">
+    <dt>版本</dt><dd>v3；同一轮两臂</dd>
+    <dt>说明</dt><dd>这一轮输入同时顶到了 ADC 满幅（bit22=1），所以<b>声学上仍然无效</b>，不能用来判候选优劣</dd>
+    <dt>结论</dt><dd>只证明"宽残差不再误停"，不证明"抵消有效"</dd>
+    <dt>来源</dt><dd><code>wide-residual-v3/evidence.json</code> → <code>human_speech_runs.attempt_2</code></dd>
+  </dl>
+</div>
+
+<div class="card measured">
+  <div class="card-title">实测 3 · 板卡通路与连续运行</div>
+  <ul style="margin-top:0">
+    <li><b>通路活着</b>：注入 1 kHz、<i>g</i> 强制 0（不涉及反馈）：静音时麦克风 −38.4 dBFS，给音后 −31.8 dBFS，1 kHz 频带比其余高 <b>30.0 dB</b>。</li>
+    <li><b>连续运行</b>：零系数 −8 dB 配置下两次跑满 60 秒（<code>completed</code>），无保护触发。</li>
+    <li><b>资源</b>：BRAM 80%、DSP 3 个、LUT 6.7%；v3 综合 WNS +0.548 ns、WHS +0.015 ns。</li>
+  </ul>
+  <p style="font-size:14px">注意：WHS 只有 +0.015 ns，<b>是"满足"，不是"宽裕"</b>。</p>
+</div>
+
+<div class="callout warn">
+  <p><b>还没有的：</b>同条件下的 ASG（增益提升量）、宽带可听收益、听众可辨改善、跨场次重复性、换电平后的行为。这些一律不写进任何"已实现"的表述。</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s8"><span class="num">8</span>真实失败与弃选</h2>
+
+<p class="essentials"><strong>一句话：这一节是整页最值钱的部分。七个坑，每一个都让我们白跑了一轮现场。</strong></p>
+
+<div class="card failure">
+  <div class="card-title">失败 1 · 用"没叫"当"抑制成功"</div>
+  <p style="margin-top:0"><b>发生了什么：</b>早期很多轮实验的结论是"某档稳定、没啸叫"。但同一批数据里出现过：播放电平完全没变，麦克风却从 −29.8 dBFS 掉到 −64.3 dBFS。</p>
+  <p><b>原因：</b>有源音响会<b>待机</b>。它一待机，环路就断了，"稳定"是假的——不是系统抑制住了，是回路根本不存在。</p>
+  <p><b>教训：</b>"没有发生 X"这种<b>负向观测</b>，在底噪上分不清"稳定"和"回路断了"。所以现在每一轮现场测量的第一步必须是<b>正向对照</b>：直放一段、确认麦克风电平在基线内，否则后面所有"稳定"都不算数。</p>
+  <p style="font-size:14px">同一次错误还导致过一个数值被反推出来（β = 0.395），以及所有由它派生的结论（CD −3.64、512 更差、重标定 +13.5 dB）——<b>全部作废</b>。</p>
+</div>
+
+<div class="card failure">
+  <div class="card-title">失败 2 · 参考对齐差一帧，抑制从 −9 dB 掉到 −0.3 dB</div>
+  <p style="margin-top:0"><b>发生了什么：</b>同一批房间数据里，前两段的参考延迟是 124 帧，其余是 125 帧。跨段累加统计时没有先对齐，结果是"抑制只有 −0.3 dB"。</p>
+  <p><b>原因：</b>差一帧 = 在高频上差几十度相位。相位一错，残差就不是"小"，而是"随机"，统计上等于没抵消。</p>
+  <p><b>现在的做法：</b>脚本第一步永远逐段估计延迟并平移对齐；<b>静音段（麦克风比底噪低 20 dB 以上）直接剔除</b>，不能进统计。</p>
+</div>
+
+<div class="card failure">
+  <div class="card-title">失败 3 · 把"停源后的尾窗"当成有效段</div>
+  <p style="margin-top:0"><b>发生了什么：</b>捕获窗口里最后一段源已经停了（我们的采集里每份 16384 帧，源只覆盖前 15407 帧）。有人把整窗都算进残差统计，于是"抑制"变了——因为尾段里根本没有"要抑制的信号"。</p>
+  <p><b>原因：</b>统计窗口混进了没有信号的部分，分子分母都不是原来那个意思了。偏大还是偏小取决于底噪与残差底谁更高，<b>但无论偏哪边，这个数都不再代表抵消效果</b>。</p>
+  <p><b>现在的做法：</b>统计只用<b>源仍然有信号</b>的帧；尾段单独判。判据要逐条查：源已停 ≥40 dB、距最后有源帧 ≥512、麦克风高于底噪 ≥10 dB、不削顶、≥2048 帧、元数据一致。</p>
+</div>
+
+<!-- 演示 4 -->
+<section class="demo" id="d-window" aria-labelledby="d-window-t">
+  <div class="demo-head">
+    <span class="tag">教学模拟</span>
+    <h4 id="d-window-t">演示 4 · 捕获窗口：含源，还是只取停源尾段</h4>
+    <span class="hint">拖动窗口看同一个"抑制"读数怎么被窗口决定</span>
+  </div>
+  <div class="demo-body">
+    <p style="margin-top:0;font-size:14px;color:var(--ink-2)">
+      下面的波形是<b>合成数据</b>：有源段麦克风大约 −26 dBFS、残差比它低 10 dB；停源后只剩底噪，而残差底噪比麦克风底噪还高。
+      真实采集的比例来自 16384 / 15407 这两个真实帧数，但具体电平是造出来给你看的。
+    </p>
+
+    <div class="plot-wrap">
+      <canvas id="wd-plot" width="900" height="110" role="img"
+              aria-label="捕获缓冲条：前 15407 帧有源，之后为停源尾段，红框为当前统计窗口"></canvas>
+      <p class="plot-cap">横轴固定为整个 16384 帧缓冲，不随窗口缩放。</p>
+    </div>
+
+    <div class="ctrls" style="margin-top:12px">
+      <div class="ctrl">
+        <label for="wd-start">窗口起点（帧） <output id="wd-start-o"></output></label>
+        <input id="wd-start" type="range" min="0" max="16384" step="1" value="0">
+      </div>
+      <div class="ctrl">
+        <label for="wd-len">窗口长度 <output id="wd-len-o"></output></label>
+        <input id="wd-len" type="range" min="512" max="16384" step="1" value="15407">
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>量</th><th class="num">数值</th></tr></thead>
+        <tbody id="wd-rows"><!-- JS 填 --></tbody>
+      </table>
+    </div>
+
+    <div class="verdict" id="wd-verdict" role="status" aria-live="polite"></div>
+
+    <div class="btnrow">
+      <button type="button" class="primary" data-wd="src">只取有源段（正确）</button>
+      <button type="button" data-wd="all">整窗（含尾段）</button>
+      <button type="button" data-wd="tail">只取尾段（错）</button>
+      <button type="button" data-wd="mid">中间 4096 帧</button>
+    </div>
+
+    <div class="callout" style="margin-bottom:0">
+      <p><b>要看的是"看起来的抑制"这一行怎么变。</b>同一份数据，只换窗口，读数可以从 +10 dB 掉到负值。
+      这就是为什么所有报告都必须写清统计窗口——不写窗口的数字没法比较。</p>
+    </div>
+  </div>
+</section>
+
+<div class="card failure">
+  <div class="card-title">失败 4 · 用宽带平均耦合去推"能不能开正增益"</div>
+  <p style="margin-top:0"><b>发生了什么：</b>有人算出"带内平均耦合约 −11 dB"，于是写"环路增益 = −8 + (−11) = −19 dB，远低于 1，所以正增益可行"。</p>
+  <p><b>错在哪：</b>−11 dB 是<b>能量平均</b>，而稳定性由<b>峰值</b>决定。同一份数据里，峰值是 <b>+4.40 dB @ 321.9 Hz</b>。两者差 15.4 dB。</p>
+  <p><b>后果：</b>0 dB 时环路增益其实是 +4.40 dB，<b>必然啸叫</b>。这跟现场实测一致（0 dB 满幅啸叫）。如果按 −19 dB 去排实验，那一轮会直接炸掉。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th><i>g</i></th><th class="num">峰值口径环路增益</th><th>现场实测</th></tr></thead>
+    <tbody>
+      <tr><td>0 dB</td><td class="num">+4.40 dB</td><td>满幅啸叫 ✔</td></tr>
+      <tr><td>−4 dB</td><td class="num">+0.40 dB</td><td>响但浑，单模占比 0.68 ✔</td></tr>
+      <tr><td>−6 dB</td><td class="num">−1.60 dB</td><td>近再生掩蔽，0.37–0.70 ✔</td></tr>
+      <tr><td>−8 dB</td><td class="num">−3.60 dB</td><td>稳，0.12–0.16 ✔</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><b>规律：</b>凡是"平均/中位/总能量"，都不能用来判稳定性；<b>只看峰值</b>。</p>
+</div>
+
+<div class="card failure">
+  <div class="card-title">失败 5 · 把"系数满幅 ±8"当成"信号满幅 ±1"</div>
+  <p style="margin-top:0"><b>发生了什么：</b>为了证明"模型不会撑爆 24 位"，算出"|pred| ≤ ‖h‖₁ × 满幅 = 2.29，离饱和阈值 8.0 还差 10.9 dB，所以不会饱和"。</p>
+  <p><b>错在哪：</b>8.0 是<b>系数</b>的 Q20 满量程，不是 <b>PCM</b> 的满量程。PCM 侧饱和阈值是 <b>1.0</b>。所以正确的说法是"‖h‖₁ = 2.29 &gt; 1，<b>存在合法输入让它饱和</b>"。</p>
+  <p><b>后果：</b>差 18 dB 的判断。如果现场因为这句话把保护当噪音关掉，会出真问题。已撤回，并在回归测试里钉住"两个 8 不许混"。</p>
+</div>
+
+<div class="card failure">
+  <div class="card-title">失败 6 · 白噪声分带占比当仪器，符号会翻</div>
+  <p style="margin-top:0"><b>发生了什么：</b>想用"300–360 Hz 能量占比"比较零系数臂和候选臂。三次重复给出 <b>+1.6 / −4.7 / −2.1 dB</b>——连正负都不一致。</p>
+  <p><b>原因：</b>白噪声在这个夹具里耦合太弱（输入从 −20 到 −6 dBFS，麦克风峰峰值只涨 3.5 dB）。两臂都坐在房间底噪上，比的其实是底噪起伏。</p>
+  <p><b>现在的做法：</b>改用<b>|H| 峰值处的纯音</b>（322 Hz）：所有能量集中在一个 bin，比底噪高约 40 dB，读数才稳。<b>而且占比是比值，会被总电平差污染</b>——两臂总电平差 7.8 dB 时，占比差和绝对差方向可以相反。</p>
+</div>
+
+<div class="card failure">
+  <div class="card-title">失败 7 · 输入削顶把整轮实验作废（而且和距离无关）</div>
+  <p style="margin-top:0"><b>发生了什么：</b>12 cm 讲话时 <code>bit22 = 1</code>（ADC 顶满）。但换到 20 cm 也出现过 <code>bit22 = 1</code>。</p>
+  <p><b>意味着什么：</b>削顶不取决于距离，取决于<b>讲话力度</b>。所以"退远一点就安全"是错的，靠移动解决不了。</p>
+  <p><b>为什么严重：</b>ADC 一顶满，信息已经丢了，数字侧任何处理都补不回来。所以这类数据<b>整轮判无效</b>，不是"稍微差一点"。</p>
+  <p><b>现在的做法：</b>bit22 变成独立检测并<b>自动停声</b>（§5.5）。宁可停，也不要拿削顶的数据下结论。</p>
+</div>
+
+<h3>8.8 弃选方案（算过、试过、不采用）</h3>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>方案</th><th>为什么没走</th><th>证据类型</th></tr></thead>
+  <tbody>
+    <tr><td>抽头加到 1024 / 2048</td><td>3×1024+3 = 3075 &gt; 2048，一帧算不完；要改架构</td><td>算术</td></tr>
+    <tr><td>抽头加到 680（还能算完）</td><td>只多 0.6~0.7 dB，代价是余量和时序；而且增加量不稳健（不同划分给 +1.7…+8.0）</td><td>离线实测</td></tr>
+    <tr><td>8× 两级抽取（多速率）</td><td>仿真只 +1.0 dB（300–1000 Hz），其余 0</td><td>仿真</td></tr>
+    <tr><td>物理摆位解耦（拉远/侧放）</td><td>实测宽带只降 5.72 dB 耦合，阈值只涨 0.85~1.6 dB——限制点搬家吃掉了收益</td><td>现场实测</td></tr>
+    <tr><td>前向陷波（一路 EQ 压 435 Hz）</td><td>会同时压掉语音 F1；而且要求改前向通路、重拟合、升契约版本</td><td>离线计算</td></tr>
+    <tr><td>把残差在增益前就钳（v2 的原做法）</td><td>见 §5.4：会让系统在有 7.8 dB 余量时停声</td><td>板上实测</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s9"><span class="num">9</span>没做、不打算这么做</h2>
+
+<p class="essentials"><strong>一句话：AFC / 在线 LMS / 自适应 / 多速率都没有实现。它们在报告里只能出现在"未实施"或"后续可选"，不能画进框图，也不能说"已被否定"。</strong></p>
+
+<div class="card later">
+  <div class="card-title">未实施（没有代码、没有上板、没有数据）</div>
+  <ul style="margin-top:0">
+    <li><b>在线自适应（LMS / NLMS）</b>：选它的理由和放弃的理由都写在 §6.2。放弃不是因为"做不到"，是因为"在闭环里做会偏移，而且要额外去相关手段"。</li>
+    <li><b>AFC（自适应反馈控制）作为独立模块</b>：没有实现。我们的"抑制"来自固定模型抵消，不来自自适应估计。</li>
+    <li><b>啸叫检测 / 陷波自动触发</b>：<b>没有。</b>这一点很关键：现场零臂啸叫时停声，是麦克风满幅触发 bit22，不是"识别出啸叫"。<b>不要把它讲成"检测到啸叫并保护"。</b></li>
+    <li><b>多速率 / 子带处理</b>：只有仿真，没有 RTL。</li>
+    <li><b>换电平后的行为</b>：只在一档注入下标定过，"更响时通路会不会变"仍是未知。</li>
+  </ul>
+</div>
+
+<div class="callout">
+  <p>写"未实施"不是示弱。<b>把边界说清楚，别人才敢用你的结论。</b>反过来，把没做的写成做了，一旦被追问细节（"你们的更新率是多少？""双讲怎么处理？"）就崩了。</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s10"><span class="num">10</span>指标：别把四种 dB 混着说</h2>
+
+<p class="essentials"><strong>一句话：CD 说模型准不准，环路提升说这一带被抬高多少，界差说稳定裕度差多少，ASG 才是"能多开多少增益"——前三个都不能替代第四个。</strong></p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>指标</th><th>定义</th><th>回答什么问题</th><th>能不能当性能</th></tr></thead>
+  <tbody>
+    <tr><td><b>CD</b>（抵消深度）</td><td>20log₁₀(|<i>H</i>| / |<i>H</i> − <i>Ĥ</i>|)</td><td>模型把路径拟合得多准</td><td>不能。它是中间量</td></tr>
+    <tr><td><b>环路提升</b></td><td>bypass − open</td><td>闭环把这个频点抬高了多少</td><td>能，但它只等于"抵消最多能收回多少"</td></tr>
+    <tr><td><b>界差</b></td><td>−20log₁₀max|<i>H</i>−<i>Ĥ</i>| 与 −20log₁₀max|<i>H</i>| 之差</td><td>稳定裕度差多少</td><td>不能当实测 ASG。<b>是充分条件，可能保守</b></td></tr>
+    <tr><td><b>ASG</b></td><td>两臂"起振临界增益"之差（实测）</td><td>能多开多少增益</td><td>能。<b>本作品目前还没有</b></td></tr>
+    <tr><td><b>听众可辨</b></td><td>人判断</td><td>到底听不听得出</td><td>能，但要写清问法和人数</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>10.1 dBFS 和声压级不是一回事</h3>
+
+<ul>
+  <li><b>dBFS</b> 是数字域：相对满幅。0 dBFS = 码值顶到 ±2<span class="sup">23</span>。<b>它不知道你麦克风灵敏度多少、增益多少。</b></li>
+  <li><b>dB SPL</b> 是物理声压：20 µPa 为 0 dB。<b>它不知道你的数字链路。</b></li>
+</ul>
+
+<p>两者之间差一个"灵敏度 + 增益 + 校准"的常数。<b>没有校准就说"我们做到了 60 dB 抑制"是没有意义的</b>——数字域减了 60 dB，可能只是把音量调小了。</p>
+
+<h3>10.2 为什么"界"不能直接和"实测"相减</h3>
+
+<p>界是<b>充分条件</b>：界说"能开到 0.68 dB"，意思是"开到 0.68 dB 一定不啸叫"，<b>没说"超过就一定叫"</b>。所以：</p>
+
+<ul>
+  <li>实测边界 ≥ 界 → 正常（界保守）</li>
+  <li>实测边界 &lt; 界 → <b>说明模型或测量有问题</b>，要查</li>
+</ul>
+
+<p>拿"界差 5.08 dB"去当"实测提升 5.08 dB"讲，是最常见的越界。<b>我们只说界差，不说 ASG。</b></p>
+
+<h3>10.3 一个反直觉的发现：提增益换不到响度</h3>
+
+<p>从 322 Hz 三点能反推出通路在这个频点的相位：约 <b>±40°</b>。这意味着 <i>H</i> 不在正实轴上，于是：</p>
+
+<div class="formula">
+  played / source = 1 / |1 − <i>g</i>·<i>H</i>|
+</div>
+
+<p>这个量在 <i>g</i> = −6.7 dB 处<b>见顶 3.87 dB</b>，之后继续提 <i>g</i> 反而下降。而我们在 −8 dB 时已经是 3.75 dB，<b>距离上限只剩 0.12 dB</b>。</p>
+
+<div class="callout key">
+  <p>所以"音响不如原声响"不是增益不够，是<b>这个环路在 322 Hz 上最多只能放大 3.87 dB</b>。想更响只能动扬声器效率、指向、到听众的距离——那是另一个问题。</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s11"><span class="num">11</span>怎么讲、怎么答</h2>
+
+<p class="essentials"><strong>一句话：先讲"你只能比原声小 4.4 dB"这个痛点，再讲"我们把判据从 |<i>H</i>| 换成 |<i>H</i>−<i>Ĥ</i>|"，最后老实说"实测 ASG 还没有"。</strong></p>
+
+<h3>11.1 三分钟口述稿（约 450 字）</h3>
+
+<div class="card">
+  <p style="margin-top:0">麦克风和音响放在同一个房间里，音响放出来的声音会绕回麦克风，被再放大一次。这形成一个正反馈：每一圈都乘同一个数，一旦这个数大于 1，声音就指数增长——这就是啸叫。</p>
+  <p>普通扩声只有一个音量旋钮，所以它能开到多大，被"最敏感的那个频率"锁死。我们这套设备测出来，最多只能放大到 −4.4 dB，也就是<b>比原声还小 4.4 dB</b>。这就是"音响永远盖不过人声"的原因。</p>
+  <p>声堤做的事是：用实际播放的信号，经一个固定的 512 抽头滤波器，预测"它绕回来会变成什么"，然后从麦克风信号里减掉，再放大。<b>数学上，这把稳定条件从 |<i>gH</i>| &lt; 1 换成了 |<i>g</i>(<i>H</i>−<i>Ĥ</i>)| &lt; 1。</b>前者由房间决定，后者由我们模型的准确度决定。</p>
+  <p>整个系统跑在 PYNQ-Z2 上：FPGA 每 20.48 微秒处理一帧，预测用 1539 个时钟算完；ARM 负责装系数、配增益、读状态、落盘。</p>
+  <p>现在能给出的硬结论是：单频 322 Hz 上，抵消把闭环 3.75 dB 的抬升收回，残差深度 6.37 dB；稳定裕度的<b>离线界差</b>是 5.08 dB。<b>实测 ASG 和宽带可听收益还没拿到</b>，这是我们下一步要补的。</p>
+</div>
+
+<h3>11.2 十个必被问到的问题</h3>
+
+<div class="qa"><div class="q">Q1　你们是不是把反馈"消除"了？</div>
+<div class="a">不是。我们降低它、把稳定边界往上推。<b>模型永远有误差，所以环路增益只能变小、不能变零。</b>说"消除"是不准确的，也是不必要的承诺。</div></div>
+
+<div class="qa"><div class="q">Q2　为什么不用 LMS 自适应？</div>
+<div class="a">闭环里参考信号本身含反馈，自适应会偏移（bias），要额外做去相关。我们选了"离线标定 + 固定系数"，代价是换摆位必须重标——而我们的前提本来就是位置固定。</div></div>
+
+<div class="qa"><div class="q">Q3　换一个房间还能用吗？</div>
+<div class="a">不能直接用。<i>H</i> 变了，系数必须重标：放一段白噪声、断环采六段、拟合、验证、装载。我们做过一次换摆位，旧系数在新摆位上 CD 是负的——在放大，不是抵消。</div></div>
+
+<div class="qa"><div class="q">Q4　你们的"抑制"有多少 dB？</div>
+<div class="a">分三个数说：单频 322 Hz 的<b>残差深度 6.37 dB</b>、闭环抬升被收回 <b>3.75 dB</b>、稳定裕度的<b>离线界差 5.08 dB</b>。<b>实测 ASG 还没有。</b>三个数不是一个东西，不能挑一个当结论。</div></div>
+
+<div class="qa"><div class="q">Q5　为什么 512 抽头？加更多不行吗？</div>
+<div class="a">512 抽头 = 10.5 ms 记忆，扣掉 3.77 ms 声学延迟还剩 6.7 ms 记混响。加到 681 是每帧算得完的上限（3N+3 ≤ 2048），实测只多 0.6~0.7 dB；1024 就超预算，要改架构。</div></div>
+
+<div class="qa"><div class="q">Q6　怎么保证不出事？</div>
+<div class="a">五类停声：输入满幅、预测饱和、增益后/混音饱和、协议错误、超时，加手动。输入满幅是独立检测的——零系数时残差恒等于麦克风，用它看不见输入过载。</div></div>
+
+<div class="qa"><div class="q">Q7　你们检测啸叫吗？</div>
+<div class="a"><b>不检测。</b>系统是无条件地做抵消，不做"识别啸叫再动作"。现场零臂啸叫时之所以停，是麦克风顶到 ADC 满幅触发的，不是识别出啸叫。</div></div>
+
+<div class="qa"><div class="q">Q8　为什么证明不了"更响"？</div>
+<div class="a">两个原因。一，322 Hz 的相位差 40°，<code>played/source</code> 在 −6.7 dB 就封顶 3.87 dB，我们在 −8 dB 已 3.75，只剩 0.12 dB。二，"更响"还要看扬声器效率和到听众的距离，那不是增益能解决的。</div></div>
+
+<div class="qa"><div class="q">Q9　数据可复现吗？</div>
+<div class="a">模型带文件哈希与系数哈希，装板后可核对；每条结论都能追到 <code>report/verification/</code> 下的目录和一条命令。回归里的整数重放与板上 prediction 曾做到逐样本 0 失配（15871 帧）。</div></div>
+
+<div class="qa"><div class="q">Q10　最大的失误是什么？</div>
+<div class="a">有两类。<b>一是用语不严</b>：把"宽带平均耦合 −19 dB"当成环路裕量，结论直接反了 15 dB。<b>二是把标签当事实</b>：metadata 写着"开环"，实际是增益 0，我们差点按标签放行；后来改成用"参考是否逐样本等于源"来判。</div></div>
+
+<h3>11.3 三条不要说的话</h3>
+
+<div class="callout warn">
+  <ul style="margin:0">
+    <li>不要说"完全消除啸叫""任意场景可用""零延迟"。</li>
+    <li>不要把界差、CD、声学差任何一个说成 ASG。</li>
+    <li>不要说"检测到啸叫后自动保护"——我们没有啸叫检测。</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s12"><span class="num">12</span>术语表与复现</h2>
+
+<h3>12.1 术语</h3>
+
+<dl class="gloss">
+  <dt>H</dt><dd>声学反馈通路：从音响到麦克风这一路的衰减、延迟、染色。宽带的，用 512 个抽头近似。</dd>
+  <dt>Ĥ</dt><dd>我们拟合出来的 <i>H</i> 的估计，也就是那 512 个系数。</dd>
+  <dt>g</dt><dd>数字增益，Q4.12，范围 0…8（+18.06 dB）。现场授权用的是 −14…−6 dB 这一小段。</dd>
+  <dt>环路增益</dt><dd>不装模型时是 <i>gH</i>，装了是 <i>g</i>(<i>H</i>−<i>Ĥ</i>)。|·| &lt; 1 才稳。</dd>
+  <dt>lag_first</dt><dd>FIR 最新那个抽头对的是 <i>u</i>[<i>n</i>−1]，不是 <i>u</i>[<i>n</i>]。全仓库统一为 1，有回归测试钉住。</dd>
+  <dt>Q20</dt><dd>定点小数格式：值 = 码值 / 2<span class="sup">20</span>。系数用 24 位 Q20，所以能表示到 ±8。</dd>
+  <dt>饱和</dt><dd>结果超出可表示范围就夹到边界，并置标志。夹是不得已，标志是为了让上层知道。</dd>
+  <dt>宽残差</dt><dd>用 25 位算 <i>m</i>−<i>p</i>，保留到乘完增益再钳到 24 位。v3 的改动。</dd>
+  <dt>CD</dt><dd>抵消深度：20log₁₀(|<i>H</i>|/|<i>H</i>−<i>Ĥ</i>|)。负值意味着在放大。</dd>
+  <dt>ASG</dt><dd>附加稳定增益：两臂起振临界增益之差。本作品<b>尚未实测</b>。</dd>
+  <dt>相干</dt><dd>两个信号在某个频率上的线性相关程度（0…1）。低于 0.8 的频点我们不拿来下结论。</dd>
+  <dt>相位穿越</dt><dd>环路相角过 0 且幅度仍够的频率。它决定理论上会在哪里啸叫，但我们在实测数据上用它不稳，故只作参考。</dd>
+</dl>
+
+<h3>12.2 复现这一页里的数字</h3>
+
+<p>这一页所有实测数字都来自仓库里的三个入口，命令可逐字跑：</p>
+
+<div class="card">
+<pre style="margin:0;font-family:var(--mono);font-size:12.5px;overflow-x:auto;line-height:1.9"><code># 1) 322 Hz 三点、环路提升、played/source 上限
+python scripts/answer_v3_working_point.py --json-out /tmp/wp.json
+
+# 2) 残差越界与宽残差（板上抓包用 --npz；只算裕量用 --ps-margin）
+python scripts/analyze_residual_overflow.py --ps-margin --model models/room_v1/rewired_512_20261026.json
+
+# 3) 候选模型的身份与分带指标
+python scripts/fit_newlayout_candidate.py --packet-dir &lt;采集目录&gt; \
+    --out-model models/room_v1/rewired_512_20261026.json \
+    --out-dir report/verification/rewired-candidate-2026-10-26 --fixture-id room_v1_20261026b</code></pre>
+</div>
+
+<p>对应的回归：</p>
+
+<pre style="font-family:var(--mono);font-size:12.5px;overflow-x:auto;line-height:1.9"><code>python -m unittest discover -s sim/feedback -p "test_*.py"</code></pre>
+
+<h3>12.3 这一页对应的文件</h3>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>内容</th><th>路径</th></tr></thead>
+  <tbody>
+    <tr><td>本页</td><td><code>materials/learning/index.html</code></td></tr>
+    <tr><td>算法报告片段</td><td><code>materials/work/b/algorithm.md</code></td></tr>
+    <tr><td>模型与代码清单</td><td><code>materials/work/b/integration.json</code></td></tr>
+    <tr><td>视频可用图</td><td><code>materials/work/b/video/*.svg</code></td></tr>
+    <tr><td>322 Hz 三点与他人复核</td><td><code>report/verification/audio-replay/wide-residual-v3/evidence.json</code></td></tr>
+    <tr><td>宽残差归因</td><td><code>report/verification/residual-overflow-2026-10-27/README.md</code></td></tr>
+    <tr><td>工作点与对照设计</td><td><code>report/verification/v3-working-point-2026-10-28/README.md</code></td></tr>
+    <tr><td>旧系数失配</td><td><code>report/verification/newlayout-325-2026-10-26/README.md</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout warn">
+  <p><b>这一页是团队内部学习资料，不是官方报告。</b>正式提交的性能声明、指标口径与限制以报告 PDF 为准；数字若与 STATE 不一致，以 STATE 为准。</p>
+</div>
+
+<footer>
+  <p>声堤 · 声反馈抑制与稳定裕度提升　|　离线教程　|　生成日期 2026-10-30　|　B 线（算法与模型）</p>
+  <p>全部动画在本地计算，不联网、不播放声音、不上传任何数据。教学模拟与实测已分别标注。</p>
+</footer>
+
+</main>
+</div>
+
+<button class="totop" id="totop" type="button" aria-label="回到顶部">↑</button>
+
+<script src="assets/tutorial.js"></script>
+</body>
+</html>

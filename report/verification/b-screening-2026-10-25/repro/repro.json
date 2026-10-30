@@ -1,0 +1,477 @@
+{
+ "config": {
+  "data_dir": "D:/Always/QianSai/_inbox/2026-10-25_lowband2_return/lowband2",
+  "model": "models/room_v1/calibrated_20261024.json",
+  "cross_session_dir": "D:/Always/QianSai/_inbox/2026-10-23_room6/manifest",
+  "out_dir": "report/verification/b-screening-2026-10-25/repro",
+  "train": "0-9",
+  "valid": "10-15",
+  "nfft": 8192,
+  "nfft_sens": 4096,
+  "compare_model": "models/room_v1/candidate_512.json",
+  "stop_after_inputs": false,
+  "coherence": 0.8,
+  "delay_frames": 2
+ },
+ "inputs": [
+  {
+   "seg_id": 0,
+   "file": "seg_0.npz",
+   "role": "train",
+   "bytes": 245160,
+   "samples": 16384,
+   "sha256": "91954af7f54ee64d05d12722ed7f7115b2d3f47352f82965aac9fade9f501102",
+   "manifest_sha256": "91954af7f54ee64d05d12722ed7f7115b2d3f47352f82965aac9fade9f501102",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.211940181000134
+  },
+  {
+   "seg_id": 1,
+   "file": "seg_1.npz",
+   "role": "train",
+   "bytes": 244856,
+   "samples": 16384,
+   "sha256": "cadf82aa9248c55763c976b8d89334a4facc349c06523c09688c030b30f6ef3f",
+   "manifest_sha256": "cadf82aa9248c55763c976b8d89334a4facc349c06523c09688c030b30f6ef3f",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.32083612304461
+  },
+  {
+   "seg_id": 2,
+   "file": "seg_2.npz",
+   "role": "train",
+   "bytes": 244967,
+   "samples": 16384,
+   "sha256": "e34fde45083b8c287236d657690272b11e83ab6f3514dadbbd47f073e56be3cc",
+   "manifest_sha256": "e34fde45083b8c287236d657690272b11e83ab6f3514dadbbd47f073e56be3cc",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.226164677156476
+  },
+  {
+   "seg_id": 3,
+   "file": "seg_3.npz",
+   "role": "train",
+   "bytes": 245030,
+   "samples": 16384,
+   "sha256": "9e17e686a22cd3d73d509d185d70c099d62dd3ea64bd364a772263d032dbf696",
+   "manifest_sha256": "9e17e686a22cd3d73d509d185d70c099d62dd3ea64bd364a772263d032dbf696",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.04567630876915
+  },
+  {
+   "seg_id": 4,
+   "file": "seg_4.npz",
+   "role": "train",
+   "bytes": 245141,
+   "samples": 16384,
+   "sha256": "8c0c0e6effc3a8dd92d8e089754cf7b6a79151db56d567be3758e17e051aa8cf",
+   "manifest_sha256": "8c0c0e6effc3a8dd92d8e089754cf7b6a79151db56d567be3758e17e051aa8cf",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.26269290050778
+  },
+  {
+   "seg_id": 5,
+   "file": "seg_5.npz",
+   "role": "train",
+   "bytes": 244692,
+   "samples": 16384,
+   "sha256": "4cebe4ed1726ccdab40012cd62b3b192048421ec7864ec272c033220ce3c46a2",
+   "manifest_sha256": "4cebe4ed1726ccdab40012cd62b3b192048421ec7864ec272c033220ce3c46a2",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.378253682964488
+  },
+  {
+   "seg_id": 6,
+   "file": "seg_6.npz",
+   "role": "train",
+   "bytes": 244995,
+   "samples": 16384,
+   "sha256": "6f275e38e862fd612ba6b79dccc6c5aaa30f3c97c6818699ce0cb043217d2357",
+   "manifest_sha256": "6f275e38e862fd612ba6b79dccc6c5aaa30f3c97c6818699ce0cb043217d2357",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.234935826730357
+  },
+  {
+   "seg_id": 7,
+   "file": "seg_7.npz",
+   "role": "train",
+   "bytes": 244972,
+   "samples": 16384,
+   "sha256": "9102d76e25496a56a08184b343192bbfe804cca1f443f8813ff7270ecc4a0239",
+   "manifest_sha256": "9102d76e25496a56a08184b343192bbfe804cca1f443f8813ff7270ecc4a0239",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.17532711607463
+  },
+  {
+   "seg_id": 8,
+   "file": "seg_8.npz",
+   "role": "train",
+   "bytes": 244854,
+   "samples": 16384,
+   "sha256": "a4ee3fe89fd05a4a977a43e27c96c628b6719151e6b4c8d83af19cb0fa91ce94",
+   "manifest_sha256": "a4ee3fe89fd05a4a977a43e27c96c628b6719151e6b4c8d83af19cb0fa91ce94",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.29814005729337
+  },
+  {
+   "seg_id": 9,
+   "file": "seg_9.npz",
+   "role": "train",
+   "bytes": 244856,
+   "samples": 16384,
+   "sha256": "8bfcddfb192e4a436b68e05d3dbd0662f12a79c6997e55dd518c6f9c2d66155d",
+   "manifest_sha256": "8bfcddfb192e4a436b68e05d3dbd0662f12a79c6997e55dd518c6f9c2d66155d",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.158894984986407
+  },
+  {
+   "seg_id": 10,
+   "file": "seg_10.npz",
+   "role": "heldout",
+   "bytes": 244922,
+   "samples": 16384,
+   "sha256": "af15128de7e010d21a0ba92fbd9519ace6fe9e834ac48f1c0dda1cd38077d699",
+   "manifest_sha256": "af15128de7e010d21a0ba92fbd9519ace6fe9e834ac48f1c0dda1cd38077d699",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.21121466389248
+  },
+  {
+   "seg_id": 11,
+   "file": "seg_11.npz",
+   "role": "heldout",
+   "bytes": 244981,
+   "samples": 16384,
+   "sha256": "858a2b6245a2689c18ec6c8f07c7734729c2a85afdce7af7368afa97c4e7c83c",
+   "manifest_sha256": "858a2b6245a2689c18ec6c8f07c7734729c2a85afdce7af7368afa97c4e7c83c",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.311712024106257
+  },
+  {
+   "seg_id": 12,
+   "file": "seg_12.npz",
+   "role": "heldout",
+   "bytes": 245287,
+   "samples": 16384,
+   "sha256": "be1c55b6649f025cf1c222c23c93df8f3ebfe76c8a96bca14f5fcf44f0e32420",
+   "manifest_sha256": "be1c55b6649f025cf1c222c23c93df8f3ebfe76c8a96bca14f5fcf44f0e32420",
+   "sha_match": true,
+   "mic_rms_dbfs": -15.884430798888742
+  },
+  {
+   "seg_id": 13,
+   "file": "seg_13.npz",
+   "role": "heldout",
+   "bytes": 245011,
+   "samples": 16384,
+   "sha256": "a4313c65b98a56008adf9677ce4c93884e0f30ac20be127ba8da687a3ccd68d3",
+   "manifest_sha256": "a4313c65b98a56008adf9677ce4c93884e0f30ac20be127ba8da687a3ccd68d3",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.071488097882252
+  },
+  {
+   "seg_id": 14,
+   "file": "seg_14.npz",
+   "role": "heldout",
+   "bytes": 245324,
+   "samples": 16384,
+   "sha256": "7100f9b20d0b3f29f63e1aff6fe8c6e39bab778045647266e57dcee7e4ca9679",
+   "manifest_sha256": "7100f9b20d0b3f29f63e1aff6fe8c6e39bab778045647266e57dcee7e4ca9679",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.08548047761034
+  },
+  {
+   "seg_id": 15,
+   "file": "seg_15.npz",
+   "role": "heldout",
+   "bytes": 245257,
+   "samples": 16384,
+   "sha256": "634dac2421ed5a0fdc0c23df2e61fae05d0780f80386c6a2d83962021e2285c5",
+   "manifest_sha256": "634dac2421ed5a0fdc0c23df2e61fae05d0780f80386c6a2d83962021e2285c5",
+   "sha_match": true,
+   "mic_rms_dbfs": -16.258673973609042
+  }
+ ],
+ "input_check": {
+  "missing": [],
+  "duplicates": [],
+  "unexpected": [],
+  "failures": [],
+  "unverified": []
+ },
+ "baseline": {
+  "nfft_8192": {
+   "small_gain_bound_db": 2.774898422923713,
+   "small_gain_at_hz": 435.11390686035156,
+   "positive_real_db": 6.598164435468565,
+   "positive_real_at_hz": 424.1797652550208,
+   "max_abs_E_db": -2.774898422923713,
+   "max_abs_E_at_hz": 435.11390686035156,
+   "coverage_ratio": 0.29021235050036615,
+   "gated_bins": 1189,
+   "bands": {
+    "300-1000": {
+     "max_abs_E_db": -2.774898422923713,
+     "at_hz": 435.11390686035156,
+     "coherence": 0.9450399949368923,
+     "gated": 90
+    },
+    "1000-2000": {
+     "max_abs_E_db": -6.745838666568538,
+     "at_hz": 1591.4440155029297,
+     "coherence": 0.9680012063750182,
+     "gated": 163
+    },
+    "2000-3400": {
+     "max_abs_E_db": -11.007623132269782,
+     "at_hz": 2008.676528930664,
+     "coherence": 0.92681954796495,
+     "gated": 216
+    },
+    "3400-6000": {
+     "max_abs_E_db": -3.6614992444394034,
+     "at_hz": 3910.064697265625,
+     "coherence": 0.897450786461193,
+     "gated": 420
+    },
+    "6000-8200": {
+     "max_abs_E_db": -6.718501025072593,
+     "at_hz": 6580.352783203125,
+     "coherence": 0.8360780914060835,
+     "gated": 275
+    },
+    "8200-8600": {
+     "max_abs_E_db": -12.081600100072787,
+     "at_hz": 8416.175842285156,
+     "coherence": 0.8294381598610058,
+     "gated": 5
+    },
+    "8600-10250": {
+     "max_abs_E_db": -9.43104861004408,
+     "at_hz": 8744.001388549805,
+     "coherence": 0.9011137569666667,
+     "gated": 19
+    }
+   },
+   "fir_off": {
+    "small_gain_bound_db": -7.398043330752636,
+    "small_gain_at_hz": 417.2325134277344,
+    "positive_real_db": -6.460880973911873,
+    "positive_real_at_hz": 429.65204483776114
+   },
+   "fir_gain_over_off_db": {
+    "small_gain": 10.17294175367635,
+    "positive_real": 13.059045409380438
+   }
+  },
+  "nfft_4096": {
+   "small_gain_bound_db": 4.55994617025652,
+   "small_gain_at_hz": 441.0743713378906,
+   "positive_real_db": 10.705488769948357,
+   "positive_real_at_hz": 884.1339084147264,
+   "max_abs_E_db": -4.559946170256521,
+   "max_abs_E_at_hz": 441.0743713378906,
+   "coverage_ratio": 0.27232796486090777,
+   "gated_bins": 558,
+   "bands": {
+    "300-1000": {
+     "max_abs_E_db": -4.559946170256521,
+     "at_hz": 441.0743713378906,
+     "coherence": 0.8820153946522968,
+     "gated": 40
+    },
+    "1000-2000": {
+     "max_abs_E_db": -9.47421222688962,
+     "at_hz": 1585.4835510253906,
+     "coherence": 0.9589376688276291,
+     "gated": 80
+    },
+    "2000-3400": {
+     "max_abs_E_db": -14.542018386679318,
+     "at_hz": 2002.716064453125,
+     "coherence": 0.8754180797977237,
+     "gated": 103
+    },
+    "3400-6000": {
+     "max_abs_E_db": -7.3347670511877725,
+     "at_hz": 3898.143768310547,
+     "coherence": 0.9060422903609031,
+     "gated": 207
+    },
+    "6000-8200": {
+     "max_abs_E_db": -9.876918969911536,
+     "at_hz": 6580.352783203125,
+     "coherence": 0.8161436430251278,
+     "gated": 124
+    },
+    "8200-8600": {
+     "max_abs_E_db": -20.19504924929414,
+     "at_hz": 8416.175842285156,
+     "coherence": 0.8006692450888178,
+     "gated": 1
+    },
+    "8600-10250": {
+     "max_abs_E_db": -13.195165421545694,
+     "at_hz": 9047.985076904297,
+     "coherence": 0.8046397511764317,
+     "gated": 3
+    }
+   },
+   "fir_off": {
+    "small_gain_bound_db": -6.570644752702965,
+    "small_gain_at_hz": 417.2325134277344,
+    "positive_real_db": -5.832823913187831,
+    "positive_real_at_hz": 428.3061117648797
+   },
+   "fir_gain_over_off_db": {
+    "small_gain": 11.130590922959485,
+    "positive_real": 16.538312683136187
+   }
+  }
+ },
+ "compare_model": {
+  "file": "candidate_512.json",
+  "q20_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
+  "thresholds": {
+   "small_gain_bound_db": -4.542172102263647,
+   "small_gain_at_hz": 8416.175842285156,
+   "positive_real_db": -0.6202585600004027,
+   "positive_real_at_hz": 3640.738412513577,
+   "max_abs_E_db": 4.542172102263646,
+   "max_abs_E_at_hz": 8416.175842285156,
+   "coverage_ratio": 0.29021235050036615,
+   "gated_bins": 1189
+  },
+  "gain_over_fir_off_db": {
+   "small_gain": 2.855871228488989,
+   "positive_real": 5.84062241391147
+  }
+ },
+ "screening_a_ridge": [
+  {
+   "ridge": 1e-09,
+   "small_gain_bound_db": 2.6827801185861015,
+   "positive_real_db": 6.528653769503778,
+   "h_norm": 0.6737140250986514
+  },
+  {
+   "ridge": 1e-07,
+   "small_gain_bound_db": 2.682317339683517,
+   "positive_real_db": 6.527261613897048,
+   "h_norm": 0.6736790465307697
+  },
+  {
+   "ridge": 1e-05,
+   "small_gain_bound_db": 2.635925329137259,
+   "positive_real_db": 6.38972082210717,
+   "h_norm": 0.6701995940041391
+  },
+  {
+   "ridge": 0.001,
+   "small_gain_bound_db": -1.2236987957576444,
+   "positive_real_db": -0.010918979286010775,
+   "h_norm": 0.4423867297523327
+  },
+  {
+   "ridge": 0.1,
+   "small_gain_bound_db": -7.2704127354447365,
+   "positive_real_db": -6.325942725219934,
+   "h_norm": 0.012709917486260073
+  }
+ ],
+ "screening_a_weights": [
+  {
+   "weights": "flat",
+   "lf_max_E_db": -2.6636251750090145,
+   "mid_max_E_db": -6.7762710423141,
+   "small_gain_bound_db": 2.6636251750090145,
+   "positive_real_db": 6.468813089754114,
+   "h_norm": 0.6777310744457753
+  },
+  {
+   "weights": "lf_x5",
+   "lf_max_E_db": -3.7068622897339916,
+   "mid_max_E_db": -6.0372125600049245,
+   "small_gain_bound_db": 3.3525665362393315,
+   "positive_real_db": 7.959326567737733,
+   "h_norm": 0.6796190852989876
+  },
+  {
+   "weights": "lf_x20",
+   "lf_max_E_db": -4.406252781124644,
+   "mid_max_E_db": 0.6117585124285565,
+   "small_gain_bound_db": -0.6117585124285565,
+   "positive_real_db": 4.548478631122295,
+   "h_norm": 0.6854764579157048
+  }
+ ],
+ "screening_a_multisession": {
+  "status": "untested",
+  "reason": "只有 2026-10-23 与 2026-10-24 两个场次；10-23 处话筒接线松脱期，不能当独立验证；10-24 已是同场拟合的来源，没有第三场可比。"
+ },
+ "screening_b_eq": [
+  {
+   "notches": "none",
+   "small_gain_bound_db": 2.774898422923713,
+   "positive_real_db": 6.598164435468565,
+   "positive_real_at_hz": 424.1797652550208
+  },
+  {
+   "notches": "435",
+   "small_gain_bound_db": 3.662223750819686,
+   "positive_real_db": 7.826880801252796,
+   "positive_real_at_hz": 883.0784992258616
+  },
+  {
+   "notches": "435+3900",
+   "small_gain_bound_db": 6.228967947901389,
+   "positive_real_db": 7.830131891700075,
+   "positive_real_at_hz": 883.0785036316232
+  },
+  {
+   "notches": "435+3900+880",
+   "small_gain_bound_db": 6.277083419119748,
+   "positive_real_db": 10.009870200161133,
+   "positive_real_at_hz": 1598.8848309811792
+  }
+ ],
+ "boundary_control": {
+  "split_probe_file": "seg_10.npz",
+  "split": {
+   "frames": {
+    "whole": 15872,
+    "piece": 12288,
+    "paired": 12288
+   },
+   "max_abs_diff": 0.0,
+   "rms_delta_db": 0.0,
+   "window_only_delta_db": -0.17111671826561178,
+   "dropped_pieces": []
+  },
+  "fits": {
+   "per_segment": {
+    "suppression_db": 7.562036866314415,
+    "frames": 95232,
+    "small_gain_bound_db": 2.6827801185861015,
+    "positive_real_db": 6.528653769503778
+   },
+   "concatenated": {
+    "suppression_db": 7.56074520143727,
+    "frames": 95232,
+    "small_gain_bound_db": 2.7749819680189947,
+    "positive_real_db": 6.598200383940935
+   }
+  },
+  "fit_delta_db": 0.0012916648771446049
+ },
+ "session_20261023": {
+  "status": "excluded_from_training_and_validation",
+  "dir": "D:\\Always\\QianSai\\_inbox\\2026-10-23_room6\\manifest",
+  "segments": 6,
+  "role": "cross_session_stress_test_not_validation",
+  "small_gain_bound_db": -5.330618629860603,
+  "positive_real_db": -3.9449549016724066,
+  "positive_real_at_hz": 8434.080639164009,
+  "fir_off_small_gain_db": -11.27223593882874,
+  "fir_off_positive_real_db": -9.633931174847664
+ }
+}
