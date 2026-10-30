@@ -25,6 +25,27 @@ class DeliveryChecks(unittest.TestCase):
         (ROOT/'tmp').mkdir(exist_ok=True)
         return tempfile.TemporaryDirectory(dir=ROOT/'tmp',prefix='delivery-test-')
 
+    def setUp(self):
+        # These checks cover the be3200e r1 delivery, not today's field tools.
+        # Keep its five source pins and validate an exact, independently frozen
+        # archive instead of silently repinning them to the integration tree.
+        archive=ROOT/'build/packages/c-cold-start-r1.zip'
+        self.assertEqual(hashlib.sha256(archive.read_bytes()).hexdigest(),
+                         'aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a')
+        temp=self.work();self.addCleanup(temp.cleanup)
+        root=Path(temp.name)
+        with zipfile.ZipFile(archive) as z:
+            cfg=json.loads(z.read('tools/delivery-freeze.json'))
+            names=set(cfg['source_sha256'])|{'tools/delivery-freeze.json',cfg['package']['path']}
+            for name in names:
+                relative=Path(name)
+                self.assertFalse(relative.is_absolute() or '..' in relative.parts)
+                target=root/relative;target.parent.mkdir(parents=True,exist_ok=True)
+                target.write_bytes(z.read(name))
+        patcher=mock.patch.object(delivery,'ROOT',root)
+        patcher.start();self.addCleanup(patcher.stop)
+        self.assertEqual(delivery.config(),cfg)  # Still checks all five hashes.
+
     def test_known_snr_and_three_bad_wav_inputs(self):
         with self.work() as temp:
             r=delivery.listener_fixture(Path(temp))
@@ -61,15 +82,20 @@ class DeliveryChecks(unittest.TestCase):
 
     def test_deployed_model_and_three_mapping_points(self):
         cfg=delivery.config()
-        a=delivery.asset_checks((ROOT/cfg['package']['path']).read_bytes(),cfg)
+        a=delivery.asset_checks((delivery.ROOT/cfg['package']['path']).read_bytes(),cfg)
         controls=delivery.mapping_controls(a['q'])
         self.assertEqual([r['gain_db'] for r in controls],[-12,-6,0])
         self.assertTrue(all(r['ok'] and r['prediction_mismatches']==0 for r in controls))
         self.assertEqual(a['assets'],cfg['assets'])
 
     def test_corrupt_asset_never_accepted(self):
-        cfg=delivery.config();data=bytearray((ROOT/cfg['package']['path']).read_bytes());data[-1]^=1
+        cfg=delivery.config();data=bytearray((delivery.ROOT/cfg['package']['path']).read_bytes());data[-1]^=1
         with self.assertRaises(delivery.DeliveryError) as cm:delivery.asset_checks(bytes(data),cfg)
+        self.assertEqual(cm.exception.defect,'D2')
+        # Redirecting the historical scope must not become a source-hash bypass.
+        source=delivery.ROOT/'board/audio_replay/sprint_selftest.py'
+        source.write_bytes(source.read_bytes()+b'\n# deliberate bad source\n')
+        with self.assertRaises(delivery.DeliveryError) as cm:delivery.config()
         self.assertEqual(cm.exception.defect,'D2')
 
     def test_report_boolean_and_rehashed_manifest_cannot_fake_delivery(self):
@@ -77,7 +103,7 @@ class DeliveryChecks(unittest.TestCase):
         with self.work() as temp:
             root=Path(temp)
             for name in cfg['source_sha256']:
-                target=root/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(delivery.source_bytes(ROOT/name))
+                target=root/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(delivery.source_bytes(delivery.ROOT/name))
             (root/'tools/delivery-freeze.json').write_bytes(delivery.encoded(cfg))
             with mock.patch.object(delivery,'ROOT',root),mock.patch.object(delivery,'identity',return_value={
                     'repository_commit':'1'*40,'clean_checkout':True,'test_fixture':True}):

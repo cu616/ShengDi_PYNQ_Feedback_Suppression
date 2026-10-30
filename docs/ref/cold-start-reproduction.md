@@ -22,6 +22,19 @@ python tools/deliver_check.py cold-start
 python tools/deliver_check.py build/packages/c-cold-start-r1.zip
 ```
 
+## 在后续集成树中复核历史r1
+
+`tools/delivery-freeze.json` 的五项 `source_sha256` 固定的是 `be3200e` 的历史r1源码，
+仅将CRLF归一化为LF；不是当前v3提交候选的源清单。两项后续源文件变化不能触发重钉旧清单。
+当仓库树任一源哈希与它不符时，该树不再是r1重建入口，直接运行仍应报D2，不能跳过检查。
+
+需要重建r1时，从 `be3200ecf4a5b1df8901f1111da4685c0f8fedc8` 的独立干净工作树运行上述命令。
+只读复核现有r1时，将 `build/packages/c-cold-start-r1.zip` 解压到独立目录，再用其中的
+`tools/deliver_check.py` 检查原ZIP的绝对路径；只读核验不需要新建Git历史，也不操作板卡。
+该ZIP的SHA256为 `aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a`。
+全量软件测试中的 `test_delivery.py` 显式核验此归档哈希并读取其五项冻结源码；不跳过测试，
+仍检查源篡改D2拒绝、资产篡改与重新计算外层哈希后伪造报告的拒绝。当前v3身份另由v3 manifest核对。
+
 冻结真人包的实际资产字段是`preflight.a_assets`，不是空的`assets`。本次冷启动报告把它经实际文件核对后映射为
 非空`assets`；源码生成器也增加同值兼容别名，并保留旧字段。已冻结真人ZIP不修改，本轮不另发真人包。
 
