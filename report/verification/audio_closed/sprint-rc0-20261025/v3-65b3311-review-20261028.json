@@ -1,0 +1,751 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "kind": "C-three-fix-review-A65",
+  "A_commit": "65b3311abbfd3ca5213e2e329d8e309ff5428a61",
+  "hardware_operations_by_C": 0,
+  "snapshot_identity": [
+    {
+      "file": "audio_replay.bit",
+      "expected": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "actual": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "matched": true
+    },
+    {
+      "file": "audio_replay.hwh",
+      "expected": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "actual": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "matched": true
+    },
+    {
+      "file": "replay_trial.py",
+      "expected": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "actual": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "matched": true
+    },
+    {
+      "file": "replay_tools.py",
+      "expected": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "actual": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "matched": true
+    },
+    {
+      "file": "closed_tools.py",
+      "expected": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "actual": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "matched": true
+    },
+    {
+      "file": "residual_tools.py",
+      "expected": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "actual": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "matched": true
+    },
+    {
+      "file": "test_runtime_stop.py",
+      "expected": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "actual": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "matched": true
+    },
+    {
+      "file": "test_verify_replay_v3.py",
+      "expected": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "actual": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "matched": true
+    },
+    {
+      "file": "tone_round_guard.py",
+      "expected": "ac93e60c944747aa69342d8bd348f503c820809438888d241638c95bdea75250",
+      "actual": "ac93e60c944747aa69342d8bd348f503c820809438888d241638c95bdea75250",
+      "matched": true
+    },
+    {
+      "file": "test_tone_round_guard.py",
+      "expected": "71c80a3187ee261f1cb8e76291a6c26ec2c29c846bd5a22d7b44b82c50dd7662",
+      "actual": "71c80a3187ee261f1cb8e76291a6c26ec2c29c846bd5a22d7b44b82c50dd7662",
+      "matched": true
+    }
+  ],
+  "shell_identity": [
+    {
+      "file": "field_ac_segments_v3.sh",
+      "materialized_sha256": "c4624c875377fb6ec7c23185ab79e85419193a2238a04433800063ab877cf7c2",
+      "LF_sha256": "15cc48037c90a7916d3d7a7e01bb5b9df31fdadb8f7c6fba2c413915768eeb49",
+      "declared_prefix": "15cc4803",
+      "LF_matches_declared": true
+    },
+    {
+      "file": "tone_analyze.sh",
+      "materialized_sha256": "9c056637e7a98dd09422acb48cd6871e07516a8e9dac2768fb844026115eb0dd",
+      "LF_sha256": "cde3d88c8545253452ed957842143e54dcd1139c65359e255a9bc509efac01c4",
+      "declared_prefix": "cde3d88c",
+      "LF_matches_declared": true
+    }
+  ],
+  "manifest": {
+    "schema_version": 1,
+    "overlay": "audio_replay",
+    "version": "v3",
+    "contract": "docs/contracts/audio-replay-v3.md",
+    "branch": "A",
+    "commit": "snapshot introduced at 05f5c69; identity is the hashes below, see branch A for later commits",
+    "sample_rate_hz": 48828.125,
+    "taps": 512,
+    "lag_first": 1,
+    "source_frames_max": 131072,
+    "source_format": "signed16 -> signed24 << 8",
+    "build": {
+      "tool": "Vivado 2018.3",
+      "script": "build/scripts/create_audio_replay.tcl",
+      "wns_ns": 0.548,
+      "whs_ns": 0.015,
+      "tns_ns": 0.0,
+      "ths_ns": 0.0,
+      "failing_endpoints": 0,
+      "block_ram_pct": 80.0,
+      "dsp": 3,
+      "timing_statement": "constraints as applied are met; NOT a full timing sign-off (four external I/O delay constraints are still missing, unchanged since v1)"
+    },
+    "hashes": {
+      "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "replay_trial.py": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "test_verify_replay_v3.py": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "tone_round_guard.py": "ac93e60c944747aa69342d8bd348f503c820809438888d241638c95bdea75250",
+      "test_tone_round_guard.py": "71c80a3187ee261f1cb8e76291a6c26ec2c29c846bd5a22d7b44b82c50dd7662"
+    },
+    "model": {
+      "path_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/rewired_512_20261026.json",
+      "sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+      "fixture_id": "room_v1_20261026b",
+      "fixture_confirmed": "same physical rig the model was fitted on (microphone to speaker 100 cm, side-facing, metal plate and cotton), confirmed by the operator 2026-10-27",
+      "logical_taps": 512,
+      "loaded_taps": 512,
+      "coefficients_sha256_q20_candidate": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+      "coefficients_sha256_q20_zero_arm": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+      "coefficients_hash_note": "the two arms load different coefficient arrays, so they have different hashes: the candidate model is 6118e85d... and any zero_coeff=True arm is e5a00aa9... (all-zero, 512 taps after padding). C 2026-10-27: the manifest had the zero-arm hash in a field named as if it were the candidate. Both are now recorded explicitly."
+    },
+    "changed_against_v2": [
+      "gain multiplies the unclamped 25-bit difference; the only clamp is after the gain",
+      "capture_status bit22 = independent input full-scale sticky flag",
+      "driver stops on bit22 with stop_reason=\"input_clip\"; pre-gain residual overflow alone still only counts",
+      "driver refuses to start when the bit/hwh next to it is not the declared v3 pair (sha256 constants)",
+      "evidence adds input_full_scale_seen; the status.json written on a capture-save failure still carries capture_status, input_full_scale_seen, the v3 marker and every version hash",
+      "replay_tools verifies the output against the wide residual, skips skip+2 of a truncated ring, uses the asymmetric 24-bit rail, reports prefix overflows as unverifiable and refuses to pass with no output frames"
+    ],
+    "unchanged_against_v2": [
+      "bitstream register map except bit22",
+      "coefficient format Q20/24-bit, lag_first=1, two-frame schedule",
+      "prediction / post-gain / mix saturation, protocol fault, timeout, manual stop",
+      "24-bit residual and residual_saturated meanings"
+    ],
+    "hardware_status": {
+      "bitstream_executed_on_board": true,
+      "executed_driver_sha256": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
+      "note": "the bitstream has run on the board with the driver 6b397359 (before the input_clip stop fix). The delivered driver 1b07586f has NOT run on hardware yet: the board is offline. First hardware step when power returns: upload 1b07586f, force or inject an input full-scale event, confirm stop_reason=\"input_clip\", mute, saved evidence and recovery."
+    },
+    "rollback": {
+      "package_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_live",
+      "bitstream_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+      "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+      "successful_baseline": "zero coefficients, PL -8 dB, Codec 40, phone 5 cm / volume 8 of 15"
+    },
+    "review_2026_10_27_C": {
+      "fixed_in_this_version": [
+        "1 save failure keeps capture_status / input_full_scale_seen / v3 marker / full hashes (incl. replay_tools)",
+        "2 wide residual is now computed from the RECORDED prediction column, so the prefix of a truncated ring is counted exactly instead of being reported as 0; the asymmetric rail test stays; on the real v2 capture the count is 8, equal to the hardware residual_saturations",
+        "3 scripts: gate before the arm, a failed gate / protection / failed recovery / stopped arm ends the branch, the tone round stops at the first failing arm, and the operator confirmation is a token the scripts consume but never create",
+        "4 tone analysis rejects five classes of bad input: missing identity, changed source or gain, conflicting actual length, input at the rail, and any arm that stopped",
+        "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); candidate and zero-arm coefficient hashes recorded separately",
+        "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded",
+        "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded",
+        "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded"
+      ]
+    }
+  },
+  "three_fix_probes": {
+    "A_commit": "65b3311",
+    "hardware_operations": 0,
+    "scripts_sha256": {
+      "field_human_pair_v3.sh": "34a36a91381175a5584c169a2e0f057c0edf410b414127607f3f618b5208e3f1",
+      "field_stationary_v3.sh": "53d1ad105534931ef2147081c59354ddc084b4aad0d46e4acf5460a0f2bc9de0",
+      "field_ac_segments_v3.sh": "c4624c875377fb6ec7c23185ab79e85419193a2238a04433800063ab877cf7c2",
+      "tone_arms_v3.sh": "677a334231a2e6dc68ca3e1723f62258df40026050e436c3426f086abe16fbbb"
+    },
+    "field": [
+      {
+        "script": "field_human_pair_v3.sh",
+        "scenario": "gate_guard",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 1,
+        "passed": true,
+        "error": "SystemExit:0",
+        "stdout": "HUMAN gate  stop=guard       frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True recovery_ok=True\nGATE_FAIL: the gate itself did not pass (stop=guard bit22=0 recovery=True)\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          }
+        ]
+      },
+      {
+        "script": "field_stationary_v3.sh",
+        "scenario": "gate_guard",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 1,
+        "passed": true,
+        "error": "SystemExit:0",
+        "stdout": "ARM gate  stop=guard       frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 share=0.0000 rsat=0 psat=0 recovery_ok=True\nGATE_FAIL: the gate itself did not pass (stop=guard bit22=0 recovery=True)\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          }
+        ]
+      },
+      {
+        "script": "field_ac_segments_v3.sh",
+        "scenario": "gate_guard",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 1,
+        "passed": true,
+        "error": "SystemExit:0",
+        "stdout": "RUN gate         stop=guard       frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 wide=0 rec=True\nGATE_FAIL: the gate itself did not pass (stop=guard bit22=0 recovery=True)\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          }
+        ]
+      },
+      {
+        "script": "tone_arms_v3.sh",
+        "scenario": "first_tone_guard_saved_npz",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 1,
+        "passed": true,
+        "stdout": "TONE open   RuntimeError('SYNTHETIC_GUARD_WITH_SAVED_NPZ')\nTONE_ROUND_ABORTED at open: not running the remaining arms\nTONE_ROUND_WRITTEN D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\c-a-65b3311-review\\protected-tone_arms_v3.sh\\tone_round.json round 1793182795826022300\n",
+        "exit_code": 0
+      },
+      {
+        "script": "field_ac_segments_v3.sh",
+        "scenario": "first_tone_guard_saved_npz",
+        "expected_driver_calls": 2,
+        "observed_driver_calls": 2,
+        "passed": true,
+        "stdout": "RUN gate         stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 wide=0 rec=True\nRUN tone_open    stop=guard       frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 wide=0 rec=True\nBRANCH_STOPPED in the tone round at open\n",
+        "exit_code": 0
+      }
+    ],
+    "analyzer": [
+      {
+        "case": "plumbing_control",
+        "problems": [],
+        "passed": true,
+        "scope": "synthetic complete-metadata guard fixture; not a physical acoustic positive control"
+      },
+      {
+        "case": "source_array_only",
+        "problems": [
+          "cancel: source array hash does not match its own metadata",
+          "source arrays differ between arms: len {'open': 97656, 'bypass': 97656, 'cancel': 97656} sha {'open': 'e989bc23', 'bypass': 'e989bc23', 'cancel': 'f1476fb9'}"
+        ],
+        "passed": true,
+        "scope": "synthetic complete-metadata guard fixture; not a physical acoustic positive control"
+      },
+      {
+        "case": "equal_wrong_metadata_lengths",
+        "problems": [
+          "open: metadata frames 16385 != actual array length 16384",
+          "bypass: metadata frames 16385 != actual array length 16384",
+          "cancel: metadata frames 16385 != actual array length 16384"
+        ],
+        "passed": true,
+        "scope": "synthetic complete-metadata guard fixture; not a physical acoustic positive control"
+      },
+      {
+        "case": "sidecar_restore_failed",
+        "problems": [
+          "cancel: sidecar recovery_ok=False"
+        ],
+        "passed": true,
+        "scope": "synthetic complete-metadata guard fixture; not a physical acoustic positive control"
+      }
+    ],
+    "units": [
+      {
+        "frames": 4096,
+        "frequency_hz": 321.8650817871094,
+        "peak_amplitude": 0.25,
+        "expected_peak_dbfs": -12.041199826559248,
+        "reported_dbfs": 48.162677741638234,
+        "passed": false
+      },
+      {
+        "frames": 8192,
+        "frequency_hz": 321.8650817871094,
+        "peak_amplitude": 0.25,
+        "expected_peak_dbfs": -12.041199826559248,
+        "reported_dbfs": 54.18433877469414,
+        "passed": false
+      }
+    ],
+    "reproduction_source_utf8": "\"\"\"C recheck of the three A65 fixes; no board/real-audio execution.\"\"\"\nimport ast\nimport contextlib\nimport importlib.util\nimport io\nimport json\nimport pathlib\nimport sys\n\nimport numpy as np\n\nROOT=pathlib.Path(__file__).resolve().parent;REPO=ROOT.parents[1]\nSCRIPTS=ROOT/'board/audio_replay';SNAP=SCRIPTS/'v3'\nsys.path.insert(0,str(SNAP))\nimport tone_round_guard as guard\n\nresults=dict(A_commit='65b3311',hardware_operations=0,scripts_sha256={},field=[],analyzer=[],units=[])\nold=json.loads((REPO/'report/verification/audio_closed/sprint-rc0-20261025/v3-ac30584-recheck-20261028.json').read_text(encoding='utf-8'))\ntree=ast.parse(old['bounded_probes']['reproduction_source_utf8'])\nnodes=[n for n in tree.body if isinstance(n,(ast.Import,ast.ImportFrom)) or\n       isinstance(n,ast.FunctionDef) and n.name in ('payload','field')]\nexec(compile(ast.Module(body=nodes,type_ignores=[]),'<archived-C-failure-fixtures>','exec'),globals())\nfor name in ('field_human_pair_v3.sh','field_stationary_v3.sh','field_ac_segments_v3.sh'):\n    field(name,'gate_guard',1)\n\n\ndef protected_tone(name,expected):\n    folder=ROOT/('protected-'+name);folder.mkdir(exist_ok=True);calls=[]\n    def trial(path,*args,**kwargs):\n        calls.append(str(path));stop='completed' if 'field_ac' in name and len(calls)==1 else 'guard'\n        m=dict(stop_reason=stop,capture_status=1,completed_frames=640,\n               prediction_saturations=0,residual_saturations=0,gain_saturations=0,mix_saturations=0,\n               verification=dict(bit_exact=True,wide_residual_frames=0))\n        np.savez(path,microphone=np.full(640,.01),metadata_json=json.dumps(m))\n        pathlib.Path(path).with_suffix('.status.json').write_text(json.dumps(dict(recovery_ok=True,stop_reason=stop)))\n        if stop=='guard':raise RuntimeError('SYNTHETIC_GUARD_WITH_SAVED_NPZ')\n        return m\n    stub=types.ModuleType('replay_trial');stub.replay_trial=trial\n    code=payload(name,folder);log=io.StringIO();exit_code=0\n    try:\n        with patch.dict(sys.modules,{'replay_trial':stub}),patch.object(sys,'argv',[name,'SYNTHETIC_TEST_ONLY','tone']),contextlib.redirect_stdout(log):\n            exec(code,{'__name__':'__main__'})\n    except SystemExit as e:exit_code=e.code\n    results['field'].append(dict(script=name,scenario='first_tone_guard_saved_npz',expected_driver_calls=expected,\n        observed_driver_calls=len(calls),passed=len(calls)==expected,stdout=log.getvalue(),exit_code=exit_code))\n\n\nprotected_tone('tone_arms_v3.sh',1)\nprotected_tone('field_ac_segments_v3.sh',2)\n\n# Reuse the three exact failing C41 fixtures, supplying the now-required final sidecar facts.\nfor case in ('plumbing_control','source_array_only','equal_wrong_metadata_lengths','sidecar_restore_failed'):\n    src=REPO/'tmp/c-a-41fd0d6-review'/('tone-qualified-'+case)\n    dst=ROOT/('analyzer-'+case);dst.mkdir(exist_ok=True)\n    original=json.loads((src/'tone_round.json').read_text())\n    manifest=dict(original,files=[])\n    for entry in original['files']:\n        p=pathlib.Path(entry['path'])\n        with np.load(p,allow_pickle=False) as cap:arrays={k:cap[k] for k in cap.files}\n        m=json.loads(str(arrays['metadata_json'].item()))\n        m['driver_sha256']='79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5'\n        arrays['metadata_json']=json.dumps(m)\n        out=dst/p.name;np.savez(out,**arrays)\n        side=json.loads(p.with_suffix('.status.json').read_text())\n        side.update(stop_reason='completed',cleanup_errors=[],save_error=None)\n        out.with_suffix('.status.json').write_text(json.dumps(side))\n        manifest['files'].append(dict(entry,path=str(out)))\n    man=dst/'tone_round.json';man.write_text(json.dumps(manifest))\n    _,rows=guard.load_round(man);problems=guard.validate(rows)\n    results['analyzer'].append(dict(case=case,problems=problems,passed=(not problems)==(case=='plumbing_control'),\n       scope='synthetic complete-metadata guard fixture; not a physical acoustic positive control'))\n\nf0=guard.RATE*27/4096;amplitude=.25;expected=20*np.log10(amplitude)\nfor n in (4096,8192):\n    x=amplitude*np.sin(2*np.pi*f0*np.arange(n)/guard.RATE)*2**23\n    measured=guard.level_dbfs(x,f0)\n    results['units'].append(dict(frames=n,frequency_hz=f0,peak_amplitude=amplitude,\n         expected_peak_dbfs=float(expected),reported_dbfs=float(measured),passed=bool(abs(measured-expected)<1e-4)))\nresults['reproduction_source_utf8']=pathlib.Path(__file__).read_text(encoding='utf-8')\n(ROOT/'three-fixes-results.json').write_bytes((json.dumps(results,ensure_ascii=False,indent=2)+'\\n').encode('utf-8'))\nfor group in ('field','analyzer','units'):\n    rows=results[group];print(group,sum(x['passed'] for x in rows),'/',len(rows))\n    for x in rows:\n        if not x['passed']:print('remaining',x)\n"
+  },
+  "A_guard16": {
+    "executed": 16,
+    "passed": 16,
+    "test_sha256": "71c80a3187ee261f1cb8e76291a6c26ec2c29c846bd5a22d7b44b82c50dd7662",
+    "stdout": "good round is accepted                                     OK cd=0.00 boost=0.00 diff=0.00 overshoot=0.00 [dBFS re 24-bit full scale, all three signals]\n1 missing identity is rejected                             OK \n2a different gain between arms is rejected                 OK \n2b bypass flag wrong is rejected                           OK \n2c open arm not at gain 0 is rejected                      OK \n3 different array length is rejected                       OK \n3b different window accounting is rejected                 OK \n4a bit22 set is rejected                                   OK \n4b microphone sample at the rail is rejected               OK \n4c saturations are rejected                                OK \n5a stopped arm is rejected                                 OK \n5b early_stop is rejected                                  OK \n3a changed source array is rejected                        OK \n3b shared wrong frame count is rejected                    OK \n3c failing recovery sidecar is rejected                    OK \n3d missing sidecar is rejected                             OK \nTONE_ROUND_GUARD_TEST PASS (16 checks)\n"
+  },
+  "item_verdicts": [
+    {
+      "item": 1,
+      "verdict": "pass",
+      "evidence": "protected gate with in-range peak stops all three current scripts"
+    },
+    {
+      "item": 2,
+      "verdict": "pass",
+      "evidence": "protected first tone with saved NPZ stops both legacy tone entry and active AC entry"
+    },
+    {
+      "item": 3,
+      "verdict": "qualification_repairs_pass_units_fail",
+      "evidence": "actual source/shared bad frames/failed sidecar reject; existing level_dbfs lacks Hann coherent-gain normalization"
+    }
+  ],
+  "tone_round_summary_from_A": {
+    "round_id": 1746930178556850644,
+    "levels_dbfs_at_322": {
+      "open_mic": 47.77,
+      "bypass_mic": 52.01,
+      "cancel_mic": 46.56,
+      "open_residual": 45.23,
+      "bypass_residual": 52.01,
+      "cancel_residual": 43.58
+    },
+    "cd_322_db": 8.43,
+    "loop_boost_db": 4.24,
+    "acoustic_difference_db": 5.45,
+    "overshoot_db": 1.21,
+    "verdict": "cancellation_holds (5.45 >= 4.24 - 1.5 and |1.21| <= 1.5)",
+    "arms": "gate + three arms all completed, bit22=0, no rail, recovery_ok",
+    "repeatability": "previous round the same day: CD 7.08 / boost 4.12 / difference 4.92 / overshoot 0.80; the verdict repeats, the numbers move by about 1 dB"
+  },
+  "summary_arithmetic_recalculated": {
+    "cd_322_db": 8.43,
+    "loop_boost_db": 4.239999999999995,
+    "acoustic_difference_db": 5.449999999999996,
+    "overshoot_db": 1.2100000000000009
+  },
+  "metric_scope": "A controlled single-frequency round report plus independent summary arithmetic, not independent PCM replay. gate+open+bypass+cancel is four executions, only three measurement arms.",
+  "metric_meanings": {
+    "cd_322_db": "bypass residual minus candidate residual, single-frequency residual depth",
+    "loop_boost_db": "bypass microphone minus open microphone, loop reinforcement; not ASG or listener gain",
+    "acoustic_difference_db": "bypass microphone minus candidate microphone; not loudspeaker/ear gain",
+    "overshoot_db": "open microphone minus candidate microphone"
+  },
+  "rule_scope": "The encoded rule reduces to abs(open_mic-cancel_mic)<=1.5dB. Its passing is a single-tone consistency check, not independent ASG/audibility proof.",
+  "artifact_search": {
+    "git": {
+      "zip_scan": [
+        {
+          "blob": "52e06e533d76ede82be72f91cc5b1908bf7b704a",
+          "paths": [
+            "build/packages/audio-replay.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A",
+            "origin/B"
+          ],
+          "members": 16,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "cf808a5046aa234fb75ee905bd87a3a8ad008f0b",
+          "paths": [
+            "report/verification/audio-replay/a-tail-review-return-3e2e923.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 2,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "b6f7539a2e19e245b98a1aea6cfdea3e2e8b0860",
+          "paths": [
+            "report/verification/audio-replay/a-tail-review-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 2,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "32530119e8a4d27831516f0abfc53d39c3c1aaa2",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc0-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 6,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "972e6841e8666ed66ec53e881178a0c4e8ead289",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-human-r1-close5cm.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 7,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "e0598df6bc9b654b4cac28afb11aeafbbbbeef30",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-human-r1-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 7,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "a19d4ec96ff28196a985866c1e9c56ed279d5342",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-r2-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 12,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "4e2aa550002290fe76298a5c2da2136ce0be8b67",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-r3-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 11,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "a2ed699b5a73fee5c6bd847106fdb840ce650521",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-r4-live-session-1.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 7,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "d28735c0e75e8619e545da3ea9dd5188383c2af4",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-r4-live-session-2.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 7,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "f07cec27d174cd00ccab78441b0f3071f91db566",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-r4-live-session-3.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 6,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "a051effebe4df82ce0d38626678e9632621f4471",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-r4-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 20,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "b854e8732b9ee4ab515b382980316bc61d1f5b2f",
+          "paths": [
+            "report/verification/audio-replay/c-sprint-rc01-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 7,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "98caec28c193fddf07db0ba6ef40d3dec2d989a7",
+          "paths": [
+            "report/verification/audio-replay/lowband2-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 39,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "956430bddb860addb1cd9fb94593e1b3e610a8d6",
+          "paths": [
+            "report/verification/audio-replay/r4-review-return.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 6,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "4a0fdc125862e87d8950656c86c286f99bb829a3",
+          "paths": [
+            "report/verification/audio-replay/room-ready-2026-10-24/room-return-1.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 14,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "77703879034af1dcbff13e8170614c1e830d3db6",
+          "paths": [
+            "report/verification/audio-replay/room-ready-2026-10-24/room-return-2.zip"
+          ],
+          "refs": [
+            "origin/main",
+            "origin/A"
+          ],
+          "members": 33,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "74a7c6871e43f27bdbaf5e5ae5cf79fc6b2ec79d",
+          "paths": [
+            "report/verification/audio-replay/b-request-2026-10-25/b-refmic-6captures.zip"
+          ],
+          "refs": [
+            "origin/A"
+          ],
+          "members": 7,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "a13d510ae712300170efb12d17e424eb0b7e6746",
+          "paths": [
+            "report/verification/audio-replay/c-new-layout-r4-returns/layout-10339aa4ee7e-return-results.zip"
+          ],
+          "refs": [
+            "origin/A"
+          ],
+          "members": 12,
+          "target_or_new_driver_hits": []
+        },
+        {
+          "blob": "42eed48761ea78a143a4d545c2ef2a24ea4f62dd",
+          "paths": [
+            "report/verification/audio-replay/c-new-layout-r4-returns/layout-8a701dc501fe-return-results.zip"
+          ],
+          "refs": [
+            "origin/A"
+          ],
+          "members": 12,
+          "target_or_new_driver_hits": []
+        }
+      ],
+      "history_hits": []
+    },
+    "local": {
+      "local_zip_count": 158,
+      "member_count": 4698,
+      "tone_manifest_candidates": [],
+      "skipped_large": []
+    },
+    "worktrees": [
+      "main C checkout",
+      "_c_cold_be3200e",
+      "shengdi-c-main-20261023"
+    ],
+    "known_A_project_paths_exist": false,
+    "latest_origin_A": "83b1764",
+    "latest_delta_contains_original_data": false,
+    "conclusion": "Located A65 round summary and later A83 output report, but no real tone_round.json/arm NPZ/status/derived rejection bundle in visible refs/history/archives/workspaces. Do not require sound rerun for this absence."
+  },
+  "normalization_proposal": {
+    "applied_to_A": false,
+    "source_sha256": "ac93e60c944747aa69342d8bd348f503c820809438888d241638c95bdea75250",
+    "checks": [
+      {
+        "frames": 4096,
+        "expected": -12.041199826559248,
+        "observed": -12.041200553731262,
+        "passed": true
+      },
+      {
+        "frames": 8192,
+        "expected": -12.041199826559248,
+        "observed": -12.041199917399075,
+        "passed": true
+      }
+    ],
+    "patch": "tone-guard-normalization-65b3311.patch"
+  },
+  "proposal_status": "Suggested patch only, clean apply-check and two known-sine tests pass in memory; A source unchanged. Update both deployed module/snapshot and manifest when adopted; no new audible trial.",
+  "driver_review": {
+    "driver_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+    "change_since_C41": "0.25s codec settling before arm added at fd98a9c; no runtime threshold change",
+    "hardware79_report": {
+      "mixed_pair_refused": "PASS",
+      "silent_bringup": "completed, 58593 frames, bit22=0, bit_exact, status.json carries the full identity",
+      "input_full_scale_stop": "PASS: clap -> stop_reason=input_clip, capture_status=0x00408000, 8 samples at the rail, stopped at 38877 of 146484 frames, recovery_ok, no cleanup errors",
+      "sixty_second_continuous": "PASS: 2929687/2929687 frames, capture_status=0x00008001, bit22=0, all four saturations 0, mic RMS -22.1 dBFS, peak -11.9 dBFS, no rail samples, bit_exact, wall 89.2 s",
+      "listener_record": "\"能听出放大\" (can hear the amplification), same working point as the earlier record"
+    },
+    "C_affected_checks": {
+      "schema_version": 1,
+      "suite": "c-a-driver-acceptance-v3",
+      "hardware_access": false,
+      "driver_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "package_hashes": {
+        "replay_trial.py": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+        "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+        "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+        "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e"
+      },
+      "accepted": true,
+      "cases": [
+        {
+          "name": "v3_input_sticky_recorded_with_clean_tail",
+          "passed": true
+        },
+        {
+          "name": "v3_identity_in_failure_sidecar",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "consumer_validation": {
+    "version": "c-measurement-2.4.3",
+    "summary_revision": "3.2.4",
+    "executed": 4,
+    "passed": 4,
+    "stdout": "test_delivered_and_historical_release_tuples_do_not_mix (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_delivered_and_historical_release_tuples_do_not_mix) ... ok\ntest_mixed_driver_bit_and_helper_identity_are_rejected (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_mixed_driver_bit_and_helper_identity_are_rejected) ... ok\ntest_itemized_adapter_requires_v3_identity_binding (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_itemized_adapter_requires_v3_identity_binding) ... ok\ntest_flat_summary_keeps_residual_diagnostic_and_rejects_input_sticky (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_flat_summary_keeps_residual_diagnostic_and_rejects_input_sticky) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.161s\n\nOK\n"
+  },
+  "later_A83_separate_scope": {
+    "source_commit": "83b1764",
+    "source_frames": 97656,
+    "budget_frames": 117187,
+    "ring_frames": 16384,
+    "captured_first_frame": 100803,
+    "captured_end_exclusive": 117187,
+    "source_end_exclusive": 97656,
+    "captured_source_on_frames": 0,
+    "source_end_seconds": 1.99999488,
+    "captured_start_seconds": 2.06444544,
+    "captured_end_seconds": 2.39998976,
+    "listed_four_dB_mean_difference": 1.904999999999994,
+    "reported_mean_difference": 1.38,
+    "full_later_report": {
+      "why_this_replaces_the_listener": "the reference channel of every capture is the word sent to the DAC, i.e. exactly what the speaker plays, so the loudness difference between two arms can be measured instead of judged. The listener attempts on 2026-10-28 all failed for a reason this measurement makes obvious.",
+      "alternating_run": {
+        "protocol": "four back-to-back segments with an identical injected source (fixed-seed noise, same level, 2 s each): zero, candidate, zero, candidate",
+        "played_rms_dbfs": {
+          "zero_0": -42.84,
+          "cand_1": -46.36,
+          "zero_2": -46.74,
+          "cand_3": -47.03
+        },
+        "played_peak_dbfs": {
+          "zero_0": -30.5,
+          "cand_1": -32.27,
+          "zero_2": -33.65,
+          "cand_3": -34.89
+        },
+        "mean_difference_db": 1.38,
+        "same_condition_scatter_db": 3.9,
+        "verdict": "NOT RESOLVABLE: the arm-to-arm difference (1.4 dB on average) is smaller than the scatter between two runs of the SAME arm (3.9 dB), so neither a listener nor this measurement can separate the two conditions at this working point."
+      },
+      "absolute_output": "the played signal sits at -42 to -47 dBFS, i.e. of order one percent of full scale, which is far too quiet to be heard clearly in a room regardless of the listener.",
+      "consistency_with_earlier_listener_records": "every earlier \"listener\" record (2026-10-27 20 cm: no audible amplification; the same day: audible but not obviously louder; the talker-as-listener pair: cannot tell) is consistent with this measurement. The negative judgements were not a hearing problem and not a cancellation failure; the output is simply too quiet and the difference too small relative to run-to-run scatter.",
+      "what_would_change_it": [
+        "a louder input (clipping: the ADC rails, and the v3 driver stops the run)",
+        "more digital gain (the zero arm is already 0.12 dB from its loudness peak at -8 dB, and -4 dB self-oscillates without cancellation)",
+        "a more efficient or closer speaker (not a parameter we control in this fixture)"
+      ],
+      "consequence_for_the_freeze": "the audible-benefit question is answered as a MEASURED NEGATIVE at this working point. It should be stated that way instead of being left open or attributed to listener hearing."
+    },
+    "listener_later_report": {
+      "protocol": "one quiet gate, then the same sentence in two 6 s windows (zero-coefficient arm, then the candidate arm, about 4 s apart). The talker was told BEFORE the run what to judge: which window is louder, whether there is howling, whether speech is intelligible. The first attempt asked for the judgement only after the run and was discarded as an invalid procedure, not as a result.",
+      "measurements": {
+        "zero_mic_dbfs": -29.9,
+        "zero_peak_dbfs": -14.8,
+        "candidate_mic_dbfs": -35.5,
+        "candidate_peak_dbfs": -19.7,
+        "difference_db": -5.6
+      },
+      "all_runs": "gate and both arms completed, bit22=0, no saturation, no rail, recovery_ok",
+      "listener_verbatim": {
+        "loudness": "差不多/听不出 (cannot tell the two apart)",
+        "howling": "无啸叫 (no howling)",
+        "intelligibility": "都能听清 (both intelligible)"
+      },
+      "reading": "the microphone level drops 5.6 dB with cancellation active, but the person doing the speaking cannot hear that as a loudness difference. The likely reason is methodological: the talker is also the listener, so their own direct voice (bone conduction plus direct sound) dominates what they hear, and a change in the played level is masked. The historical sessions used a separate listener 20 cm from the speaker for exactly this reason.",
+      "what_it_does_not_say": "it does NOT say the cancellation is inaudible; it says this listener position cannot resolve it. A separate listener at the speaker, or a recorded A/B of the played signal, is needed to answer the audible-benefit question."
+    }
+  },
+  "later_A83_C_findings": [
+    "The new alternating source is2s and run2.4s. Under completed runs, ring100803..117186 is wholly after source_end97656. Values -42..-47dBFS describe source-off tail, not active speech/noise output.",
+    "Digital dBFS without DAC/amplifier/speaker/room calibration cannot establish absolute SPL or what any listener can hear.",
+    "Reporter globs all alt files and groups gate/history with measurement arms. Listed four-row dB mean is1.905dB, not1.38; exact origin of1.38 remains unknown without the actual selection.",
+    "Keep cannot-tell listener statements and tail-window non-resolution, but do not call A83 a measured negative of audible amplification. Reuse existing A65 source-on portions if available; no new alternating trial requested."
+  ],
+  "freeze_recommendation": "Gate/protection and the three qualification repairs pass their requested software scope. Absolute level units need the supplied minimal fix or honest relabeling before numerical-analysis freeze. Real-round data validity remains A report until existing originals/derived provenance are available.",
+  "next_action": "A applies unit normalization and recomputes existing records silently; add known-sine checks. Preserve controlled round, success/failure and listener records; do not rerun hardware checks,60s,segmentB or new scene.",
+  "remaining_evidence": "Use existing board originals/manifest and derived rejection records to enable independent reanalysis; never regenerate originals or claim a synthetic fixture is the real round.",
+  "C_source_hashes": {
+    "board/audio_replay/evaluation.py": "7b2a77a668b27c25ec04679b4d38b5be7e261682714b6b382233c8d56060b2f2",
+    "board/audio_replay/model_comparison.py": "c7a67c1522609b4d574d5330de1c2cd9445b20fd8dc05bb8e3b2bf1e638a9365",
+    "scripts/review_itemized_20261027.py": "f17be597c205a6c649602f1c8f781006a42bf22ae92f688e87a50e2cfc02be29"
+  }
+}

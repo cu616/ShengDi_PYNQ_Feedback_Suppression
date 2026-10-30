@@ -1,0 +1,122 @@
+{
+  "b_commit": "05657e5784d0d78eb446d752bff258a0cf21e51e",
+  "remote_heads": {
+    "A": "47367f96e5be05f69d65fafac4ba7733249c960e",
+    "B": "05657e5784d0d78eb446d752bff258a0cf21e51e",
+    "C": "23f176755f79ae5fb9785530f6bf72acdc5bac48"
+  },
+  "original_source_files_verified": 126,
+  "source_hashes": {
+    "scripts/reproduce_b_screening.py": "83134340e7c6fedcb880b2c82c31d709712f069a98e85c0dad1ec0361949972b",
+    "scripts/diagnose_peak_margin.py": "5f2b57418f15a4e28922c50549c7d1bf2ede5f9c5b84bb8b466850d8bb225472",
+    "scripts/verify_r4_waveforms.py": "ee7065bbc1846ce710d020c636b448bd7ee7fd3cc009f6e7eb5103c0d2ecbe2c",
+    "sim/feedback/test_r4_waveform.py": "e1585e15f3b132349d40f0e1c138049faaeb00e09086cc87c6e25aa66bbecfaf",
+    "models/room_v1/calibrated_20261024.json": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "report/verification/rc01-r4-2026-10-25/revision-1.md": "de04bde4bc9e398d2b91de1cd268731588023fb0b6f65615d55172541307595b",
+    "report/verification/rc01-r4-2026-10-25/part2-field-pairs.md": "4532c4225524fa7cd5aec4235c4ec68d294c696322e283c47adb6d674b1712f6",
+    "report/verification/rc01-r4-2026-10-25/run-rev1/prediction.json": "5eedbc8e40c04d6f1adaeb2cbe191e505d9c1448a4cbca48d0eb550f5b4f48c6"
+  },
+  "original_regression_tests": 124,
+  "original_regression_exit": 0,
+  "regression_environment_note": "Initial C partial export lacked board JSON and the sandbox temp directory denied writes; after exporting unchanged B JSON and moving TEMP/TMP into workspace, original 124 tests passed. Those setup failures are not B defects.",
+  "original_screening_cli_exit": 0,
+  "prediction_json_exactly_reproduced": true,
+  "numerical_tables_and_controls_unchanged": true,
+  "changed_function_bodies": [
+    "main"
+  ],
+  "requested_three_publication_corrections_accepted": true,
+  "publication_scope": "The specifically requested N1 remnants, unproven causal attributions and OFF intrinsically stable assertion have been corrected. Numeric references remain limited to qualified sampled bins; actual field values remain limited to their source-on windows.",
+  "original_waveform_cli_exit": 0,
+  "original_waveform_saved_result_exact": true,
+  "raw_files_verified": 5,
+  "raw_manifest_checks": true,
+  "replay_arithmetic_mismatches": {
+    "07-fir-off.npz": {
+      "prediction_mismatches": 0,
+      "residual_mismatches": 0,
+      "output_mismatches": 0
+    },
+    "09-fir-on.npz": {
+      "prediction_mismatches": 0,
+      "residual_mismatches": 0,
+      "output_mismatches": 0
+    },
+    "11-fir-on.npz": {
+      "prediction_mismatches": 0,
+      "residual_mismatches": 0,
+      "output_mismatches": 0
+    },
+    "13-fir-off.npz": {
+      "prediction_mismatches": 0,
+      "residual_mismatches": 0,
+      "output_mismatches": 0
+    }
+  },
+  "tail_60s": {
+    "prediction_mismatches": 0,
+    "residual_mismatches": 0,
+    "output_mismatches": null,
+    "output_status": "not_tested_by_B"
+  },
+  "max_b_vs_c_pair_difference_db": 0.0,
+  "pairs": [
+    {
+      "repeat": 1,
+      "off_file": "07-fir-off.npz",
+      "on_file": "09-fir-on.npz",
+      "total_db": -0.1710526780488273,
+      "bands_db": {
+        "300-1000": -0.7560427318885061,
+        "1000-3000": -0.11959674527546582,
+        "8200-8600": 0.37947540363266796
+      }
+    },
+    {
+      "repeat": 2,
+      "off_file": "13-fir-off.npz",
+      "on_file": "11-fir-on.npz",
+      "total_db": -0.24414526545724868,
+      "bands_db": {
+        "300-1000": 0.05061928088436218,
+        "1000-3000": -0.44456215189118353,
+        "8200-8600": 0.2530895972567535
+      }
+    }
+  ],
+  "c_continuous_output_scope": {
+    "driver_commit": "85f4967f242eed61eaa6b74041be931c2f5bc7a0",
+    "driver_file": "board/audio_replay/live_run.py",
+    "driver_sha256": "a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441",
+    "source_basis": "Frozen live_run sets source_len=1 and loads a single zero PCM word; therefore the saved tail uses no injected source. C checked feedback-only output. This is separate C evidence, not B output verification."
+  },
+  "cli_check": {
+    "checker": "tools/check_b_waveform_cli.py",
+    "checker_sha256": "d6d6a7f72f4a2434a3d7a48e5c5a28ca13faa6770564f52b3f2b277ae00a96a3",
+    "exit_code": 2,
+    "positive_passed": true,
+    "bad_inputs_rejected": 0,
+    "bad_inputs_total": 5,
+    "all_ok": false,
+    "evidence": "b-05657e5-cli-controls.json"
+  },
+  "required_fix": {
+    "owner": "B",
+    "file": "scripts/verify_r4_waveforms.py",
+    "defect_classes": [
+      "D4",
+      "D2",
+      "D3"
+    ],
+    "cause": "main returns 0 if pkg_ok else 2; arithmetic/model/comparison/missing-file qualifications are printed or skipped and never enter the exit decision.",
+    "acceptance": "Original fixed five-file input exits 0 and reproduces unchanged values; all five recorded bad CLI inputs exit nonzero. Enforce the five expected files, frozen model identity, per-trial arithmetic, and explicitly requested summary/C-review availability, identity, pair counts and numeric agreement. Preserve diagnostic failures, never label them qualified results. Add production-entry subprocess regressions, not helper-only tests."
+  },
+  "request_r007_status": "open: only production checker qualification remains; previous numbers/publication corrections accepted",
+  "next_A": "No new task: R-009 D4 START/timeout/cancel handling and already-requested field facts remain pending; no new audible run.",
+  "next_B": "Fix original waveform CLI qualification once; do not change default coefficients, candidates, thresholds or measured pairs.",
+  "hardware_access": false,
+  "production_B_code_modified": false,
+  "c_regression_tests": 164,
+  "c_regression_exit": 0,
+  "c_regression_evidence": "c-b056-review-tests.txt"
+}

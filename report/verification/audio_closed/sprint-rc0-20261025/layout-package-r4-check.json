@@ -1,0 +1,104 @@
+{
+  "stage": "final-archive",
+  "policy": "c-new-layout-1.3.0",
+  "package_status": "ready_for_A_field_binding",
+  "A_driver_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
+  "A_scene_commit": "52ee4e4a5d34fff9f0c82ae46d7dd5449ee99d00",
+  "B_model_git_source_commit": "b6bcfb21d0f8c51cc4106108053ec6adb4f289e2",
+  "B_errata_forwarded_by_user": "254b8e9",
+  "B_errata_git_object_read": true,
+  "network_note": "Connection failed during source freeze; recovered after archive c0b1772. C pushed, then B=254b8e9 fetched and original errata reviewed. Frozen packet retains exact b6bcfb2 model/report plus explicit C errata notes; no archive bytes replaced.",
+  "candidate_file_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+  "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+  "fixture_id": "room_v1_20261026b",
+  "source_manifest_sha256": "1a4196c27730e4ceec678fc2d6debc755212790b494716b45d9e887769bfcfaa",
+  "source_capture_set_sha256": "46aad2acf0557698281d67fdac5724daad9e246f1225c4114093d52abd0036da",
+  "allowed_gains_db": [
+    -14,
+    -12,
+    -10,
+    -8,
+    -6
+  ],
+  "work_point_db": -8,
+  "extra_noise_injection": false,
+  "scientific_scope": {
+    "offline_difference_not_gain_guarantee": true,
+    "guard_not_howl": true,
+    "protection_then_completed_other_arm_not_db_lower_bound": true,
+    "both_at_ceiling": "unknown/censored",
+    "quantitative_listener": "not_tested"
+  },
+  "software_checks": {
+    "unique_controls_passed": 23,
+    "main_tests": 22,
+    "main_seconds": 83.018,
+    "additional_capture_mismatch_control": 1,
+    "additional_seconds": 5.843,
+    "final_runtime_repeat": 1,
+    "final_runtime_repeat_seconds": 12.761,
+    "logs": [
+      "layout-tests-r4.txt",
+      "layout-binding-negative-r4.txt",
+      "layout-runtime-final-r4.txt"
+    ],
+    "hardware_executed": false,
+    "old_B_145_tests_repeated": false
+  },
+  "draft_missing": [
+    "A:fixed_phone_source_facts",
+    "C:frozen_run_binding_missing"
+  ],
+  "actual_field_model_loaded": false,
+  "field_effect_established": false,
+  "source_base": "9797a1237119138151a79f608a819948da8005ba",
+  "source_tree_clean": true,
+  "package_sha256": "b9ad6dabc5a8e6619b0859a8f1109471f57d4661273eeaa8eaa817487281852f",
+  "package_bytes": 338417,
+  "immutable_payload_files": 32,
+  "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
+  "final_check_missing": [
+    "A:fixed_phone_source_facts",
+    "C:frozen_run_binding_missing"
+  ],
+  "archive_payload_verified": true,
+  "source_payload_matches_tested_files": true,
+  "cancel_control": {
+    "exit_code": 2,
+    "trials": 0,
+    "active_model_created": false,
+    "active_binding_created": false,
+    "stop_reason": "RuntimeError:field_scene_cancelled_or_fixed_source_missing",
+    "return_zip_generated": true
+  },
+  "hardware_executed": false,
+  "post_archive_B_verification": {
+    "commit": "254b8e931ca0bb2c15538e53bf04628ebbef44e7",
+    "model_bytes_equal_b6bcfb2": true,
+    "model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+    "readme_sha256": "abccfd5b5c9679f2994bd77101e5becb10842ce6d5f8a163552926d8af0eb3e2",
+    "report_section_zero_reviewed": true,
+    "field_threshold_interpretation": "C notes retain execution contrast only, no automatic dB lower bound",
+    "tests_repeated": false
+  },
+  "remote_sync": {
+    "archive_commit": "c0b1772",
+    "pushed_to": "origin/C",
+    "successful": true
+  },
+  "latest_A_handoff": {
+    "declared_commit": "3af9e61",
+    "source": "user-forwarded message; Git object fetch reset during receipt",
+    "received_package": "r3 / bbc89b2 / 336654 bytes / 0595b074...",
+    "r3_execution_refused_before_sound": true,
+    "rewired_file_validation_reported_by_A": true,
+    "PL_loading_not_inferred_from_load_candidate": true,
+    "reroute_to_release": "C fa13877 / c-new-layout-r4.zip",
+    "zero_arm": "original valid rewired model + zero_coeff=True; no synthetic zero model JSON",
+    "microphone_precheck": "0.30s, complete valid samples, absolute peak including DC strictly below -6 dBFS; equality/above/dropped frames stop",
+    "flat_input_scope": "Known constant -4.2dBFS is rejected by peak. Not a general subthreshold stuck-ADC detector; known no-response under actual input requires operator stop.",
+    "saturation_10_9dB_claim_withdrawn": true,
+    "code_or_archive_changed": false,
+    "tests_repeated": false
+  }
+}

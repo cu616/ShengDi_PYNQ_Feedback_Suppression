@@ -1,0 +1,74 @@
+{
+  "stage": "final-archive",
+  "policy": "c-new-layout-1.4.0",
+  "package_status": "ready_for_A_field_binding",
+  "A_driver_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
+  "A_scene_commit": "52ee4e4a5d34fff9f0c82ae46d7dd5449ee99d00",
+  "A_failure_report_commit": "26aaedd310af25f7b44259e4114b032aa28c97a1",
+  "A_first_raw_commit": "083f31ca5cc5530d8aabbbb4326bfb547d706964",
+  "B_git_source_commit": "254b8e931ca0bb2c15538e53bf04628ebbef44e7",
+  "model_file_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+  "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+  "fixture_id": "room_v1_20261026b",
+  "change": "relative 1kHz path detection and independent intake recalculation, including early gate stops",
+  "source_level_duration_changed": false,
+  "gains_changed": false,
+  "model_or_A_driver_changed": false,
+  "optional_bypass": false,
+  "predeclared_detection": {
+    "contrast_db": 10.0,
+    "window_frames": [
+      33420,
+      48340
+    ],
+    "projection_frames": 14920,
+    "noise_floor": "max(quiet target, mean quiet neighbours, mean concurrent neighbours)",
+    "frequency_offsets_bins": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "definition": "detector contrast, not broadband pure signal SNR or algorithm success"
+  },
+  "software_checks": {
+    "methods_passed": 8,
+    "relative_methods": 4,
+    "runtime_intake_methods": 4,
+    "relative_seconds": 2.252,
+    "runtime_seconds": 28.871,
+    "logs": [
+      "layout-relative-gate-r5.txt",
+      "layout-runtime-r5.txt"
+    ],
+    "hardware_executed": false,
+    "unchanged_B_145_not_repeated": true
+  },
+  "first_raw_quality_control": "completed; no discrepancies; phone contamination invalidates clean acoustic control; no algorithm pairs",
+  "second_raw_status": "pending A board network recovery; no rerun requested",
+  "hardware_executed": false,
+  "field_effect_established": false,
+  "source_base": "c2acf87af505d01f9773de37cd576a4643aa2ef0",
+  "source_tree_clean": true,
+  "package_sha256": "feaca0b6cf2fd5b828456f0cfa504f16fd2e852549d3f625f229663fc5992bfa",
+  "package_bytes": 342392,
+  "immutable_payload_files": 32,
+  "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
+  "archive_payload_verified": true,
+  "source_payload_matches_tested_files": true,
+  "field_only_missing": [
+    "A:fixed_phone_source_facts",
+    "C:frozen_run_binding_missing"
+  ],
+  "cancel_control": {
+    "exit_code": 2,
+    "trials": 0,
+    "active_model": false,
+    "active_binding": false,
+    "return_zip_generated": true
+  }
+}

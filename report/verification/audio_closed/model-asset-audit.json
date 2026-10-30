@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-23",
+  "refresh_result": "initial HTTPS fetch succeeded; later refresh failed to connect to github.com:443",
+  "branches": {
+    "A": {
+      "commit": "59aa10e537c43ba2ba259e474c487eebaa88740d",
+      "tracked_files": 331,
+      "model_named_files": [
+        "report/verification/field-validation/model-bound-zero-playback-2026-10-20.md",
+        "scripts/compare_feedback_models.py"
+      ],
+      "archives": {
+        "build/packages/audio-replay.zip": [
+          "audio_replay/audio_replay.bit",
+          "audio_replay/audio_replay.hwh",
+          "audio_replay/replay_trial.py",
+          "audio_replay/replay_tools.py",
+          "audio_replay/replay_session.py",
+          "audio_replay/sweep_plan.py",
+          "audio_replay/sweep_session.py",
+          "audio_replay/click_panel.py",
+          "audio_replay/click-panel.html",
+          "audio_replay/start-panel.sh",
+          "audio_replay/replay_calibration.py",
+          "audio_replay/closed_tools.py",
+          "audio_replay/residual_tools.py",
+          "audio_replay/replay_trial.ipynb",
+          "audio_replay/README.md",
+          "audio_replay/manifest.json"
+        ]
+      },
+      "coefficient_arrays": [
+        {
+          "file": "report/verification/algorithm-2026-10-20/synthetic-v1.json",
+          "json_path": "/emphasis/coefficients_q20",
+          "length": 256
+        }
+      ]
+    },
+    "B": {
+      "commit": "2a3c34e95d54af6c54043901c9a547c604bf5a17",
+      "tracked_files": 294,
+      "model_named_files": [
+        "scripts/compare_feedback_models.py"
+      ],
+      "archives": {},
+      "coefficient_arrays": [
+        {
+          "file": "report/verification/algorithm-2026-10-20/synthetic-v1.json",
+          "json_path": "/emphasis/coefficients_q20",
+          "length": 256
+        },
+        {
+          "file": "report/verification/algorithm-box-v1-2026-10-21/analysis.json",
+          "json_path": "/emphasis/coefficients_q20",
+          "length": 256
+        }
+      ]
+    }
+  },
+  "conclusion": "No standalone loadable existing 512-tap model at these fetched commits; 256-tap emphasis arrays in analysis reports are not an approved 512-tap deployment artifact."
+}

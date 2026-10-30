@@ -1,0 +1,6 @@
+test_assembly_rejects_wrong_capture_identity_despite_matching_coefficients (sim.feedback.test_layout_experiment.LayoutTests.test_assembly_rejects_wrong_capture_identity_despite_matching_coefficients) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 5.843s
+
+OK

@@ -1,0 +1,45 @@
+{
+  "artifact": "build/packages/c-sprint-rc01.zip",
+  "sha256": "c0a2d5aaf4565af9d768ecebfaa41ab8651ce1064420934ab37b8fe8d8065c9f",
+  "size_bytes": 300051,
+  "policy": "c-sprint-rc01-1.0.0",
+  "source_commits": {
+    "A": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+    "B": "d033d0047542d5e50654a0333777c48ec08dce21",
+    "C": "af045bfee170aebf93c0ea18e3542fd17023c356"
+  },
+  "source_tree_clean": true,
+  "payload_hashes_verified": 26,
+  "c_source_blob_matches": 6,
+  "a_exact_blob_matches": 6,
+  "b_model_blob_match": true,
+  "model_identical_to_previous_rc0": true,
+  "default_model": {
+    "name": "calibrated_20261024",
+    "source_file": "models/room_v1/calibrated_20261024.json",
+    "file_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+    "validity": "same verified calibration scene only; no cross-session fallback"
+  },
+  "notebook_code_cells": 1,
+  "notebook_first_line": "# C sprint RC0.1: fixed baseline, single entry",
+  "actual_packaged_notebook_cancel_executed": true,
+  "board_imports": false,
+  "frozen_plan_unchanged": true,
+  "thresholds_unchanged": true,
+  "a_driver_bit_hwh_unchanged": true,
+  "driver_acceptance_passed": true,
+  "driver_acceptance_cases": 8,
+  "software_tests": 146,
+  "actual_a_path_gate": "failed:gate_tone_not_observed; not reclassified by package fix",
+  "hardware_test": "not_tested",
+  "continuous_60s": "not_tested",
+  "independent_board_reproduction": "not_tested",
+  "actual_archive_software_schedule": {
+    "packaged_coordinator_trials": 13,
+    "gate_source_on_frames": 14920,
+    "fir_source_frames": 91308,
+    "fir_source_off_frames": 16384,
+    "valid_software_fir_pairs": 2
+  }
+}

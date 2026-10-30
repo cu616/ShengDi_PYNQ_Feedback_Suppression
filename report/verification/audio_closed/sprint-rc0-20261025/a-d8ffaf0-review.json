@@ -1,0 +1,135 @@
+{
+  "a_commit": "d8ffaf0ab5ba99f8f59ccfe99ee4806236294e67",
+  "original_checker_command": [
+    "C:\\Python314\\python.exe",
+    "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\a-d8ffaf0\\board\\audio_replay\\deliver_check.py"
+  ],
+  "original_checker_exit": 1,
+  "original_checker_stdout": "[routing] exit=1  \n[start_control] exit=1  \nDELIVERY_INCOMPLETE routing,start_control\n",
+  "original_checker_stderr": "Traceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\a-d8ffaf0\\board\\audio_replay\\test_human_routing.py\", line 15, in <module>\n    shell = DRIVER.read_text(encoding='utf-8')\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\OCadence_Project\\\\Flushbonading_FPGA_Contest\\\\_a_work\\\\run_human_r1.sh'\nTraceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\a-d8ffaf0\\board\\audio_replay\\test_start_control.py\", line 12, in <module>\n    shell = DRIVER.read_text(encoding='utf-8')\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\OCadence_Project\\\\Flushbonading_FPGA_Contest\\\\_a_work\\\\run_human_r1.sh'\n",
+  "exact_ask_controls": [
+    {
+      "input": "GO",
+      "returned": "START",
+      "c_before_start_result": true,
+      "events": [
+        {
+          "step": "start",
+          "trial": 1,
+          "real_voice": true
+        }
+      ]
+    },
+    {
+      "input": "START",
+      "returned": "START",
+      "c_before_start_result": true,
+      "events": [
+        {
+          "step": "start",
+          "trial": 2,
+          "real_voice": true
+        }
+      ]
+    },
+    {
+      "input": null,
+      "returned": "CANCEL",
+      "c_before_start_result": false,
+      "events": [
+        {
+          "step": "cancelled",
+          "trial": 3,
+          "reason": "TIMEOUT_OR_EMPTY"
+        }
+      ]
+    },
+    {
+      "input": "CANCEL",
+      "returned": "CANCEL",
+      "c_before_start_result": false,
+      "events": [
+        {
+          "step": "cancelled",
+          "trial": 4,
+          "reason": "CANCEL"
+        }
+      ]
+    },
+    {
+      "input": "",
+      "returned": "CANCEL",
+      "c_before_start_result": false,
+      "events": [
+        {
+          "step": "cancelled",
+          "trial": 5,
+          "reason": "TIMEOUT_OR_EMPTY"
+        }
+      ]
+    },
+    {
+      "input": "MAYBE",
+      "returned": "CANCEL",
+      "c_before_start_result": false,
+      "events": [
+        {
+          "step": "cancelled",
+          "trial": 6,
+          "reason": "MAYBE"
+        }
+      ]
+    }
+  ],
+  "start_control_semantics_passed": true,
+  "complete_delivery_passed": false,
+  "source_sha256": {
+    "run_human_r1.sh": "7576ec920af0fc87b5d5e9e72151ee9f353e44056e0ddbb91eb6c8c621af7ced",
+    "deliver_check.py": "de15a2b62f812a8d02037ba8f34c9326db778fe93d63ee5b93f058d7efbe6e01",
+    "test_start_control.py": "1c6e91a815a63006e064153f0a49875a5b04e21aaa428a3e9814dc7474621ce0",
+    "test_human_routing.py": "cd75ac881914b13fd8f6ade83a9f5004186e8181e5fc520ac1dd4b09b1dc4f3b"
+  },
+  "hardware_access": false,
+  "correction_sha256": "ae534bc42f27e11e6592cb060dd245a561e4c65b8772b33006cdd3f7a9cbbc22",
+  "original_corrections_accepted": [
+    "two trials only; NO_AMPLIFICATION failed; listener not_tested",
+    "default layout is not measured geometry; preserve original ZIP",
+    "zero microphone full-scale count is tail-only"
+  ],
+  "remaining_delivery_defects": [
+    {
+      "code": "D4/D3",
+      "action": "Both tests use old absolute _a_work paths and routing uses unshipped h1/sprint_experiment.py. Resolve from __file__ and an explicitly bound frozen package; checker must test the same driver it hashes, and missing required prompt coverage cannot SKIP to success."
+    },
+    {
+      "code": "D4",
+      "action": "Correction document wrongly says C does not record layout and summary layout is None. Actual field is summary.scene.layout, exactly preserving the input string. Do not claim C automatically recodes OTHER to NO_AMPLIFICATION; retain each run ID and original hearing fields."
+    },
+    {
+      "code": "D4",
+      "action": "Future driver still has default LAYOUT and automatic SAME_SCENE/source confirmations. Do not treat defaults as verified field facts; changed geometry is not authorized for the old scene model."
+    }
+  ],
+  "gate_and_coupling_review": "gate-coupling-review.json",
+  "next_A": "Fix portable bound software delivery and correction provenance in one commit. No new audio session or human PCM requested.",
+  "no_new_board_package": true,
+  "latest_a_checked": "e4bed22f8e116e3c7cb3dc2cef39459e4afeeb76",
+  "latest_driver_and_tests_unchanged": true,
+  "latest_additions": {
+    "curve_sha256": "30ecc4ac6970b33a03f89aaafcaffabcc3ee4cf934b42d74e743b97b442b8c5e",
+    "curve_bytes": 17690,
+    "keys": [
+      "freqs",
+      "coupling_db",
+      "broadband_db",
+      "peak_db",
+      "peak_hz"
+    ],
+    "broadband_db": -5.8161335232577285,
+    "peak_db": 1.7309056345975211,
+    "peak_hz": 452.99530029296875,
+    "raw_reference_microphone_phase_coherence_metadata_absent": true,
+    "independent_gain_threshold_status": "not_measured; cannot call negative curve peak the maximum stable gain",
+    "new_model_status": "unreviewed and not selected; keep calibrated_20261024 default scene restriction"
+  }
+}

@@ -10,7 +10,6 @@
 board/audio_replay/README.md -text
 board/audio_replay/*.ipynb -text
 board/audio_replay/*.json -text
-
 # 时间线是只追加的：两个人同时往顶部加条目时，git 默认会判冲突。
 # union 合并会把双方新增的行都保留，正好符合"谁都不许删别人的条目"的规则。
 # 实测（2026-10-20，两条分支同时往顶部加条目）：
@@ -19,9 +18,12 @@ board/audio_replay/*.json -text
 # 所以日志正文要写具体内容，不要写"完成"这类雷同的空话——这也正好是项目要的写法。
 # 副作用：合并后两条同日条目的先后顺序不保证，所以每条都必须自带日期。
 docs/log/progress.md merge=union
-
 board/audio_replay/*.html -text
-
 board/audio_replay/start-panel.sh -text
 # 模型文件的 SHA256 要跨机一致，禁止行尾转换
 models/** -text
+# Preserve B model-package SHA256 across checkout.
+/models/** -text
+# The room review is a byte-frozen evidence bundle, including original models.
+/report/verification/audio_closed/room-review-20261024/** -text
+/report/verification/audio_closed/lowband-audit-20261025/** -text

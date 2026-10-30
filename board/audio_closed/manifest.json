@@ -16,7 +16,7 @@
     "board/audio_closed/closed_trial.py": "49526ab66b2fd224d96d0935e3bd589bea8207a74918e7dc904184b05ba15f67",
     "board/audio_closed/residual_tools.py": "045f6fd1cfe5bb35f46b5625bab4ce1d85f5bb27e055d977a8a8021c58aa9e72",
     "board/audio_closed/closed_tools.py": "7643726b465cb672fefbd179354e03d184d70572039e205d94370beb43b1616e",
-    "board/audio_closed/closed_batch.py": "26514ef1d5f29cb42a95a441f7a06b68079e410e95f3356fc5a9e971fdf2255b",
+    "board/audio_closed/closed_batch.py": "b8d4a845f4a4bf128329192478942e98f69286a3342275469525fadcd213dc01",
     "board/audio_closed/audio_closed.bit": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316",
     "board/audio_closed/audio_closed.hwh": "328a1c608192328434dcd6b5be0c0e1d6e8b1c483bfc92a1b243129a997cf010"
   },

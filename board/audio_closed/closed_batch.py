@@ -6,6 +6,8 @@ from pathlib import Path
 import uuid
 
 GAINS = (-30, -24, -18, -12)
+SUMMARY_SCHEMA_VERSION = 2
+ACTUAL_CONFIG_FIELDS = ('gain_q12', 'hp_volume', 'bit_sha256')
 MATCH_KEYS = ('bit_sha256', 'model_sha256', 'coefficients_sha256',
               'fixture_id', 'hp_volume', 'sample_rate_hz', 'gain_q12',
               'completed_frames', 'sound_seconds_nominal')
@@ -35,13 +37,21 @@ def rejection(result):
 def export_summary(folder, state):
     """Save after every transition; a new UUID directory protects previous batches."""
     folder = Path(folder)
+    state['schema_version'] = SUMMARY_SCHEMA_VERSION
+    for row in state['trials']:
+        # Driver telemetry is authoritative; cancellation/unknown values stay null.
+        # Retain metadata for existing consumers and expose aliases for flat exports.
+        metadata = row.get('metadata', {})
+        for key in ACTUAL_CONFIG_FIELDS:
+            row[key] = metadata.get(key)
     pairs = []
     for gain in GAINS:
         rows = [r for r in state['trials'] if r['gain_db_requested'] == gain]
         if len(rows) != 2 or any('metadata' not in r for r in rows):
             continue
         a, b = rows
-        comparable = all(a['metadata'].get(k) == b['metadata'].get(k) for k in MATCH_KEYS)
+        comparable = all(a['metadata'].get(k) is not None and
+                         a['metadata'].get(k) == b['metadata'].get(k) for k in MATCH_KEYS)
         pairs.append(dict(gain_db_requested=gain, configuration_matches=comparable,
                           bypass_hearing=a.get('hearing'), cancel_hearing=b.get('hearing'),
                           digital_checks_pass=not rejection(a['metadata']) and not rejection(b['metadata']),
@@ -50,7 +60,8 @@ def export_summary(folder, state):
     temp = folder / 'summary.json.tmp'
     temp.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding='utf-8')
     temp.replace(folder / 'summary.json')
-    fields = ['index', 'gain_db_requested', 'mode', 'hearing', 'error', 'gain_db_actual',
+    fields = ['index', 'gain_db_requested', 'mode', 'hearing', 'error',
+              *ACTUAL_CONFIG_FIELDS, 'gain_db_actual',
               'mic_rms_dbfs', 'mic_peak_dbfs', 'prediction_saturations',
               'residual_saturations', 'gain_saturations', 'bit_exact', 'file']
     with (folder / 'summary.csv').open('w', newline='', encoding='utf-8-sig') as f:
@@ -83,7 +94,7 @@ def run_batch(fixture_id='box_v1_20261016',
     model_digest = hashlib.sha256(model_path.read_bytes()).hexdigest()
     folder = Path(output_root) / ('batch_' + uuid.uuid4().hex[:12])
     folder.mkdir(parents=True, exist_ok=False)
-    state = dict(schema_version=1, batch_id=folder.name, status='running', trials=[],
+    state = dict(schema_version=SUMMARY_SCHEMA_VERSION, batch_id=folder.name, status='running', trials=[],
                  gains_db=list(GAINS), seconds=2.0, hp_volume=40,
                  interpretation='operating-range exploration; NOT measured MSG/ASG',
                  monitoring='no continuous spectral monitor; only tail PCM and full-run saturation counts',

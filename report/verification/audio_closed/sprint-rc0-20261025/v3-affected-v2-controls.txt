@@ -1,0 +1,23 @@
+test_aligned_nonstationary_source_pair_and_mismatch_rejection (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_aligned_nonstationary_source_pair_and_mismatch_rejection) ... ok
+test_clean_tail_does_not_certify_full_run_adc (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_clean_tail_does_not_certify_full_run_adc) ... ok
+test_counter_word_preserves_both_16_and_full_32_bit_fields (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_counter_word_preserves_both_16_and_full_32_bit_fields) ... ok
+test_eight_rail_samples_alone_do_not_prove_eight_overflows (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_eight_rail_samples_alone_do_not_prove_eight_overflows) ... ok
+test_gain_negative_half_rounds_away_from_zero (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_gain_negative_half_rounds_away_from_zero) ... ok
+test_identity_bad_extent_and_status_disagreement_cannot_pass (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_identity_bad_extent_and_status_disagreement_cannot_pass) ... ok
+test_invalid_counter_keeps_independent_input_observation (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_invalid_counter_keeps_independent_input_observation) ... ok
+test_reported_candidate_extent_and_event_census_keeps_scope (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_reported_candidate_extent_and_event_census_keeps_scope) ... ok
+test_reported_zero_rail_census_does_not_become_good_baseline (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_reported_zero_rail_census_does_not_become_good_baseline) ... ok
+test_signed24_legal_rails_are_not_arithmetic_overflow (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_signed24_legal_rails_are_not_arithmetic_overflow) ... ok
+test_source_on_and_transition_windows_are_not_mixed (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_source_on_and_transition_windows_are_not_mixed) ... ok
+test_spectral_power_obeys_parseval_and_band_share_identity (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_spectral_power_obeys_parseval_and_band_share_identity) ... ok
+test_summary_numbers_are_consistency_only (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_summary_numbers_are_consistency_only) ... ok
+test_tail_history_is_excluded_from_local_predictor_replay (sim.feedback.test_itemized_20261027.ItemizedReviewTests.test_tail_history_is_excluded_from_local_predictor_replay) ... ok
+test_literal_packed_counts (sim.feedback.test_evaluation.EvaluationTests.test_literal_packed_counts) ... ok
+test_clipped_tone_is_not_howl (sim.feedback.test_evaluation.EvaluationTests.test_clipped_tone_is_not_howl) ... ok
+test_gap_alignment_configuration_and_version (sim.feedback.test_evaluation.EvaluationTests.test_gap_alignment_configuration_and_version) ... ok
+test_bypass_prediction_saturation_only (sim.feedback.test_evaluation.EvaluationTests.test_bypass_prediction_saturation_only) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.265s
+
+OK

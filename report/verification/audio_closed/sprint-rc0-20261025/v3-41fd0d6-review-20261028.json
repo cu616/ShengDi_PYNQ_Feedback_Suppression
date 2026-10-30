@@ -1,0 +1,608 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "kind": "C-final-scope-review-A-41fd0d6",
+  "A_commit": "41fd0d638fb0d6122547e4cfa54c8e17b8353973",
+  "hardware_operations_by_C": 0,
+  "question": "Which module/evidence can freeze after A hardware supplements, and is one new tone round currently justified?",
+  "snapshot_hash_checks": [
+    {
+      "file": "audio_replay.bit",
+      "expected": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "actual": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "matched": true
+    },
+    {
+      "file": "audio_replay.hwh",
+      "expected": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "actual": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "matched": true
+    },
+    {
+      "file": "replay_trial.py",
+      "expected": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+      "actual": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+      "matched": true
+    },
+    {
+      "file": "replay_tools.py",
+      "expected": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "actual": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "matched": true
+    },
+    {
+      "file": "closed_tools.py",
+      "expected": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "actual": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "matched": true
+    },
+    {
+      "file": "residual_tools.py",
+      "expected": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "actual": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "matched": true
+    },
+    {
+      "file": "test_runtime_stop.py",
+      "expected": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "actual": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "matched": true
+    },
+    {
+      "file": "test_verify_replay_v3.py",
+      "expected": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "actual": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "matched": true
+    }
+  ],
+  "manifest": {
+    "schema_version": 1,
+    "overlay": "audio_replay",
+    "version": "v3",
+    "contract": "docs/contracts/audio-replay-v3.md",
+    "branch": "A",
+    "commit": "snapshot introduced at 05f5c69; identity is the hashes below, see branch A for later commits",
+    "sample_rate_hz": 48828.125,
+    "taps": 512,
+    "lag_first": 1,
+    "source_frames_max": 131072,
+    "source_format": "signed16 -> signed24 << 8",
+    "build": {
+      "tool": "Vivado 2018.3",
+      "script": "build/scripts/create_audio_replay.tcl",
+      "wns_ns": 0.548,
+      "whs_ns": 0.015,
+      "tns_ns": 0.0,
+      "ths_ns": 0.0,
+      "failing_endpoints": 0,
+      "block_ram_pct": 80.0,
+      "dsp": 3,
+      "timing_statement": "constraints as applied are met; NOT a full timing sign-off (four external I/O delay constraints are still missing, unchanged since v1)"
+    },
+    "hashes": {
+      "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "replay_trial.py": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+      "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "test_verify_replay_v3.py": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d"
+    },
+    "model": {
+      "path_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/rewired_512_20261026.json",
+      "sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+      "fixture_id": "room_v1_20261026b",
+      "fixture_confirmed": "same physical rig the model was fitted on (microphone to speaker 100 cm, side-facing, metal plate and cotton), confirmed by the operator 2026-10-27",
+      "logical_taps": 512,
+      "loaded_taps": 512,
+      "coefficients_sha256_q20_candidate": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+      "coefficients_sha256_q20_zero_arm": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+      "coefficients_hash_note": "the two arms load different coefficient arrays, so they have different hashes: the candidate model is 6118e85d... and any zero_coeff=True arm is e5a00aa9... (all-zero, 512 taps after padding). C 2026-10-27: the manifest had the zero-arm hash in a field named as if it were the candidate. Both are now recorded explicitly."
+    },
+    "changed_against_v2": [
+      "gain multiplies the unclamped 25-bit difference; the only clamp is after the gain",
+      "capture_status bit22 = independent input full-scale sticky flag",
+      "driver stops on bit22 with stop_reason=\"input_clip\"; pre-gain residual overflow alone still only counts",
+      "driver refuses to start when the bit/hwh next to it is not the declared v3 pair (sha256 constants)",
+      "evidence adds input_full_scale_seen; the status.json written on a capture-save failure still carries capture_status, input_full_scale_seen, the v3 marker and every version hash",
+      "replay_tools verifies the output against the wide residual, skips skip+2 of a truncated ring, uses the asymmetric 24-bit rail, reports prefix overflows as unverifiable and refuses to pass with no output frames"
+    ],
+    "unchanged_against_v2": [
+      "bitstream register map except bit22",
+      "coefficient format Q20/24-bit, lag_first=1, two-frame schedule",
+      "prediction / post-gain / mix saturation, protocol fault, timeout, manual stop",
+      "24-bit residual and residual_saturated meanings"
+    ],
+    "hardware_status": {
+      "bitstream_executed_on_board": true,
+      "executed_driver_sha256": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
+      "note": "the bitstream has run on the board with the driver 6b397359 (before the input_clip stop fix). The delivered driver 1b07586f has NOT run on hardware yet: the board is offline. First hardware step when power returns: upload 1b07586f, force or inject an input full-scale event, confirm stop_reason=\"input_clip\", mute, saved evidence and recovery."
+    },
+    "rollback": {
+      "package_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_live",
+      "bitstream_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+      "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+      "successful_baseline": "zero coefficients, PL -8 dB, Codec 40, phone 5 cm / volume 8 of 15"
+    },
+    "review_2026_10_27_C": {
+      "fixed_in_this_version": [
+        "1 save failure keeps capture_status / input_full_scale_seen / v3 marker / full hashes (incl. replay_tools)",
+        "2 wide residual is now computed from the RECORDED prediction column, so the prefix of a truncated ring is counted exactly instead of being reported as 0; the asymmetric rail test stays; on the real v2 capture the count is 8, equal to the hardware residual_saturations",
+        "3 scripts: gate before the arm, a failed gate / protection / failed recovery / stopped arm ends the branch, the tone round stops at the first failing arm, and the operator confirmation is a token the scripts consume but never create",
+        "4 tone analysis rejects five classes of bad input: missing identity, changed source or gain, conflicting actual length, input at the rail, and any arm that stopped",
+        "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); candidate and zero-arm coefficient hashes recorded separately"
+      ]
+    }
+  },
+  "hardware_report": {
+    "evidence_level": "A-owned hardware report accepted with its driver/config scope; no independent C raw replay",
+    "driver_full_verification": {
+      "date": "2026-10-28, after the operator returned to the microphone",
+      "why": "the delivered driver was only partly re-verified; these are the two checks that need a person",
+      "input_full_scale_stop": {
+        "how": "hand claps 2-3 cm from the microphone during a 3 s listen-only run (digital gain 0)",
+        "result": "stop_reason=\"input_clip\", capture_status=0x00406350 (bit22=1), input_full_scale_seen=true, microphone peak -0.0 dBFS, 15 samples at the rail, stopped at 12712 of 146484 frames",
+        "recovery": "recovery_ok=true, cleanup_errors=[]",
+        "verdict": "PASS on the delivered driver"
+      },
+      "sixty_second_continuous": {
+        "preconditions": "listen-only probe first: mic -32.2 dBFS, peak -19.7 dBFS, bit22=0, no rail samples",
+        "result": "stop_reason=completed, 2929687/2929687 frames, capture_status=0x00008001, bit22=0, rsat/psat/gsat/msat 0, mic RMS -31.4 dBFS, peak -14.3 dBFS, no rail samples, bit_exact=true, wall 89.0 s",
+        "verdict": "PASS on the delivered driver"
+      },
+      "failed_attempts_before_this": [
+        "60 s at phone volume 8/15, 5 cm: stopped after 31988 frames with input_clip (mic RMS -21.6 dBFS). The historical baseline was recorded with a driver that had no input detector, so its zero counters never proved a clean input; the working point was changed to 6/15 and marked as a changed condition.",
+        "first attempts right after the clap test still carried the clapping tail (mic RMS -18.2 dBFS, one sample at the rail) and stopped correctly; they were not source measurements at all."
+      ],
+      "listener_record": {
+        "configuration": "zero coefficients, PL -8 dB, Codec 40, phone 6/15 at 5 cm, speaker 100 cm side-facing",
+        "verbatim": "\"能听出放大\" (can hear the amplification)",
+        "meaning": "the amplification path and level are audible at this working point. It is NOT an anti-howling result: no cancellation was active (zero coefficients), so this says nothing about the candidate model.",
+        "earlier_negative_records": [
+          "2026-10-27, 20 cm human speech: \"感觉都没放大人声\" (no audible amplification)",
+          "2026-10-28, 60 s at 6/15 before this run: \"能听到、没明显放大\" (audible, not obviously louder)"
+        ]
+      }
+    },
+    "matrix": {
+      "why": "C re-verifies a hash, not a story: every hardware check must say which driver hash it ran on",
+      "rows": [
+        {
+          "check": "input full scale stops the run (hand claps 2-3 cm)",
+          "driver": "82787262b94b2b081d7da6da1d0429ea51f8bb2048a62e40682d3643a2a7f67c",
+          "result": "PASS: stop_reason=input_clip, capture_status=0x004019ee, stopped at 3319/146484 frames, recovery_ok"
+        },
+        {
+          "check": "60 s continuous, twice",
+          "driver": "82787262",
+          "result": "PASS both runs (2929687 frames, bit22=0)"
+        },
+        {
+          "check": "mixed pair refused before start",
+          "driver": "82787262",
+          "result": "PASS"
+        },
+        {
+          "check": "silent run completes",
+          "driver": "82787262",
+          "result": "PASS"
+        },
+        {
+          "check": "mixed pair refused before start",
+          "driver": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+          "result": "PASS (re-run on the delivered driver)"
+        },
+        {
+          "check": "silent run completes + status.json carries the full identity",
+          "driver": "c2b2a86a",
+          "result": "PASS: completed, bit22=0, bit_exact, and status.json now contains capture_status, input_full_scale_seen, package_version and driver/bit/hwh/model hashes (C item 1)"
+        },
+        {
+          "check": "input full scale stops the run",
+          "driver": "c2b2a86a",
+          "result": "PASS: stop_reason=input_clip, capture_status=0x00406350, 12712/146484 frames, recovery_ok (re-run on the delivered driver)"
+        },
+        {
+          "check": "60 s continuous on the delivered driver",
+          "driver": "c2b2a86a",
+          "result": "PASS: 2929687/2929687 frames, bit22=0, all saturations 0, bit_exact (delivered driver)"
+        }
+      ],
+      "diff_evidence": "driver-diff-clap-verified-to-delivered.txt: 34 changed lines between the clap-verified driver and the delivered one; none of them is runtime_stop, the polling loop or the post-run re-check. The single line that mentions INPUT_CLIP_BIT is the status field.",
+      "conclusion": "the delivered driver c2b2a86a now has all four checks: mixed pair refused, silent run completes with full identity in status.json, input full scale stops the run, and 60 s completes."
+    },
+    "four_checks_closed_by_A": true,
+    "source_condition": {
+      "file": "1101.m4a",
+      "volume": "6/15",
+      "distance_cm": 5,
+      "role": "phone source, zero coefficients, PL-8dB Codec40, changed from8/15"
+    },
+    "input_clip_engineering_test": "12712/146484 frames, bit22 set, recovery true; intentional overload proves stop behavior, not acoustic instability",
+    "sixty_second_scope": "2929687/2929687 executed frames; bit22/all sticky DSP counters clear per A. bit_exact applies to captured verification window, not every frame of the60s.",
+    "listener_scope": "Retain can hear amplification as qualitative positive report. Output-muted listener comparison not documented; no precise PA gain, no human-speech or FIR benefit claim."
+  },
+  "changed_helper_test": {
+    "executed": 7,
+    "passed": 7,
+    "source_sha256": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+    "stdout": "legal -8388608 is not an overflow                          OK counted 0\n-8388609 is an overflow                                    OK counted 1\n+8388608 is an overflow                                    OK counted 1\nprefix overflow is counted, not dropped                    OK checked=1 prefix=1 partial=False\nclean prefix counts zero                                   OK \nshortest acceptable ring still verifies one output frame   OK checked=1 bit_exact=True\nordinary capture still verifies                            OK tm=0\nVERIFY_REPLAY_V3_TEST PASS (7 checks)\n"
+  },
+  "unchanged_stop16": {
+    "rerun_by_C": false,
+    "reason": "driver c2b2 and test_runtime_stop hash unchanged; preserve previous software and now-supplied actual hardware evidence, no new stopping logic"
+  },
+  "targeted_checker": {
+    "schema_version": 1,
+    "suite": "c-a-driver-acceptance-v3",
+    "hardware_access": false,
+    "driver_sha256": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+    "package_hashes": {
+      "replay_trial.py": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+      "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e"
+    },
+    "accepted": true,
+    "cases": [
+      {
+        "name": "v3_identity_in_failure_sidecar",
+        "passed": true
+      },
+      {
+        "name": "v3_oracle_wide_count_uses_recorded_prediction",
+        "passed": true
+      }
+    ]
+  },
+  "changed_scope_probes": {
+    "A_commit": "41fd0d6",
+    "hardware_operations": 0,
+    "scripts_sha256": {
+      "field_human_pair_v3.sh": "aea244c3b1ff8c0ecbe9021f108897e89d9c52729efb48ac1a5b47e9bad478bd",
+      "field_stationary_v3.sh": "3a1cff4fad9555adb1d39e5c5ae67b137a52620b78cd4606b781ac564260d052",
+      "tone_arms_v3.sh": "8ce30e7a0b51cf15130fea321202ddfaa121be003bffe59160b232adfbfffac8",
+      "tone_analyze.sh": "42ccba262529f3c6534569860543995bee94b25a8a0d1a085e06a309a4103be0"
+    },
+    "field": [
+      {
+        "script": "field_human_pair_v3.sh",
+        "scenario": "gate_guard",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 3,
+        "passed": false,
+        "error": null,
+        "stdout": "HUMAN gate  stop=guard       frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True recovery_ok=True\nHUMAN_PAIR cue: speak the same sentence continuously for about 20 s from now\nHUMAN zero  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True recovery_ok=True\nHUMAN cand  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True recovery_ok=True\nHUMAN_PAIR_SUMMARY zero_mic=-40.0 cand_mic=-40.0 delta=+0.0 dB conf=SYNTHETIC_TEST_ONLY\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": true,
+            "direct_only": false
+          },
+          {
+            "zero_coeff": false,
+            "direct_only": false
+          }
+        ]
+      },
+      {
+        "script": "field_human_pair_v3.sh",
+        "scenario": "zero_restore",
+        "expected_driver_calls": 2,
+        "observed_driver_calls": 2,
+        "passed": true,
+        "error": "SystemExit:0",
+        "stdout": "HUMAN gate  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True recovery_ok=True\nHUMAN_PAIR cue: speak the same sentence continuously for about 20 s from now\nHUMAN zero  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True recovery_ok=False\nBRANCH_STOPPED after the zero arm (stop=completed bit22=0)\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": true,
+            "direct_only": false
+          }
+        ]
+      },
+      {
+        "script": "field_stationary_v3.sh",
+        "scenario": "gate_input",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 3,
+        "passed": false,
+        "error": null,
+        "stdout": "ARM gate  stop=input_clip  frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=1 share=0.0000 rsat=0 psat=0 recovery_ok=True\nARM zero  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 share=0.0000 rsat=0 psat=0 recovery_ok=True\nARM cand  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 share=0.0000 rsat=0 psat=0 recovery_ok=True\nSTATIONARY_SUMMARY share_zero=0.0000 share_cand=0.0000 delta_db=+0.0 level=-8.0 conf=SYNTHETIC_TEST_ONLY\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": true,
+            "direct_only": false
+          },
+          {
+            "zero_coeff": false,
+            "direct_only": false
+          }
+        ]
+      },
+      {
+        "script": "tone_arms_v3.sh",
+        "scenario": "first_missing",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 1,
+        "passed": true,
+        "error": null,
+        "stdout": "TONE open   RuntimeError('synthetic missing capture')\nTONE_ROUND_ABORTED at open: not running the remaining arms\nTONE_ROUND_WRITTEN D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\c-a-41fd0d6-review\\field-tone_arms_v3.sh-first_missing\\tone_round.json round 1793162765440151600\n",
+        "calls": [
+          {
+            "zero_coeff": false,
+            "direct_only": true
+          }
+        ]
+      },
+      {
+        "script": "tone_arms_v3.sh",
+        "scenario": "first_guard_with_npz",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 3,
+        "passed": false
+      }
+    ],
+    "tone": [
+      {
+        "case": "plumbing_control",
+        "printed_depth": true,
+        "should_print_depth": true,
+        "passed": true,
+        "exit_code": 0,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      },
+      {
+        "case": "missing_identity",
+        "printed_depth": false,
+        "should_print_depth": false,
+        "passed": true,
+        "exit_code": 1,
+        "stdout": "TONE_FAIL refusing to compute a depth:\n  - identity missing on driver_sha256: {'open': None, 'bypass': None, 'cancel': None}\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      },
+      {
+        "case": "changed_source_gain",
+        "printed_depth": false,
+        "should_print_depth": false,
+        "passed": true,
+        "exit_code": 1,
+        "stdout": "TONE_FAIL refusing to compute a depth:\n  - identity mismatch on hp_volume: {'open': 40, 'bypass': 40, 'cancel': 30}\n  - bypass and cancel used different gains: {'open': 0, 'bypass': 1631, 'cancel': 2048}\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      },
+      {
+        "case": "array_length",
+        "printed_depth": false,
+        "should_print_depth": false,
+        "passed": true,
+        "exit_code": 1,
+        "stdout": "TONE_FAIL refusing to compute a depth:\n  - array lengths differ: {'open': (16384, 16384, 16384), 'bypass': (16384, 16384, 16384), 'cancel': (16383, 16383, 16383)}\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      },
+      {
+        "case": "raw_input_rail",
+        "printed_depth": false,
+        "should_print_depth": false,
+        "passed": true,
+        "exit_code": 1,
+        "stdout": "TONE_FAIL refusing to compute a depth:\n  - cancel: 1 microphone samples at the rail in the capture\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      },
+      {
+        "case": "stopped",
+        "printed_depth": false,
+        "should_print_depth": false,
+        "passed": true,
+        "exit_code": 1,
+        "stdout": "TONE_FAIL refusing to compute a depth:\n  - cancel: stop_reason=guard (an arm that stopped cannot be part of a depth)\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      },
+      {
+        "case": "source_array_only",
+        "printed_depth": true,
+        "should_print_depth": false,
+        "passed": false,
+        "exit_code": 0,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      },
+      {
+        "case": "equal_wrong_metadata_lengths",
+        "printed_depth": true,
+        "should_print_depth": false,
+        "passed": false,
+        "exit_code": 0,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      },
+      {
+        "case": "sidecar_restore_failed",
+        "printed_depth": true,
+        "should_print_depth": false,
+        "passed": false,
+        "exit_code": 0,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace"
+      }
+    ],
+    "oracle": [
+      {
+        "case": "512_observed_prefix_events",
+        "passed": true,
+        "verification": {
+          "bit_exact": true,
+          "verified": true,
+          "verification_note": null,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "wide_residual_frames": 512,
+          "wide_residual_frames_prefix": 512,
+          "wide_residual_count_partial": false,
+          "wide_prediction_source": "recorded prediction column (exact for the prefix too)",
+          "wide_rail_definition": "overflow iff wide > 8388607 or wide < -8388608",
+          "history_excluded_frames": 512,
+          "evaluated_frames": 128,
+          "output_checked_frames": 638,
+          "interpretation": "played[n]=source[n]+gain(wide residual[n-2]), one clamp after gain; arithmetic only"
+        },
+        "note": "Output from index2 verifies recorded-prediction arithmetic; model replay still excludes512 prefix frames."
+      }
+    ],
+    "real_captures": [
+      {
+        "archive": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\c-field-intake-20261027\\a735d45c\\report\\verification\\audio-replay\\c-new-layout-r4-returns\\layout-10339aa4ee7e-return-results.zip",
+        "member": "01-mic-precheck-quiet-zero.npz",
+        "sha256": "254d42033fcfbcef3e4589ba6fe89cace7283310227cda053bf7e6baf50ae280",
+        "recorded_bit": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "first_frame": 0,
+        "frames": 14648,
+        "direct_whole": 0,
+        "direct_prefix": 0,
+        "helper_whole": 0,
+        "helper_prefix": 0,
+        "recorded_whole_run_residual_count": 0,
+        "passed": true,
+        "scope": "real v2 data, independent strict subtraction only; no v3 bit-exact or effect claim"
+      },
+      {
+        "archive": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\c-field-intake-20261027\\a735d45c\\report\\verification\\audio-replay\\c-new-layout-r4-returns\\layout-10339aa4ee7e-return-results.zip",
+        "member": "02-quiet-matched.npz",
+        "sha256": "0e4be9940f97d53afddcf720f5a87ef5c3c9387951e9da565924d1685cfba763",
+        "recorded_bit": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "first_frame": 33420,
+        "frames": 16384,
+        "direct_whole": 0,
+        "direct_prefix": 0,
+        "helper_whole": 0,
+        "helper_prefix": 0,
+        "recorded_whole_run_residual_count": 0,
+        "passed": true,
+        "scope": "real v2 data, independent strict subtraction only; no v3 bit-exact or effect claim"
+      },
+      {
+        "archive": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\c-field-intake-20261027\\a735d45c\\report\\verification\\audio-replay\\c-new-layout-r4-returns\\layout-10339aa4ee7e-return-results.zip",
+        "member": "03-mic-precheck-positive-zero.npz",
+        "sha256": "4cd696212455d0bc2be3ccb156072368132577f1fd3197b46420ad8818d5905a",
+        "recorded_bit": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "first_frame": 0,
+        "frames": 14648,
+        "direct_whole": 0,
+        "direct_prefix": 0,
+        "helper_whole": 0,
+        "helper_prefix": 0,
+        "recorded_whole_run_residual_count": 0,
+        "passed": true,
+        "scope": "real v2 data, independent strict subtraction only; no v3 bit-exact or effect claim"
+      },
+      {
+        "archive": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\c-field-intake-20261027\\a735d45c\\report\\verification\\audio-replay\\c-new-layout-r4-returns\\layout-10339aa4ee7e-return-results.zip",
+        "member": "04-positive-matched.npz",
+        "sha256": "beb6a14b12ba3de6eff1624b8162666fac966c4399b6cb0d43ec2af1451086ca",
+        "recorded_bit": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "first_frame": 33420,
+        "frames": 16384,
+        "direct_whole": 0,
+        "direct_prefix": 0,
+        "helper_whole": 0,
+        "helper_prefix": 0,
+        "recorded_whole_run_residual_count": 0,
+        "passed": true,
+        "scope": "real v2 data, independent strict subtraction only; no v3 bit-exact or effect claim"
+      }
+    ],
+    "local_excerpt": {
+      "source_sha256": "659373a72f45677ec4e69934d48e038e1dda4ee6462e14136875184e5add4969",
+      "frames": 33,
+      "definite_overflow": 8,
+      "possible_overflow": 8,
+      "global_frames": [
+        114687,
+        114688,
+        114689,
+        114690,
+        114691,
+        114692,
+        114693,
+        114694
+      ],
+      "scope": "rounded six-decimal excerpt with +/-0.5e-6 bounds; no full16384 capture replay or global counter/reset proof"
+    },
+    "reproduction_source_utf8": "\"\"\"Changed/previously failing A41 v3 checks, no board imports or real audio execution.\"\"\"\nimport ast\nimport contextlib\nimport hashlib\nimport io\nimport json\nimport pathlib\nimport subprocess\nimport sys\nimport zipfile\n\nimport numpy as np\n\nROOT=pathlib.Path(__file__).resolve().parent\nREPO=ROOT.parents[1]\nSCRIPTS=ROOT/'board/audio_replay';SNAP=SCRIPTS/'v3'\nsys.path.insert(0,str(SNAP))\nimport replay_tools\n\nMAN=json.loads((SNAP/'manifest.json').read_text(encoding='utf-8-sig'))\nresults=dict(A_commit='41fd0d6',hardware_operations=0,scripts_sha256={},field=[],tone=[],oracle=[],real_captures=[])\n\n# Reuse C's already archived bounded payload/stub functions; do not execute the old test loops.\nold=json.loads((REPO/'report/verification/audio_closed/sprint-rc0-20261025/v3-ac30584-recheck-20261028.json').read_text(encoding='utf-8'))\nsource=old['bounded_probes']['reproduction_source_utf8']\ntree=ast.parse(source)\nimports=[n for n in tree.body if isinstance(n,(ast.Import,ast.ImportFrom))]\nfunctions=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in ('payload','field')]\nexec(compile(ast.Module(body=imports+functions,type_ignores=[]),'<archived-C-probe-functions>','exec'),globals())\nfor name,scenario,expected in [\n ('field_human_pair_v3.sh','gate_guard',1),('field_human_pair_v3.sh','zero_restore',2),\n ('field_stationary_v3.sh','gate_input',1),('tone_arms_v3.sh','first_missing',1)]:\n    field(name,scenario,expected)\n\n# A protected first tone leaves an NPZ, unlike a missing-capture failure.\nfolder=ROOT/'tone-first-protected';folder.mkdir(exist_ok=True);calls=[]\ndef protected_trial(path,*args,**kwargs):\n    calls.append(str(path))\n    np.savez(path,microphone=np.full(640,.01),metadata_json=json.dumps(dict(stop_reason='guard')))\n    raise RuntimeError('SYNTHETIC_GUARD_WITH_SAVED_NPZ')\nstub=types.ModuleType('replay_trial');stub.replay_trial=protected_trial\nwith patch.dict(sys.modules,{'replay_trial':stub}),patch.object(sys,'argv',['tone','SYNTHETIC_TEST_ONLY']),contextlib.redirect_stdout(io.StringIO()):\n    exec(payload('tone_arms_v3.sh',folder),{'__name__':'__main__'})\nresults['field'].append(dict(script='tone_arms_v3.sh',scenario='first_guard_with_npz',\n    expected_driver_calls=1,observed_driver_calls=len(calls),passed=len(calls)==1))\n\n\ndef tone(case):\n    folder=ROOT/('tone-qualified-'+case);folder.mkdir(exist_ok=True)\n    n=16384;fs=48828.125;budget=107421;first=budget-n\n    mic=.01*np.sin(2*np.pi*322*np.arange(n)/fs)\n    pcm=np.rint(.15*np.sin(2*np.pi*322*np.arange(97656)/fs)*32767).astype('<i2')\n    q=np.asarray(json.loads((REPO/'tmp/c-be730b5b-review/models/room_v1/rewired_512_20261026.json').read_text(encoding='utf-8'))['coefficients_q20'],dtype='<i4')\n    entries=[]\n    for tag in ('open','bypass','cancel'):\n        meta=dict(package_version='audio-replay-v3',bit_sha256=MAN['hashes']['audio_replay.bit'],\n          hwh_sha256=MAN['hashes']['audio_replay.hwh'],driver_sha256=MAN['hashes']['replay_trial.py'],\n          replay_tools_sha256=MAN['hashes']['replay_tools.py'],model_sha256=MAN['model']['sha256'],\n          source_pcm16_sha256=hashlib.sha256(pcm.tobytes()).hexdigest(),\n          coefficients_sha256=hashlib.sha256(q.tobytes()).hexdigest(),fixture_id='room_v1_20261026b',\n          hp_volume=40,sample_rate_hz=fs,frames=n,first_frame=first,completed_frames=budget,\n          sound_seconds_nominal=budget/fs,source_frames=len(pcm),source_end_frame_exclusive=len(pcm),\n          source_schedule_verified=True,capture_status=0x8001,input_full_scale_seen=False,\n          mic_full_scale_samples=0,prediction_saturations=0,residual_saturations=0,\n          gain_saturations=0,mix_saturations=0,stop_reason='completed',early_stop=False,\n          recovery_ok=True,verification=dict(bit_exact=True),gain_q12=0 if tag=='open' else 1631,\n          bypass=tag=='bypass',zero_coeff=False)\n        signal=mic.copy();actual_source=pcm.copy();recovery=True\n        if case=='missing_identity':meta.pop('driver_sha256')\n        if case=='changed_source_gain' and tag=='cancel':meta.update(gain_q12=2048,hp_volume=30);actual_source[5]+=1\n        if case=='array_length' and tag=='cancel':signal=signal[:-1]\n        if case=='raw_input_rail' and tag=='cancel':signal[0]=1.0\n        if case=='stopped' and tag=='cancel':meta['stop_reason']='guard'\n        if case=='source_array_only' and tag=='cancel':actual_source[5]+=1\n        if case=='equal_wrong_metadata_lengths':meta['frames']=n+1\n        if case=='sidecar_restore_failed' and tag=='cancel':\n            recovery=False;meta.pop('recovery_ok')\n        p=folder/(tag+'.npz')\n        np.savez(p,microphone=signal,prediction_pcm=np.zeros(len(signal),dtype=np.int64),\n          residual_pcm=np.rint(signal*2**23).astype(np.int64),reference=np.zeros(len(signal)),\n          source_pcm16=actual_source,coefficients_q20=q,sample_rate_hz=fs,metadata_json=json.dumps(meta))\n        p.with_suffix('.status.json').write_text(json.dumps(dict(recovery_ok=recovery)))\n        entries.append(dict(tag=tag,path=str(p),exists=True,error=None))\n    (folder/'tone_round.json').write_text(json.dumps(dict(round_id=123,tone_hz=322,files=entries,\n                                                operator_confirmation='SYNTHETIC_TEST_ONLY')))\n    out=io.StringIO();exit_code=0\n    try:\n        with contextlib.redirect_stdout(out):exec(payload('tone_analyze.sh',folder),{'__name__':'__main__'})\n    except SystemExit as e:exit_code=e.code\n    except Exception as e:exit_code=99;out.write(repr(e))\n    printed='TONE_DEPTH' in out.getvalue();expected=case=='plumbing_control'\n    results['tone'].append(dict(case=case,printed_depth=printed,should_print_depth=expected,\n        passed=printed==expected,exit_code=exit_code,stdout=out.getvalue(),\n        scope='synthetic analyzer plumbing with required metadata; not a validated acoustic/RTL trace'))\n\n\nfor case in ('plumbing_control','missing_identity','changed_source_gain','array_length','raw_input_rail','stopped',\n             'source_array_only','equal_wrong_metadata_lengths','sidecar_restore_failed'):tone(case)\n\nq=np.zeros(512,dtype=np.int64);q[-1]=1<<20\nraw=np.zeros((640,4),dtype=np.int64);raw[:,1]=2**23-51;raw[:,3]=raw[:,1]\nraw[:512,2]=-256;raw[:512,3]=2**23-1\nv=replay_tools.verify_replay(raw,q,False,0,np.zeros(1,dtype='<i2'),1000)\nresults['oracle'].append(dict(case='512_observed_prefix_events',passed=v['wide_residual_frames']==512\n    and v['wide_residual_frames_prefix']==512 and v['wide_residual_count_partial'] is False,\n    verification=v,note='Output from index2 verifies recorded-prediction arithmetic; model replay still excludes512 prefix frames.'))\n\n# Existing real v2 captures: only count identities are compared, not v3 deployment or efficacy.\nzpath=REPO/'tmp/c-field-intake-20261027/a735d45c/report/verification/audio-replay/c-new-layout-r4-returns/layout-10339aa4ee7e-return-results.zip'\nwith zipfile.ZipFile(zpath) as archive:\n    for name in archive.namelist():\n        if not name.endswith('.npz'):continue\n        blob=archive.read(name)\n        with np.load(io.BytesIO(blob),allow_pickle=False) as z:\n            m=json.loads(str(z['metadata_json'].item()))\n            data=np.column_stack([np.rint(z['reference']*2**23).astype(np.int64),\n              np.rint(z['microphone']*2**23).astype(np.int64),z['prediction_pcm'],z['residual_pcm']])\n            wide=data[:,1] if m['bypass'] else data[:,1]-data[:,2]\n            over=(wide < -2**23)|(wide > 2**23-1)\n            prefix=min(len(z['coefficients_q20']),len(data)) if m['first_frame'] else 0\n            got=replay_tools.verify_replay(data,z['coefficients_q20'],m['bypass'],m['gain_q12'],z['source_pcm16'],m['first_frame'])\n            results['real_captures'].append(dict(archive=str(zpath),member=name,sha256=hashlib.sha256(blob).hexdigest(),\n                recorded_bit=m['bit_sha256'],first_frame=m['first_frame'],frames=len(data),\n                direct_whole=int(over.sum()),direct_prefix=int(over[:prefix].sum()),\n                helper_whole=got['wide_residual_frames'],helper_prefix=got['wide_residual_frames_prefix'],\n                recorded_whole_run_residual_count=m['residual_saturations'],\n                passed=got['wide_residual_frames']==int(over.sum()) and got['wide_residual_frames_prefix']==int(over[:prefix].sum()),\n                scope='real v2 data, independent strict subtraction only; no v3 bit-exact or effect claim'))\n\n# A's prior 33-point statistical excerpt remains a local range proof, not the original NPZ.\np=REPO/'tmp/c-b3e69ab5-review/A-5c67f21/report/verification/audio-replay/residual-overflow-result-2026-10-27.json'\nexcerpt=json.loads(p.read_text(encoding='utf-8-sig'))[0]['primary_capture_only']['around_first']\nlo=np.clip((np.asarray(excerpt['mic'])-.5e-6)*2**23,-2**23,2**23-1)-np.asarray(excerpt['pred'])\nhi=np.clip((np.asarray(excerpt['mic'])+.5e-6)*2**23,-2**23,2**23-1)-np.asarray(excerpt['pred'])\ndefinite=(lo>2**23-1)|(hi < -2**23);possible=(hi>2**23-1)|(lo < -2**23)\nresults['local_excerpt']=dict(source_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),frames=33,\n    definite_overflow=int(definite.sum()),possible_overflow=int(possible.sum()),\n    global_frames=np.asarray(excerpt['global_frame'])[definite].tolist(),\n    scope='rounded six-decimal excerpt with +/-0.5e-6 bounds; no full16384 capture replay or global counter/reset proof')\nresults['reproduction_source_utf8']=pathlib.Path(__file__).read_text(encoding='utf-8')\n(ROOT/'revised-results.json').write_bytes((json.dumps(results,ensure_ascii=False,indent=2)+'\\n').encode('utf-8'))\nfor group in ('field','tone','oracle','real_captures'):\n    rows=results[group];print(group,sum(r['passed'] for r in rows),'/',len(rows))\n    for r in rows:\n        if not r['passed']:print('remaining',r.get('script',r.get('case')),r.get('scenario',''))\nprint('33-point definite/possible',int(definite.sum()),int(possible.sum()))\n"
+  },
+  "consumer_validation": {
+    "version": "c-measurement-2.4.2",
+    "summary_revision": "3.2.3",
+    "tests_executed": 5,
+    "tests_passed": 5,
+    "log": "test_delivered_and_historical_release_tuples_do_not_mix (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_delivered_and_historical_release_tuples_do_not_mix) ... ok\ntest_mixed_driver_bit_and_helper_identity_are_rejected (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_mixed_driver_bit_and_helper_identity_are_rejected) ... ok\ntest_itemized_adapter_requires_v3_identity_binding (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_itemized_adapter_requires_v3_identity_binding) ... ok\ntest_flat_summary_keeps_residual_diagnostic_and_rejects_input_sticky (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_flat_summary_keeps_residual_diagnostic_and_rejects_input_sticky) ... ok\ntest_wide_output_matches_scalar_trace_and_old_oracle_differs (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_wide_output_matches_scalar_trace_and_old_oracle_differs) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.122s\n\nOK\n"
+  },
+  "coverage_semantics": "bba helper verifies physical gain(mic-recorded prediction) output from index2, so N-2 checked output frames are valid. Model replay still excludes taps prefix. C independently verifies model-derived output from skip+2 and now labels that scope; these counts are not a mismatch.",
+  "accepted": [
+    "8/8 manifest file identity",
+    "A four engineering hardware checks scoped to c2b2",
+    "prefix count repair: synthetic512/512 and real r4 captures4/4 match direct subtraction",
+    "A old33-point event excerpt has exactly8 definite and8 possible strict overflows under rounding bounds; local only",
+    "candidate6118 vs zeroe5a identities split in manifest",
+    "human zero-arm restore failure now prevents candidate",
+    "tone first missing capture now stops",
+    "five previously bad tone fixtures now refuse depth; plumbing control runs"
+  ],
+  "not_accepted": [
+    "human/stationary protected gate can still run later arms",
+    "first tone protection/error with a saved NPZ still runs later arms",
+    "tone analyzer still emits depth for changed actual source with unchanged declaration, common wrong frame counts, and failed recovery sidecar",
+    "tone metric still mixes source-on/off final-ring windows, uses clamped residual/unnormalized FFT and inverse sign label; no qualified effect depth yet"
+  ],
+  "remaining_A_actions": [
+    {
+      "file": "field_human_pair_v3.sh / field_stationary_v3.sh",
+      "action": "Apply full admissible gate completion/input/protocol/recovery/error checks before the first sound arm, not only peak; keep corrected restore gating."
+    },
+    {
+      "file": "tone_arms_v3.sh",
+      "action": "Return success only when driver returned without error and NPZ plus finalized status confirm completion/recovery/save. A saved protected NPZ is evidence, not permission for the next arm. Preserve the partial round manifest after stopping."
+    },
+    {
+      "file": "tone_analyze.sh",
+      "action": "Validate actual source/Q20 identity, each array length against metadata and each other, and final sidecar/error/recovery; reject the three preserved counterexamples. Use an explicit common source-on window and normalized/specified units, correct bypass-minus-cancel label, and keep v3 pre-gain residual diagnostic distinct from protection."
+    },
+    {
+      "file": "v3/manifest.json + evidence.json",
+      "action": "Synchronize stale skip+2/unverifiable-prefix/offline old-driver/honest_position wording with current bba and A hardware matrix. C does not require any hardware rerun for these text fixes."
+    }
+  ],
+  "audio_round_decision": {
+    "run_now": false,
+    "blocking": "tone code can rearm after a protected NPZ and qualified analysis still has failures",
+    "after_software_fix": "One round only with existing three-arm entry and a genuine round manifest. Keep frozen source/gain/Codec/fixture. Rejection examples are derived local copies of that round, no extra sound/intentional overload.",
+    "no_repeat": [
+      "the four hardware engineering checks",
+      "60s",
+      "full16 stop tests",
+      "full regression",
+      "new B parameters"
+    ]
+  },
+  "freeze_recommendation": "Underlying bit/HWH/driver engineering baseline may freeze at the stated hashes on A evidence. Helper prefix math passes this limited review. Do not freeze the complete effect experiment workflow or claim FIR/human PA benefit.",
+  "original_8_count_scope": "C has not obtained blind2_cand_1746867731709459239.npz in full. A report says full window8 equals hardware8; C only independently checked the33-point local excerpt plus other real NPZ. Supply existing board-local path/hash or derived statistics if full-NPZ independent confirmation is required; no recapture or voice upload requested.",
+  "C_source_hashes": {
+    "scripts/check_a_driver.py": "efd15559be2cb4aad413b89f822e272c76d731bda514be78fd40c533eebe9101",
+    "scripts/review_itemized_20261027.py": "069bae94b7b63a3583e9e4c464994e899b6c678d6720f62fd3c4b147b264f321",
+    "board/audio_replay/model_comparison.py": "a2508cdf625702a1d3f130c428f44e6145518c6fd24c880ab774958a89ca84c0",
+    "board/audio_replay/evaluation.py": "9da37df16efba63d0dadb4fc11d43e3a0c14437295f4aaed25b007792911345b",
+    "sim/feedback/test_replay_v3_consumer.py": "6f82afcb3cc95adbecb9cd791ecd985c57bd92139048c27b8a7d0f894d3b85b6"
+  }
+}

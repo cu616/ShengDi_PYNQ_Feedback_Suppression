@@ -1,0 +1,3 @@
+INFO  REQUESTS: 4 条，其中 2 条 open
+
+扫描 103 个 markdown 文件：0 错误，0 警告

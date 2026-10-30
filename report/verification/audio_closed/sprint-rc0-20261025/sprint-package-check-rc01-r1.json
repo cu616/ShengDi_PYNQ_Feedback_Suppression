@@ -1,0 +1,314 @@
+{
+  "artifact": "build/packages/c-sprint-rc01-r1.zip",
+  "sha256": "c2ee0a2d76cb2569ecdebab1928e389b9b8d6dc38cc79cd82c799d201a3d45f2",
+  "size_bytes": 313904,
+  "policy": "c-sprint-rc01-1.0.1",
+  "source_commits": {
+    "A": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+    "B": "d033d0047542d5e50654a0333777c48ec08dce21",
+    "C": "75f95a1985bdb59bc5718e00fab6a0783fb673f1"
+  },
+  "b_independently_reviewed_commit": "6128282f2853b829768c7310e57b08f0d84c4b89",
+  "source_tree_clean": true,
+  "payload_hashes_verified": 32,
+  "c_source_blob_matches": 7,
+  "a_exact_blob_matches": 6,
+  "default_model": {
+    "name": "calibrated_20261024",
+    "source_file": "models/room_v1/calibrated_20261024.json",
+    "file_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+    "validity": "same verified calibration scene only; no cross-session fallback"
+  },
+  "notebook_code_cells": 1,
+  "notebook_first_line": "# C sprint RC0.1: fixed baseline, single entry",
+  "actual_packaged_notebook_cancel_executed": true,
+  "board_imports": false,
+  "archived_selftest_exact_reproduction": true,
+  "frozen_plan_unchanged": true,
+  "thresholds_unchanged": true,
+  "a_driver_bit_hwh_model_eq_unchanged": true,
+  "preflight_negative_controls": 5,
+  "driver_acceptance": {
+    "schema_version": 1,
+    "suite": "c-a-driver-acceptance-v2",
+    "hardware_access": false,
+    "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+    "accepted": true,
+    "cases": [
+      {
+        "name": "guard_distinct_counts",
+        "passed": true
+      },
+      {
+        "name": "bypass_prediction_only",
+        "passed": true
+      },
+      {
+        "name": "terminal_counts",
+        "passed": true
+      },
+      {
+        "name": "completed_zero_counts",
+        "passed": true
+      },
+      {
+        "name": "protocol_fault",
+        "passed": true
+      },
+      {
+        "name": "operator_cancel",
+        "passed": true
+      },
+      {
+        "name": "restore_failure",
+        "passed": true
+      },
+      {
+        "name": "capture_write_failure",
+        "passed": true
+      }
+    ]
+  },
+  "c_software_tests": 148,
+  "b_software_tests": 109,
+  "preflight": {
+    "schema_version": 1,
+    "policy": "c-sprint-rc01-1.0.1",
+    "all_ok": true,
+    "evidence_kind": "software_fixture",
+    "scope": "package workflow, windows and deployed Q20 arithmetic only; no acoustic or board acceptance",
+    "source_commits": {
+      "A": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+      "B": "d033d0047542d5e50654a0333777c48ec08dce21",
+      "C": "75f95a1985bdb59bc5718e00fab6a0783fb673f1"
+    },
+    "payload_hashes": {
+      "a-driver-acceptance.json": "6c45a38fe9687030c208e22f2d18f71d64991aba58fa60ceb4d0d7217e247813",
+      "a-historical-scene.json": "fc6fa5e99d4255f849ce49e92d62c6f03e07362dff7ad5dd33f2a714f04b488c",
+      "audio_replay.bit": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+      "audio_replay.hwh": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb",
+      "closed_tools.py": "7643726b465cb672fefbd179354e03d184d70572039e205d94370beb43b1616e",
+      "eq.json": "24623514603cc16e0e13f74da588b2f84aaaa110c59d42d5d8e2c13cb4d27ea3",
+      "evaluation.py": "d9e868013f49c6901a6f7084f72b99ba1954ec663300a72a8b17c64a8c731565",
+      "growth_monitor.py": "877f843e83d604a8cf6dd46cfccb1c908ecf2c5d00520fb3ff08535dbd580d7d",
+      "model.json": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+      "model_comparison.py": "209c7d5dab96662fdafb432dca88af8fda0ff016145ec95bf5a66869302a0a55",
+      "models/manifest.json": "4f3248de3248540ce7e6beb5883e438b31defb9db159104b50ed954dda708efb",
+      "models/room_v1/calibrated_20261024.json": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+      "offline-evidence/audit.json": "d7e821bb75d2f99e090a2fb2b1f39c5a14680a2607561daec316df9c8d2f264e",
+      "offline-evidence/b-6128282-repro.txt": "3c19f4e8289883a4dc1a61defc84b9149a134c2392fdd287e9d85211d6a95929",
+      "offline-evidence/b-6128282-review.json": "b5171c1255345a46a6345c1f8654028b9cca6812f0f723f9df4cc7995be5c849",
+      "offline-evidence/b-6128282-tests.txt": "c9caf4053eb0b923bb28e2a05c359034209a84e701c67d92d4abaa8f86cf0a01",
+      "offline-evidence/b-handoff-review.json": "ccb35fd3c84b0624bba4c6fce3a3ac8d81e579c9e8bac56e0c1dee564bc542f3",
+      "offline-evidence/rc01-input-review.json": "7b2099404ffc6434bc01511cb71949f75e3f067999d8a85a4be94a38045386aa",
+      "offline-evidence/tests-r1.txt": "d82947a01b89926b644a171cf9c1c1b539dd443d066d5490d7f5eeb5b91e2d48",
+      "offline-evidence/tests-rc01-r1.txt": "64ca0cd51c97ecbdcc7f4931cccd36ba39320761dc2888e0cf6f7b2026165445",
+      "offline-evidence/tests-rc01.txt": "4961a60ca5bda37ed5e12eb34096da0ce717ecbe9328a858fdcc26d38a0e127d",
+      "offline-evidence/tests.txt": "7109e2ed1a685e1590d91b1863cd41a9dfe17a9ded31cddd90575d2fa8acd2c4",
+      "OPERATIONS.md": "c0455127a9364013961cd078cef9cb18ceaf930404b3617cf09a3ce5461fead7",
+      "replay_tools.py": "e3c748e07a6e87e9dd1522eebe11a24e171407039d35142590e70a85dc6bb767",
+      "replay_trial.py": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+      "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "room_experiment.py": "b41ee2354afc85c30c41c0b560d1325113f3f09b710194f4fb39893cc73d3572",
+      "sprint.ipynb": "e8bb0e71835301373f47b04a2b60f4541feb496c6bb5a7482c9b5aec2ce38360",
+      "sprint_experiment.py": "6fe9007c5aa38d4fdeb04d2d00de48376a028afc8b5492979bb07f4e7989170f",
+      "sprint_selftest.py": "5e03c9f16bacf664025f41302395f0113ee877a4df43b4995c77500a8f18466d",
+      "tail_metrics.py": "8ddd200ceff7bb00ca16da25837dc2fe5aeffaa15abeadd8b6ba4b0f3cbe7bef"
+    },
+    "model": {
+      "taps": 512,
+      "lag_first": 1,
+      "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160"
+    },
+    "checks": {
+      "schedule_completed": true,
+      "trials_complete": true,
+      "gates_passed": true,
+      "fir_pairs_valid": true,
+      "continuous_left_untested": true,
+      "listener_left_untested": true
+    },
+    "trials": [
+      {
+        "id": 1,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 2,
+        "role": "real-voice",
+        "seconds": 8.0,
+        "source_frames": 1,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "saved_waveform",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 3,
+        "role": "listener-off",
+        "seconds": 8.0,
+        "source_frames": 1,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "saved_waveform",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 4,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 5,
+        "role": "listener-on",
+        "seconds": 8.0,
+        "source_frames": 1,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "saved_waveform",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 6,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 7,
+        "role": "fir-off",
+        "seconds": 2.5,
+        "source_frames": 91308,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_off_tail",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "no_instability_observed_in_window"
+      },
+      {
+        "id": 8,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 9,
+        "role": "fir-on",
+        "seconds": 2.5,
+        "source_frames": 91308,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_off_tail",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "no_instability_observed_in_window"
+      },
+      {
+        "id": 10,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 11,
+        "role": "fir-on",
+        "seconds": 2.5,
+        "source_frames": 91308,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_off_tail",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "no_instability_observed_in_window"
+      },
+      {
+        "id": 12,
+        "role": "path-gate",
+        "seconds": 1.02,
+        "source_frames": 48828,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_on_tone",
+        "window_frames": 14920,
+        "ok": true,
+        "category": "unknown"
+      },
+      {
+        "id": 13,
+        "role": "fir-off",
+        "seconds": 2.5,
+        "source_frames": 91308,
+        "capture_frames": 16384,
+        "bit_exact": true,
+        "transition_frames": 2442,
+        "window_kind": "source_off_tail",
+        "window_frames": 16384,
+        "ok": true,
+        "category": "no_instability_observed_in_window"
+      }
+    ],
+    "stop_reason": null,
+    "hardware_test": "not_tested",
+    "continuous_60s": "not_tested",
+    "acoustic_effect": "not_evaluated",
+    "estimated_board_active_minutes": 0.6686666666666666,
+    "estimate_scope": "audio/observation time only; configuration, operator and optional recording waits additional"
+  },
+  "actual_a_path_gate": "failed:gate_tone_not_observed; not reclassified",
+  "hardware_test": "not_tested",
+  "continuous_60s": "not_tested",
+  "independent_board_reproduction": "not_tested"
+}

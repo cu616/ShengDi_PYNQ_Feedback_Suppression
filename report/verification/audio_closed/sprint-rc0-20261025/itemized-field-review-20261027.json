@@ -1,0 +1,581 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "C-derived-review-of-A-itemized-20261027",
+  "r6_native_execution": false,
+  "question": "What can the actual itemized execution establish about baseline use and candidate improvement?",
+  "raw_new_field_captures_available": false,
+  "hardware_operations_by_C": 0,
+  "source_scope": {
+    "required_A_commits": [
+      "d17ff29bb4cea4ee9763b83022f3560c8280f3be",
+      "fc49529288d72e7ce7e1896c2be68e1c305b271b",
+      "df0956c720ddf382367ba9935b50140993961ee7"
+    ],
+    "newest_A_read": "a735d45ceaae71206b9b5878749ec2cca4cfa051",
+    "B_revision_examined": "fee0e5930ab909abdce0996d39d474f31c7bddf5",
+    "access": "Authenticated read-only GitHub API, content Git blob IDs verified; git fetch failed TLS, no A/B checkout or merge",
+    "reports": [
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/candidate-failure-evidence-2026-10-27.json",
+        "sha256": "bfec590c8ac2b6be97116e0d0559130cd80441101e0d49a6298f47a4bb281ce3",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/correction-phone-not-live-human-2026-10-27.json",
+        "sha256": "eab576974d7674448fc57e0fe3d163b90d88a45096c4fe7c7693885c51bf3af7",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/discriminate-success-vs-clip-2026-10-27.json",
+        "sha256": "9e7d4ae2f63c1888a2c623f07dbe87e3ceb297aa4fb74ba337d0c41628bb832a",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/gain-is-exact-2026-10-27.json",
+        "sha256": "748b4f527233d708d5a296aee9a6181d4ef42b650e0f90b1136464dcf3347789",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/live-human-first-confirmed-2026-10-27.json",
+        "sha256": "e6251e851158d57fe1eebd42f6aaf89c7db793acfc9fbdd98a9bb6bf8c884c22",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/live-speech-two-arm-2026-10-27.json",
+        "sha256": "67f1fc6311d0a5bf2581159478dd219981c57ce1ba4879185dc0469cbaec0d32",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/r6-execution-equivalence-2026-10-27.json",
+        "sha256": "c5df4ac555b4db372e64119f2b95aa79f3d617281e0f3bbbd9d711dfb82355a5",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/reproduction-result-2026-10-27.json",
+        "sha256": "3fd88054ddd4c308b58af0911660a3866d09460ccd92a79183bc56718da8e877",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "df0956c7",
+        "path": "report/verification/audio-replay/two-arm-stationary-2026-10-27.json",
+        "sha256": "6e7502106573c31e3b23782378df77ff38127cfa7b06a1d71119f78a8c88f374",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "a735d45c",
+        "path": "report/verification/audio-replay/candidate-failure-evidence-2026-10-27.json",
+        "sha256": "bfec590c8ac2b6be97116e0d0559130cd80441101e0d49a6298f47a4bb281ce3",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "a735d45c",
+        "path": "report/verification/audio-replay/residual-compat-change-list-2026-10-27.json",
+        "sha256": "90eac631da6265fe75f57722eb554ba0920f884838c22ddfdbf1bb749696e116",
+        "evidence": "A-authored report; not independent capture replay"
+      },
+      {
+        "commit_prefix": "a735d45c",
+        "path": "report/verification/audio-replay/silent-analysis-2026-10-27.json",
+        "sha256": "5761c83988f02e3bb1c272b0248624d8464224ecf1a0858478772ed3753a20db",
+        "evidence": "A-authored report; not independent capture replay"
+      }
+    ],
+    "git_fetch_eventual_result": "Final git fetch origin succeeded: origin/main=479a570, origin/A=a735d45, origin/B=fee0e59; unchanged from API search snapshots. No A/B checkout or merge."
+  },
+  "branch_search": [
+    {
+      "branch": "main",
+      "commit": "479a5706819badc3ef5cf5379e9a5eaa2e0704c0",
+      "regular_files": 417,
+      "npz_paths": [
+        "report/verification/audio-replay/calib-repeat-1746798693048720349.npz",
+        "report/verification/audio-replay/coupling-curve.npz",
+        "report/verification/audio-replay/osc-osc_110_1746800858560562482.npz",
+        "report/verification/audio-replay/osc-osc_140_1746800826285439189.npz",
+        "report/verification/audio-replay/osc-osc_80_1746800889744920787.npz",
+        "report/verification/audio-replay/v2-runs/v2_5s_1746776684341025902.npz",
+        "report/verification/audio-replay/v2-runs/v2_60s_1746776696456826068.npz",
+        "report/verification/audio-replay/v2-runs/v2_stop_1746776761600412531.npz"
+      ],
+      "shell_paths": [
+        "board/audio_replay/run_human_r1.sh",
+        "board/audio_replay/run_rc4_human.sh",
+        "board/audio_replay/run_rc4_human2.sh",
+        "board/audio_replay/selftest_channel.sh",
+        "board/audio_replay/start-panel.sh",
+        "scripts/enter-repo.sh"
+      ]
+    },
+    {
+      "branch": "A",
+      "commit": "a735d45ceaae71206b9b5878749ec2cca4cfa051",
+      "regular_files": 461,
+      "npz_paths": [
+        "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799426007669601.npz",
+        "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799460431974953.npz",
+        "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799495671311695.npz",
+        "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799530870174448.npz",
+        "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799566241828611.npz",
+        "report/verification/audio-replay/b-request-2026-10-25/calib6_1746799601922597315.npz",
+        "report/verification/audio-replay/bind-capture-2026-10-26/bind4_00_1746832927253437612.npz",
+        "report/verification/audio-replay/bind-capture-2026-10-26/bind4_01_1746832962577236520.npz",
+        "report/verification/audio-replay/bind-capture-2026-10-26/bind4_02_1746832997608122031.npz",
+        "report/verification/audio-replay/bind-capture-2026-10-26/bind4_03_1746833033647207392.npz",
+        "report/verification/audio-replay/bind-capture-2026-10-26/bind4_04_1746833069163613450.npz",
+        "report/verification/audio-replay/bind-capture-2026-10-26/bind4_05_1746833105158088504.npz",
+        "report/verification/audio-replay/calib-repeat-1746798693048720349.npz",
+        "report/verification/audio-replay/coupling-curve.npz",
+        "report/verification/audio-replay/osc-osc_110_1746800858560562482.npz",
+        "report/verification/audio-replay/osc-osc_140_1746800826285439189.npz",
+        "report/verification/audio-replay/osc-osc_80_1746800889744920787.npz",
+        "report/verification/audio-replay/v2-runs/v2_5s_1746776684341025902.npz",
+        "report/verification/audio-replay/v2-runs/v2_60s_1746776696456826068.npz",
+        "report/verification/audio-replay/v2-runs/v2_stop_1746776761600412531.npz"
+      ],
+      "shell_paths": [
+        "board/audio_replay/run_human_r1.sh",
+        "board/audio_replay/run_rc4_human.sh",
+        "board/audio_replay/run_rc4_human2.sh",
+        "board/audio_replay/selftest_channel.sh",
+        "board/audio_replay/start-panel.sh",
+        "scripts/enter-repo.sh"
+      ]
+    },
+    {
+      "branch": "B",
+      "commit": "fee0e5930ab909abdce0996d39d474f31c7bddf5",
+      "regular_files": 463,
+      "npz_paths": [],
+      "shell_paths": [
+        "board/audio_replay/start-panel.sh",
+        "scripts/enter-repo.sh"
+      ]
+    }
+  ],
+  "archive_search": [
+    {
+      "path": "build/packages/audio-replay.zip",
+      "branches": [
+        "main",
+        "A",
+        "B"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 16,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/a-tail-review-return-3e2e923.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 2,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/a-tail-review-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 2,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc0-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 6,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-human-r1-close5cm.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 7,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-human-r1-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 7,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r2-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 12,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r3-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 11,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r4-live-session-1.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 7,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r4-live-session-2.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 7,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r4-live-session-3.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 6,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-r4-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 20,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-sprint-rc01-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 7,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/lowband2-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 39,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/r4-review-return.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 6,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/room-ready-2026-10-24/room-return-1.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 14,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/room-ready-2026-10-24/room-return-2.zip",
+      "branches": [
+        "main",
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 33,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/b-request-2026-10-25/b-refmic-6captures.zip",
+      "branches": [
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 7,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-new-layout-r4-returns/layout-10339aa4ee7e-return-results.zip",
+      "branches": [
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 12,
+      "matches": []
+    },
+    {
+      "path": "report/verification/audio-replay/c-new-layout-r4-returns/layout-8a701dc501fe-return-results.zip",
+      "branches": [
+        "A"
+      ],
+      "state": "blob_verified_archive_inspected",
+      "members": 12,
+      "matches": []
+    }
+  ],
+  "execution_coverage": [
+    {
+      "item": "entry_and_order",
+      "covered": "A reports scripts speaker_check.sh, input_check.sh, repro5.sh, use60.sh, stationary_arms.sh, blind_arms.sh",
+      "missing": "Actual scripts, shell/Notebook execution logs, per-trial metadata and prompt responses absent",
+      "conclusion": "Not native r6 and not established equivalent; r6 does not prescribe a five-gain scan"
+    },
+    {
+      "item": "input_gate",
+      "covered": "A reports per-item 0.30 s checks and separate 3 s input checks",
+      "missing": "Per-item prechecks and their pairing with actual sound/voice missing; -40 dB alone is not zero output",
+      "conclusion": "A precheck describes that window only; later full-scale input invalidates the affected use/pair, no change to stop rules"
+    },
+    {
+      "item": "input_and_speaker_path",
+      "covered": "A reports input response and tone-versus-quiet 1 kHz +15.9 dB",
+      "missing": "Raw source/reference/background windows and manual pause/named-speaker confirmation; actual tone -12 dBFS differs from frozen r6 -20 dBFS",
+      "conclusion": "Current reported path activity retained; not proof of historical route or automatic path equivalence"
+    },
+    {
+      "item": "phone_baseline",
+      "covered": "A reports zero FIR -8 dB, phone 1101.m4a 8/15 at5cm, two short positive listener reports",
+      "missing": "Short raw captures/status and exact source segment alignment; comparison used -40 dB, not proven output mute",
+      "conclusion": "Preserve qualitative phone amplification observations separately from live-human results"
+    },
+    {
+      "item": "live_human_baseline",
+      "covered": "A reports live15 at12cm: heard/amplified, fairly clear, louder than off, no howl; peak -2.2 dBFS, full-scale0",
+      "missing": "Raw statistics validation, actual off condition and original actions; only one valid reported short run, no live-human 60 s",
+      "conclusion": "Limited single-run qualitative evidence, not repeated or sustained live-human acceptance; live5 clipped1081 samples is separate"
+    },
+    {
+      "item": "continuous_use",
+      "covered": "A reports phone-source 60 s rerun:2929687frames,2952polls, completed, four counts0; first attempt clipped after handling phone",
+      "missing": "Timeline, tail capture/status and actual retry/restore conditions absent",
+      "conclusion": "Phone-source engineering/listener observations only; counters do not certify full-run ADC headroom"
+    },
+    {
+      "item": "controlled_candidate_pair",
+      "covered": "A reports identical seed4242 2s noise -20dBFS, -8dB, zero then candidate",
+      "missing": "Source hashes/arrays, frame windows, external-source state, raw counters and original spectral code",
+      "conclusion": "Reported direction retained; absolute metric contradiction unresolved, no field ASG or adoption pass"
+    },
+    {
+      "item": "live_candidate_event",
+      "covered": "A reports zero input at rails and candidate guard with decoded residual8/prediction0",
+      "missing": "Raw event and pre-event data, sidecars, source state and reset/counter provenance absent",
+      "conclusion": "Both arms invalid for controlled comparison; candidate use interrupted and acceptance unmet, relative worsening and cause unresolved"
+    },
+    {
+      "item": "protection_and_save",
+      "covered": "Frozen replay_trial SHA2127663 matches A version; code disarms/mutes before reading ring and saving; recovery path retained",
+      "missing": "Runtime files to verify recovered/saved flags; this driver does not emit its own SHA or HWH SHA in every status, contrary to generic A claim",
+      "conclusion": "Code-level stop ordering verified; actual execution and identity binding still need original files, no protection semantic change"
+    }
+  ],
+  "outcome_axes": {
+    "execution": "itemized A report only, not complete r6 execution",
+    "measurement": "new raw data not independently available; affected human pair clipped",
+    "algorithm": "controlled-noise metric unresolved; human pair cannot rank candidate versus zero",
+    "listener": "phone positives and one live12cm qualitative positive retained; candidate interrupted",
+    "sustained_use": "phone60s reported; live-human/candidate sustained use not established"
+  },
+  "white_noise_consistency": {
+    "evidence_level": "arithmetic on A rounded summaries only",
+    "share_zero": 0.2281,
+    "share_candidate": 0.0476,
+    "share_drop_db": 6.805183325561554,
+    "total_rms_drop_db": 3.3,
+    "conditional_absolute_band_drop_db": 10.105183325561555,
+    "reported_absolute_band_drop_db": 7.9,
+    "disagreement_db": 2.2051833255615545,
+    "conditional_premise": "same frames, DC removal, power definition, taper and normalization; not established",
+    "phone_share_ratio_power_db": 19.49999542859922,
+    "no_claim_of_true_absolute_10db": true,
+    "policy": "Comparable excitation/segments and windows required; an aligned identical nonstationary waveform is admissible; tone projection also depends on background/window"
+  },
+  "candidate_event": {
+    "evidence_level": "A report only, raw not replayed",
+    "packed_example": 524288,
+    "decoded_prediction": 0,
+    "decoded_residual": 8,
+    "zero_reported_residual_rail_sum": 3359,
+    "zero_later_microphone_rail_count": 3383,
+    "zero_count_discrepancy": 24,
+    "candidate_reported_microphone_rails": 26,
+    "candidate_reported_residual_rails": 8,
+    "rail_vs_overflow": "A legal ±rail sample is not in itself an arithmetic overflow; compare actual mic-pred against [-8388608,8388607]",
+    "candidate_capture_claim": {
+      "first_frame": 98334,
+      "end_frame": 114718,
+      "frames": 16384,
+      "seconds": 0.33554432,
+      "first_reported_residual_rail_local": 16353,
+      "first_reported_residual_rail_global": 114687
+    },
+    "first_full_run_overflow": "unknown until actual wide residual, validated arithmetic, counter reset and coverage reconcile",
+    "frequency_396_hz": "model prediction only, not measured event location",
+    "feedback_cause": "not excluded by prediction_saturations=0; not proven solely by rail census or aggregated envelope",
+    "use_acceptance": "interrupted by guard in this condition; not accepted, independently of unproven algorithm ranking"
+  },
+  "protection": {
+    "semantics_changed": false,
+    "stop_before_read_and_save": "verified in frozen driver source only",
+    "precheck_does_not_guarantee_run": true,
+    "offline_clipping": "retain record and invalidate affected estimate/use; no authorization to continue sounding",
+    "subsequent_branches": "only after recovery and original predefined prerequisites"
+  },
+  "B_current_boundary_probes": {
+    "script": "tmp\\c-field-intake-20261027\\fee0e593\\scripts\\analyze_residual_overflow.py",
+    "script_sha256": "12c359137de4f0e0db9d53a5f013aad4936445e0a937ef0fadb2179234ddd40f",
+    "fixtures": "synthetic boundaries, not recovered A speech PCM",
+    "cases": [
+      {
+        "case": "legal_negative_rail",
+        "expected": 0,
+        "observed": 1024,
+        "passed": false
+      },
+      {
+        "case": "negative_Q12_half",
+        "expected": 1.1920928955078125e-07,
+        "observed": 0.0,
+        "passed": false
+      },
+      {
+        "case": "unknown_FIR_prefix",
+        "expected": 0,
+        "observed": 511,
+        "passed": false
+      },
+      {
+        "case": "Q20_hash_mismatch",
+        "passed": false,
+        "observed": "ordinary result without invalid marker"
+      },
+      {
+        "case": "inconsistent_extent",
+        "passed": false,
+        "observed": "ordinary result without invalid marker"
+      }
+    ]
+  },
+  "validation": {
+    "C_unique_targeted_tests_finally_passed": 14,
+    "logs": [
+      "itemized-final-tests.txt",
+      "itemized-counter-scope-tests.txt",
+      "itemized-identity-tests.txt"
+    ],
+    "initial_test_failures": "First run: six temporary-directory permission errors plus an overprecise hand-copied expected decimal; workspace-local temp and rounded expectation corrected. Second run:10/11passed, final expected19.5 corrected; targeted arithmetic recheck passed. Final13passed, one added counter-locality case plus event recheck passed.",
+    "real_fixture_adapter": "Existing A083f31c r4 four captures, not the new r6/itemized session",
+    "existing_fixture_results": [
+      {
+        "name": "01-mic-precheck-quiet-zero.npz",
+        "issues": [],
+        "unknown": [],
+        "arithmetic": {
+          "history_excluded_frames": 0,
+          "prediction_evaluated_frames": 14648,
+          "prediction_mismatches": 0,
+          "recorded_residual_mismatches": 0,
+          "output_evaluated_frames": 14646,
+          "output_mismatches": 0
+        }
+      },
+      {
+        "name": "02-quiet-matched.npz",
+        "issues": [],
+        "unknown": [],
+        "arithmetic": {
+          "history_excluded_frames": 0,
+          "prediction_evaluated_frames": 16384,
+          "prediction_mismatches": 0,
+          "recorded_residual_mismatches": 0,
+          "output_evaluated_frames": 16382,
+          "output_mismatches": 0
+        }
+      },
+      {
+        "name": "03-mic-precheck-positive-zero.npz",
+        "issues": [],
+        "unknown": [],
+        "arithmetic": {
+          "history_excluded_frames": 0,
+          "prediction_evaluated_frames": 14648,
+          "prediction_mismatches": 0,
+          "recorded_residual_mismatches": 0,
+          "output_evaluated_frames": 14646,
+          "output_mismatches": 0
+        }
+      },
+      {
+        "name": "04-positive-matched.npz",
+        "issues": [],
+        "unknown": [],
+        "arithmetic": {
+          "history_excluded_frames": 0,
+          "prediction_evaluated_frames": 16384,
+          "prediction_mismatches": 0,
+          "recorded_residual_mismatches": 0,
+          "output_evaluated_frames": 16382,
+          "output_mismatches": 0
+        }
+      }
+    ],
+    "no_full_unchanged_regression": true,
+    "identity_followup": "After adding actual loaded/logical tap and coefficient status checks, only two affected identity/clean-tail methods were repeated; both passed."
+  },
+  "minimum_existing_evidence_needed": [
+    "Actual six shell scripts, invoked parameters/order and human source-stop/start/listener log; directory SHA list binding bit/HWH/driver/model, because not every hash exists in replay status.",
+    "Run review_itemized_20261027.py on existing audio_live NPZ/status only, return derived JSON and file inventory; speech PCM remains board-local. Return the controlled-white-noise NPZ/status if authorized, otherwise same local derived calculation.",
+    "Original 60s status/timeline and first rejected attempt plus retry/restore logs; not a fresh60s run.",
+    "B revised analyzer commit; repeat only boundary/identity/history/coverage checks and available real events. Current public fee0e593 fails5/5 boundary probes."
+  ],
+  "field_retest_now": "none; retrieve/derive existing evidence first. If existing logs prove true output mute never occurred and causal listener contrast is still required, decide only that short missing contrast after input/protection prerequisites; do not rerun the whole session.",
+  "release": "Review artifact and offline adapter only; r6 ZIP, A drivers, B model, RTL and protection unchanged",
+  "producer_script_sha256": "608cfde19568bac1f5b04acba5589df55a0c36523944a98d360559707c52e5e1"
+}

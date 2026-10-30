@@ -217,12 +217,13 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
 
 ### C 测评与工具
 
-**最后动作**：C=`330e135` 的定向验收和分析入口已有，A 已回传派生 JSON；队长准备 [C 候选集成、报告与 Skill 任务](../materials/prompts/c.txt)，已完成分支合并预演。
-**当前卡点**：派生回包最终复核与新任务接收均未确认；main/A/B/C 存在已列出的合并冲突，不能宣布 Git 集成完成。C 可先整理无冲突候选文件与报告，不重复已过硬件检查。
+**最后动作**：2026-10-30接收facd3de任务，以A v3为运行底座导出独立候选；完成既有回包36项身份/窗口/算术核对、9页报告初稿及最小Skill。冻结源稿C=ff8e77d；本轮未操板、未改A驱动/RTL或B算法、未合main。已通过Windows现用127.0.0.1:7897代理成功推送origin/C（330e135至862fd2e）；仅命令级使用代理与HTTPS映射，origin和持久配置未改。离线Git包仍保留。
+**当前卡点**：A/B integration.json与hardware/algorithm片段、官方报告模板、最终媒体未到；本机未找到RAR工具，真实RAR尚未生成。10类具体冲突已交材料建议，由人转发队长决定，不恢复REQUESTS派活。
 
-- [C 已交付的验收及操作说明](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/330e135/report/verification/audio_closed/sprint-rc0-20261025/v3-c1a180f-review-20261028.json) 与 [A 回包](../report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json) 是本次交接材料。
-- 测量必须指定真实 round_id/manifest，分别报告完整捕获窗与共同含源窗；不使用全目录 glob 的混合均值。
-- 旧“输出太小、可听收益为负”的结论已撤回：该次交替段保存的是源停止后的尾窗。听众阳性与阴性原话均保留为定性证据，不自动互相覆盖，也不代替量化差值。
+- [交付、实际检查与缺件](../materials/work/c/release-checklist.md)、[逐文件来源](../materials/work/c/integration.json)、[机器回执](../materials/work/c/validation.json)、[一次性冲突建议](../materials/work/c/conflicts.md)。A/B及顶部全局段仍是本C分支旧快照，冻结技术现状请读[最新A STATE](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/A/docs/STATE.md)，不得用本分支旧驱动覆盖A。
+- 既有三臂回包确认共同含源6619帧，采用[视频/报告引用表](../materials/work/c/claims.md)；C未取得原PCM，本轮是派生身份/窗口/差值算术复核，不是本地原件级重算、ASG或听众收益验收。
+- 独立候选121项含运行源码/载荷/证据及1项生成回执，整套v3载荷10/10与模型Q20一致，独立解压及错误helper拒绝通过。A黄金参考7项、B单位9项维持相同源字节的通过结果；C窗口7项与宽残差4项在新组合通过。导入、编译、Skill及文档检查通过，未重复旧全套或硬件检查。
+- r2暴露C测试把运行helper当旧参考的问题，已固定旧数值helper为sim夹具，不进入运行目录；首次失败及修正回执均保留。开发/候选文档链接检查0错误。报告PDF与候选在忽略目录，原片/授权书/最终大文件不入Git。
 
 ## 已验证 / 未验证
 

@@ -49,3 +49,12 @@ C 的精确轮次分析入口与固定提交见 [STATE 的 C 段](../../docs/STA
 回退也必须整组核对版本、依赖、模型与保护语义；先保留当前配置和采集文件，再由 A 安排。目录名含 rollback 不代表可以无条件覆盖正在使用的包。
 
 原来的“三格操作”、旧上传目录及按钮页说明已完整保存在 [整理前原文](../../docs/archive/pre-freeze-guide-2026-10-29.md)。它们用于理解历史记录，不作为今天的执行单。
+
+## 本轮材料与报告入口
+
+- 硬件交付清单：[materials/work/a/integration.json](../../materials/work/a/integration.json)（逐项哈希与依赖）、[hardware.md](../../materials/work/a/hardware.md)（分工/保护归属/构建）
+- 算法片段：[materials/work/b/algorithm.md](../../materials/work/b/algorithm.md)；离线教程：`materials/learning/index.html`
+- 测评与报告：[materials/work/c/technical-report.md](../../materials/work/c/technical-report.md)、[claims.md](../../materials/work/c/claims.md)、[conflicts.md](../../materials/work/c/conflicts.md)
+- 可复用技能包：[skill/audio-evidence/SKILL.md](../../skill/audio-evidence/SKILL.md)
+
+C 分支携带的 2026-10-21「逐档增益 A/B」操作页已过期，不再作为入口；其内容仍在 git 历史与对应证据目录中，不删除。

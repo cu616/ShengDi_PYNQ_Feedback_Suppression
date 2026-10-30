@@ -1,0 +1,275 @@
+[
+  {
+    "path": "closed_loop/strong_g0p0_r1_01_b0_g4096.npz",
+    "sha256": "7bc1ae8e27f8f6d0cffc5dddc149743f948d9b935bbc8eb69f5e0ee4b6fe764a",
+    "size_bytes": 234832,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/strong_test"
+  },
+  {
+    "path": "closed_loop/strong_g0p0_r2_01_b0_g4096.npz",
+    "sha256": "fab0501803ddfc433308294765183043f692695f13c9b23ba7b340b42289199d",
+    "size_bytes": 232097,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/strong_test"
+  },
+  {
+    "path": "closed_loop/strong_g3p0_r1_01_b0_g5786.npz",
+    "sha256": "8fb1c70dacfbf3fbe3d8febe9c85f5a34ed2dd3ed91a40a43af083b451e85435",
+    "size_bytes": 248103,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/strong_test"
+  },
+  {
+    "path": "closed_loop/strong_g3p0_r2_01_b0_g5786.npz",
+    "sha256": "f0afaa8f2bbff4e5ac7b91c97d5c894b08f7def65f4a431fb35af17963ca9363",
+    "size_bytes": 15027,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/strong_test"
+  },
+  {
+    "path": "gate_tones/tone_0.npz",
+    "sha256": "2ae433769215933e9415c5c0c13e8bac502b80ad5673ed508811024e5a2412d9",
+    "size_bytes": 139876,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/gate_drift"
+  },
+  {
+    "path": "gate_tones/tone_1.npz",
+    "sha256": "4994a79b1a3f9cd1a5c3e2f7b581fbb980f0d1288a322f57c8fc2498f6efa1e8",
+    "size_bytes": 139258,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/gate_drift"
+  },
+  {
+    "path": "gate_tones/tone_2.npz",
+    "sha256": "3b964c7a597fd449fab587de54c11506980e912e7a7a2da23bc66fd2a1700977",
+    "size_bytes": 141697,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/gate_drift"
+  },
+  {
+    "path": "gate_tones/tone_3.npz",
+    "sha256": "7899da884b2f6a926f254d41a868a79706c1e4db3aa21f09df49c8f474b0049b",
+    "size_bytes": 142980,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/gate_drift"
+  },
+  {
+    "path": "gate_tones/tone_4.npz",
+    "sha256": "b6a9b827da18c1dd1e4d9693e72544a3e9ee3e2455d49151d83d84608d9726fb",
+    "size_bytes": 140980,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/gate_drift"
+  },
+  {
+    "path": "gate_tones/tone_5.npz",
+    "sha256": "43427ba13cce3a5e68b670403c23fcc84dd0f1de0ce44604d46e736e4d35c650",
+    "size_bytes": 140447,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/gate_drift"
+  },
+  {
+    "path": "lowband2/model_512_strong.json",
+    "sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "size_bytes": 19962,
+    "original_file_hash_bound": true,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "lowband2/seg_0.npz",
+    "sha256": "91954af7f54ee64d05d12722ed7f7115b2d3f47352f82965aac9fade9f501102",
+    "size_bytes": 245160,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_1.npz",
+    "sha256": "cadf82aa9248c55763c976b8d89334a4facc349c06523c09688c030b30f6ef3f",
+    "size_bytes": 244856,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_10.npz",
+    "sha256": "af15128de7e010d21a0ba92fbd9519ace6fe9e834ac48f1c0dda1cd38077d699",
+    "size_bytes": 244922,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_11.npz",
+    "sha256": "858a2b6245a2689c18ec6c8f07c7734729c2a85afdce7af7368afa97c4e7c83c",
+    "size_bytes": 244981,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_12.npz",
+    "sha256": "be1c55b6649f025cf1c222c23c93df8f3ebfe76c8a96bca14f5fcf44f0e32420",
+    "size_bytes": 245287,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_13.npz",
+    "sha256": "a4313c65b98a56008adf9677ce4c93884e0f30ac20be127ba8da687a3ccd68d3",
+    "size_bytes": 245011,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_14.npz",
+    "sha256": "7100f9b20d0b3f29f63e1aff6fe8c6e39bab778045647266e57dcee7e4ca9679",
+    "size_bytes": 245324,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_15.npz",
+    "sha256": "634dac2421ed5a0fdc0c23df2e61fae05d0780f80386c6a2d83962021e2285c5",
+    "size_bytes": 245257,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_2.npz",
+    "sha256": "e34fde45083b8c287236d657690272b11e83ab6f3514dadbbd47f073e56be3cc",
+    "size_bytes": 244967,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_3.npz",
+    "sha256": "9e17e686a22cd3d73d509d185d70c099d62dd3ea64bd364a772263d032dbf696",
+    "size_bytes": 245030,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_4.npz",
+    "sha256": "8c0c0e6effc3a8dd92d8e089754cf7b6a79151db56d567be3758e17e051aa8cf",
+    "size_bytes": 245141,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_5.npz",
+    "sha256": "4cebe4ed1726ccdab40012cd62b3b192048421ec7864ec272c033220ce3c46a2",
+    "size_bytes": 244692,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_6.npz",
+    "sha256": "6f275e38e862fd612ba6b79dccc6c5aaa30f3c97c6818699ce0cb043217d2357",
+    "size_bytes": 244995,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_7.npz",
+    "sha256": "9102d76e25496a56a08184b343192bbfe804cca1f443f8813ff7270ecc4a0239",
+    "size_bytes": 244972,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_8.npz",
+    "sha256": "a4ee3fe89fd05a4a977a43e27c96c628b6719151e6b4c8d83af19cb0fa91ce94",
+    "size_bytes": 244854,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "lowband2/seg_9.npz",
+    "sha256": "8bfcddfb192e4a436b68e05d3dbd0662f12a79c6997e55dd518c6f9c2d66155d",
+    "size_bytes": 244856,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/lowband2"
+  },
+  {
+    "path": "manifest.json",
+    "sha256": "dafda86cfb052a330ca7d637dc5103c17cd49da8bad81e5805e1da6267f42b3b",
+    "size_bytes": 27240,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scene/mic_check_after_repair.npz",
+    "sha256": "bff6bdc5f48a9920708c7ce52a9e55df8d126c8cde949f1bf677eb793ed016e6",
+    "size_bytes": 126520,
+    "original_file_hash_bound": true,
+    "provenance": "board capture, A=08965d2, /home/xilinx/mic_check"
+  },
+  {
+    "path": "scripts/a-band-12k-2026-10-24.json",
+    "sha256": "c642f851b8894136a85d76661cbafebf7e25db50acb2f12fce1e097d5fae5e8d",
+    "size_bytes": 3382,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/a-lowband-2026-10-24.json",
+    "sha256": "3029f5dafea34e249d265539789ef91e0c187748f7a2ecdd034a7f2ddaf53f07",
+    "size_bytes": 2729,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/band_12k.py",
+    "sha256": "8004d7dc1aef2911b637525788520190984c213c57233fabd85288f191fca281",
+    "size_bytes": 3237,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/bandlimit_feasibility.py",
+    "sha256": "f6a2bc3f6adbba5a0e3b49fd061fb077a8e168586a74e4521f5e82c3e85cbe26",
+    "size_bytes": 3370,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/decimation_bands.py",
+    "sha256": "1e6a165d7ba7578dd37eb1f8d657f864e78ad5f7a0ddd483b6049250bc510451",
+    "size_bytes": 2959,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/fit_side_merged.py",
+    "sha256": "1115816e8165d1f61697171f0d03e3000ef54f10414f0b237b32fdde7f3acda0",
+    "size_bytes": 3290,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/fractional_delay.py",
+    "sha256": "4624441aff8eb070bcb772213a7378b0b2836b5a316c3fb7fc0561d5d4f7d564",
+    "size_bytes": 2225,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/memory_sweep.py",
+    "sha256": "6c90ee50f6a0853f801e6986df25b4c4978895a170bc5c49698f5f3ed8eb40ed",
+    "size_bytes": 3407,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/replay_calibration.py",
+    "sha256": "6f6d42c73c1e801af4ac4317aa6f856a095d70ada2e1012ee23ebc675a1ce364",
+    "size_bytes": 10427,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  },
+  {
+    "path": "scripts/replay_trial.py",
+    "sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+    "size_bytes": 19626,
+    "original_file_hash_bound": false,
+    "provenance": "C computed from exact received ZIP"
+  }
+]

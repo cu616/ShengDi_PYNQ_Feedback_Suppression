@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "topic": "low-band calibration improvement and band-limiting feasibility",
+  "recorded_at": "2026-10-24",
+  "recorded_by": "A",
+  "motivation": "band-limiting the forward path to 300-3400 Hz removes the 8.4 kHz resonance from the loop (|F*H| there drops to -35.75 dB) but the limiting point had already moved to 381-435 Hz inside the band, so the forward filter buys almost nothing for the cancellation arm. The real lever is 300-1000 Hz cancellation quality, where coherence was only 0.81.",
+  "band_limit_feasibility": {
+    "no_filter": {
+      "bypass_max_stable_gain_db": -11.31,
+      "cancel_max_stable_gain_db": 3.65
+    },
+    "bandpass_300_3400_order6": {
+      "bypass_max_stable_gain_db": -6.62,
+      "cancel_max_stable_gain_db": 3.89,
+      "note": "8.2-8.6 kHz loop term falls to -35.75 dB but the limiting bin is 381 Hz"
+    }
+  },
+  "improved_calibration": {
+    "dir": "/home/xilinx/lowband2",
+    "segments": 16,
+    "injection_rms_dbfs": -12.0,
+    "mic_median_dbfs": -16.2,
+    "kept": "16/16",
+    "fit_reduction_db": 7.36,
+    "model": "/home/xilinx/lowband2/model_512_strong.json",
+    "bands": {
+      "300-1000": {
+        "coherence": 0.93,
+        "max_H_db": 6.43,
+        "max_H_minus_Hhat_db": -5.42,
+        "worst_hz": 435,
+        "max_stable_gain_db": 5.42
+      },
+      "1000-2000": {
+        "coherence": 0.96,
+        "max_H_db": 5.27,
+        "max_H_minus_Hhat_db": -8.62,
+        "worst_hz": 1585,
+        "max_stable_gain_db": 8.62
+      },
+      "2000-3400": {
+        "coherence": 0.95,
+        "max_H_db": 2.77,
+        "max_H_minus_Hhat_db": -12.38,
+        "worst_hz": 3231,
+        "max_stable_gain_db": 12.38
+      },
+      "8200-8600": {
+        "coherence": 0.81,
+        "max_H_db": 6.82,
+        "max_H_minus_Hhat_db": -11.8,
+        "worst_hz": 8315,
+        "max_stable_gain_db": 11.8
+      }
+    }
+  },
+  "board_verification": {
+    "protocol": "loop only, source off, 3 s per trial, two repeats per gain, no 1.5 dB gate",
+    "results": {
+      "0 dB": "held 2/2, mic -28.6 dBFS",
+      "+3 dB": "held 1/2, the howling repeat reached -1.7 dBFS peak",
+      "main_frequency": "9131 Hz in three of four trials, 457 Hz in the howling one"
+    }
+  },
+  "agreement": "the predicted limit (+5.42 dB from max|H-Hhat|) matches the observed threshold of +3 to +5 dB, so the metric is usable as a design target",
+  "gain_over_previous": "the deployed model howled at -3 dB in one session; this one holds at 0 dB and is borderline at +3 dB, about 6 dB better",
+  "remaining_gap": "a usable PA needs roughly +20 dB; the canceller now gives about +5 dB, so about 15 dB are still missing"
+}

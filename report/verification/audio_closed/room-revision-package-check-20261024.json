@@ -1,0 +1,55 @@
+{
+  "package_version": "c-room-experiment-1.1.0",
+  "policy": "c-room-policy-1.1.0",
+  "calculation_version": "c-measurement-2.2.1",
+  "driver_acceptance": {
+    "schema_version": 1,
+    "suite": "c-a-driver-acceptance-v2",
+    "hardware_access": false,
+    "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+    "accepted": true,
+    "cases": [
+      {
+        "name": "guard_distinct_counts",
+        "passed": true
+      },
+      {
+        "name": "bypass_prediction_only",
+        "passed": true
+      },
+      {
+        "name": "terminal_counts",
+        "passed": true
+      },
+      {
+        "name": "completed_zero_counts",
+        "passed": true
+      },
+      {
+        "name": "protocol_fault",
+        "passed": true
+      },
+      {
+        "name": "operator_cancel",
+        "passed": true
+      },
+      {
+        "name": "restore_failure",
+        "passed": true
+      },
+      {
+        "name": "capture_write_failure",
+        "passed": true
+      }
+    ]
+  },
+  "hash_validation": true,
+  "notebook_single_code_cell": true,
+  "cancel_before_driver_import": true,
+  "hardware_access": false,
+  "published_as_audio_package": false,
+  "reason": "old current-session model assets used only to verify new packaging; strong model not yet received",
+  "software_tests_passed": 131,
+  "published_review_zip_sha256": "a5644a0011aa65d529006f9a7efe833c859eea8eabf32f980796b2e9c8b264f5",
+  "review_zip_raw_pcm_included": false
+}

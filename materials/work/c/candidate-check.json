@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "hardware_operations": 0,
+  "payload_checks": [
+    {
+      "file": "audio_replay.bit",
+      "ok": true
+    },
+    {
+      "file": "audio_replay.hwh",
+      "ok": true
+    },
+    {
+      "file": "replay_trial.py",
+      "ok": true
+    },
+    {
+      "file": "replay_tools.py",
+      "ok": true
+    },
+    {
+      "file": "closed_tools.py",
+      "ok": true
+    },
+    {
+      "file": "residual_tools.py",
+      "ok": true
+    },
+    {
+      "file": "test_runtime_stop.py",
+      "ok": true
+    },
+    {
+      "file": "test_verify_replay_v3.py",
+      "ok": true
+    },
+    {
+      "file": "tone_round_guard.py",
+      "ok": true
+    },
+    {
+      "file": "test_tone_round_guard.py",
+      "ok": true
+    }
+  ],
+  "inventory_files": 121,
+  "candidate_q20_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+  "issues": [],
+  "scope": "file identity and loader only; no hardware/effect/release pass implied",
+  "verification_context": {
+    "directory": "materials/staging/tmp/submission-candidate-r3-audited-extraction",
+    "archive_kind": "ZIP only for clean extraction test, not the submission RAR",
+    "test_archive_sha256": "83f79645b955ab914c358415480ee5fe02ff75e0fe6663a6e85bcaeecbbe0594"
+  }
+}

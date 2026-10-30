@@ -1,0 +1,232 @@
+{
+  "b_commit": "6128282f2853b829768c7310e57b08f0d84c4b89",
+  "previous_b": "6a09d36d96e3fcfaa947eaf4dbda5af7e819a156",
+  "verification_level": "original_full_test_suite_original_cli_and_independent_acceptance_controls",
+  "original_b_tests": 109,
+  "original_b_tests_passed": true,
+  "matched_input_hashes": 16,
+  "numerical_values_compared": 220,
+  "max_saved_result_difference": 1.8909318555415666e-12,
+  "normal_boundary_control": {
+    "split_probe_file": "seg_10.npz",
+    "split": {
+      "frames": {
+        "whole": 15872,
+        "piece": 12288,
+        "paired": 12288
+      },
+      "max_abs_diff": 0.0,
+      "rms_delta_db": 0.0,
+      "window_only_delta_db": -0.17111671826561178,
+      "dropped_pieces": []
+    },
+    "fits": {
+      "per_segment": {
+        "suppression_db": 7.562036866314417,
+        "frames": 95232,
+        "small_gain_bound_db": 2.6827801185860993,
+        "positive_real_db": 6.528653769503778
+      },
+      "concatenated": {
+        "suppression_db": 7.56074520143727,
+        "frames": 95232,
+        "small_gain_bound_db": 2.7749819680189947,
+        "positive_real_db": 6.598200383940939
+      }
+    },
+    "fit_delta_db": 0.0012916648771463812
+  },
+  "phase_controls": [
+    {
+      "case": "isolated_two",
+      "count": 2,
+      "check_passed": true,
+      "estimated_db": 6.020599913279624,
+      "hz": 400.0
+    },
+    {
+      "case": "isolated_one",
+      "count": 1,
+      "check_passed": true,
+      "estimated_db": 7.958800173440752,
+      "hz": 410.0
+    },
+    {
+      "case": "negative_real_wrap",
+      "count": 0,
+      "check_passed": true,
+      "estimated_db": null,
+      "hz": null
+    },
+    {
+      "case": "interior_control",
+      "count": 1,
+      "check_passed": true,
+      "estimated_db": 6.1535707338809145,
+      "hz": 405.0
+    }
+  ],
+  "mixed_short_piece_control": {
+    "check_passed": true,
+    "returned": {
+      "frames": {
+        "whole": 3588,
+        "piece": 4,
+        "paired": 4
+      },
+      "max_abs_diff": 0.0,
+      "rms_delta_db": 0.0,
+      "window_only_delta_db": -2.419773358983183,
+      "dropped_pieces": [
+        [
+          0,
+          512
+        ],
+        [
+          1025,
+          1537
+        ],
+        [
+          2050,
+          2562
+        ],
+        [
+          3075,
+          3587
+        ]
+      ]
+    },
+    "frames": 4100,
+    "pieces": 8,
+    "taps": 512,
+    "expected_paired": 4,
+    "expected_dropped": 4
+  },
+  "original_cli_invalid_input_controls": [
+    {
+      "case": "bad-hash",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "reports_written": [],
+      "check_passed": true,
+      "files_written": [
+        "input-check.txt"
+      ]
+    },
+    {
+      "case": "missing-id",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "reports_written": [],
+      "check_passed": true,
+      "training_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        9
+      ],
+      "files_written": [
+        "input-check.txt"
+      ]
+    },
+    {
+      "case": "duplicate-id",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "reports_written": [],
+      "check_passed": true,
+      "files_written": [
+        "input-check.txt"
+      ]
+    },
+    {
+      "case": "overlapping-ids",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "reports_written": [],
+      "check_passed": true,
+      "files_written": [
+        "input-check.txt"
+      ]
+    },
+    {
+      "case": "missing-manifest",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "reports_written": [],
+      "check_passed": true,
+      "files_written": [
+        "input-check.txt"
+      ],
+      "unverified_count": 16
+    },
+    {
+      "case": "broken-manifest",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "reports_written": [],
+      "check_passed": true,
+      "files_written": [
+        "input-check.txt"
+      ],
+      "unverified_count": 16
+    },
+    {
+      "case": "missing-manifest-entry",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "reports_written": [],
+      "check_passed": true,
+      "files_written": [
+        "input-check.txt"
+      ],
+      "unverified_count": 1
+    }
+  ],
+  "source_sha256": {
+    "scripts/diagnose_peak_margin.py": "5f2b57418f15a4e28922c50549c7d1bf2ede5f9c5b84bb8b466850d8bb225472",
+    "scripts/reproduce_b_screening.py": "a378b6103b85faa5f401a434e6c761438410c3924a87fd7b992e5a028e36550d"
+  },
+  "model": {
+    "path": "calibrated_20261024.json",
+    "file_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+    "taps": 512,
+    "lag_first": 1,
+    "source": "coefficients_q20",
+    "float_vs_q20_max_abs": 4.767818667580914e-07
+  },
+  "board_access": false,
+  "new_acquisition": false,
+  "changed_b_files": false,
+  "rc01_sha256": "c0a2d5aaf4565af9d768ecebfaa41ab8651ce1064420934ab37b8fe8d8065c9f",
+  "cross_session_pressure": "not_independently_recomputed; no new data requested",
+  "runtime": {
+    "python": "3.14.4",
+    "numpy": "2.5.4",
+    "utf8_mode": 1
+  },
+  "input_only_positive_precheck": {
+    "exit_code": 0,
+    "files_written": [
+      "input-check.txt"
+    ],
+    "scope": "input qualification only; not model/bit/whole-package preflight",
+    "check_passed": true
+  },
+  "decisions": {
+    "unverified_input_blocking": "closed",
+    "mixed_short_piece_handling": "closed",
+    "baseline_default_and_no_candidate": "unchanged",
+    "previous_b_required_fixes": "closed"
+  },
+  "accepted_phase_version_unchanged": true,
+  "accepted_q20_loader_unchanged": true,
+  "rc01_package_unchanged": true,
+  "all_targeted_acceptance_controls_passed": true
+}

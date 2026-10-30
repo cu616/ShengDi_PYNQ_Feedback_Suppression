@@ -1,0 +1,24 @@
+test_clean_tail_does_not_certify_full_run_adc (test_itemized_20261027.ItemizedReviewTests.test_clean_tail_does_not_certify_full_run_adc) ... ok
+test_counter_word_preserves_both_16_and_full_32_bit_fields (test_itemized_20261027.ItemizedReviewTests.test_counter_word_preserves_both_16_and_full_32_bit_fields) ... ok
+test_eight_rail_samples_alone_do_not_prove_eight_overflows (test_itemized_20261027.ItemizedReviewTests.test_eight_rail_samples_alone_do_not_prove_eight_overflows) ... ok
+test_gain_negative_half_rounds_away_from_zero (test_itemized_20261027.ItemizedReviewTests.test_gain_negative_half_rounds_away_from_zero) ... ok
+test_identity_bad_extent_and_status_disagreement_cannot_pass (test_itemized_20261027.ItemizedReviewTests.test_identity_bad_extent_and_status_disagreement_cannot_pass) ... ok
+test_reported_candidate_extent_and_event_census_keeps_scope (test_itemized_20261027.ItemizedReviewTests.test_reported_candidate_extent_and_event_census_keeps_scope) ... ok
+test_reported_zero_rail_census_does_not_become_good_baseline (test_itemized_20261027.ItemizedReviewTests.test_reported_zero_rail_census_does_not_become_good_baseline) ... ok
+test_signed24_legal_rails_are_not_arithmetic_overflow (test_itemized_20261027.ItemizedReviewTests.test_signed24_legal_rails_are_not_arithmetic_overflow) ... ok
+test_spectral_power_obeys_parseval_and_band_share_identity (test_itemized_20261027.ItemizedReviewTests.test_spectral_power_obeys_parseval_and_band_share_identity) ... ok
+test_summary_numbers_are_consistency_only (test_itemized_20261027.ItemizedReviewTests.test_summary_numbers_are_consistency_only) ... FAIL
+test_tail_history_is_excluded_from_local_predictor_replay (test_itemized_20261027.ItemizedReviewTests.test_tail_history_is_excluded_from_local_predictor_replay) ... ok
+
+======================================================================
+FAIL: test_summary_numbers_are_consistency_only (test_itemized_20261027.ItemizedReviewTests.test_summary_numbers_are_consistency_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\sim\feedback\test_itemized_20261027.py", line 75, in test_summary_numbers_are_consistency_only
+    self.assertAlmostEqual(10*np.log10(.713/.008), 19.5001, places=4)
+AssertionError: 19.49999542859922 != 19.5001 within 4 places (0.00010457140077946292 difference)
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.197s
+
+FAILED (failures=1)

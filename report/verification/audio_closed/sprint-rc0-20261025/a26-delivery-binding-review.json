@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Python314\\python.exe",
+    "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\a26-delivery-bound\\snapshot\\_a_work\\board\\audio_replay\\deliver_check.py"
+  ],
+  "exit_code": 1,
+  "stdout": "binding package_dir D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\a26-delivery-bound\\snapshot\\h1\nbinding prompt_sha256 b6f0c2be628be52b888c0a23600e3d1ea71fa612c857baebf9d1b17c8df5970d\n[test_human_routing.py] exit=0  ROUTING_RESULT PASS\n[test_start_control.py] exit=1  \nDELIVERY_INCOMPLETE test_start_control.py\n",
+  "stderr": "Traceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\a26-delivery-bound\\snapshot\\_a_work\\board\\audio_replay\\test_start_control.py\", line 12, in <module>\n    shell = DRIVER.read_text(encoding='utf-8')\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\OCadence_Project\\\\Flushbonading_FPGA_Contest\\\\_a_work\\\\run_human_r1.sh'\n",
+  "archive_sha256": "0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e",
+  "fixtures_match_frozen_archive": true,
+  "source_sha256": {
+    "deliver_check.py": "5049ca51d594a56100cb6aae1079a0a7aced07e3ac33daf8b82498e668c80adf",
+    "test_human_routing.py": "9616d81a4c708381a3b1aadcbdc6c10b39f91d10a5b8a8d33bd81f5f5f4e09fb",
+    "test_start_control.py": "1c6e91a815a63006e064153f0a49875a5b04e21aaa428a3e9814dc7474621ce0"
+  },
+  "source_modified": false,
+  "hardware_access": false
+}

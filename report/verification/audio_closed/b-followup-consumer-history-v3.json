@@ -1,0 +1,87 @@
+{
+ "summary": "report/verification/audio_closed/b-followup-historical-summary-v3.json",
+ "schema_version": 3,
+ "calculation_version": "c-measurement-2.1.0",
+ "evidence_kind": [
+  "board_recording",
+  "unverified_capture"
+ ],
+ "rows": 50,
+ "model_pairs": 0,
+ "effect_eligible_rows": 0,
+ "effect_eligible_real_pairs": 0,
+ "consumable_as_is": true,
+ "blocking_issues": [],
+ "gaps": {
+  "comparison_id 为空，无法参与配对": {
+   "rows": 45,
+   "examples": [
+    "0d96408a-d14a-48a2-85c0-3bc53143465b",
+    "13149f5c-d3a1-43d5-a244-718e4136897f",
+    "16c3dbff-7ff1-49be-9635-2ac4755006c5"
+   ]
+  },
+  "logical_taps/loaded_taps 未知": {
+   "rows": 44,
+   "examples": [
+    "0d96408a-d14a-48a2-85c0-3bc53143465b",
+    "13149f5c-d3a1-43d5-a244-718e4136897f",
+    "16c3dbff-7ff1-49be-9635-2ac4755006c5"
+   ]
+  },
+  "repeat_id 为空，无法参与配对": {
+   "rows": 45,
+   "examples": [
+    "0d96408a-d14a-48a2-85c0-3bc53143465b",
+    "13149f5c-d3a1-43d5-a244-718e4136897f",
+    "16c3dbff-7ff1-49be-9635-2ac4755006c5"
+   ]
+  },
+  "有模型行但没有配对": {
+   "rows": 1,
+   "examples": [
+    "None"
+   ]
+  }
+ },
+ "categories": {
+  "invalid": 50
+ },
+ "row_blocking_reasons": {
+  "actual_loaded_taps_missing": 44,
+  "tail_not_validated": 50,
+  "positive_control_not_validated": 50,
+  "safety_not_validated": 50,
+  "configuration_or_capture_invalid": 50,
+  "comparison_identity_missing": 22,
+  "actual_gain_q12_missing_or_invalid": 6,
+  "actual_hp_volume_missing_or_invalid": 6,
+  "bit_sha256_missing_or_invalid": 6,
+  "coefficients_sha256_missing_or_invalid": 6,
+  "model_not_in_approved_registry": 6,
+  "arithmetic_not_validated": 6,
+  "evidence_not_board_recording": 6,
+  "retired_overlay_no_dac_output": 22
+ },
+ "model_registry_hits": 44,
+ "coef_hash_matches_raw_array": 44,
+ "coef_hash_matches_padded512": 0,
+ "field_coverage": {
+  "gain_q12": 44,
+  "hp_volume": 44,
+  "bit_sha256": 44,
+  "coefficients_sha256": 44,
+  "model_role": 44,
+  "logical_taps": 44,
+  "loaded_taps": 0,
+  "tail_valid": 50,
+  "tail_rms_dbfs": 0,
+  "tail_slope_db_per_s": 0,
+  "effect_eligible": 50,
+  "protection_triggered": 0,
+  "band_300-1000": 0,
+  "band_1000-3000": 0,
+  "band_8200-8600": 0
+ },
+ "note": "本脚本只判字段与门禁自洽性，不判抗啸叫性能，也不把软件夹具当实测。"
+}

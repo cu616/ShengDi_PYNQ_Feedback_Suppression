@@ -1,0 +1,58 @@
+{
+  "all_ok": true,
+  "checks": [
+    {
+      "kind": "cold-start",
+      "source_commit": "be3200ecf4a5b1df8901f1111da4685c0f8fedc8",
+      "clean_checkout_root": "D:\\Flushbonading_Contest\\_c_cold_be3200e",
+      "clean_command": [
+        "C:\\Python314\\python.exe",
+        "-I",
+        "-S",
+        "tools/deliver_check.py",
+        "cold-start"
+      ],
+      "clean_exit_code": 0,
+      "standalone_command": [
+        "C:\\Python314\\python.exe",
+        "-I",
+        "-S",
+        "tools/deliver_check.py",
+        "D:\\Flushbonading_Contest\\_c_cold_be3200e\\build\\generated\\delivery\\cold-start.zip"
+      ],
+      "standalone_cwd": "D:\\Flushbonading_Contest\\_c_cold_be3200e\\build\\generated\\standalone\\cold-start",
+      "standalone_exit_code": 0,
+      "last_line": "PACKAGE_COMPLETE aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a",
+      "sha256": "aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a",
+      "bytes": 389560,
+      "artifact": "build/packages/c-cold-start-r1.zip"
+    },
+    {
+      "kind": "listener-pipeline",
+      "source_commit": "be3200ecf4a5b1df8901f1111da4685c0f8fedc8",
+      "clean_checkout_root": "D:\\Flushbonading_Contest\\_c_cold_be3200e",
+      "clean_command": [
+        "C:\\Python314\\python.exe",
+        "-I",
+        "-S",
+        "tools/deliver_check.py",
+        "listener-pipeline"
+      ],
+      "clean_exit_code": 0,
+      "standalone_command": [
+        "C:\\Python314\\python.exe",
+        "-I",
+        "-S",
+        "tools/deliver_check.py",
+        "D:\\Flushbonading_Contest\\_c_cold_be3200e\\build\\generated\\delivery\\listener-pipeline.zip"
+      ],
+      "standalone_cwd": "D:\\Flushbonading_Contest\\_c_cold_be3200e\\build\\generated\\standalone\\listener-pipeline",
+      "standalone_exit_code": 0,
+      "last_line": "PACKAGE_COMPLETE e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58",
+      "sha256": "e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58",
+      "bytes": 49280,
+      "artifact": "build/packages/c-listener-pipeline-r1.zip"
+    }
+  ],
+  "hardware_access": false
+}

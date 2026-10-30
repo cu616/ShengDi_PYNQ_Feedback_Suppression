@@ -1,0 +1,1576 @@
+{
+  "model_file_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+  "deployed_Q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+  "split_provenance": "A manifest declares seg_0..9 train, seg_10..15 valid; audit does not refit",
+  "estimates": [
+    {
+      "nfft": 4096,
+      "bin_width_hz": 11.920928955078125,
+      "window": "symmetric Hann; 50% overlap; no demeaning",
+      "coherence_filter": 0.8,
+      "source_on_only": false,
+      "include_last_window": true,
+      "spectral_windows": 112,
+      "per_record_windows": [
+        {
+          "capture_id": "45439a4c-d3c6-4c99-a40c-36ec22d4017f",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "a7a913f5-66a0-4eab-b258-d99298b09d78",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "7dd6cdc4-bd5a-4efc-909c-b92e4887fa09",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "4d77ee26-1641-49ed-809e-fd40138cd110",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "c1ec5bde-b527-47c1-82d9-98f4e8f4ea02",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "dc910841-c212-4920-874f-d895da8fa8d7",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "3e31571d-3f36-4fca-86c8-56e5c0fd3d36",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "2bb0afcc-aa7b-4e5e-92bb-53b0520d3084",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "400964b1-c884-451e-9f0e-c0c5f4f5de89",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "7a721a92-9a59-4f24-a209-827a20ff9f2b",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "c2b38db5-5e76-45d5-b499-6564033239e3",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "a60dd08f-b9e1-405f-b75d-9fdf4845b089",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "c961b4bc-81df-4041-93af-e4874f93f858",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "f382ce9e-1e00-462b-a91c-46dedccd2f13",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "d0f9c9f5-c0c5-474e-abc2-7b0ea3cf1d49",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "d1701860-e5cc-45b7-bbce-9b2d2bf8cb28",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        }
+      ],
+      "comparison_band_hz": [
+        300,
+        10250
+      ],
+      "sampled_small_gain_estimate": {
+        "estimated_db": 7.009011787727797,
+        "worst_hz": 441.0743713378906,
+        "selected_bins": 568,
+        "coherence_at_worst": 0.8736243271882852
+      },
+      "bands": {
+        "0-300": {
+          "estimated_db": 12.360213463029787,
+          "worst_hz": 274.1813659667969,
+          "selected_bins": 4,
+          "coherence_at_worst": 0.8157435640516792,
+          "total_bins": 26
+        },
+        "300-1000": {
+          "estimated_db": 7.009011787727797,
+          "worst_hz": 441.0743713378906,
+          "selected_bins": 40,
+          "coherence_at_worst": 0.8736243271882852,
+          "total_bins": 58
+        },
+        "1000-2000": {
+          "estimated_db": 9.917776843002935,
+          "worst_hz": 1585.4835510253906,
+          "selected_bins": 79,
+          "coherence_at_worst": 0.9542198112272742,
+          "total_bins": 84
+        },
+        "2000-3400": {
+          "estimated_db": 16.050639586772782,
+          "worst_hz": 2002.716064453125,
+          "selected_bins": 105,
+          "coherence_at_worst": 0.8603652312974003,
+          "total_bins": 118
+        },
+        "3400-6000": {
+          "estimated_db": 9.001905471354792,
+          "worst_hz": 3898.143768310547,
+          "selected_bins": 213,
+          "coherence_at_worst": 0.9187028368368263,
+          "total_bins": 218
+        },
+        "6000-8200": {
+          "estimated_db": 15.497238516171086,
+          "worst_hz": 6413.459777832031,
+          "selected_bins": 131,
+          "coherence_at_worst": 0.8184822954410593,
+          "total_bins": 184
+        },
+        "8200-8600": {
+          "estimated_db": null,
+          "worst_hz": null,
+          "selected_bins": 0,
+          "total_bins": 34
+        },
+        "8600-10250": {
+          "estimated_db": null,
+          "worst_hz": null,
+          "selected_bins": 0,
+          "total_bins": 138
+        },
+        "10250-24415.1": {
+          "estimated_db": null,
+          "worst_hz": null,
+          "selected_bins": 0,
+          "total_bins": 1189
+        }
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 9.864900762562147,
+        "frequency_hz": 882.2781161693441,
+        "crossings": 88
+      },
+      "probes": [
+        {
+          "requested_hz": 0,
+          "bin_hz": 0.0,
+          "H_db": -33.85918495438963,
+          "Hhat_db": -26.364593994026514,
+          "residual_path_db": -23.306851334320775,
+          "coherence": 0.01686717807719663
+        },
+        {
+          "requested_hz": 435,
+          "bin_hz": 429.1534423828125,
+          "H_db": 5.827768063461168,
+          "Hhat_db": 4.874698327757559,
+          "residual_path_db": -10.953657859758728,
+          "coherence": 0.876205416148052
+        },
+        {
+          "requested_hz": 441,
+          "bin_hz": 441.0743713378906,
+          "H_db": 5.311541543222049,
+          "Hhat_db": 4.36630559295542,
+          "residual_path_db": -7.009011787727797,
+          "coherence": 0.8736243271882852
+        },
+        {
+          "requested_hz": 3898,
+          "bin_hz": 3898.143768310547,
+          "H_db": 3.749964390489788,
+          "Hhat_db": 4.727121679597017,
+          "residual_path_db": -9.001905471354792,
+          "coherence": 0.9187028368368263
+        },
+        {
+          "requested_hz": 8416,
+          "bin_hz": 8416.175842285156,
+          "H_db": 3.9726782185133187,
+          "Hhat_db": 4.011414945398716,
+          "residual_path_db": -26.84613554818222,
+          "coherence": 0.7574461782053651
+        },
+        {
+          "requested_hz": 9131,
+          "bin_hz": 9131.431579589844,
+          "H_db": -1.2316820823627672,
+          "Hhat_db": -1.6281130276600642,
+          "residual_path_db": -25.0316557525713,
+          "coherence": 0.7122466410231854
+        },
+        {
+          "requested_hz": 12000,
+          "bin_hz": 12004.375457763672,
+          "H_db": -32.52627413320616,
+          "Hhat_db": -29.972514153237793,
+          "residual_path_db": -40.787414623419394,
+          "coherence": 0.29172512144036394
+        },
+        {
+          "requested_hz": 20000,
+          "bin_hz": 20003.318786621094,
+          "H_db": -42.78453127741331,
+          "Hhat_db": -38.28109764391864,
+          "residual_path_db": -44.316681661537544,
+          "coherence": 0.02398365056838046
+        }
+      ],
+      "fullband_certified": false,
+      "interpretation": "Finite-grid prediction with omitted low-coherence bins; not measured MSG/ASG or a physical ceiling",
+      "label": "all16_B4096",
+      "input_paths": [
+        "lowband2/seg_0.npz",
+        "lowband2/seg_1.npz",
+        "lowband2/seg_2.npz",
+        "lowband2/seg_3.npz",
+        "lowband2/seg_4.npz",
+        "lowband2/seg_5.npz",
+        "lowband2/seg_6.npz",
+        "lowband2/seg_7.npz",
+        "lowband2/seg_8.npz",
+        "lowband2/seg_9.npz",
+        "lowband2/seg_10.npz",
+        "lowband2/seg_11.npz",
+        "lowband2/seg_12.npz",
+        "lowband2/seg_13.npz",
+        "lowband2/seg_14.npz",
+        "lowband2/seg_15.npz"
+      ],
+      "uses_training_records": true
+    },
+    {
+      "nfft": 4096,
+      "bin_width_hz": 11.920928955078125,
+      "window": "symmetric Hann; 50% overlap; no demeaning",
+      "coherence_filter": 0.8,
+      "source_on_only": false,
+      "include_last_window": true,
+      "spectral_windows": 42,
+      "per_record_windows": [
+        {
+          "capture_id": "c2b38db5-5e76-45d5-b499-6564033239e3",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "a60dd08f-b9e1-405f-b75d-9fdf4845b089",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "c961b4bc-81df-4041-93af-e4874f93f858",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "f382ce9e-1e00-462b-a91c-46dedccd2f13",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "d0f9c9f5-c0c5-474e-abc2-7b0ea3cf1d49",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        },
+        {
+          "capture_id": "d1701860-e5cc-45b7-bbce-9b2d2bf8cb28",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 7
+        }
+      ],
+      "comparison_band_hz": [
+        300,
+        10250
+      ],
+      "sampled_small_gain_estimate": {
+        "estimated_db": 4.559946170256523,
+        "worst_hz": 441.0743713378906,
+        "selected_bins": 558,
+        "coherence_at_worst": 0.882015394652297
+      },
+      "bands": {
+        "0-300": {
+          "estimated_db": 12.435088966367424,
+          "worst_hz": 286.102294921875,
+          "selected_bins": 5,
+          "coherence_at_worst": 0.8363446347012924,
+          "total_bins": 26
+        },
+        "300-1000": {
+          "estimated_db": 4.559946170256523,
+          "worst_hz": 441.0743713378906,
+          "selected_bins": 40,
+          "coherence_at_worst": 0.882015394652297,
+          "total_bins": 58
+        },
+        "1000-2000": {
+          "estimated_db": 9.47421222688961,
+          "worst_hz": 1585.4835510253906,
+          "selected_bins": 80,
+          "coherence_at_worst": 0.9589376688276289,
+          "total_bins": 84
+        },
+        "2000-3400": {
+          "estimated_db": 14.542018386679324,
+          "worst_hz": 2002.716064453125,
+          "selected_bins": 103,
+          "coherence_at_worst": 0.8754180797977236,
+          "total_bins": 118
+        },
+        "3400-6000": {
+          "estimated_db": 7.334767051187777,
+          "worst_hz": 3898.143768310547,
+          "selected_bins": 207,
+          "coherence_at_worst": 0.9060422903609031,
+          "total_bins": 218
+        },
+        "6000-8200": {
+          "estimated_db": 9.876918969911543,
+          "worst_hz": 6580.352783203125,
+          "selected_bins": 124,
+          "coherence_at_worst": 0.8161436430251277,
+          "total_bins": 184
+        },
+        "8200-8600": {
+          "estimated_db": 20.19504924929414,
+          "worst_hz": 8416.175842285156,
+          "selected_bins": 1,
+          "coherence_at_worst": 0.8006692450888178,
+          "total_bins": 34
+        },
+        "8600-10250": {
+          "estimated_db": 13.195165421545694,
+          "worst_hz": 9047.985076904297,
+          "selected_bins": 3,
+          "coherence_at_worst": 0.8046397511764312,
+          "total_bins": 138
+        },
+        "10250-24415.1": {
+          "estimated_db": null,
+          "worst_hz": null,
+          "selected_bins": 0,
+          "total_bins": 1189
+        }
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 10.70548876994836,
+        "frequency_hz": 884.1339084147264,
+        "crossings": 77
+      },
+      "probes": [
+        {
+          "requested_hz": 0,
+          "bin_hz": 0.0,
+          "H_db": -38.50341263507899,
+          "Hhat_db": -26.364593994026514,
+          "residual_path_db": -24.44582992468902,
+          "coherence": 0.010566556126035588
+        },
+        {
+          "requested_hz": 435,
+          "bin_hz": 429.1534423828125,
+          "H_db": 5.89885048386808,
+          "Hhat_db": 4.874698327757559,
+          "residual_path_db": -6.546664131055948,
+          "coherence": 0.8516642296864927
+        },
+        {
+          "requested_hz": 441,
+          "bin_hz": 441.0743713378906,
+          "H_db": 5.440728802449745,
+          "Hhat_db": 4.36630559295542,
+          "residual_path_db": -4.559946170256523,
+          "coherence": 0.882015394652297
+        },
+        {
+          "requested_hz": 3898,
+          "bin_hz": 3898.143768310547,
+          "H_db": 3.473427946938594,
+          "Hhat_db": 4.727121679597017,
+          "residual_path_db": -7.334767051187777,
+          "coherence": 0.9060422903609031
+        },
+        {
+          "requested_hz": 8416,
+          "bin_hz": 8416.175842285156,
+          "H_db": 4.333395495153927,
+          "Hhat_db": 4.011414945398716,
+          "residual_path_db": -20.19504924929414,
+          "coherence": 0.8006692450888178
+        },
+        {
+          "requested_hz": 9131,
+          "bin_hz": 9131.431579589844,
+          "H_db": -1.0213894206293346,
+          "Hhat_db": -1.6281130276600642,
+          "residual_path_db": -24.437404363881136,
+          "coherence": 0.7079663847158494
+        },
+        {
+          "requested_hz": 12000,
+          "bin_hz": 12004.375457763672,
+          "H_db": -34.406102684522146,
+          "Hhat_db": -29.972514153237793,
+          "residual_path_db": -37.71358305236479,
+          "coherence": 0.20282168296290226
+        },
+        {
+          "requested_hz": 20000,
+          "bin_hz": 20003.318786621094,
+          "H_db": -42.33370322666171,
+          "Hhat_db": -38.28109764391864,
+          "residual_path_db": -46.700708903337855,
+          "coherence": 0.025630804579480873
+        }
+      ],
+      "fullband_certified": false,
+      "interpretation": "Finite-grid prediction with omitted low-coherence bins; not measured MSG/ASG or a physical ceiling",
+      "label": "holdout6_B4096",
+      "input_paths": [
+        "lowband2/seg_10.npz",
+        "lowband2/seg_11.npz",
+        "lowband2/seg_12.npz",
+        "lowband2/seg_13.npz",
+        "lowband2/seg_14.npz",
+        "lowband2/seg_15.npz"
+      ],
+      "uses_training_records": false
+    },
+    {
+      "nfft": 4096,
+      "bin_width_hz": 11.920928955078125,
+      "window": "symmetric Hann; 50% overlap; no demeaning",
+      "coherence_filter": 0.8,
+      "source_on_only": true,
+      "include_last_window": true,
+      "spectral_windows": 24,
+      "per_record_windows": [
+        {
+          "capture_id": "c2b38db5-5e76-45d5-b499-6564033239e3",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 4
+        },
+        {
+          "capture_id": "a60dd08f-b9e1-405f-b75d-9fdf4845b089",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 4
+        },
+        {
+          "capture_id": "c961b4bc-81df-4041-93af-e4874f93f858",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 4
+        },
+        {
+          "capture_id": "f382ce9e-1e00-462b-a91c-46dedccd2f13",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 4
+        },
+        {
+          "capture_id": "d0f9c9f5-c0c5-474e-abc2-7b0ea3cf1d49",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 4
+        },
+        {
+          "capture_id": "d1701860-e5cc-45b7-bbce-9b2d2bf8cb28",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 4
+        }
+      ],
+      "comparison_band_hz": [
+        300,
+        10250
+      ],
+      "sampled_small_gain_estimate": {
+        "estimated_db": 4.887288217735624,
+        "worst_hz": 441.0743713378906,
+        "selected_bins": 569,
+        "coherence_at_worst": 0.8923059310079035
+      },
+      "bands": {
+        "0-300": {
+          "estimated_db": 12.428307500394029,
+          "worst_hz": 286.102294921875,
+          "selected_bins": 5,
+          "coherence_at_worst": 0.8615626721117329,
+          "total_bins": 26
+        },
+        "300-1000": {
+          "estimated_db": 4.887288217735624,
+          "worst_hz": 441.0743713378906,
+          "selected_bins": 44,
+          "coherence_at_worst": 0.8923059310079035,
+          "total_bins": 58
+        },
+        "1000-2000": {
+          "estimated_db": 8.876894003510182,
+          "worst_hz": 1132.4882507324219,
+          "selected_bins": 81,
+          "coherence_at_worst": 0.9245518032179179,
+          "total_bins": 84
+        },
+        "2000-3400": {
+          "estimated_db": 13.858424828658906,
+          "worst_hz": 3337.860107421875,
+          "selected_bins": 107,
+          "coherence_at_worst": 0.8824396822328185,
+          "total_bins": 118
+        },
+        "3400-6000": {
+          "estimated_db": 7.221655713573672,
+          "worst_hz": 5149.84130859375,
+          "selected_bins": 210,
+          "coherence_at_worst": 0.8441776579245763,
+          "total_bins": 218
+        },
+        "6000-8200": {
+          "estimated_db": 7.85663513909614,
+          "worst_hz": 6413.459777832031,
+          "selected_bins": 125,
+          "coherence_at_worst": 0.812481182461848,
+          "total_bins": 184
+        },
+        "8200-8600": {
+          "estimated_db": 18.24158950716495,
+          "worst_hz": 8320.808410644531,
+          "selected_bins": 1,
+          "coherence_at_worst": 0.8391740089176003,
+          "total_bins": 34
+        },
+        "8600-10250": {
+          "estimated_db": 20.104797129090443,
+          "worst_hz": 8738.040924072266,
+          "selected_bins": 1,
+          "coherence_at_worst": 0.8078954098376145,
+          "total_bins": 138
+        },
+        "10250-24415.1": {
+          "estimated_db": null,
+          "worst_hz": null,
+          "selected_bins": 0,
+          "total_bins": 1189
+        }
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 10.709120357512807,
+        "frequency_hz": 883.57115902211,
+        "crossings": 75
+      },
+      "probes": [
+        {
+          "requested_hz": 0,
+          "bin_hz": 0.0,
+          "H_db": -36.308822195016404,
+          "Hhat_db": -26.364593994026514,
+          "residual_path_db": -29.692279451864323,
+          "coherence": 0.03679647653466898
+        },
+        {
+          "requested_hz": 435,
+          "bin_hz": 429.1534423828125,
+          "H_db": 5.890090506144801,
+          "Hhat_db": 4.874698327757559,
+          "residual_path_db": -6.630359642155696,
+          "coherence": 0.8621457314386523
+        },
+        {
+          "requested_hz": 441,
+          "bin_hz": 441.0743713378906,
+          "H_db": 5.503208194906551,
+          "Hhat_db": 4.36630559295542,
+          "residual_path_db": -4.887288217735624,
+          "coherence": 0.8923059310079035
+        },
+        {
+          "requested_hz": 3898,
+          "bin_hz": 3898.143768310547,
+          "H_db": 3.4273491273762513,
+          "Hhat_db": 4.727121679597017,
+          "residual_path_db": -8.195050116332833,
+          "coherence": 0.9117385983269004
+        },
+        {
+          "requested_hz": 8416,
+          "bin_hz": 8416.175842285156,
+          "H_db": 4.215832279557426,
+          "Hhat_db": 4.011414945398716,
+          "residual_path_db": -26.36719315275842,
+          "coherence": 0.79649775621416
+        },
+        {
+          "requested_hz": 9131,
+          "bin_hz": 9131.431579589844,
+          "H_db": -1.1684505302877204,
+          "Hhat_db": -1.6281130276600642,
+          "residual_path_db": -24.693391975386298,
+          "coherence": 0.6938306545893196
+        },
+        {
+          "requested_hz": 12000,
+          "bin_hz": 12004.375457763672,
+          "H_db": -33.888112001926416,
+          "Hhat_db": -29.972514153237793,
+          "residual_path_db": -37.925443282565354,
+          "coherence": 0.2589974042382092
+        },
+        {
+          "requested_hz": 20000,
+          "bin_hz": 20003.318786621094,
+          "H_db": -40.346191609162304,
+          "Hhat_db": -38.28109764391864,
+          "residual_path_db": -46.28247281913086,
+          "coherence": 0.03634781656132186
+        }
+      ],
+      "fullband_certified": false,
+      "interpretation": "Finite-grid prediction with omitted low-coherence bins; not measured MSG/ASG or a physical ceiling",
+      "label": "holdout6_source_on4096",
+      "input_paths": [
+        "lowband2/seg_10.npz",
+        "lowband2/seg_11.npz",
+        "lowband2/seg_12.npz",
+        "lowband2/seg_13.npz",
+        "lowband2/seg_14.npz",
+        "lowband2/seg_15.npz"
+      ],
+      "uses_training_records": false
+    },
+    {
+      "nfft": 8192,
+      "bin_width_hz": 5.9604644775390625,
+      "window": "symmetric Hann; 50% overlap; no demeaning",
+      "coherence_filter": 0.8,
+      "source_on_only": false,
+      "include_last_window": false,
+      "spectral_windows": 32,
+      "per_record_windows": [
+        {
+          "capture_id": "45439a4c-d3c6-4c99-a40c-36ec22d4017f",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "a7a913f5-66a0-4eab-b258-d99298b09d78",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "7dd6cdc4-bd5a-4efc-909c-b92e4887fa09",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "4d77ee26-1641-49ed-809e-fd40138cd110",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "c1ec5bde-b527-47c1-82d9-98f4e8f4ea02",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "dc910841-c212-4920-874f-d895da8fa8d7",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "3e31571d-3f36-4fca-86c8-56e5c0fd3d36",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "2bb0afcc-aa7b-4e5e-92bb-53b0520d3084",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "400964b1-c884-451e-9f0e-c0c5f4f5de89",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "7a721a92-9a59-4f24-a209-827a20ff9f2b",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "c2b38db5-5e76-45d5-b499-6564033239e3",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "a60dd08f-b9e1-405f-b75d-9fdf4845b089",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "c961b4bc-81df-4041-93af-e4874f93f858",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "f382ce9e-1e00-462b-a91c-46dedccd2f13",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "d0f9c9f5-c0c5-474e-abc2-7b0ea3cf1d49",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "d1701860-e5cc-45b7-bbce-9b2d2bf8cb28",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        }
+      ],
+      "comparison_band_hz": [
+        300,
+        10250
+      ],
+      "sampled_small_gain_estimate": {
+        "estimated_db": 5.415479943973728,
+        "worst_hz": 435.11390686035156,
+        "selected_bins": 1213,
+        "coherence_at_worst": 0.9401137711790097
+      },
+      "bands": {
+        "0-300": {
+          "estimated_db": 10.69714822182802,
+          "worst_hz": 268.2209014892578,
+          "selected_bins": 7,
+          "coherence_at_worst": 0.8726763685973375,
+          "total_bins": 51
+        },
+        "300-1000": {
+          "estimated_db": 5.415479943973728,
+          "worst_hz": 435.11390686035156,
+          "selected_bins": 98,
+          "coherence_at_worst": 0.9401137711790097,
+          "total_bins": 117
+        },
+        "1000-2000": {
+          "estimated_db": 8.619600994878894,
+          "worst_hz": 1585.4835510253906,
+          "selected_bins": 162,
+          "coherence_at_worst": 0.9656458648273079,
+          "total_bins": 168
+        },
+        "2000-3400": {
+          "estimated_db": 12.3783731640697,
+          "worst_hz": 3230.571746826172,
+          "selected_bins": 221,
+          "coherence_at_worst": 0.9499154531021025,
+          "total_bins": 235
+        },
+        "3400-6000": {
+          "estimated_db": 6.77360835163741,
+          "worst_hz": 3910.064697265625,
+          "selected_bins": 429,
+          "coherence_at_worst": 0.911450357842653,
+          "total_bins": 436
+        },
+        "6000-8200": {
+          "estimated_db": 11.857806564961164,
+          "worst_hz": 6633.996963500977,
+          "selected_bins": 286,
+          "coherence_at_worst": 0.8298461806793893,
+          "total_bins": 369
+        },
+        "8200-8600": {
+          "estimated_db": 11.801250528917679,
+          "worst_hz": 8314.847946166992,
+          "selected_bins": 5,
+          "coherence_at_worst": 0.8455904643158013,
+          "total_bins": 67
+        },
+        "8600-10250": {
+          "estimated_db": 11.416189836552979,
+          "worst_hz": 8761.882781982422,
+          "selected_bins": 12,
+          "coherence_at_worst": 0.8490766379015054,
+          "total_bins": 277
+        },
+        "10250-24415.1": {
+          "estimated_db": null,
+          "worst_hz": null,
+          "selected_bins": 0,
+          "total_bins": 2377
+        }
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 8.326199050419564,
+        "frequency_hz": 881.7455771012941,
+        "crossings": 148
+      },
+      "probes": [
+        {
+          "requested_hz": 0,
+          "bin_hz": 0.0,
+          "H_db": -48.13783782264739,
+          "Hhat_db": -26.364593994026514,
+          "residual_path_db": -25.683791875368623,
+          "coherence": 0.002088059122052234
+        },
+        {
+          "requested_hz": 435,
+          "bin_hz": 435.11390686035156,
+          "H_db": 6.284270324654698,
+          "Hhat_db": 4.64857254628399,
+          "residual_path_db": -5.415479943973728,
+          "coherence": 0.9401137711790097
+        },
+        {
+          "requested_hz": 441,
+          "bin_hz": 441.0743713378906,
+          "H_db": 5.478014576842125,
+          "Hhat_db": 4.366305592955423,
+          "residual_path_db": -5.488487377368001,
+          "coherence": 0.9298521568460445
+        },
+        {
+          "requested_hz": 3898,
+          "bin_hz": 3898.143768310547,
+          "H_db": 3.6865692859060424,
+          "Hhat_db": 4.727121679597017,
+          "residual_path_db": -8.904104334555914,
+          "coherence": 0.9222578234559287
+        },
+        {
+          "requested_hz": 8416,
+          "bin_hz": 8416.175842285156,
+          "H_db": 3.745354753738922,
+          "Hhat_db": 4.011414945398718,
+          "residual_path_db": -16.876068315527384,
+          "coherence": 0.7467411029025417
+        },
+        {
+          "requested_hz": 9131,
+          "bin_hz": 9131.431579589844,
+          "H_db": -1.0294436845475883,
+          "Hhat_db": -1.628113027660063,
+          "residual_path_db": -17.391617908982223,
+          "coherence": 0.7524789025572751
+        },
+        {
+          "requested_hz": 12000,
+          "bin_hz": 11998.414993286133,
+          "H_db": -32.68336185223728,
+          "Hhat_db": -30.334606172130254,
+          "residual_path_db": -39.91608533575,
+          "coherence": 0.2640130156201961
+        },
+        {
+          "requested_hz": 20000,
+          "bin_hz": 19997.358322143555,
+          "H_db": -37.03494270063451,
+          "Hhat_db": -38.246964894986846,
+          "residual_path_db": -42.3288232838889,
+          "coherence": 0.06613767260426284
+        }
+      ],
+      "fullband_certified": false,
+      "interpretation": "Finite-grid prediction with omitted low-coherence bins; not measured MSG/ASG or a physical ceiling",
+      "label": "all16_A8192_legacy_endpoint",
+      "input_paths": [
+        "lowband2/seg_0.npz",
+        "lowband2/seg_1.npz",
+        "lowband2/seg_2.npz",
+        "lowband2/seg_3.npz",
+        "lowband2/seg_4.npz",
+        "lowband2/seg_5.npz",
+        "lowband2/seg_6.npz",
+        "lowband2/seg_7.npz",
+        "lowband2/seg_8.npz",
+        "lowband2/seg_9.npz",
+        "lowband2/seg_10.npz",
+        "lowband2/seg_11.npz",
+        "lowband2/seg_12.npz",
+        "lowband2/seg_13.npz",
+        "lowband2/seg_14.npz",
+        "lowband2/seg_15.npz"
+      ],
+      "uses_training_records": true
+    },
+    {
+      "nfft": 8192,
+      "bin_width_hz": 5.9604644775390625,
+      "window": "symmetric Hann; 50% overlap; no demeaning",
+      "coherence_filter": 0.8,
+      "source_on_only": false,
+      "include_last_window": false,
+      "spectral_windows": 12,
+      "per_record_windows": [
+        {
+          "capture_id": "c2b38db5-5e76-45d5-b499-6564033239e3",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "a60dd08f-b9e1-405f-b75d-9fdf4845b089",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "c961b4bc-81df-4041-93af-e4874f93f858",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "f382ce9e-1e00-462b-a91c-46dedccd2f13",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "d0f9c9f5-c0c5-474e-abc2-7b0ea3cf1d49",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        },
+        {
+          "capture_id": "d1701860-e5cc-45b7-bbce-9b2d2bf8cb28",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 2
+        }
+      ],
+      "comparison_band_hz": [
+        300,
+        10250
+      ],
+      "sampled_small_gain_estimate": {
+        "estimated_db": 2.75148205837429,
+        "worst_hz": 435.11390686035156,
+        "selected_bins": 1217,
+        "coherence_at_worst": 0.9461155063589353
+      },
+      "bands": {
+        "0-300": {
+          "estimated_db": 9.396674688187092,
+          "worst_hz": 286.102294921875,
+          "selected_bins": 8,
+          "coherence_at_worst": 0.9389855762384209,
+          "total_bins": 51
+        },
+        "300-1000": {
+          "estimated_db": 2.75148205837429,
+          "worst_hz": 435.11390686035156,
+          "selected_bins": 93,
+          "coherence_at_worst": 0.9461155063589353,
+          "total_bins": 117
+        },
+        "1000-2000": {
+          "estimated_db": 6.920209525995288,
+          "worst_hz": 1591.4440155029297,
+          "selected_bins": 162,
+          "coherence_at_worst": 0.9691308053467,
+          "total_bins": 168
+        },
+        "2000-3400": {
+          "estimated_db": 11.125961311737218,
+          "worst_hz": 2008.676528930664,
+          "selected_bins": 218,
+          "coherence_at_worst": 0.9235797279272295,
+          "total_bins": 235
+        },
+        "3400-6000": {
+          "estimated_db": 3.1129232223007435,
+          "worst_hz": 3910.064697265625,
+          "selected_bins": 420,
+          "coherence_at_worst": 0.8991181956155561,
+          "total_bins": 436
+        },
+        "6000-8200": {
+          "estimated_db": 5.2581312315594095,
+          "worst_hz": 7838.010787963867,
+          "selected_bins": 276,
+          "coherence_at_worst": 0.8140835903001866,
+          "total_bins": 369
+        },
+        "8200-8600": {
+          "estimated_db": 12.688953534186977,
+          "worst_hz": 8350.610733032227,
+          "selected_bins": 10,
+          "coherence_at_worst": 0.8185817114286394,
+          "total_bins": 67
+        },
+        "8600-10250": {
+          "estimated_db": 9.307180889029864,
+          "worst_hz": 8744.001388549805,
+          "selected_bins": 38,
+          "coherence_at_worst": 0.920810040919016,
+          "total_bins": 277
+        },
+        "10250-24415.1": {
+          "estimated_db": 26.935662934559076,
+          "worst_hz": 10293.722152709961,
+          "selected_bins": 2,
+          "coherence_at_worst": 0.8034903346135794,
+          "total_bins": 2377
+        }
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 6.622106393061433,
+        "frequency_hz": 424.62765867858474,
+        "crossings": 129
+      },
+      "probes": [
+        {
+          "requested_hz": 0,
+          "bin_hz": 0.0,
+          "H_db": -46.18715083688129,
+          "Hhat_db": -26.364593994026514,
+          "residual_path_db": -25.52045846548655,
+          "coherence": 0.007225140666538003
+        },
+        {
+          "requested_hz": 435,
+          "bin_hz": 435.11390686035156,
+          "H_db": 6.575532904565431,
+          "Hhat_db": 4.64857254628399,
+          "residual_path_db": -2.75148205837429,
+          "coherence": 0.9461155063589353
+        },
+        {
+          "requested_hz": 441,
+          "bin_hz": 441.0743713378906,
+          "H_db": 5.883431188857166,
+          "Hhat_db": 4.366305592955423,
+          "residual_path_db": -3.5901341143989147,
+          "coherence": 0.9274224865563688
+        },
+        {
+          "requested_hz": 3898,
+          "bin_hz": 3898.143768310547,
+          "H_db": 3.2865150733029873,
+          "Hhat_db": 4.727121679597017,
+          "residual_path_db": -7.1930560238362995,
+          "coherence": 0.9082466122169197
+        },
+        {
+          "requested_hz": 8416,
+          "bin_hz": 8416.175842285156,
+          "H_db": 4.337637283465603,
+          "Hhat_db": 4.011414945398718,
+          "residual_path_db": -14.322016792457983,
+          "coherence": 0.8145050466318672
+        },
+        {
+          "requested_hz": 9131,
+          "bin_hz": 9131.431579589844,
+          "H_db": -0.9670811866424196,
+          "Hhat_db": -1.628113027660063,
+          "residual_path_db": -23.095105368135577,
+          "coherence": 0.7190966009758011
+        },
+        {
+          "requested_hz": 12000,
+          "bin_hz": 11998.414993286133,
+          "H_db": -32.28261288158809,
+          "Hhat_db": -30.334606172130254,
+          "residual_path_db": -42.08000453805188,
+          "coherence": 0.26098492719054467
+        },
+        {
+          "requested_hz": 20000,
+          "bin_hz": 19997.358322143555,
+          "H_db": -38.66276861066707,
+          "Hhat_db": -38.246964894986846,
+          "residual_path_db": -52.272740153319205,
+          "coherence": 0.04330623832932956
+        }
+      ],
+      "fullband_certified": false,
+      "interpretation": "Finite-grid prediction with omitted low-coherence bins; not measured MSG/ASG or a physical ceiling",
+      "label": "holdout6_A8192_legacy_endpoint",
+      "input_paths": [
+        "lowband2/seg_10.npz",
+        "lowband2/seg_11.npz",
+        "lowband2/seg_12.npz",
+        "lowband2/seg_13.npz",
+        "lowband2/seg_14.npz",
+        "lowband2/seg_15.npz"
+      ],
+      "uses_training_records": false
+    },
+    {
+      "nfft": 8192,
+      "bin_width_hz": 5.9604644775390625,
+      "window": "symmetric Hann; 50% overlap; no demeaning",
+      "coherence_filter": 0.8,
+      "source_on_only": false,
+      "include_last_window": true,
+      "spectral_windows": 18,
+      "per_record_windows": [
+        {
+          "capture_id": "c2b38db5-5e76-45d5-b499-6564033239e3",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 3
+        },
+        {
+          "capture_id": "a60dd08f-b9e1-405f-b75d-9fdf4845b089",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 3
+        },
+        {
+          "capture_id": "c961b4bc-81df-4041-93af-e4874f93f858",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 3
+        },
+        {
+          "capture_id": "f382ce9e-1e00-462b-a91c-46dedccd2f13",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 3
+        },
+        {
+          "capture_id": "d0f9c9f5-c0c5-474e-abc2-7b0ea3cf1d49",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 3
+        },
+        {
+          "capture_id": "d1701860-e5cc-45b7-bbce-9b2d2bf8cb28",
+          "available_first_frame": 4123,
+          "available_end_frame": 20507,
+          "windows": 3
+        }
+      ],
+      "comparison_band_hz": [
+        300,
+        10250
+      ],
+      "sampled_small_gain_estimate": {
+        "estimated_db": 2.7748984229237186,
+        "worst_hz": 435.11390686035156,
+        "selected_bins": 1188,
+        "coherence_at_worst": 0.9450399949368915
+      },
+      "bands": {
+        "0-300": {
+          "estimated_db": 9.669990607803797,
+          "worst_hz": 286.102294921875,
+          "selected_bins": 10,
+          "coherence_at_worst": 0.9243731978944199,
+          "total_bins": 51
+        },
+        "300-1000": {
+          "estimated_db": 2.7748984229237186,
+          "worst_hz": 435.11390686035156,
+          "selected_bins": 90,
+          "coherence_at_worst": 0.9450399949368915,
+          "total_bins": 117
+        },
+        "1000-2000": {
+          "estimated_db": 6.745838666568541,
+          "worst_hz": 1591.4440155029297,
+          "selected_bins": 163,
+          "coherence_at_worst": 0.9680012063750182,
+          "total_bins": 168
+        },
+        "2000-3400": {
+          "estimated_db": 11.007623132269782,
+          "worst_hz": 2008.676528930664,
+          "selected_bins": 216,
+          "coherence_at_worst": 0.9268195479649501,
+          "total_bins": 235
+        },
+        "3400-6000": {
+          "estimated_db": 3.661499244439399,
+          "worst_hz": 3910.064697265625,
+          "selected_bins": 420,
+          "coherence_at_worst": 0.8974507864611933,
+          "total_bins": 436
+        },
+        "6000-8200": {
+          "estimated_db": 6.718501025072587,
+          "worst_hz": 6580.352783203125,
+          "selected_bins": 275,
+          "coherence_at_worst": 0.8360780914060836,
+          "total_bins": 369
+        },
+        "8200-8600": {
+          "estimated_db": 12.0816001000728,
+          "worst_hz": 8416.175842285156,
+          "selected_bins": 5,
+          "coherence_at_worst": 0.8294381598610054,
+          "total_bins": 67
+        },
+        "8600-10250": {
+          "estimated_db": 9.431048610044089,
+          "worst_hz": 8744.001388549805,
+          "selected_bins": 19,
+          "coherence_at_worst": 0.9011137569666664,
+          "total_bins": 277
+        },
+        "10250-24415.1": {
+          "estimated_db": 26.220231836794085,
+          "worst_hz": 10293.722152709961,
+          "selected_bins": 1,
+          "coherence_at_worst": 0.811610100163379,
+          "total_bins": 2377
+        }
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 6.5981644354685445,
+        "frequency_hz": 424.1797652550208,
+        "crossings": 121
+      },
+      "probes": [
+        {
+          "requested_hz": 0,
+          "bin_hz": 0.0,
+          "H_db": -34.20898053729316,
+          "Hhat_db": -26.364593994026514,
+          "residual_path_db": -23.4091895975407,
+          "coherence": 0.08924347684876571
+        },
+        {
+          "requested_hz": 435,
+          "bin_hz": 435.11390686035156,
+          "H_db": 6.623323411523696,
+          "Hhat_db": 4.64857254628399,
+          "residual_path_db": -2.7748984229237186,
+          "coherence": 0.9450399949368915
+        },
+        {
+          "requested_hz": 441,
+          "bin_hz": 441.0743713378906,
+          "H_db": 5.9857272903319565,
+          "Hhat_db": 4.366305592955423,
+          "residual_path_db": -2.997192825694065,
+          "coherence": 0.9252796004992334
+        },
+        {
+          "requested_hz": 3898,
+          "bin_hz": 3898.143768310547,
+          "H_db": 3.3142995849799832,
+          "Hhat_db": 4.727121679597017,
+          "residual_path_db": -6.413904252577791,
+          "coherence": 0.9006976578285523
+        },
+        {
+          "requested_hz": 8416,
+          "bin_hz": 8416.175842285156,
+          "H_db": 4.605795998547988,
+          "Hhat_db": 4.011414945398718,
+          "residual_path_db": -12.0816001000728,
+          "coherence": 0.8294381598610054
+        },
+        {
+          "requested_hz": 9131,
+          "bin_hz": 9131.431579589844,
+          "H_db": -1.0441507830444199,
+          "Hhat_db": -1.628113027660063,
+          "residual_path_db": -24.20317996683184,
+          "coherence": 0.7183836386031908
+        },
+        {
+          "requested_hz": 12000,
+          "bin_hz": 11998.414993286133,
+          "H_db": -32.00719298285669,
+          "Hhat_db": -30.334606172130254,
+          "residual_path_db": -43.529345487455934,
+          "coherence": 0.27560670317498787
+        },
+        {
+          "requested_hz": 20000,
+          "bin_hz": 19997.358322143555,
+          "H_db": -38.82385500610341,
+          "Hhat_db": -38.246964894986846,
+          "residual_path_db": -41.34160511770209,
+          "coherence": 0.046572271442821306
+        }
+      ],
+      "fullband_certified": false,
+      "interpretation": "Finite-grid prediction with omitted low-coherence bins; not measured MSG/ASG or a physical ceiling",
+      "label": "holdout6_8192_inclusive_endpoint",
+      "input_paths": [
+        "lowband2/seg_10.npz",
+        "lowband2/seg_11.npz",
+        "lowband2/seg_12.npz",
+        "lowband2/seg_13.npz",
+        "lowband2/seg_14.npz",
+        "lowband2/seg_15.npz"
+      ],
+      "uses_training_records": false
+    },
+    {
+      "nfft": 8192,
+      "bin_width_hz": 5.9604644775390625,
+      "window": "symmetric Hann; 50% overlap; no demeaning",
+      "coherence_filter": 0.8,
+      "source_on_only": true,
+      "include_last_window": true,
+      "spectral_windows": 6,
+      "per_record_windows": [
+        {
+          "capture_id": "c2b38db5-5e76-45d5-b499-6564033239e3",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 1
+        },
+        {
+          "capture_id": "a60dd08f-b9e1-405f-b75d-9fdf4845b089",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 1
+        },
+        {
+          "capture_id": "c961b4bc-81df-4041-93af-e4874f93f858",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 1
+        },
+        {
+          "capture_id": "f382ce9e-1e00-462b-a91c-46dedccd2f13",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 1
+        },
+        {
+          "capture_id": "d0f9c9f5-c0c5-474e-abc2-7b0ea3cf1d49",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 1
+        },
+        {
+          "capture_id": "d1701860-e5cc-45b7-bbce-9b2d2bf8cb28",
+          "available_first_frame": 4123,
+          "available_end_frame": 16113,
+          "windows": 1
+        }
+      ],
+      "comparison_band_hz": [
+        300,
+        10250
+      ],
+      "sampled_small_gain_estimate": {
+        "estimated_db": -1.2423852063720413,
+        "worst_hz": 8285.045623779297,
+        "selected_bins": 1244,
+        "coherence_at_worst": 0.8061286490123656
+      },
+      "bands": {
+        "0-300": {
+          "estimated_db": 9.198152095467542,
+          "worst_hz": 286.102294921875,
+          "selected_bins": 13,
+          "coherence_at_worst": 0.9285869141500263,
+          "total_bins": 51
+        },
+        "300-1000": {
+          "estimated_db": 3.344603511953129,
+          "worst_hz": 435.11390686035156,
+          "selected_bins": 91,
+          "coherence_at_worst": 0.9362786362899937,
+          "total_bins": 117
+        },
+        "1000-2000": {
+          "estimated_db": 6.608951732178722,
+          "worst_hz": 1591.4440155029297,
+          "selected_bins": 160,
+          "coherence_at_worst": 0.973091785359441,
+          "total_bins": 168
+        },
+        "2000-3400": {
+          "estimated_db": 8.23556784855446,
+          "worst_hz": 3188.8484954833984,
+          "selected_bins": 218,
+          "coherence_at_worst": 0.9596597396197403,
+          "total_bins": 235
+        },
+        "3400-6000": {
+          "estimated_db": 3.725718405611489,
+          "worst_hz": 3892.183303833008,
+          "selected_bins": 419,
+          "coherence_at_worst": 0.9338918978498598,
+          "total_bins": 436
+        },
+        "6000-8200": {
+          "estimated_db": -0.7809246149324542,
+          "worst_hz": 8106.231689453125,
+          "selected_bins": 278,
+          "coherence_at_worst": 0.857080778343541,
+          "total_bins": 369
+        },
+        "8200-8600": {
+          "estimated_db": -1.2423852063720413,
+          "worst_hz": 8285.045623779297,
+          "selected_bins": 16,
+          "coherence_at_worst": 0.8061286490123656,
+          "total_bins": 67
+        },
+        "8600-10250": {
+          "estimated_db": 5.31759393372557,
+          "worst_hz": 9918.212890625,
+          "selected_bins": 62,
+          "coherence_at_worst": 0.8213380608768827,
+          "total_bins": 277
+        },
+        "10250-24415.1": {
+          "estimated_db": 22.200200100612673,
+          "worst_hz": 10365.24772644043,
+          "selected_bins": 29,
+          "coherence_at_worst": 0.9196880474416671,
+          "total_bins": 2377
+        }
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 5.328181558078726,
+        "frequency_hz": 421.70042912075274,
+        "crossings": 154
+      },
+      "probes": [
+        {
+          "requested_hz": 0,
+          "bin_hz": 0.0,
+          "H_db": -29.649110227363007,
+          "Hhat_db": -26.364593994026514,
+          "residual_path_db": -21.83191599897926,
+          "coherence": 0.08124329875956264
+        },
+        {
+          "requested_hz": 435,
+          "bin_hz": 435.11390686035156,
+          "H_db": 6.721745305688089,
+          "Hhat_db": 4.64857254628399,
+          "residual_path_db": -3.344603511953129,
+          "coherence": 0.9362786362899937
+        },
+        {
+          "requested_hz": 441,
+          "bin_hz": 441.0743713378906,
+          "H_db": 5.654394329867682,
+          "Hhat_db": 4.366305592955423,
+          "residual_path_db": -4.9591842888443525,
+          "coherence": 0.9041189337695742
+        },
+        {
+          "requested_hz": 3898,
+          "bin_hz": 3898.143768310547,
+          "H_db": 3.4595555247637444,
+          "Hhat_db": 4.727121679597017,
+          "residual_path_db": -7.81132638945936,
+          "coherence": 0.9171009909342672
+        },
+        {
+          "requested_hz": 8416,
+          "bin_hz": 8416.175842285156,
+          "H_db": 4.740047546739618,
+          "Hhat_db": 4.011414945398718,
+          "residual_path_db": -5.840139914744294,
+          "coherence": 0.9297465871479949
+        },
+        {
+          "requested_hz": 9131,
+          "bin_hz": 9131.431579589844,
+          "H_db": -1.0476871423276388,
+          "Hhat_db": -1.628113027660063,
+          "residual_path_db": -16.886305914953386,
+          "coherence": 0.6947196994478355
+        },
+        {
+          "requested_hz": 12000,
+          "bin_hz": 11998.414993286133,
+          "H_db": -29.82429165474369,
+          "Hhat_db": -30.334606172130254,
+          "residual_path_db": -46.38004703687328,
+          "coherence": 0.5450680048088221
+        },
+        {
+          "requested_hz": 20000,
+          "bin_hz": 19997.358322143555,
+          "H_db": -33.301980113122845,
+          "Hhat_db": -38.246964894986846,
+          "residual_path_db": -40.20818350343465,
+          "coherence": 0.19576500376668984
+        }
+      ],
+      "fullband_certified": false,
+      "interpretation": "Finite-grid prediction with omitted low-coherence bins; not measured MSG/ASG or a physical ceiling",
+      "label": "holdout6_source_on8192",
+      "input_paths": [
+        "lowband2/seg_10.npz",
+        "lowband2/seg_11.npz",
+        "lowband2/seg_12.npz",
+        "lowband2/seg_13.npz",
+        "lowband2/seg_14.npz",
+        "lowband2/seg_15.npz"
+      ],
+      "uses_training_records": false
+    }
+  ]
+}

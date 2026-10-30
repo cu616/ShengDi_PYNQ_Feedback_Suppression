@@ -1,0 +1,17 @@
+[
+  {
+    "case": "missing-member",
+    "rejected": true,
+    "report_written": false
+  },
+  {
+    "case": "changed-pcm",
+    "rejected": true,
+    "report_written": false
+  },
+  {
+    "case": "wrong-summary",
+    "rejected": true,
+    "report_written": false
+  }
+]

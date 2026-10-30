@@ -1,0 +1,177 @@
+{
+  "source_files": {
+    "board/audio_replay/room_experiment.py": "b41ee2354afc85c30c41c0b560d1325113f3f09b710194f4fb39893cc73d3572",
+    "board/audio_replay/sprint_experiment.py": "fc9787047c51ef35481ba6c6a0181f6400768ccb52155c4d40ffaac5a0e1f8cb"
+  },
+  "synthetic_only": true,
+  "hardware_access": false,
+  "gate_controls": [
+    {
+      "case": "source_present",
+      "synthetic_tone_rms_dbfs": -24.0,
+      "synthetic_noise_rms_dbfs": -50.0,
+      "gate_noise_floor_argument": -50.0,
+      "previous_gate_argument": null,
+      "expected_passed": true,
+      "result": {
+        "passed": true,
+        "baseline_dbfs": null,
+        "capture_sha256": "f345ec74504411a69934057222f33d18f34f5c2bd30c440f1c2e3150021bae73",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [],
+        "rms_dbfs": -23.992806789268954,
+        "tonal_fraction": 0.9974948222942637,
+        "drift_db": null,
+        "reference_rms_dbfs": -23.011069809157583,
+        "mic_over_ref_db": -0.9817369801113713,
+        "operational_drift_limit_db": 5.0
+      }
+    },
+    {
+      "case": "quieter_source_and_measured_quieter_floor",
+      "synthetic_tone_rms_dbfs": -39.0,
+      "synthetic_noise_rms_dbfs": -65.0,
+      "gate_noise_floor_argument": -65.0,
+      "previous_gate_argument": null,
+      "expected_passed": true,
+      "result": {
+        "passed": true,
+        "baseline_dbfs": null,
+        "capture_sha256": "c6bad4403ef364cf7a201ed6f75ef308765048d35c4e904d723c44b23a8f0786",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [],
+        "rms_dbfs": -38.99280683440359,
+        "tonal_fraction": 0.9974948208291732,
+        "drift_db": null,
+        "reference_rms_dbfs": -23.011069809157583,
+        "mic_over_ref_db": -15.981737025246005,
+        "operational_drift_limit_db": 5.0
+      }
+    },
+    {
+      "case": "same_quiet_capture_but_stale_frozen_floor",
+      "synthetic_tone_rms_dbfs": -39.0,
+      "synthetic_noise_rms_dbfs": -65.0,
+      "gate_noise_floor_argument": -37.8,
+      "previous_gate_argument": null,
+      "expected_passed": false,
+      "result": {
+        "passed": false,
+        "baseline_dbfs": null,
+        "capture_sha256": "c6bad4403ef364cf7a201ed6f75ef308765048d35c4e904d723c44b23a8f0786",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [
+          "gate_at_noise_floor"
+        ],
+        "rms_dbfs": -38.99280683440359,
+        "tonal_fraction": 0.9974948208291732,
+        "drift_db": null,
+        "reference_rms_dbfs": -23.011069809157583,
+        "mic_over_ref_db": -15.981737025246005,
+        "operational_drift_limit_db": 5.0
+      }
+    },
+    {
+      "case": "quieter_source_but_previous_path_baseline",
+      "synthetic_tone_rms_dbfs": -39.0,
+      "synthetic_noise_rms_dbfs": -65.0,
+      "gate_noise_floor_argument": -65.0,
+      "previous_gate_argument": -24.0,
+      "expected_passed": false,
+      "result": {
+        "passed": false,
+        "baseline_dbfs": -24.0,
+        "capture_sha256": "c6bad4403ef364cf7a201ed6f75ef308765048d35c4e904d723c44b23a8f0786",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [
+          "gate_drift_exceeds_5_db"
+        ],
+        "rms_dbfs": -38.99280683440359,
+        "tonal_fraction": 0.9974948208291732,
+        "drift_db": -14.992806834403588,
+        "reference_rms_dbfs": -23.011069809157583,
+        "mic_over_ref_db": -15.981737025246005,
+        "operational_drift_limit_db": 5.0
+      }
+    },
+    {
+      "case": "noise_only",
+      "synthetic_tone_rms_dbfs": null,
+      "synthetic_noise_rms_dbfs": -50.0,
+      "gate_noise_floor_argument": -50.0,
+      "previous_gate_argument": null,
+      "expected_passed": false,
+      "result": {
+        "passed": false,
+        "baseline_dbfs": null,
+        "capture_sha256": "4cfb731f22aa86510bcb7817ee821c1632068a2447345c3da7d03927ae16472b",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [
+          "gate_at_noise_floor",
+          "gate_tone_not_observed"
+        ],
+        "rms_dbfs": -49.99999886672523,
+        "tonal_fraction": 0.00023074681782161887,
+        "drift_db": null,
+        "reference_rms_dbfs": -23.011069809157583,
+        "mic_over_ref_db": -26.988929057567645,
+        "operational_drift_limit_db": 5.0
+      }
+    }
+  ],
+  "current_gate": {
+    "source_response": "level >= supplied noise_floor_dbfs + 6 dB; tonal_fraction >= 0.8; level <= -3 dBFS; no full scale",
+    "subsequent_drift": "same-run baseline <=5 dB; paired path drift <=1.5 dB",
+    "frozen_sprint_floor_dbfs": -37.8,
+    "first_gate_uses_previous_level": false
+  },
+  "next_package_policy": "Separate source observability from path/configuration consistency. A current source-off floor requires original capture/provenance and matching analog/layout configuration. Do not estimate it from a driven tone or automatically reset drift gates. Changed geometry invalidates SAME_SCENE and the old scene-model authorization; retain mute/stop until current calibration/qualification.",
+  "coupling_claim": {
+    "source": "A user handoff and d8ffaf0 corrections; no original calibration capture submitted to C",
+    "reference_rms_dbfs": -40.9,
+    "microphone_rms_dbfs": -37.9,
+    "reported_seconds": 2.4,
+    "arithmetic_delta_db": 3.0,
+    "independently_verified_waveform": false,
+    "causal_explanation": "not established"
+  },
+  "independent_same_white_rms_counterexample": [
+    {
+      "name": "flat",
+      "white_input_expected_rms_ratio_db": 3.010299956639813,
+      "peak_magnitude_db": 3.0102999566398125,
+      "peak_frequency_hz": 0.0
+    },
+    {
+      "name": "narrowband",
+      "white_input_expected_rms_ratio_db": 3.010299956639812,
+      "peak_magnitude_db": 21.429525221560407,
+      "peak_frequency_hz": 450.0150680541992
+    }
+  ],
+  "independent_same_1khz_counterexample": {
+    "first_path": [
+      1.0
+    ],
+    "second_path": [
+      11.0,
+      -19.834643874233905,
+      10.0
+    ],
+    "at_1khz_magnitude": 1.0,
+    "second_path_nyquist_magnitude": 40.834643874233905
+  },
+  "interpretation": "A broadband RMS ratio is a source/noise-weighted average, not max frequency loop gain, phase, onset threshold or a causal account of all reported phenomena. The counterexamples are synthetic and do not identify the real room path.",
+  "counterexample_construction": {
+    "fs": 48828.125,
+    "nfft": 65536,
+    "flat": "h=[sqrt(2)]",
+    "narrowband": "n=0..127; h=cos(2*pi*435*n/fs); normalize sum(h**2)=2",
+    "same_1khz": "h1=[1]; h2=[11,-20*cos(2*pi*1000/fs),10]"
+  }
+}

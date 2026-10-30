@@ -1,0 +1,213 @@
+{
+  "stage": "final-candidate-archive",
+  "policy": "c-new-layout-1.0.0",
+  "package_status": "prepared_pending_binding",
+  "package_sha256": "8a992db05b0c42cd765a16176b7346f63754ccd631473a0b75d38696857bd564",
+  "package_bytes": 322836,
+  "source_base": "c6980a107f933a56099f664a7bd71480b24cddd3",
+  "source_tree_clean": true,
+  "A_commit": "2928a4a9de2e360d9aeedce435b452b860baf189",
+  "software_tests": {
+    "layout": {
+      "command": "D:\\Anaconda\\python.exe -m unittest discover -s sim/feedback -p test_layout_experiment.py -v",
+      "count": 11,
+      "seconds": 23.022,
+      "exit_code": 0,
+      "output": "layout-tests-r1.txt"
+    },
+    "related_sprint": {
+      "command": "D:\\Anaconda\\python.exe -m unittest discover -s sim/feedback -p test_sprint_experiment.py -v",
+      "count": 22,
+      "seconds": 37.046,
+      "exit_code": 0
+    }
+  },
+  "hardware_executed": false,
+  "physical_effect": "not_tested",
+  "candidate_supplied": true,
+  "workflow_refs": {
+    "rules": "ddafcb7",
+    "state_and_review": "ca9b484"
+  },
+  "A_sources": {
+    "replay_trial.py": {
+      "sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+      "git_bytes_identical": true
+    },
+    "live_run.py": {
+      "sha256": "a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441",
+      "git_bytes_identical": true
+    },
+    "replay_tools.py": {
+      "sha256": "e3c748e07a6e87e9dd1522eebe11a24e171407039d35142590e70a85dc6bb767",
+      "git_bytes_identical": true
+    },
+    "closed_tools.py": {
+      "sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "git_bytes_identical": true
+    },
+    "residual_tools.py": {
+      "sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "git_bytes_identical": true
+    },
+    "audio_replay.bit": {
+      "sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+      "git_bytes_identical": true
+    },
+    "audio_replay.hwh": {
+      "sha256": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b",
+      "git_bytes_identical": true
+    },
+    "a-field-config-original.json": {
+      "sha256": "b4db3fb621ac6a9cfc9bb39121a96c03b66da29ca79bce689bcf54efd44d87bf",
+      "git_bytes_identical": true
+    }
+  },
+  "A_field_config_parse": {
+    "valid": false,
+    "error": "Expecting ',' delimiter: line 29 column 17 (char 1534)",
+    "line": 29,
+    "column": 17,
+    "known_fields": [
+      "retired.action",
+      "zero_coefficient",
+      "acoustics.reflecting_object"
+    ]
+  },
+  "independent_extraction": {
+    "action": "check",
+    "exit_code": 2,
+    "ready": false,
+    "missing": [
+      "A:a_allowed_gains_db",
+      "A:a_injection_range_dbfs",
+      "A:agc_disabled",
+      "A:fixed_speech_source",
+      "A:gain_not_supported",
+      "A:injection_not_supported",
+      "A:recorder_gain",
+      "A:unknown:fixed_speech_source",
+      "A:unknown:recorder_gain",
+      "A:unverified:agc_disabled",
+      "A:unverified:control_and_cue_approved_by_A",
+      "A:unverified:verified_by_A",
+      "B:b_injection_range_dbfs",
+      "B:band:0",
+      "B:band:1",
+      "B:injection_not_supported",
+      "B:injection_rms_dbfs",
+      "injection:PCM_headroom",
+      "C:frozen_run_binding_missing"
+    ],
+    "no_active_model": true,
+    "candidate_present": true,
+    "immutable_payload_hashes_verified": true,
+    "runnable_C_sources_equal_tested_tree": {
+      "layout_experiment.py": true,
+      "sprint_continuous.py": true,
+      "listener_metrics.py": true,
+      "evaluation.py": true,
+      "growth_monitor.py": true,
+      "tail_metrics.py": true,
+      "model_comparison.py": true,
+      "room_experiment.py": true
+    },
+    "unbound_run_covered_by": "test_pending_is_complete_missing_list_and_never_calls_board; test_actual_B_candidate_is_carried_and_compatible_without_sound_approval"
+  },
+  "payload_files": 26,
+  "notebook_code_sha256": "5ed9423f59100f32aac9c33de084bf92710bb7ca10d37d3897f3d97041f8e283",
+  "candidate_activated": false,
+  "candidate_compatibility": {
+    "B_commit": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a",
+    "A_later_facts_commit": "1d7872c4428822c2ab913a494120fd0d137be30e",
+    "model": {
+      "path": "models/room_v1/newlayout_512_20261026.json",
+      "file_sha256": "36c0d9705de99fcddd6022390d49bf878f376a38ee535398819ed911eebdd665",
+      "q20_sha256": "e8757833a8c9f08e06c8a728dff1bbdc9bb8283ebdc10cbea0f54cbb18390961",
+      "float_sha256": "4dfff1ca3798a59ef00fff0f50f903e936d306b8b1347cff6a1d4aca8f94dc75",
+      "bytes": 17882,
+      "q20_min": -31959,
+      "q20_max": 43681
+    },
+    "logical_taps": 512,
+    "loaded_taps": 512,
+    "serial_cycles": 1539,
+    "frame_budget": 2048,
+    "bias_loaded": false,
+    "lag_first": 1,
+    "forward_schedule_frames": 2,
+    "identity_and_driver_compatibility": true,
+    "probe": {
+      "budget": 123046,
+      "source_frames": 1,
+      "headroom_frames": 123045,
+      "validation_driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62"
+    },
+    "probe_scope": "software argument validation only; no gain/injection approval",
+    "sources": {
+      "candidate-unbound.json": "models/room_v1/newlayout_512_20261026.json",
+      "b-metrics.json": "report/verification/newlayout-candidate-2026-10-26/metrics.json",
+      "b-readme-original.txt": "report/verification/newlayout-candidate-2026-10-26/README.md",
+      "b-model-registry.json": "models/manifest.json"
+    },
+    "unresolved": [
+      "B numeric injection range or justified non-estimation branch",
+      "B band validity: coherence>=0.8 supplied, no pure-SNR threshold; do not invent one",
+      "A current scene and actual limits; external source/recorder facts only for dependent branches"
+    ],
+    "known_report_conflicts": [
+      "README section 9 says c771a02d but file/metrics/registry Q20 is e8757833",
+      "README section 7 gain forecast/3dB test compares old model, not this zero/matched question",
+      "README section 4 unaligned summary differs from section 6 and machine metrics"
+    ]
+  },
+  "latest_handoffs": {
+    "A": "1d7872c4428822c2ab913a494120fd0d137be30e",
+    "B": "8a027578be68d79eece4837c4fb3b5ffb65a7a7a"
+  },
+  "A_original_JSONs": {
+    "a-field-config-original.json": {
+      "valid": false,
+      "error": "Expecting ',' delimiter: line 29 column 17 (char 1534)",
+      "adjacent_string_lines": [
+        28,
+        32,
+        39
+      ]
+    },
+    "a-usable-point-original.json": {
+      "valid": false,
+      "error": "Expecting ',' delimiter: line 10 column 21 (char 402)",
+      "adjacent_string_lines": [
+        9,
+        14,
+        28,
+        33,
+        34,
+        36,
+        37,
+        39,
+        41,
+        43
+      ]
+    },
+    "a-live-round-original.json": {
+      "valid": false,
+      "error": "Expecting ',' delimiter: line 6 column 15 (char 259)",
+      "adjacent_string_lines": [
+        5,
+        10,
+        20,
+        30,
+        31,
+        35,
+        39,
+        40,
+        44,
+        45,
+        47,
+        50
+      ]
+    }
+  }
+}

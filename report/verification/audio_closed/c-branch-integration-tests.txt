@@ -1,0 +1,112 @@
+test_board_gain_and_fixture_must_match (test_calibration.CalibrationTests.test_board_gain_and_fixture_must_match) ... ok
+test_data_contract_failures (test_calibration.CalibrationTests.test_data_contract_failures) ... ok
+test_hand_calculated_causality (test_calibration.CalibrationTests.test_hand_calculated_causality) ... ok
+test_integer_rounding_and_saturation (test_calibration.CalibrationTests.test_integer_rounding_and_saturation) ... ok
+test_noise_and_changed_path (test_calibration.CalibrationTests.test_noise_and_changed_path) ... ok
+test_npz_and_model_round_trip (test_calibration.CalibrationTests.test_npz_and_model_round_trip) ... ok
+test_quantized_fir_against_float (test_calibration.CalibrationTests.test_quantized_fir_against_float) ... ok
+test_recover_delayed_path_and_bias (test_calibration.CalibrationTests.test_recover_delayed_path_and_bias) ... ok
+test_reject_reused_validation_and_wrong_rate (test_calibration.CalibrationTests.test_reject_reused_validation_and_wrong_rate) ... ok
+test_reject_single_tone_and_silence (test_calibration.CalibrationTests.test_reject_single_tone_and_silence) ... ok
+test_divergence_guard_rejects_large_update (test_cancellation.CancellationTests.test_divergence_guard_rejects_large_update) ... ok
+test_hand_rounding_residual_and_bypass (test_cancellation.CancellationTests.test_hand_rounding_residual_and_bypass) ... ok
+test_nlms_frozen_matches_independent_convolution (test_cancellation.CancellationTests.test_nlms_frozen_matches_independent_convolution) ... ok
+test_nlms_recovers_known_path (test_cancellation.CancellationTests.test_nlms_recovers_known_path) ... ok
+test_saturation (test_cancellation.CancellationTests.test_saturation) ... ok
+test_zero_input_freezes_and_bad_parameters_rejected (test_cancellation.CancellationTests.test_zero_input_freezes_and_bad_parameters_rejected) ... ok
+test_corrupt_reference_restores_without_saving (test_capture_driver.DriverTests.test_corrupt_reference_restores_without_saving) ... ok
+test_restore_failure_still_mutes_codec_and_restores_pll (test_capture_driver.DriverTests.test_restore_failure_still_mutes_codec_and_restores_pll) ... ok
+test_success_and_no_import_playback (test_capture_driver.DriverTests.test_success_and_no_import_playback) ... ok
+test_bad_result_and_interrupt_never_escalate (test_closed_batch.BatchTests.test_bad_result_and_interrupt_never_escalate) ... ok
+test_cancel_at_ready_no_audio (test_closed_batch.BatchTests.test_cancel_at_ready_no_audio) ... ok
+test_complete_eight_trials_and_four_pairs (test_closed_batch.BatchTests.test_complete_eight_trials_and_four_pairs) ... ok
+test_howl_stops_whole_batch (test_closed_batch.BatchTests.test_howl_stops_whole_batch) ... ok
+test_missing_actual_config_stops_without_fabricating_fields (test_closed_batch.BatchTests.test_missing_actual_config_stops_without_fabricating_fields) ... ok
+test_no_initial_confirmation_no_trials (test_closed_batch.BatchTests.test_no_initial_confirmation_no_trials) ... ok
+test_pair_config_change_stops (test_closed_batch.BatchTests.test_pair_config_change_stops) ... ok
+test_summary_exports_actual_config (test_closed_batch.BatchTests.test_summary_exports_actual_config) ... ok
+test_cancel_before_unmute_restores (test_closed_driver.ClosedDriverTests.test_cancel_before_unmute_restores) ... ok
+test_protocol_fault_restores_without_saving (test_closed_driver.ClosedDriverTests.test_protocol_fault_restores_without_saving) ... ok
+test_restore_failure_still_mutes_codec_and_restores_pll (test_closed_driver.ClosedDriverTests.test_restore_failure_still_mutes_codec_and_restores_pll) ... ok
+test_success_and_no_import_playback (test_closed_driver.ClosedDriverTests.test_success_and_no_import_playback) ... ok
+test_gain_range_is_enforced (test_closed_loop_sim.FixedPointTests.test_gain_range_is_enforced) ... ok
+test_gain_saturates_at_24_bits (test_closed_loop_sim.FixedPointTests.test_gain_saturates_at_24_bits) ... ok
+test_rounding_is_half_away_from_zero (test_closed_loop_sim.FixedPointTests.test_rounding_is_half_away_from_zero) ... ok
+test_unity_gain_is_transparent (test_closed_loop_sim.FixedPointTests.test_unity_gain_is_transparent) ... ok
+test_bypass_threshold_matches_theory (test_closed_loop_sim.MessageTests.test_bypass_threshold_matches_theory) ... ok
+test_partial_cancellation_matches_theory (test_closed_loop_sim.MessageTests.test_partial_cancellation_matches_theory)
+模型只抵掉一半路径时，剩余 0.25 → 起振增益应为 4 倍（12 dB）。 ... ok
+test_perfect_model_survives_maximum_gain (test_closed_loop_sim.MessageTests.test_perfect_model_survives_maximum_gain) ... ok
+test_stable_loop_does_not_report_divergence (test_closed_loop_sim.MessageTests.test_stable_loop_does_not_report_divergence) ... ok
+test_bypass_ignores_model_and_keeps_microphone (test_closed_loop_sim.SchedulingTests.test_bypass_ignores_model_and_keeps_microphone) ... ok
+test_output_is_played_two_frames_later (test_closed_loop_sim.SchedulingTests.test_output_is_played_two_frames_later)
+顶层是 played[n+2] = gain(residual[n])，这条关系错了就全错。 ... ok
+test_actual_output_history_and_truncated_ring (test_closed_tools.ClosedToolsTests.test_actual_output_history_and_truncated_ring) ... ok
+test_rounding_and_clipping (test_closed_tools.ClosedToolsTests.test_rounding_and_clipping) ... ok
+test_zero_coefficients_both_modes (test_closed_tools.ClosedToolsTests.test_zero_coefficients_both_modes) ... ok
+test_bypass_prediction_saturation_only (test_evaluation.EvaluationTests.test_bypass_prediction_saturation_only) ... ok
+test_clipped_tone_is_not_howl (test_evaluation.EvaluationTests.test_clipped_tone_is_not_howl) ... ok
+test_exponential_growth (test_evaluation.EvaluationTests.test_exponential_growth) ... ok
+test_gap_alignment_configuration_and_version (test_evaluation.EvaluationTests.test_gap_alignment_configuration_and_version) ... ok
+test_growth_and_protection_coexist (test_evaluation.EvaluationTests.test_growth_and_protection_coexist) ... ok
+test_invalid_counts_retain_protection_and_missing_file (test_evaluation.EvaluationTests.test_invalid_counts_retain_protection_and_missing_file) ... ok
+test_literal_packed_counts (test_evaluation.EvaluationTests.test_literal_packed_counts) ... ok
+test_noise_floor_and_missing_positive_control (test_evaluation.EvaluationTests.test_noise_floor_and_missing_positive_control) ... ok
+test_npz_bad_shape_and_read_only (test_evaluation.EvaluationTests.test_npz_bad_shape_and_read_only) ... ok
+test_planned_end_never_promoted_to_actual (test_evaluation.EvaluationTests.test_planned_end_never_promoted_to_actual) ... ok
+test_short_tail_no_slope (test_evaluation.EvaluationTests.test_short_tail_no_slope) ... ok
+test_source_playing_and_boundary (test_evaluation.EvaluationTests.test_source_playing_and_boundary) ... ok
+test_speech_surrogate (test_evaluation.EvaluationTests.test_speech_surrogate) ... ok
+test_stable_tone_and_decay (test_evaluation.EvaluationTests.test_stable_tone_and_decay) ... ok
+test_unrecoverable_old_guard_and_no_confidence (test_evaluation.EvaluationTests.test_unrecoverable_old_guard_and_no_confidence) ... ok
+test_collect_write_failure_is_visible (test_experiment.ExperimentTests.test_collect_write_failure_is_visible) ... ok
+test_full_schedule_keeps_versions_and_no_raw_export (test_experiment.ExperimentTests.test_full_schedule_keeps_versions_and_no_raw_export) ... ok
+test_incomplete_package_never_calls_driver (test_experiment.ExperimentTests.test_incomplete_package_never_calls_driver) ... ok
+test_operator_cancel_and_interrupt_preserve_packet (test_experiment.ExperimentTests.test_operator_cancel_and_interrupt_preserve_packet) ... ok
+test_positive_control_delay_independent_known_shift (test_experiment.ExperimentTests.test_positive_control_delay_independent_known_shift) ... ok
+test_actual_project_sample_rate (test_measurement.MonitorTests.test_actual_project_sample_rate) ... ok
+test_bad_pcm_order_and_extent_are_rejected (test_measurement.MonitorTests.test_bad_pcm_order_and_extent_are_rejected) ... ok
+test_config_validation (test_measurement.MonitorTests.test_config_validation) ... ok
+test_empty_stream_has_zero_coverage (test_measurement.MonitorTests.test_empty_stream_has_zero_coverage) ... ok
+test_full_scale_event_is_not_a_howl_claim (test_measurement.MonitorTests.test_full_scale_event_is_not_a_howl_claim) ... ok
+test_input_and_spectral_coverage_are_distinct (test_measurement.MonitorTests.test_input_and_spectral_coverage_are_distinct) ... ok
+test_missing_middle_resets_history_and_cannot_imply_stability (test_measurement.MonitorTests.test_missing_middle_resets_history_and_cannot_imply_stability) ... ok
+test_out_of_band_rise_does_not_create_an_in_band_alarm (test_measurement.MonitorTests.test_out_of_band_rise_does_not_create_an_in_band_alarm) ... ok
+test_positive_warning_survives_later_missing_data (test_measurement.MonitorTests.test_positive_warning_survives_later_missing_data) ... ok
+test_rise_detected_with_bounded_delay_and_frequency (test_measurement.MonitorTests.test_rise_detected_with_bounded_delay_and_frequency) ... ok
+test_short_burst_does_not_become_growth (test_measurement.MonitorTests.test_short_burst_does_not_become_growth) ... ok
+test_stable_tone_noise_and_silence_do_not_alarm (test_measurement.MonitorTests.test_stable_tone_noise_and_silence_do_not_alarm) ... ok
+test_tail_and_short_complete_record_are_insufficient (test_measurement.MonitorTests.test_tail_and_short_complete_record_are_insufficient) ... ok
+test_window_results_are_invariant_to_packet_size (test_measurement.MonitorTests.test_window_results_are_invariant_to_packet_size) ... ok
+test_cli_reads_without_playback_and_refuses_overwrite (test_measurement.ReplayFileTests.test_cli_reads_without_playback_and_refuses_overwrite) ... ok
+test_dropped_frames_without_positions_are_rejected (test_measurement.ReplayFileTests.test_dropped_frames_without_positions_are_rejected) ... ok
+test_explicit_frame_positions_preserve_missing_coverage (test_measurement.ReplayFileTests.test_explicit_frame_positions_preserve_missing_coverage) ... ok
+test_normalized_pcm_and_tail_metadata_round_trip (test_measurement.ReplayFileTests.test_normalized_pcm_and_tail_metadata_round_trip) ... ok
+test_bias_is_reported_in_dbfs (test_path_analysis.DcTests.test_bias_is_reported_in_dbfs) ... ok
+test_dc_gain_looks_below_twenty_hertz (test_path_analysis.DcTests.test_dc_gain_looks_below_twenty_hertz) ... ok
+test_emphasis_filter_boosts_the_requested_band (test_path_analysis.EmphasisTests.test_emphasis_filter_boosts_the_requested_band) ... ok
+test_emphasis_keeps_model_shape_valid (test_path_analysis.EmphasisTests.test_emphasis_keeps_model_shape_valid) ... ok
+test_model_response_is_one_sample_causal (test_path_analysis.EstimatorTests.test_model_response_is_one_sample_causal)
+fir_response 必须与 pred[n]=Σh[k]u[n-1-k] 完全一致。 ... ok
+test_perfect_model_depth_is_large (test_path_analysis.EstimatorTests.test_perfect_model_depth_is_large) ... ok
+test_recovers_known_flat_gain (test_path_analysis.EstimatorTests.test_recovers_known_flat_gain) ... ok
+test_zero_model_gives_exactly_zero_depth (test_path_analysis.EstimatorTests.test_zero_model_gives_exactly_zero_depth) ... ok
+test_validation_must_not_reuse_training_capture (test_path_analysis.LeakageTests.test_validation_must_not_reuse_training_capture) ... ok
+test_q20_only_artifact_is_accepted (test_path_analysis.ModelArtifactTests.test_q20_only_artifact_is_accepted)
+板上候选文件只有 coefficients_q20 时也必须能读。 ... ok
+test_tap_mismatch_is_rejected (test_path_analysis.ModelArtifactTests.test_tap_mismatch_is_rejected) ... ok
+test_msg_is_inverse_of_peak_magnitude (test_path_analysis.StabilityTests.test_msg_is_inverse_of_peak_magnitude) ... ok
+test_phase_crossings_of_pure_delay (test_path_analysis.StabilityTests.test_phase_crossings_of_pure_delay)
+纯 D 帧延迟：相位零点在 fs/D 的整数倍，用来核对起振频点判据。 ... ok
+test_recommendation_stays_inside_hardware_ceiling (test_path_analysis.StabilityTests.test_recommendation_stays_inside_hardware_ceiling) ... ok
+test_corrupt_reference_restores_without_saving (test_residual_driver.ResidualDriverTests.test_corrupt_reference_restores_without_saving) ... ok
+test_restore_failure_still_mutes_codec_and_restores_pll (test_residual_driver.ResidualDriverTests.test_restore_failure_still_mutes_codec_and_restores_pll) ... ok
+test_success_and_no_import_playback (test_residual_driver.ResidualDriverTests.test_success_and_no_import_playback) ... ok
+test_candidate_rejects_wrong_fixture_and_quantization (test_residual_tools.ResidualChecks.test_candidate_rejects_wrong_fixture_and_quantization) ... ok
+test_hand_calculated_half_and_shift_mismatch (test_residual_tools.ResidualChecks.test_hand_calculated_half_and_shift_mismatch) ... ok
+test_invalid_pcm_rejected (test_residual_tools.ResidualChecks.test_invalid_pcm_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 102 tests in 5.715s
+
+OK

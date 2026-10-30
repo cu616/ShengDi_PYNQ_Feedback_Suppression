@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "reviewer": "C",
+  "date": "2026-10-28",
+  "fixed_A_commit": "c1a180f",
+  "validation_layer": "off-board software and summary arithmetic; no hardware operation",
+  "questions": [
+    "Hann peak-amplitude unit",
+    "existing three-point capture differences",
+    "withdrawal of invalid loudness conclusion"
+  ],
+  "manifest_checks": [
+    {
+      "file": "audio_replay.bit",
+      "expected": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "actual": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "matched": true
+    },
+    {
+      "file": "audio_replay.hwh",
+      "expected": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "actual": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "matched": true
+    },
+    {
+      "file": "replay_trial.py",
+      "expected": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "actual": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+      "matched": true
+    },
+    {
+      "file": "replay_tools.py",
+      "expected": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "actual": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "matched": true
+    },
+    {
+      "file": "closed_tools.py",
+      "expected": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "actual": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "matched": true
+    },
+    {
+      "file": "residual_tools.py",
+      "expected": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "actual": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "matched": true
+    },
+    {
+      "file": "test_runtime_stop.py",
+      "expected": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "actual": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "matched": true
+    },
+    {
+      "file": "test_verify_replay_v3.py",
+      "expected": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "actual": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+      "matched": true
+    },
+    {
+      "file": "tone_round_guard.py",
+      "expected": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+      "actual": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+      "matched": true
+    },
+    {
+      "file": "test_tone_round_guard.py",
+      "expected": "b32f348605edf8a14bb4a1299c74a0c174a147c1db764321a199e1e46a583ec6",
+      "actual": "b32f348605edf8a14bb4a1299c74a0c174a147c1db764321a199e1e46a583ec6",
+      "matched": true
+    }
+  ],
+  "actual_unit_checks": [
+    {
+      "frames": 4096,
+      "frequency_hz": 322.0,
+      "expected_dbfs": -12.041199826559248,
+      "actual_dbfs": -12.041917132563821,
+      "passed": true
+    },
+    {
+      "frames": 4096,
+      "frequency_hz": 321.8650817871094,
+      "expected_dbfs": -12.041199826559248,
+      "actual_dbfs": -12.041200553731262,
+      "passed": true
+    },
+    {
+      "frames": 8192,
+      "frequency_hz": 321.8650817871094,
+      "expected_dbfs": -12.041199826559248,
+      "actual_dbfs": -12.041199917399075,
+      "passed": true
+    }
+  ],
+  "requested_verdicts": {
+    "unit": "PASS: three targeted known-amplitude checks; not a full 17-test rerun",
+    "differences": "SUMMARY_ARITHMETIC_ONLY: raw original manifest/NPZ/status not visible; independent waveform result pending",
+    "retraction": "ACCEPTED: invalid tail-window loudness/product-negative conclusion withdrawn; human reports retained"
+  },
+  "reported_absolute_levels": {
+    "open_mic": -24.48,
+    "bypass_mic": -20.24,
+    "cancel_mic": -25.69,
+    "open_residual": -27.01,
+    "bypass_residual": -20.24,
+    "cancel_residual": -28.67
+  },
+  "summary_arithmetic": {
+    "cd_322_db": 8.430000000000003,
+    "loop_boost_db": 4.240000000000002,
+    "acoustic_difference_db": 5.450000000000003,
+    "overshoot_db": 1.2100000000000009
+  },
+  "raw_waveform_independent_recalculation_completed": false,
+  "A_retraction_verbatim": {
+    "auditor": "C (C=255214a)",
+    "retracted_claim": "the played output was too quiet (-42..-47 dBFS) and the listener benefit is a measured negative",
+    "why_invalid": "the driver saves the LAST 16384 frames of the ring, i.e. 0.336 s. The alternating run was 2.4 s with a 2.0 s source, so the saved window starts at 2.064 s and ends at 2.400 s - entirely AFTER the source ended. The levels therefore describe the decay tail, not program material, and no loudness statement can be made from them.",
+    "what_survives": "the same-window arm difference (1.91 dB over the four arms, gate excluded; C independently got 1.905 dB) may be kept as a same-window comparison, but it is not a loudness measurement either.",
+    "what_was_also_wrong": "the earlier 1.38 dB summary included the gate run in the zero-arm mean; the four-arm mean is 1.91 dB.",
+    "correct_method_for_a_real_measurement": "the run duration must be no longer than the saved window (0.336 s) so that the capture falls inside the source, or the capture length must be made configurable. Neither was done here, and no new audible trial was spent.",
+    "consequence_for_the_freeze": "the audible-benefit question is OPEN again: it is neither a measured negative nor a measured positive. What stands is the 322 Hz three-point verdict (cancellation_holds) and every listener record as a record."
+  },
+  "corrected_scope": {
+    "four_row_mean_db": 1.905,
+    "gate_excluded": true,
+    "includes_program_material": false,
+    "source_frames": 97656,
+    "existing_three_point": {
+      "run_frames": 107421,
+      "capture_first": 91037,
+      "capture_end_exclusive": 107421,
+      "scheduled_source_frames": 6619,
+      "scheduled_source_seconds": 0.13555712
+    },
+    "invalid_alternating": {
+      "run_frames": 117187,
+      "capture_first": 100803,
+      "capture_end_exclusive": 117187,
+      "scheduled_source_frames": 0
+    },
+    "derivation": "A parameter encoding and ring length, not independently read raw waveform; C local entry verifies actual metadata and source array",
+    "duration_shorter_than_capture_is_necessary": false,
+    "capture_architecture_change_needed": false
+  },
+  "remaining_A_reporter_limits": [
+    "Global alt_*.npz selection has no exact-round identity.",
+    "Source duration hardcoded despite v3 capture storing source_pcm16.",
+    "Zero-active rows fall back to full tail and enter means; invalid is only printed when every row has zero active frames.",
+    "Do not use current played_level_report.sh mixed-row mean as valid source-active playback level."
+  ],
+  "original_lookup": {
+    "previous_search_evidence": "v3-65b3311-review-20261028.json",
+    "c1_commit_adds_raw_tone_files": false,
+    "new_archive_or_pcm_available": false,
+    "first_round_id": 1746930178556850644,
+    "action": "Do not repeat filename questions or field trials; run existing exact original manifest locally on A board."
+  },
+  "C_delivery": {
+    "source": "scripts/review_itemized_20261027.py",
+    "source_sha256": "3e7b5b367a719cd0ed14ddf2ccf6a2e38d2e8756adfd212f0bef37a1ac612732",
+    "test": "sim/feedback/test_replay_v3_consumer.py",
+    "test_sha256": "a56cf3e4141b0d72916614a3cb76131674584aee8f3e08c268f81f92876a2119",
+    "unique_targeted_tests": [
+      "test_round_manifest_recalculates_both_windows_and_keeps_originals",
+      "test_round_manifest_tail_only_does_not_invent_active_playback",
+      "test_round_manifest_source_change_blocks_paired_differences",
+      "test_round_known_tone_peak_units_are_length_independent",
+      "test_round_cli_missing_original_saves_failure_without_audio",
+      "test_round_manifest_shared_bad_frames_and_failed_status_refuse",
+      "test_existing_pattern_cli_keeps_itemized_output",
+      "test_round_manifest_rejects_a_replaced_round_identity"
+    ],
+    "unique_targeted_tests_passed": 8,
+    "test_logs": {
+      "C-round-tests.txt": "test_round_manifest_recalculates_both_windows_and_keeps_originals (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_recalculates_both_windows_and_keeps_originals) ... ok\ntest_round_manifest_tail_only_does_not_invent_active_playback (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_tail_only_does_not_invent_active_playback) ... ok\ntest_round_manifest_source_change_blocks_paired_differences (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_source_change_blocks_paired_differences) ... ok\ntest_round_known_tone_peak_units_are_length_independent (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_known_tone_peak_units_are_length_independent) ... ok\ntest_round_cli_missing_original_saves_failure_without_audio (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_cli_missing_original_saves_failure_without_audio) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 1.483s\n\nOK\n",
+      "C-round-added-tests.txt": "test_round_manifest_shared_bad_frames_and_failed_status_refuse (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_shared_bad_frames_and_failed_status_refuse) ... ok\ntest_existing_pattern_cli_keeps_itemized_output (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_existing_pattern_cli_keeps_itemized_output) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.764s\n\nOK\n",
+      "C-round-scope-refinement.txt": "test_round_manifest_recalculates_both_windows_and_keeps_originals (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_recalculates_both_windows_and_keeps_originals) ... ok\ntest_round_manifest_tail_only_does_not_invent_active_playback (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_tail_only_does_not_invent_active_playback) ... ok\ntest_round_cli_missing_original_saves_failure_without_audio (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_cli_missing_original_saves_failure_without_audio) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 1.042s\n\nOK\n",
+      "C-round-path-compatibility.txt": "test_round_manifest_recalculates_both_windows_and_keeps_originals (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_recalculates_both_windows_and_keeps_originals) ... ok\ntest_existing_pattern_cli_keeps_itemized_output (sim.feedback.test_replay_v3_consumer.V3ConsumerTests.test_existing_pattern_cli_keeps_itemized_output) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.584s\n\nOK\n"
+    },
+    "replaced_round_test_result": "Executed separately: 1 test, OK; included in unique 8, no separate saved stdout",
+    "repeats": "Only affected 3 source-window/error cases after scope refinement and 2 path/legacy cases after Python compatibility change.",
+    "not_rerun": [
+      "A guard full 17",
+      "prior guard 16",
+      "runtime stop 16",
+      "four hardware checks",
+      "60 seconds",
+      "full regression",
+      "B model"
+    ],
+    "board_directory": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide",
+    "command": "/usr/local/share/pynq-venv/bin/python review_itemized_20261027.py --capture-dir . --round-manifest tone_round.json --expected-round-id 1746930178556850644 --out C-tone-1746930178556850644.json",
+    "hardware_operations": 0,
+    "requires_only_existing_files": true,
+    "output": "C-tone-1746930178556850644.json",
+    "raw_pcm_export": false,
+    "no_effect_pass_implied": true,
+    "analysis_scopes": [
+      "original full-window FFT with Hann coherent gain normalization",
+      "common stored-source-active interval: Hann weighted sin/cos/DC fit and same-window RMS including DC"
+    ],
+    "limitations": [
+      "Synthetic amplitude tests do not substitute for a board RTL trace.",
+      "Pairing integrity, numeric checks and effect judgement are distinct.",
+      "Projection remains dependent on noise/window; no automatic SNR/coherence acceptance.",
+      "Digital reference dBFS is not speaker SPL, listener benefit or ASG.",
+      "Source schedule proves onboard PCM timing only, not external phone/talker silence."
+    ]
+  },
+  "next_required": "A runs this C script once read-only beside the original manifest and returns derived JSON only; missing/replaced originals produce a failure record, no audio re-run.",
+  "final_checks": {
+    "check_docs": {
+      "exit_code": 0,
+      "markdown_files": 117,
+      "errors": 0,
+      "warnings": 0
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    },
+    "state_outside_C_unchanged": true
+  }
+}

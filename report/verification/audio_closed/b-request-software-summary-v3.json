@@ -1,0 +1,664 @@
+{
+  "schema_version": 3,
+  "calculation_version": "c-measurement-2.1.0",
+  "artifact_kind": "offline_existing_capture_summary",
+  "status": "completed",
+  "board_actions": false,
+  "source_root": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-request-v3-software-raw",
+  "trials": [
+    {
+      "index": 1,
+      "mode": null,
+      "status": null,
+      "error": null,
+      "file": "baseline.npz",
+      "gain_q12": 0,
+      "hp_volume": 40,
+      "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+      "coefficients_sha256": "12c723ad4010ba09c9aea3692c451a192b61284652daf98c4664cc1f904058bf",
+      "model_sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+      "fixture_id": "room_v1_20261021",
+      "sample_rate_hz": 48828.125,
+      "source_pcm16_sha256": "01a6f782a2a89b4acbb2c3e4c5820622760923833ffee1cf1e4a948a9ded4f8a",
+      "scene_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "session_id": "software-session",
+      "comparison_id": "software-room-pair",
+      "repeat_id": 1,
+      "bypass": false,
+      "tail_valid": true,
+      "tail_rms_dbfs": -38.23803935587333,
+      "tail_slope_db_per_s": 0.0032817038395131833,
+      "tail_slope_fit_r2": 0.049548537164664785,
+      "tail_residual_over_mic_db": {
+        "300-1000": 0.0,
+        "1000-3000": 0.0,
+        "8200-8600": 0.0
+      },
+      "tail_band_reasons": {},
+      "tail_reasons": [],
+      "tail_config": {
+        "block_seconds": 0.02,
+        "minimum_blocks": 8,
+        "minimum_mic_dbfs": -55.0,
+        "minimum_band_mic_dbfs": -80.0
+      },
+      "tail_first_frame": 70000,
+      "tail_end_frame": 86384,
+      "tail_frames": 16384,
+      "tail_slope_frames": 15632,
+      "category": "no_instability_observed_in_window",
+      "calculation_version": "c-measurement-2.1.0",
+      "evidence_kind": "software_fixture",
+      "capture_id": "software-baseline",
+      "model_role": "baseline",
+      "logical_taps": 256,
+      "loaded_taps": 512,
+      "coefficients_sha256_basis": "saved_q20_le_int32",
+      "source_input_sha256": "394ac2df99dfda65f7e52c00de7226cb65fd49181261c8d11eca32c9edc3efaa",
+      "effect_eligible": false,
+      "comparison_reasons": [
+        "tail_or_safety_or_positive_control_not_validated"
+      ],
+      "protection_triggered": false,
+      "prediction_saturation": false,
+      "residual_saturation": false,
+      "gain_saturation": false,
+      "mix_saturation": false,
+      "microphone_clipping": false,
+      "mute_applied": true,
+      "mute_during_observation": false,
+      "silence_in_window": false,
+      "model_registry_sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+      "model_file": "room_v1/baseline_256.json",
+      "tail_residual_over_mic_db_300_1000": 0.0,
+      "tail_residual_over_mic_db_1000_3000": 0.0,
+      "tail_residual_over_mic_db_8200_8600": 0.0,
+      "analysis": {
+        "calculation_version": "c-measurement-2.1.0",
+        "category": "no_instability_observed_in_window",
+        "reasons": [],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 70000,
+          "end_frame": 86384,
+          "frames": 16384,
+          "source_end_frame_exclusive": 48828,
+          "source_schedule_verified": true,
+          "planned_source_frames": 48828,
+          "transition_frames": 2442,
+          "pure_tail": true,
+          "reason": "verified_source_off_tail",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.1896647527319874,
+          "waveform_missing_intervals": [
+            [
+              0,
+              70000
+            ]
+          ],
+          "counter_coverage": "unknown"
+        },
+        "detector": {
+          "schema_version": 1,
+          "detector_version": "narrowband-growth-v1",
+          "offline_only": true,
+          "sample_rate_hz": 48828.125,
+          "config": {
+            "window_seconds": 0.016,
+            "hop_seconds": 0.008,
+            "growth_seconds": 0.08,
+            "confirm_seconds": 0.016,
+            "minimum_rise_db": 3.0,
+            "minimum_slope_db_per_second": 12.0,
+            "minimum_fit_r2": 0.9,
+            "minimum_tonal_fraction": 0.55,
+            "minimum_tonal_dbfs": -55.0,
+            "low_hz": 20.0,
+            "high_hz": 20000.0,
+            "frequency_tolerance_bins": 2
+          },
+          "verdict": "no_growth_detected",
+          "analysis": {
+            "window_frames": 781,
+            "hop_frames": 391,
+            "history_windows": 11,
+            "fft_bin_hz": 62.52000640204866,
+            "monitored_first_bin_hz": 62.52000640204866,
+            "monitored_last_bin_hz": 19943.88204225352
+          },
+          "events": [],
+          "first_suspected_howl": null,
+          "full_scale_samples": 0,
+          "coverage": {
+            "total_frames": 16384,
+            "observed_frames": 16384,
+            "fraction": 1.0,
+            "complete": true,
+            "observed_intervals": [
+              [
+                0,
+                16384
+              ]
+            ],
+            "missing_intervals": [],
+            "sufficient_contiguous_history": true,
+            "minimum_contiguous_frames": 5473,
+            "minimum_contiguous_seconds": 0.11208704,
+            "analyzed_windows": 40,
+            "history_ready_windows": 30,
+            "spectral_intervals": [
+              [
+                0,
+                16030
+              ]
+            ],
+            "spectral_unanalyzed_intervals": [
+              [
+                16030,
+                16384
+              ]
+            ]
+          },
+          "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+        },
+        "window_rms_dbfs": -38.23803935587333,
+        "tail_statistics": {
+          "tail_valid": true,
+          "tail_rms_dbfs": -38.23803935587333,
+          "tail_slope_db_per_s": 0.0032817038395131833,
+          "tail_slope_fit_r2": 0.049548537164664785,
+          "tail_residual_over_mic_db": {
+            "300-1000": 0.0,
+            "1000-3000": 0.0,
+            "8200-8600": 0.0
+          },
+          "tail_band_reasons": {},
+          "tail_reasons": [],
+          "tail_config": {
+            "block_seconds": 0.02,
+            "minimum_blocks": 8,
+            "minimum_mic_dbfs": -55.0,
+            "minimum_band_mic_dbfs": -80.0
+          },
+          "tail_first_frame": 70000,
+          "tail_end_frame": 86384,
+          "tail_frames": 16384,
+          "tail_slope_frames": 15632
+        },
+        "recorded_coefficients_sha256": "12c723ad4010ba09c9aea3692c451a192b61284652daf98c4664cc1f904058bf",
+        "recorded_taps": 512,
+        "silence_in_window": false,
+        "original_metadata": {
+          "first_frame": 70000,
+          "completed_frames": 86384,
+          "frames": 16384,
+          "source_end_frame_exclusive": 48828,
+          "source_frames": 48828,
+          "source_schedule_verified": true,
+          "transition_frames": 2442,
+          "external_source_off_verified": true,
+          "external_source_active": false,
+          "positive_control_valid": true,
+          "gain_q12": 0,
+          "hp_volume": 40,
+          "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+          "sample_rate_hz": 48828.125,
+          "fixture_id": "room_v1_20261021",
+          "session_id": "software-session",
+          "comparison_id": "software-room-pair",
+          "repeat_id": 1,
+          "scene_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "guard_tripped": false,
+          "mute_applied": true,
+          "mute_during_observation": false,
+          "bypass": false,
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "clip_counts_raw": [
+            0,
+            0,
+            0
+          ],
+          "verification": {
+            "bit_exact": true
+          },
+          "evidence_kind": "software_fixture",
+          "capture_id": "software-baseline",
+          "model_role": "baseline",
+          "model_sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+          "coefficients_sha256": "12c723ad4010ba09c9aea3692c451a192b61284652daf98c4664cc1f904058bf",
+          "source_pcm16_sha256": "01a6f782a2a89b4acbb2c3e4c5820622760923833ffee1cf1e4a948a9ded4f8a"
+        },
+        "evaluation_metadata": {
+          "first_frame": 70000,
+          "completed_frames": 86384,
+          "frames": 16384,
+          "source_end_frame_exclusive": 48828,
+          "source_frames": 48828,
+          "source_schedule_verified": true,
+          "transition_frames": 2442,
+          "external_source_off_verified": true,
+          "external_source_active": false,
+          "positive_control_valid": true,
+          "gain_q12": 0,
+          "hp_volume": 40,
+          "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+          "sample_rate_hz": 48828.125,
+          "fixture_id": "room_v1_20261021",
+          "session_id": "software-session",
+          "comparison_id": "software-room-pair",
+          "repeat_id": 1,
+          "scene_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "guard_tripped": false,
+          "mute_applied": true,
+          "mute_during_observation": false,
+          "bypass": false,
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "clip_counts_raw": [
+            0,
+            0,
+            0
+          ],
+          "verification": {
+            "bit_exact": true,
+            "prediction_mismatches": 0,
+            "residual_mismatches": 0,
+            "output_mismatches": 0,
+            "history_excluded_frames": 512,
+            "evaluated_frames": 15872,
+            "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+          },
+          "evidence_kind": "software_fixture",
+          "capture_id": "software-baseline",
+          "model_role": "baseline",
+          "model_sha256": "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2",
+          "coefficients_sha256": "12c723ad4010ba09c9aea3692c451a192b61284652daf98c4664cc1f904058bf",
+          "source_pcm16_sha256": "01a6f782a2a89b4acbb2c3e4c5820622760923833ffee1cf1e4a948a9ded4f8a"
+        },
+        "supplemental_evidence": null,
+        "input_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-request-v3-software-raw\\baseline.npz",
+        "input_sha256": "394ac2df99dfda65f7e52c00de7226cb65fd49181261c8d11eca32c9edc3efaa"
+      }
+    },
+    {
+      "index": 2,
+      "mode": null,
+      "status": null,
+      "error": null,
+      "file": "candidate.npz",
+      "gain_q12": 0,
+      "hp_volume": 40,
+      "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+      "coefficients_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
+      "model_sha256": "854fb75dbb6c6b46182ba6dc4c3fd73719d331f5f3b0555c78b71a7561de09bd",
+      "fixture_id": "room_v1_20261021",
+      "sample_rate_hz": 48828.125,
+      "source_pcm16_sha256": "01a6f782a2a89b4acbb2c3e4c5820622760923833ffee1cf1e4a948a9ded4f8a",
+      "scene_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "session_id": "software-session",
+      "comparison_id": "software-room-pair",
+      "repeat_id": 1,
+      "bypass": false,
+      "tail_valid": true,
+      "tail_rms_dbfs": -38.23803935587333,
+      "tail_slope_db_per_s": 0.0032817038395131833,
+      "tail_slope_fit_r2": 0.049548537164664785,
+      "tail_residual_over_mic_db": {
+        "300-1000": 0.0,
+        "1000-3000": 0.0,
+        "8200-8600": 0.0
+      },
+      "tail_band_reasons": {},
+      "tail_reasons": [],
+      "tail_config": {
+        "block_seconds": 0.02,
+        "minimum_blocks": 8,
+        "minimum_mic_dbfs": -55.0,
+        "minimum_band_mic_dbfs": -80.0
+      },
+      "tail_first_frame": 70000,
+      "tail_end_frame": 86384,
+      "tail_frames": 16384,
+      "tail_slope_frames": 15632,
+      "category": "no_instability_observed_in_window",
+      "calculation_version": "c-measurement-2.1.0",
+      "evidence_kind": "software_fixture",
+      "capture_id": "software-candidate",
+      "model_role": "candidate",
+      "logical_taps": 512,
+      "loaded_taps": 512,
+      "coefficients_sha256_basis": "saved_q20_le_int32",
+      "source_input_sha256": "a8d6f8af1bfc77eee18ec90edf5c1e1d3e0a64ee9b8835f5df98dd0d5849f47d",
+      "effect_eligible": false,
+      "comparison_reasons": [
+        "tail_or_safety_or_positive_control_not_validated"
+      ],
+      "protection_triggered": false,
+      "prediction_saturation": false,
+      "residual_saturation": false,
+      "gain_saturation": false,
+      "mix_saturation": false,
+      "microphone_clipping": false,
+      "mute_applied": true,
+      "mute_during_observation": false,
+      "silence_in_window": false,
+      "model_registry_sha256": "854fb75dbb6c6b46182ba6dc4c3fd73719d331f5f3b0555c78b71a7561de09bd",
+      "model_file": "room_v1/candidate_512.json",
+      "tail_residual_over_mic_db_300_1000": 0.0,
+      "tail_residual_over_mic_db_1000_3000": 0.0,
+      "tail_residual_over_mic_db_8200_8600": 0.0,
+      "analysis": {
+        "calculation_version": "c-measurement-2.1.0",
+        "category": "no_instability_observed_in_window",
+        "reasons": [],
+        "event_flags": {
+          "protection": false,
+          "early_stop": null,
+          "execution_error": false,
+          "recovery_failed": false,
+          "instability_growth": false,
+          "prediction_saturations": false,
+          "residual_saturations": false,
+          "gain_saturations": false,
+          "mix_saturations": false,
+          "microphone_clipping": false
+        },
+        "instability_evidence": [],
+        "msg_db": null,
+        "asg_db": null,
+        "scope": "captured window only; no whole-trial stability claim",
+        "counts": {
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0
+        },
+        "window": {
+          "first_frame": 70000,
+          "end_frame": 86384,
+          "frames": 16384,
+          "source_end_frame_exclusive": 48828,
+          "source_schedule_verified": true,
+          "planned_source_frames": 48828,
+          "transition_frames": 2442,
+          "pure_tail": true,
+          "reason": "verified_source_off_tail",
+          "source_active_at_stop": false,
+          "waveform_coverage_fraction": 0.1896647527319874,
+          "waveform_missing_intervals": [
+            [
+              0,
+              70000
+            ]
+          ],
+          "counter_coverage": "unknown"
+        },
+        "detector": {
+          "schema_version": 1,
+          "detector_version": "narrowband-growth-v1",
+          "offline_only": true,
+          "sample_rate_hz": 48828.125,
+          "config": {
+            "window_seconds": 0.016,
+            "hop_seconds": 0.008,
+            "growth_seconds": 0.08,
+            "confirm_seconds": 0.016,
+            "minimum_rise_db": 3.0,
+            "minimum_slope_db_per_second": 12.0,
+            "minimum_fit_r2": 0.9,
+            "minimum_tonal_fraction": 0.55,
+            "minimum_tonal_dbfs": -55.0,
+            "low_hz": 20.0,
+            "high_hz": 20000.0,
+            "frequency_tolerance_bins": 2
+          },
+          "verdict": "no_growth_detected",
+          "analysis": {
+            "window_frames": 781,
+            "hop_frames": 391,
+            "history_windows": 11,
+            "fft_bin_hz": 62.52000640204866,
+            "monitored_first_bin_hz": 62.52000640204866,
+            "monitored_last_bin_hz": 19943.88204225352
+          },
+          "events": [],
+          "first_suspected_howl": null,
+          "full_scale_samples": 0,
+          "coverage": {
+            "total_frames": 16384,
+            "observed_frames": 16384,
+            "fraction": 1.0,
+            "complete": true,
+            "observed_intervals": [
+              [
+                0,
+                16384
+              ]
+            ],
+            "missing_intervals": [],
+            "sufficient_contiguous_history": true,
+            "minimum_contiguous_frames": 5473,
+            "minimum_contiguous_seconds": 0.11208704,
+            "analyzed_windows": 40,
+            "history_ready_windows": 30,
+            "spectral_intervals": [
+              [
+                0,
+                16030
+              ]
+            ],
+            "spectral_unanalyzed_intervals": [
+              [
+                16030,
+                16384
+              ]
+            ]
+          },
+          "interpretation": "Offline suspected-growth screening; not feedback causality, measured stability or MSG/ASG"
+        },
+        "window_rms_dbfs": -38.23803935587333,
+        "tail_statistics": {
+          "tail_valid": true,
+          "tail_rms_dbfs": -38.23803935587333,
+          "tail_slope_db_per_s": 0.0032817038395131833,
+          "tail_slope_fit_r2": 0.049548537164664785,
+          "tail_residual_over_mic_db": {
+            "300-1000": 0.0,
+            "1000-3000": 0.0,
+            "8200-8600": 0.0
+          },
+          "tail_band_reasons": {},
+          "tail_reasons": [],
+          "tail_config": {
+            "block_seconds": 0.02,
+            "minimum_blocks": 8,
+            "minimum_mic_dbfs": -55.0,
+            "minimum_band_mic_dbfs": -80.0
+          },
+          "tail_first_frame": 70000,
+          "tail_end_frame": 86384,
+          "tail_frames": 16384,
+          "tail_slope_frames": 15632
+        },
+        "recorded_coefficients_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
+        "recorded_taps": 512,
+        "silence_in_window": false,
+        "original_metadata": {
+          "first_frame": 70000,
+          "completed_frames": 86384,
+          "frames": 16384,
+          "source_end_frame_exclusive": 48828,
+          "source_frames": 48828,
+          "source_schedule_verified": true,
+          "transition_frames": 2442,
+          "external_source_off_verified": true,
+          "external_source_active": false,
+          "positive_control_valid": true,
+          "gain_q12": 0,
+          "hp_volume": 40,
+          "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+          "sample_rate_hz": 48828.125,
+          "fixture_id": "room_v1_20261021",
+          "session_id": "software-session",
+          "comparison_id": "software-room-pair",
+          "repeat_id": 1,
+          "scene_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "guard_tripped": false,
+          "mute_applied": true,
+          "mute_during_observation": false,
+          "bypass": false,
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "clip_counts_raw": [
+            0,
+            0,
+            0
+          ],
+          "verification": {
+            "bit_exact": true
+          },
+          "evidence_kind": "software_fixture",
+          "capture_id": "software-candidate",
+          "model_role": "candidate",
+          "model_sha256": "854fb75dbb6c6b46182ba6dc4c3fd73719d331f5f3b0555c78b71a7561de09bd",
+          "coefficients_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
+          "source_pcm16_sha256": "01a6f782a2a89b4acbb2c3e4c5820622760923833ffee1cf1e4a948a9ded4f8a"
+        },
+        "evaluation_metadata": {
+          "first_frame": 70000,
+          "completed_frames": 86384,
+          "frames": 16384,
+          "source_end_frame_exclusive": 48828,
+          "source_frames": 48828,
+          "source_schedule_verified": true,
+          "transition_frames": 2442,
+          "external_source_off_verified": true,
+          "external_source_active": false,
+          "positive_control_valid": true,
+          "gain_q12": 0,
+          "hp_volume": 40,
+          "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+          "sample_rate_hz": 48828.125,
+          "fixture_id": "room_v1_20261021",
+          "session_id": "software-session",
+          "comparison_id": "software-room-pair",
+          "repeat_id": 1,
+          "scene_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "guard_tripped": false,
+          "mute_applied": true,
+          "mute_during_observation": false,
+          "bypass": false,
+          "prediction_saturations": 0,
+          "residual_saturations": 0,
+          "gain_saturations": 0,
+          "mix_saturations": 0,
+          "clip_counts_raw": [
+            0,
+            0,
+            0
+          ],
+          "verification": {
+            "bit_exact": true,
+            "prediction_mismatches": 0,
+            "residual_mismatches": 0,
+            "output_mismatches": 0,
+            "history_excluded_frames": 512,
+            "evaluated_frames": 15872,
+            "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+          },
+          "evidence_kind": "software_fixture",
+          "capture_id": "software-candidate",
+          "model_role": "candidate",
+          "model_sha256": "854fb75dbb6c6b46182ba6dc4c3fd73719d331f5f3b0555c78b71a7561de09bd",
+          "coefficients_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
+          "source_pcm16_sha256": "01a6f782a2a89b4acbb2c3e4c5820622760923833ffee1cf1e4a948a9ded4f8a"
+        },
+        "supplemental_evidence": null,
+        "input_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-request-v3-software-raw\\candidate.npz",
+        "input_sha256": "a8d6f8af1bfc77eee18ec90edf5c1e1d3e0a64ee9b8835f5df98dd0d5849f47d"
+      }
+    }
+  ],
+  "model_pairs": [
+    {
+      "comparison_id": "software-room-pair",
+      "configuration_matches": true,
+      "effect_eligible": false,
+      "baseline_capture_id": "software-baseline",
+      "candidate_capture_id": "software-candidate",
+      "reasons": [
+        "safety_only_or_tail_not_valid"
+      ],
+      "asg_db": null,
+      "evidence_kind": "software_fixture",
+      "gain_q12": 0
+    }
+  ],
+  "input_files": 2,
+  "configuration_matched_pairs": 1,
+  "effect_eligible_pairs": 0,
+  "msg_db": null,
+  "asg_db": null,
+  "model_registry": {
+    "aea6dc0645be6677542d7bf167685123c6fd394b4ec6cfc59e58c67a3cab19f2": {
+      "file": "room_v1/baseline_256.json",
+      "fixture_id": "room_v1_20261021",
+      "logical_taps": 256,
+      "role": "baseline",
+      "coefficients_sha256": "6932cf414dd4cd13dbc633e77acc36b49a51f8ca25a0b1c5ca04899eb351d9cf",
+      "padded_512_sha256": "12c723ad4010ba09c9aea3692c451a192b61284652daf98c4664cc1f904058bf"
+    },
+    "854fb75dbb6c6b46182ba6dc4c3fd73719d331f5f3b0555c78b71a7561de09bd": {
+      "file": "room_v1/candidate_512.json",
+      "fixture_id": "room_v1_20261021",
+      "logical_taps": 512,
+      "role": "candidate",
+      "coefficients_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9",
+      "padded_512_sha256": "b5892e91d7d5c091a08b6a604d654a31c347f0cfba5cf6673c52c5464ff2a8d9"
+    },
+    "4f0422c333a45438b69b02c5399d1f329685c51cef3e105c9d0fffd01a5b1414": {
+      "file": "box_v1/baseline_256.json",
+      "fixture_id": "box_v1_20261016",
+      "logical_taps": 256,
+      "role": "baseline",
+      "coefficients_sha256": "6645a56c06ed99a6b430ef95213a940ec23bcc76717655a9e5a951fa636520be",
+      "padded_512_sha256": "8c2e591615fe3d5745380591d39191bfbc0469bf6122ac2a24d58d5204dd37e2"
+    }
+  },
+  "model_selection": {
+    "room_v1_20261021": "room_v1/candidate_512.json",
+    "box_v1_20261016": "box_v1/baseline_256.json"
+  },
+  "evidence_sha256": null,
+  "interpretation": "Real capture validity is determined per row; no fabricated measured pair or ASG",
+  "scope": "SOFTWARE SCHEMA/PAIRING FIXTURE ONLY; gain_q12=0, not a field comparison or model performance test",
+  "measured_acceptance_complete": false
+}

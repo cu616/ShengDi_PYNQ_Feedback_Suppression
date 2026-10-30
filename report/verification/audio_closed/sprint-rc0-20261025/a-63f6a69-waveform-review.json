@@ -1,0 +1,152 @@
+{
+  "a_commit": "63f6a69ee679f992d1e459d9447262fa1db6b403",
+  "source": "five original nonvoice NPZ rings; prior independently verified original r4 return",
+  "package_sha256": "e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48",
+  "package_bytes": 2082636,
+  "all_raw_checks": true,
+  "files": [
+    {
+      "file": "07-fir-off.npz",
+      "sha256": "7f5aa465a08293a7b6b18aefb276a7877ca93cdc9b70619306c97a753d334d29",
+      "frames": 16384,
+      "first_frame": 106662,
+      "end_frame": 123046,
+      "independent_arithmetic_mismatches": {
+        "prediction": 0,
+        "residual": 0,
+        "output": 0
+      },
+      "prediction_evaluated_frames": 15872,
+      "output_evaluated_frames": 16382,
+      "microphone_full_scale_samples": 0,
+      "response_first_frame": 107174,
+      "response_end_frame": 121582,
+      "response_frames": 14408,
+      "response_rms_dbfs": -25.454883797568897,
+      "response_bands_dbfs": {
+        "300-1000": -37.20275906876831,
+        "1000-3000": -35.10727039821748,
+        "8200-8600": -33.798442818568375
+      },
+      "max_report_difference_db": 0.0
+    },
+    {
+      "file": "09-fir-on.npz",
+      "sha256": "6701db8afebd62370261e2c3bdf5a74bc42210e2b87d961fb56c409b70b81174",
+      "frames": 16384,
+      "first_frame": 106662,
+      "end_frame": 123046,
+      "independent_arithmetic_mismatches": {
+        "prediction": 0,
+        "residual": 0,
+        "output": 0
+      },
+      "prediction_evaluated_frames": 15872,
+      "output_evaluated_frames": 16382,
+      "microphone_full_scale_samples": 0,
+      "response_first_frame": 107174,
+      "response_end_frame": 121582,
+      "response_frames": 14408,
+      "response_rms_dbfs": -25.625936475617724,
+      "response_bands_dbfs": {
+        "300-1000": -37.958801800656815,
+        "1000-3000": -35.226867143492946,
+        "8200-8600": -33.41896741493571
+      },
+      "max_report_difference_db": 7.105427357601002e-15
+    },
+    {
+      "file": "11-fir-on.npz",
+      "sha256": "388aec33188f332e6ced9db4ad6e775bbe97ad5a885892cbebc7119d27881d3e",
+      "frames": 16384,
+      "first_frame": 106662,
+      "end_frame": 123046,
+      "independent_arithmetic_mismatches": {
+        "prediction": 0,
+        "residual": 0,
+        "output": 0
+      },
+      "prediction_evaluated_frames": 15872,
+      "output_evaluated_frames": 16382,
+      "microphone_full_scale_samples": 0,
+      "response_first_frame": 107174,
+      "response_end_frame": 121582,
+      "response_frames": 14408,
+      "response_rms_dbfs": -25.586411425195543,
+      "response_bands_dbfs": {
+        "300-1000": -37.534247713005044,
+        "1000-3000": -35.42074866027888,
+        "8200-8600": -33.50594220382058
+      },
+      "max_report_difference_db": 0.0
+    },
+    {
+      "file": "13-fir-off.npz",
+      "sha256": "36c05b05a5d935659c35afd75fbe017e6f9034d87b649a7285dc2bb26e4a244d",
+      "frames": 16384,
+      "first_frame": 106662,
+      "end_frame": 123046,
+      "independent_arithmetic_mismatches": {
+        "prediction": 0,
+        "residual": 0,
+        "output": 0
+      },
+      "prediction_evaluated_frames": 15872,
+      "output_evaluated_frames": 16382,
+      "microphone_full_scale_samples": 0,
+      "response_first_frame": 107174,
+      "response_end_frame": 121582,
+      "response_frames": 14408,
+      "response_rms_dbfs": -25.342266159738294,
+      "response_bands_dbfs": {
+        "300-1000": -37.584866993889406,
+        "1000-3000": -34.9761865083877,
+        "8200-8600": -33.759031801077334
+      },
+      "max_report_difference_db": 0.0
+    },
+    {
+      "file": "15-continuous-60s.npz",
+      "sha256": "5eb60b3b244f9534559295983f4b3b579abb92780c938e30f2d5ce38b38f9f05",
+      "frames": 16384,
+      "first_frame": 2913303,
+      "end_frame": 2929687,
+      "independent_arithmetic_mismatches": {
+        "prediction": 0,
+        "residual": 0,
+        "output": 0
+      },
+      "prediction_evaluated_frames": 15872,
+      "output_evaluated_frames": 16382,
+      "microphone_full_scale_samples": 0,
+      "timeline_points": 2951,
+      "max_poll_gap_s": 0.0211,
+      "waveform_coverage_fraction": 0.005592406287770673,
+      "scope": "engineering timeline and final ring arithmetic only; whole-run acoustics unknown"
+    }
+  ],
+  "pairs": [
+    {
+      "repeat": 1,
+      "on_minus_off_total_db": -0.1710526780488273,
+      "on_minus_off_bands_db": {
+        "300-1000": -0.7560427318885061,
+        "1000-3000": -0.11959674527546582,
+        "8200-8600": 0.37947540363266796
+      }
+    },
+    {
+      "repeat": 2,
+      "on_minus_off_total_db": -0.24414526545724868,
+      "on_minus_off_bands_db": {
+        "300-1000": 0.05061928088436218,
+        "1000-3000": -0.44456215189118353,
+        "8200-8600": 0.2530895972567535
+      }
+    }
+  ],
+  "coefficient_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+  "method": "direct integer history dot products; symmetric integer rounding; independent de-meaned RMS and Hann spectral band sums",
+  "scope": "FIR values describe 14408 source-on frames; 60-second engineering timeline plus 16384-frame tail only. No ASG or whole-run acoustic stability.",
+  "hardware_access": false
+}

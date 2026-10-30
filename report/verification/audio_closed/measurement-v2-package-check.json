@@ -1,0 +1,8 @@
+{
+  "payload_hashes_verified": 15,
+  "historical_review_byte_identical": true,
+  "original_evidence_hashes_unchanged": 12,
+  "a_baseline_files_byte_identical": 42,
+  "incomplete_bundle_refused_before_driver": true,
+  "hardware_access": false
+}

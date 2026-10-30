@@ -1,0 +1,38 @@
+{
+  "source_a_commit": "1003728b7e6ce2a40656ba24371f9cc83b568def",
+  "source_b_commit": "67e5b098747444e7aa934c256463aaef04c5a5ed",
+  "original_packet_repo_path": "report/verification/audio-replay/lowband2-return.zip",
+  "original_packet_sha256": "3e327d04c940630c17ba90f607c6ab38e7f0fc02d356f965bcc3cc228aac1c7c",
+  "audit_scope": "independent NPZ numerical review; no new board action or model fitting",
+  "supporting_a_reports": [
+    {
+      "file": "report/verification/audio-replay/a-memory-sweep-2026-10-24.json",
+      "sha256": "cf5d5ac9a1374be92cf21817a5102b1646505ace1bc33503310e4701a30ecb82"
+    },
+    {
+      "file": "report/verification/audio-replay/a-orientation-2026-10-24.json",
+      "sha256": "aa7fbc96daf93cb475cf79fbdd6438c3319d8c91ec25287a01fbbd67cb4103b9"
+    }
+  ],
+  "supporting_b_reports": [
+    "report/verification/lowband2-2026-10-24/README.md",
+    "report/verification/twostage-2026-10-24/README.md"
+  ],
+  "competition_guide": {
+    "file": "references/competition/amd-fpga-guide-2026.pdf",
+    "sha256": "c6ad82acd4f7bdcd13bd412e232ed85d05f2a87dd5e2cdd04f9d219f88b569fc",
+    "printed_pages": [
+      19,
+      20
+    ],
+    "pdf_pages": [
+      22,
+      23
+    ],
+    "visual_reviewed": true,
+    "scope": "repository guide; team change approval not inferred"
+  },
+  "fixture_change_proposed": true,
+  "fixture_change_approved": false,
+  "new_hardware_or_collection_instruction": false
+}

@@ -1,0 +1,56 @@
+--- a/board/audio_replay/tone_round_guard.py
++++ b/board/audio_replay/tone_round_guard.py
+@@ -177,10 +177,14 @@
+     """Level in dBFS. All three signals are 24-bit PCM after the *2**23 normalisation below, so the
+     three numbers and their differences are in the same unit (C 2026-10-28: units must be stated)."""
+     x = np.asarray(x, dtype=np.float64) / 2**23
+-    spec = np.abs(np.fft.rfft(x * np.hanning(len(x))))
++    window = np.hanning(len(x))
++    scale = float(np.sum(window)) / 2.0
++    if scale <= 0:
++        raise ValueError("tone window has no positive coherent gain")
++    spec = np.abs(np.fft.rfft(x * window))
+     freqs = np.fft.rfftfreq(len(x), 1.0 / RATE)
+     band = np.abs(freqs - f0) <= halfwidth
+-    return 20 * np.log10(max(float(np.max(spec[band])), 1e-12))
++    return 20 * np.log10(max(float(np.max(spec[band])) / scale, 1e-12))
+
+
+ def three_point(rows, tone_hz):
+@@ -193,7 +197,7 @@
+             residual=level_dbfs(np.asarray(data['residual_pcm'], dtype=np.float64), tone_hz))
+     o, b, c = out['open'], out['bypass'], out['cancel']
+     return dict(levels_dbfs=out,
+-                units='dBFS re 24-bit full scale, all three signals',
++                units='dBFS peak-amplitude estimate, Hann coherent-gain normalization',
+                 cd_322_db=b['residual'] - c['residual'],
+                 loop_boost_db=b['mic'] - o['mic'],
+                 acoustic_difference_db=b['mic'] - c['mic'],
+--- a/board/audio_replay/v3/tone_round_guard.py
++++ b/board/audio_replay/v3/tone_round_guard.py
+@@ -177,10 +177,14 @@
+     """Level in dBFS. All three signals are 24-bit PCM after the *2**23 normalisation below, so the
+     three numbers and their differences are in the same unit (C 2026-10-28: units must be stated)."""
+     x = np.asarray(x, dtype=np.float64) / 2**23
+-    spec = np.abs(np.fft.rfft(x * np.hanning(len(x))))
++    window = np.hanning(len(x))
++    scale = float(np.sum(window)) / 2.0
++    if scale <= 0:
++        raise ValueError("tone window has no positive coherent gain")
++    spec = np.abs(np.fft.rfft(x * window))
+     freqs = np.fft.rfftfreq(len(x), 1.0 / RATE)
+     band = np.abs(freqs - f0) <= halfwidth
+-    return 20 * np.log10(max(float(np.max(spec[band])), 1e-12))
++    return 20 * np.log10(max(float(np.max(spec[band])) / scale, 1e-12))
+
+
+ def three_point(rows, tone_hz):
+@@ -193,7 +197,7 @@
+             residual=level_dbfs(np.asarray(data['residual_pcm'], dtype=np.float64), tone_hz))
+     o, b, c = out['open'], out['bypass'], out['cancel']
+     return dict(levels_dbfs=out,
+-                units='dBFS re 24-bit full scale, all three signals',
++                units='dBFS peak-amplitude estimate, Hann coherent-gain normalization',
+                 cd_322_db=b['residual'] - c['residual'],
+                 loop_boost_db=b['mic'] - o['mic'],
+                 acoustic_difference_db=b['mic'] - c['mic'],

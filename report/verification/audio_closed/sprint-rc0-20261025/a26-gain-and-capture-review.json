@@ -1,0 +1,550 @@
+{
+  "a_commit": "b104f20345a11aaff15ae2b29b3c56ab9f75e95d",
+  "b_commit": "e9e267bc4f53a50761af78e4280eec2279ecfc2f",
+  "date": "2026-10-26",
+  "hardware_access": false,
+  "report_hashes": {
+    "gain-sweep-boundary-2026-10-26.json": "51c3b3c4c5896cc9abc7d05bef939f3f8400e978a852ead29f1accf6cad55c9a",
+    "live-voice-window-2026-10-26.json": "c6b51ed92c96e7023f20b3f74fb4ee5b16c73eee48bfc89b0ee0b0d205101031",
+    "board-model-stale-2026-10-26.json": "0825ef21d69e4fb9bea9ffc2aaf8119a6e35caef36e8d112f38954ebf7bf69dd",
+    "ab-stale-vs-nomodel-2026-10-26.json": "70da88cd027a23b45ea62da3bfe1015e79a1418553e4bf7dd920087445257325",
+    "measurement-exhausted-2026-10-26.json": "626617d1e54aad58386566e887ce1af2a50a874c2628d79ebb89a327dd7764fb"
+  },
+  "nonvoice_packet": {
+    "sha256": "0a4fb68c7f47e4215e77260b51cf17acc4ef8fca1bcc48cdcdfa1dd6ab905b61",
+    "bytes": 2592358,
+    "verified_files": 6,
+    "files": [
+      {
+        "file": "calib6_1746799426007669601.npz",
+        "sha256": "4ca28bb850af0510b2d743bf064258079d6ef4dabe027e31fcaf780925a76caf",
+        "frames": 16384,
+        "first_frame": 101780,
+        "end_frame": 118164,
+        "sample_rate_hz": 48828.125,
+        "source_matches_reference": true,
+        "direct_correlation_lag_frames": 184,
+        "normalized_correlation": 0.20294728212593777,
+        "actual_q20_sha256": "93f7ab6eab2f3f60c5e2c81900f5d1188697bd40cc6cb548806defc4067fdf5f",
+        "model_file_sha256": "49c9c572780cbc7dae91ad76f9d3e364bd85e880256e99f84c3c542c3735a9b1",
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "source_pcm16_sha256": "18e948092988d4f0d590f9f4110d34be57d647559cb8a5e4fae08d47936b0f13",
+        "coefficient_peak_lag_first_1": 128
+      },
+      {
+        "file": "calib6_1746799460431974953.npz",
+        "sha256": "af2caffc351e23c607b82a12dbc3f1a56c1f3c8f78c41bc63f65db5793b6ac24",
+        "frames": 16384,
+        "first_frame": 101780,
+        "end_frame": 118164,
+        "sample_rate_hz": 48828.125,
+        "source_matches_reference": true,
+        "direct_correlation_lag_frames": 185,
+        "normalized_correlation": 0.20434321865922733,
+        "actual_q20_sha256": "93f7ab6eab2f3f60c5e2c81900f5d1188697bd40cc6cb548806defc4067fdf5f",
+        "model_file_sha256": "49c9c572780cbc7dae91ad76f9d3e364bd85e880256e99f84c3c542c3735a9b1",
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "source_pcm16_sha256": "3f66771de338c39ba6319ac6d6466d3ca03826e400a26dcf4d5adde248976aab",
+        "coefficient_peak_lag_first_1": 128
+      },
+      {
+        "file": "calib6_1746799495671311695.npz",
+        "sha256": "b78fb85620d86237eacfb89b28c86b11f8fd612e905351989f35f91f9ce8cdbc",
+        "frames": 16384,
+        "first_frame": 101780,
+        "end_frame": 118164,
+        "sample_rate_hz": 48828.125,
+        "source_matches_reference": true,
+        "direct_correlation_lag_frames": 185,
+        "normalized_correlation": 0.2066901500536818,
+        "actual_q20_sha256": "93f7ab6eab2f3f60c5e2c81900f5d1188697bd40cc6cb548806defc4067fdf5f",
+        "model_file_sha256": "49c9c572780cbc7dae91ad76f9d3e364bd85e880256e99f84c3c542c3735a9b1",
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "source_pcm16_sha256": "59fbe77006e5ed680f08401d9aae17f69b0f6f6ae9ab6dca73f0f3e10aacabc2",
+        "coefficient_peak_lag_first_1": 128
+      },
+      {
+        "file": "calib6_1746799530870174448.npz",
+        "sha256": "e4406408525cad2590a17cd1be8f804e7d6c135dc9b03ca3c1594c8f72a6a03a",
+        "frames": 16384,
+        "first_frame": 101780,
+        "end_frame": 118164,
+        "sample_rate_hz": 48828.125,
+        "source_matches_reference": true,
+        "direct_correlation_lag_frames": 185,
+        "normalized_correlation": 0.20159143607333146,
+        "actual_q20_sha256": "93f7ab6eab2f3f60c5e2c81900f5d1188697bd40cc6cb548806defc4067fdf5f",
+        "model_file_sha256": "49c9c572780cbc7dae91ad76f9d3e364bd85e880256e99f84c3c542c3735a9b1",
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "source_pcm16_sha256": "209232b7f2fadfcc2d718b0b37673a7cb37643f836d1cd6fe921768c1410f969",
+        "coefficient_peak_lag_first_1": 128
+      },
+      {
+        "file": "calib6_1746799566241828611.npz",
+        "sha256": "0aebf36f7f2f1cd4d767229aba34b1432e7feedaee16136d3f552af1c947cf4c",
+        "frames": 16384,
+        "first_frame": 101780,
+        "end_frame": 118164,
+        "sample_rate_hz": 48828.125,
+        "source_matches_reference": true,
+        "direct_correlation_lag_frames": 184,
+        "normalized_correlation": 0.2224508407991392,
+        "actual_q20_sha256": "93f7ab6eab2f3f60c5e2c81900f5d1188697bd40cc6cb548806defc4067fdf5f",
+        "model_file_sha256": "49c9c572780cbc7dae91ad76f9d3e364bd85e880256e99f84c3c542c3735a9b1",
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "source_pcm16_sha256": "42c612d22408a981120c00ce826ef0abb7b38e9b8a3350a0b6fa40d739e2c98a",
+        "coefficient_peak_lag_first_1": 128
+      },
+      {
+        "file": "calib6_1746799601922597315.npz",
+        "sha256": "138c40cf16d97c02269de2ac0d19d1029ad2a6c37f0f3a377b2ecf5aac40d34e",
+        "frames": 16384,
+        "first_frame": 101780,
+        "end_frame": 118164,
+        "sample_rate_hz": 48828.125,
+        "source_matches_reference": true,
+        "direct_correlation_lag_frames": 185,
+        "normalized_correlation": 0.20657353130437803,
+        "actual_q20_sha256": "93f7ab6eab2f3f60c5e2c81900f5d1188697bd40cc6cb548806defc4067fdf5f",
+        "model_file_sha256": "49c9c572780cbc7dae91ad76f9d3e364bd85e880256e99f84c3c542c3735a9b1",
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "source_pcm16_sha256": "c96a6578d3075bf26785b3c2b71d06507709ea86c6503c99dfb592f97f75d42d",
+        "coefficient_peak_lag_first_1": 128
+      }
+    ]
+  },
+  "direct_lag_frames": [
+    184,
+    185,
+    185,
+    185,
+    184,
+    185
+  ],
+  "board_q20_sha256": [
+    "93f7ab6eab2f3f60c5e2c81900f5d1188697bd40cc6cb548806defc4067fdf5f"
+  ],
+  "independent_spectral_diagnostics": [
+    {
+      "microphone_registration_to_max_lag": false,
+      "independent_windows": 18,
+      "qualified_bins": 428,
+      "bins_above_300": 4046,
+      "bands": [
+        {
+          "low_hz": 300,
+          "high_hz": 460,
+          "median_coherence": 0.8388273550035152,
+          "qualified_bins": 16,
+          "total_bins": 27
+        },
+        {
+          "low_hz": 460,
+          "high_hz": 3000,
+          "median_coherence": 0.297587315171572,
+          "qualified_bins": 2,
+          "total_bins": 426
+        },
+        {
+          "low_hz": 3000,
+          "high_hz": 8200,
+          "median_coherence": 0.7907310818827238,
+          "qualified_bins": 395,
+          "total_bins": 872
+        }
+      ]
+    },
+    {
+      "microphone_registration_to_max_lag": true,
+      "independent_windows": 18,
+      "qualified_bins": 1052,
+      "bins_above_300": 4046,
+      "bands": [
+        {
+          "low_hz": 300,
+          "high_hz": 460,
+          "median_coherence": 0.8366565943135612,
+          "qualified_bins": 16,
+          "total_bins": 27
+        },
+        {
+          "low_hz": 460,
+          "high_hz": 3000,
+          "median_coherence": 0.29826287942788265,
+          "qualified_bins": 2,
+          "total_bins": 426
+        },
+        {
+          "low_hz": 3000,
+          "high_hz": 8200,
+          "median_coherence": 0.9201077736545776,
+          "qualified_bins": 685,
+          "total_bins": 872
+        }
+      ]
+    }
+  ],
+  "frozen_c_package_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+  "board_model_matches_frozen_c_package": false,
+  "gain_decision": {
+    "approve_minus6_live_default": false,
+    "manual_edit_human_r1_allowed": false,
+    "reason": "A subsequent live-voice record reports residual protection at -6 dB; six calibration captures use a different model from frozen C human-r1. Silent-source results are not live-speech authorization.",
+    "silent_scan_reported_stable_db": -6,
+    "reported_concentrated_mode_db": -5,
+    "measured_msg_db": null,
+    "measured_asg_db": null,
+    "measured_midpoint_minus5_5_accepted": false,
+    "explanation": "At most an A-reported condition-specific 1 dB transition bracket, not a measured midpoint. Concentration, a fixed tone or protection alone is not growth/feedback causality. source=0 with nonzero feedback gain remains closed loop.",
+    "latest_voice_record": {
+      "gain_db": -6.0,
+      "verdict": "protection: runtime saturation guard stopped playback (packed_prediction_residual=131072, residual=2)"
+    },
+    "unchanged_baseline_result": "NO_AMPLIFICATION remains failed; neither low gain nor silence is counted as suppression success."
+  },
+  "protection": {
+    "silent_packed": 589824,
+    "silent_prediction_count": 0,
+    "silent_residual_count": 9,
+    "live_minus6_packed": 131072,
+    "live_prediction_count": 0,
+    "live_residual_count": 2,
+    "gain_and_mix_counts": null,
+    "scope": "decode the reported packed words only; original per-run cleanup sidecars not supplied in these summaries; do not repeat the existing protection injection"
+  },
+  "capture_feasibility": {
+    "current_v2_contiguous_multiblock": false,
+    "current_evidence": "Single overwriting 96-bit x 16384 ring; read_ring reads after disarm. No completed-bank ownership/ack/overrun protocol.",
+    "source_hashes": {
+      "live_run.py": "a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441",
+      "audio_pl_replay.v": "4cbc11de7325daf7314466718cef0e26d80d7811e8df186a703d910dec2d935f"
+    },
+    "multiple_arms": "Can be separate records in one overlay session if A supplies that API; resets and gaps remain explicit. Never concatenate as one continuous record.",
+    "requested_true_continuous": "A-owned single-arm ref/mic stream with stable completed-bank snapshot or DMA, absolute frame indices and explicit loss/overwrite detection. No C driver/RTL change.",
+    "target_segments": 8,
+    "target_frames_per_segment": 16384,
+    "target_seconds": 2.68435456,
+    "raw_refmic_bytes_per_second": 292968.75,
+    "int32_refmic_storage_bytes_per_second": 390625.0,
+    "bank_drain_deadline_seconds": 0.33554432,
+    "current_raw_only_register_operations_per_frame": 4,
+    "current_raw_only_register_operation_budget_us": 5.12,
+    "memory_payload_bits_current": 1572864,
+    "memory_payload_bits_two_raw_banks": 1572864,
+    "memory_note": "Equal payload-bit arithmetic only, not a resource/timing guarantee. Benchmark drain throughput before choosing MMIO/bank or DMA; do not promise continuity from host timing.",
+    "single_window_only_root_cause_established": false,
+    "reason": "Existing independent records admit per-record train/heldout validation; longer records help coverage/variance but do not by themselves fix low coherence, sample-origin jitter, nonlinearity, level or incorrect model identity."
+  },
+  "monitor_controls": {
+    "stationary_325": {
+      "growth_evidence": false,
+      "chunk_invariant": true,
+      "coverage": {
+        "total_frames": 131072,
+        "observed_frames": 131072,
+        "fraction": 1.0,
+        "complete": true,
+        "observed_intervals": [
+          [
+            0,
+            131072
+          ]
+        ],
+        "missing_intervals": [],
+        "sufficient_contiguous_history": true,
+        "minimum_contiguous_frames": 32803,
+        "minimum_contiguous_seconds": 0.67180544,
+        "analyzed_windows": 164,
+        "history_ready_windows": 132,
+        "spectral_intervals": [
+          [
+            0,
+            130428
+          ]
+        ],
+        "spectral_unanalyzed_intervals": [
+          [
+            130428,
+            131072
+          ]
+        ]
+      }
+    },
+    "growing_325": {
+      "growth_evidence": true,
+      "chunk_invariant": true,
+      "coverage": {
+        "total_frames": 131072,
+        "observed_frames": 131072,
+        "fraction": 1.0,
+        "complete": true,
+        "observed_intervals": [
+          [
+            0,
+            131072
+          ]
+        ],
+        "missing_intervals": [],
+        "sufficient_contiguous_history": true,
+        "minimum_contiguous_frames": 32803,
+        "minimum_contiguous_seconds": 0.67180544,
+        "analyzed_windows": 164,
+        "history_ready_windows": 132,
+        "spectral_intervals": [
+          [
+            0,
+            130428
+          ]
+        ],
+        "spectral_unanalyzed_intervals": [
+          [
+            130428,
+            131072
+          ]
+        ]
+      }
+    },
+    "independent_short_blocks": {
+      "growth_evidence": false,
+      "cross_gap_history_used": false,
+      "coverage": {
+        "total_frames": 166072,
+        "observed_frames": 131072,
+        "fraction": 0.7892480369960018,
+        "complete": false,
+        "observed_intervals": [
+          [
+            0,
+            16384
+          ],
+          [
+            21384,
+            37768
+          ],
+          [
+            42768,
+            59152
+          ],
+          [
+            64152,
+            80536
+          ],
+          [
+            85536,
+            101920
+          ],
+          [
+            106920,
+            123304
+          ],
+          [
+            128304,
+            144688
+          ],
+          [
+            149688,
+            166072
+          ]
+        ],
+        "missing_intervals": [
+          [
+            16384,
+            21384
+          ],
+          [
+            37768,
+            42768
+          ],
+          [
+            59152,
+            64152
+          ],
+          [
+            80536,
+            85536
+          ],
+          [
+            101920,
+            106920
+          ],
+          [
+            123304,
+            128304
+          ],
+          [
+            144688,
+            149688
+          ]
+        ],
+        "sufficient_contiguous_history": false,
+        "minimum_contiguous_frames": 32803,
+        "minimum_contiguous_seconds": 0.67180544,
+        "analyzed_windows": 136,
+        "history_ready_windows": 0,
+        "spectral_intervals": [
+          [
+            0,
+            15621
+          ],
+          [
+            21384,
+            37005
+          ],
+          [
+            42768,
+            58389
+          ],
+          [
+            64152,
+            79773
+          ],
+          [
+            85536,
+            101157
+          ],
+          [
+            106920,
+            122541
+          ],
+          [
+            128304,
+            143925
+          ],
+          [
+            149688,
+            165309
+          ]
+        ],
+        "spectral_unanalyzed_intervals": [
+          [
+            15621,
+            21384
+          ],
+          [
+            37005,
+            42768
+          ],
+          [
+            58389,
+            64152
+          ],
+          [
+            79773,
+            85536
+          ],
+          [
+            101157,
+            106920
+          ],
+          [
+            122541,
+            128304
+          ],
+          [
+            143925,
+            149688
+          ],
+          [
+            165309,
+            166072
+          ]
+        ]
+      }
+    }
+  },
+  "capture_request": {
+    "status": "proposal_not_implemented_or_approved_asset",
+    "owner": "A",
+    "proposed_call": "capture_refmic_segments(output_dir, source_pcm16, segments=8, segment_frames=16384, gain_q12=0, bypass=True, before_start=confirm, stop_file=..., require_contiguous=True)",
+    "boundary": "New calibration capture capability only; do not change FIR, gain, guard or output scheduling semantics. A owns implementation and versioned contract/asset approval.",
+    "session_fields": [
+      "capture_schema",
+      "capture_abi",
+      "capture_id",
+      "overlay_session_id",
+      "arm_id",
+      "driver_sha256",
+      "bit_sha256",
+      "hwh_sha256",
+      "scene_sha256",
+      "model_file_sha256",
+      "coefficients_q20_sha256",
+      "sample_rate_hz",
+      "pcm_scale",
+      "gain_q12",
+      "hp_volume",
+      "bypass",
+      "source_pcm16_sha256",
+      "source_frames",
+      "source_start_frame",
+      "source_end_frame_exclusive",
+      "history_reset_count"
+    ],
+    "segment_fields": [
+      "sequence",
+      "file",
+      "bytes",
+      "sha256",
+      "first_frame",
+      "end_frame_exclusive",
+      "frames",
+      "source_first_frame",
+      "source_end_frame_exclusive",
+      "bank_id",
+      "bank_epoch_before",
+      "bank_epoch_after",
+      "dropped_frames",
+      "overwritten_frames",
+      "read_start_time",
+      "read_end_time"
+    ],
+    "signals": [
+      "reference: actual DAC-bound played PCM",
+      "microphone: simultaneous ADC PCM"
+    ],
+    "final_fields": [
+      "completed_frames",
+      "status",
+      "count_timeline",
+      "stop_reason",
+      "disarm_ok",
+      "mute_ok",
+      "save_error",
+      "contiguous",
+      "missing_intervals",
+      "overlap_intervals",
+      "corrupt_intervals"
+    ],
+    "acceptance": [
+      "one overlay and one arm for the continuous claim; source/frame clock origin shared",
+      "8 blocks of 16384 raw ref/mic frames with exactly adjoining half-open indices",
+      "completed bank remains stable until acknowledged; changing epoch/overwrite is rejected",
+      "known counter/loopback fixture proves payload seam continuity, not just matching header values",
+      "slow reader and deliberate block loss/duplicate/reorder produce explicit non-success, never silently join",
+      "stop/cancel/protection keep real mute/disarm receipts and preserve completed evidence",
+      "benchmark drain with stopped/muted existing data; new RTL needs timing/resource/ABI/hash and rollback evidence",
+      "no transport available: mark capability not implemented; separate-arm records are independent, not continuous"
+    ],
+    "minimum_drain_payload_bytes_per_second": 292968.75,
+    "receiver": "C existing GrowthMonitor.push(pcm, first_frame) or replay(..., frame_indices=...) resets history at gaps; each independent record has separate FIR history"
+  },
+  "next_A": "No old-model -6 live retry. Preserve existing boundary/open-loop and voice metadata/status/config; no human PCM upload. Implement the requested capture capability as owner after contract/resource review, retaining all stop/mute protections.",
+  "next_B": "R-007 stays closed. Consolidate the existing new-layout calibration request: export one deployable 512-tap Q20 model plus hashes/convention/provenance, unaltered-data heldout checks and compatibility; do not send A an unfrozen coefficient-only upgrade or recommend stepping through protection.",
+  "new_audible_package": "not issued: current scene-model identity and deployable replacement are not qualified; changing gain requires a newly frozen complete C package, including all gates and selftest",
+  "c_regression_tests": 164,
+  "c_regression_exit": 0,
+  "audit_command": [
+    "C:\\Python314\\python.exe",
+    "scripts/audit_sprint.py",
+    "--a26-review",
+    "--a-commit",
+    "b104f20",
+    "--b-commit",
+    "e9e267b",
+    "--output",
+    "report/verification/audio_closed/sprint-rc0-20261025/a26-gain-and-capture-review.json"
+  ],
+  "audit_exit_code": 0,
+  "coordination_review_commit": "ca9b48484f95f688eed68ab4a6bf5bed45c62672",
+  "coordination_review_scope": "Official GitHub API commit/patch read after Git 443 timeout; documentation review only, no new driver/capture/model asset. Existing A-to-B corrections are consolidated into R-012, not duplicated. Stop/mute precedes filesystem saving."
+}

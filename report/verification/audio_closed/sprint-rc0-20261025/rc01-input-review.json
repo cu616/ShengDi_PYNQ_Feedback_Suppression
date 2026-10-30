@@ -1,0 +1,184 @@
+{
+  "a_commit": "8c7c49c9c66f83f69249ec5f1e64342a56068ff5",
+  "packet_sha256": "f1035b47a1d120489cb7198453013e7978f3d845348c9e4a0dc74a02b5a22f4d",
+  "return_member_hashes_verified": 5,
+  "independent_scope": "saved summary/status and analytic timing; original board NPZ absent from ZIP; no board access",
+  "supplied_runs_in_git": 1,
+  "other_run": "A reports a first failure; first raw result is absent from this committed path history",
+  "actual_capture": {
+    "first_frame": 33420,
+    "completed_frames": 49804,
+    "frames": 16384,
+    "mic_rms_dbfs": -14.636033107808743
+  },
+  "cropped_analysis": {
+    "first_frame": 49804,
+    "end_frame": 49804,
+    "frames": 0
+  },
+  "actual_path_gate": {
+    "passed": false,
+    "baseline_dbfs": null,
+    "capture_sha256": "c01f8c97aafa345cfbd65389ec23f1664c4c823bcbd35ca7605ae73d54d43758",
+    "first_frame": 33420,
+    "end_frame": 48340,
+    "reasons": [
+      "gate_tone_not_observed"
+    ],
+    "rms_dbfs": -15.19645093152853,
+    "tonal_fraction": 0.11565094387392741,
+    "drift_db": null,
+    "reference_rms_dbfs": -23.011081979678153,
+    "mic_over_ref_db": 7.814631048149623,
+    "operational_drift_limit_db": 5.0
+  },
+  "actual_failure": "RuntimeError:path_gate_failed",
+  "empty_tail_caused_gate_failure": false,
+  "geometry": [
+    {
+      "label": "original_path_gate",
+      "seconds": 1.02,
+      "source_seconds": 1.0,
+      "completed_frames": 49804,
+      "capture_interval": [
+        33420,
+        49804
+      ],
+      "capture_frames": 16384,
+      "source_on_gate_interval": [
+        33420,
+        48340
+      ],
+      "source_on_gate_frames": 14920,
+      "source_off_tail_interval": [
+        49804,
+        49804
+      ],
+      "source_off_tail_frames": 0,
+      "full_source_off_tail": false
+    },
+    {
+      "label": "A_proposed_1p6s_path_gate",
+      "seconds": 1.6,
+      "source_seconds": 1.0,
+      "completed_frames": 78125,
+      "capture_interval": [
+        61741,
+        78125
+      ],
+      "capture_frames": 16384,
+      "source_on_gate_interval": [
+        61741,
+        61741
+      ],
+      "source_on_gate_frames": 0,
+      "source_off_tail_interval": [
+        61741,
+        78125
+      ],
+      "source_off_tail_frames": 16384,
+      "full_source_off_tail": true
+    },
+    {
+      "label": "actual_FIR_source_1p87s",
+      "seconds": 2.5,
+      "source_seconds": 1.87,
+      "completed_frames": 122070,
+      "capture_interval": [
+        105686,
+        122070
+      ],
+      "capture_frames": 16384,
+      "source_on_gate_interval": [
+        105686,
+        105686
+      ],
+      "source_on_gate_frames": 0,
+      "source_off_tail_interval": [
+        105686,
+        122070
+      ],
+      "source_off_tail_frames": 16384,
+      "full_source_off_tail": true
+    },
+    {
+      "label": "A_assumed_FIR_source_1s",
+      "seconds": 2.5,
+      "source_seconds": 1.0,
+      "completed_frames": 122070,
+      "capture_interval": [
+        105686,
+        122070
+      ],
+      "capture_frames": 16384,
+      "source_on_gate_interval": [
+        105686,
+        105686
+      ],
+      "source_on_gate_frames": 0,
+      "source_off_tail_interval": [
+        105686,
+        122070
+      ],
+      "source_off_tail_frames": 16384,
+      "full_source_off_tail": true
+    }
+  ],
+  "conclusion": "Path gate measures source-on tone; proposed 1.6s/1s leaves no source-on samples. FIR 2.5s/1.87s already retains the full 16384-frame source-off tail.",
+  "missing": [
+    "Original 01-path-gate.npz for independent waveform/tone spectrum recomputation",
+    "First return package, if two-run comparison is required"
+  ],
+  "continuous_60s": "not_tested; no contract approval inferred from A report",
+  "unchanged_gate_controls": [
+    {
+      "passed": true,
+      "baseline_dbfs": null,
+      "first_frame": 33420,
+      "end_frame": 48340,
+      "reasons": [],
+      "rms_dbfs": -23.011081979678153,
+      "tonal_fraction": 1.0000019613960394,
+      "drift_db": null,
+      "reference_rms_dbfs": -23.011081979678153,
+      "mic_over_ref_db": 0.0,
+      "operational_drift_limit_db": 5.0,
+      "label": "original_pure_tone",
+      "evidence_kind": "synthetic_software_control",
+      "seconds": 1.02,
+      "source_seconds": 1.0
+    },
+    {
+      "passed": false,
+      "baseline_dbfs": null,
+      "first_frame": 61741,
+      "end_frame": 48340,
+      "reasons": [
+        "gate_source_on_window_too_short"
+      ],
+      "label": "proposed_1p6s_pure_tone",
+      "evidence_kind": "synthetic_software_control",
+      "seconds": 1.6,
+      "source_seconds": 1.0
+    },
+    {
+      "passed": false,
+      "baseline_dbfs": null,
+      "first_frame": 33420,
+      "end_frame": 48340,
+      "reasons": [
+        "gate_tone_not_observed"
+      ],
+      "rms_dbfs": -16.02496020627933,
+      "tonal_fraction": 0.1988981076852286,
+      "drift_db": null,
+      "reference_rms_dbfs": -23.011081979678153,
+      "mic_over_ref_db": 6.986121773398821,
+      "operational_drift_limit_db": 5.0,
+      "label": "contaminated_control",
+      "evidence_kind": "synthetic_software_control",
+      "seconds": 1.02,
+      "source_seconds": 1.0
+    }
+  ]
+}

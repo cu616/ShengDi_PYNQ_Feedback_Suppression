@@ -1,0 +1,91 @@
+{
+  "b_commit": "12e5ce21e88bc4e17166cc327182cc10929932cf",
+  "script_blob": "828cd67813dd00011d5af9ace6dfbd54fdbab598",
+  "same_script_blob_at_0167e14": true,
+  "script_sha256": "723e595dc2bf3f1d115f99627349941823972098f74db8bfb862ddc3b5aaaa9c",
+  "source_files_verified": 126,
+  "original_regressions": 130,
+  "original_regression_exit": 0,
+  "normal_cli": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "scripts/verify_r4_waveforms.py",
+      "--pack",
+      "../b-12e5ce2-originals",
+      "--model",
+      "models/room_v1/calibrated_20261024.json",
+      "--summary-v3",
+      "../r4-to-b-r1-frozen-unpacked/summary-v3.json",
+      "--c-review",
+      "../../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json",
+      "--out-dir",
+      "../b-12e5ce2-waveform"
+    ],
+    "exit_code": 0,
+    "stdout": "==============================================================================\n[1] 包完整性（..\\b-12e5ce2-originals）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              463531 B  sha 6701db8afebd6237  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：5/5 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 calibrated_20261024.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=1\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  09-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  pred 不符 0/15872｜residual 不符 0/15872｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照\n  repeat 1 总：本侧 -0.171053 / 汇总 -0.171053（差 0.00e+00）\n           配对身份：off dbb60f98 / on 05a1c814，逐帧区间一致\n           300-1000   本侧 -0.756043 / 汇总 -0.756043（差 0.00e+00）\n           1000-3000  本侧 -0.119597 / 汇总 -0.119597（差 7.11e-15）\n           8200-8600  本侧 +0.379475 / 汇总 +0.379475（差 0.00e+00）\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           配对身份：off 841abaa2 / on e1361e19，逐帧区间一致\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  最大差 7.105e-15 dB（容差 1e-03；超了就是两套数字对不上）\n\n[7] 与 C 的独立波形复核对照（a-63f6a69-waveform-review.json）\n  07-fir-off.npz         算术失配 本侧 0/0/0｜C 0/0/0；总电平差 0.00e+00 dB\n  09-fir-on.npz          算术失配 本侧 0/0/0｜C 0/0/0；总电平差 0.00e+00 dB\n  11-fir-on.npz          算术失配 本侧 0/0/0｜C 0/0/0；总电平差 0.00e+00 dB\n  13-fir-off.npz         算术失配 本侧 0/0/0｜C 0/0/0；总电平差 0.00e+00 dB\n  15-continuous-60s.npz  算术失配 本侧 0/0/未测｜C 0/0/0；总电平差 0.00e+00 dB\n  最大差 0.000e+00（容差 1e-03）；失配计数两侧都为 0 才算对上\n\n判定：**合格** — 文件齐全（角色件数一致）、模型绑定一致、4 试次算术 0 失配、60 s 尾环 prediction/residual 0 失配、与 summary-v3 及复核 JSON 在容差 1e-03 内一致\n\n输出：..\\b-12e5ce2-waveform\n",
+    "stderr": ""
+  },
+  "normal_numbers_unchanged": true,
+  "old_five_counterexamples_closed": true,
+  "tail_60s_output_status": "not_tested_by_B; independent C result not borrowed",
+  "checker_command": [
+    "C:\\Python314\\python.exe",
+    "tools/check_b_waveform_cli.py",
+    "--b-commit",
+    "12e5ce2",
+    "--out-dir",
+    "tmp/b-12e5ce2-qualified-review"
+  ],
+  "checker_exit": 2,
+  "positive_passed": true,
+  "bad_rejected": 5,
+  "bad_total": 8,
+  "new_counterexamples": [
+    {
+      "case": "used_file_unlisted",
+      "exit_code": 0,
+      "reported_ok": true,
+      "failures": []
+    },
+    {
+      "case": "model_lag_first_changed",
+      "exit_code": 0,
+      "reported_ok": true,
+      "failures": []
+    },
+    {
+      "case": "summary_capture_identity_changed",
+      "exit_code": 0,
+      "reported_ok": true,
+      "failures": []
+    }
+  ],
+  "required_fix": [
+    {
+      "code": "D3/D2",
+      "case": "used_file_unlisted",
+      "action": "Every consumed NPZ must be listed and hash/size verified. Role counts and a subset manifest are insufficient."
+    },
+    {
+      "code": "D4",
+      "case": "model_lag_first_changed",
+      "action": "Bind the actual fixed FIR semantics: supported taps/lag_first and actual per-capture coefficients as well as declared Q20 hash. Current arithmetic hardcodes lag_first=1 while supplied model can say 2."
+    },
+    {
+      "code": "D4",
+      "case": "summary_capture_identity_changed",
+      "action": "Compare actual capture identity, repeat/arm and frame interval against the requested reference, not only copied valid flags and numeric values."
+    }
+  ],
+  "r007_status": "open only for three concrete qualification gaps; earlier five fixes and normal values accepted",
+  "default_model_unchanged": true,
+  "new_candidates": false,
+  "hardware_access": false,
+  "production_B_code_modified": false,
+  "c_regression_tests": 164,
+  "c_regression_exit": 0,
+  "c_regression_evidence": "c-handoff-b12-tests.txt",
+  "latest_b_checked": "510f36fe51ef3d0ffb925c5e50fb90ae79288296",
+  "waveform_checker_blob_unchanged": true,
+  "new_gain_budget_status": "New script/report not independently numerically reviewed by C; not accepted for field authorization. Apply existing N1: qualified sampled small-gain bound is not maximum allowable gain; old-scene data do not prove new-scene impossibility or a unique engineering solution."
+}

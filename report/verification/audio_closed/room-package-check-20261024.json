@@ -1,0 +1,24 @@
+{
+  "package_version": "c-room-experiment-1.0.0",
+  "package_sha256": "5bedff5dca9b3ace92c760a7b82b439fc4890e744940f9be4443581ea89d5a27",
+  "calculation_version": "c-measurement-2.2.0",
+  "measurement_policy_version": "c-room-policy-1.0.0",
+  "source_a_commit": "db296988a444cf2f72852dec66f777edb7c103f6",
+  "frozen_hashes_valid": true,
+  "driver_acceptance_8_of_8": true,
+  "notebook_single_cell_verified": true,
+  "cancel_without_pynq_import": true,
+  "full_software_schedule_calls": 38,
+  "software_controller_models": "zero-coefficient fixtures; not the deployed current-session models",
+  "software_evidence_kind": "software_fixture",
+  "software_model_pairs": 8,
+  "effect_eligible_real_pairs": 0,
+  "b_consumer_as_is": true,
+  "b_consumer_blocking_issues": [],
+  "returned_raw_pcm": false,
+  "hardware_access": false,
+  "actual_current_models": {
+    "room-current/baseline_256.json": "5537483e4cc1abd6e8566a8f8bbd6ad8bf436bae14c37a920f1a6458e56db36a",
+    "room-current/candidate_512.json": "98d0956813720f4a791db0fa510e2216897f3aba2dac35083668e47678430d17"
+  }
+}

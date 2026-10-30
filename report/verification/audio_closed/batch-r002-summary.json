@@ -1,0 +1,85 @@
+{
+  "artifact_kind": "software_test_fixture",
+  "hardware_executed": false,
+  "status": "completed",
+  "trials": [
+    {
+      "index": 1,
+      "gain_db_requested": -30,
+      "mode": "bypass",
+      "hearing": "not_measured",
+      "metadata": {
+        "source": "software_test_fixture",
+        "gain_q12": 130,
+        "hp_volume": 40,
+        "bit_sha256": "66c34e6dcbad6209da770f14cad1587706f87e90dead13eb9188f471e373098a",
+        "model_sha256": "05598b02548198fa62652e9282aaacf934df19c9c7e4ee7c5697cdcbf70402a9",
+        "coefficients_sha256": "0a4dd545cc28d0344854f3113bf7efdca58f71214ec8f4afd6c43dd7770e4420",
+        "fixture_id": "software_test_fixture",
+        "sample_rate_hz": 48828.125,
+        "completed_frames": 97656,
+        "sound_seconds_nominal": 1.99999488,
+        "bypass": true,
+        "zero_coeff": false,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mic_full_scale_samples": 0,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0
+        }
+      },
+      "gain_q12": 130,
+      "hp_volume": 40,
+      "bit_sha256": "66c34e6dcbad6209da770f14cad1587706f87e90dead13eb9188f471e373098a"
+    },
+    {
+      "index": 2,
+      "gain_db_requested": -30,
+      "mode": "cancel",
+      "hearing": "not_measured",
+      "metadata": {
+        "source": "software_test_fixture",
+        "gain_q12": 130,
+        "hp_volume": 40,
+        "bit_sha256": "66c34e6dcbad6209da770f14cad1587706f87e90dead13eb9188f471e373098a",
+        "model_sha256": "05598b02548198fa62652e9282aaacf934df19c9c7e4ee7c5697cdcbf70402a9",
+        "coefficients_sha256": "0a4dd545cc28d0344854f3113bf7efdca58f71214ec8f4afd6c43dd7770e4420",
+        "fixture_id": "software_test_fixture",
+        "sample_rate_hz": 48828.125,
+        "completed_frames": 97656,
+        "sound_seconds_nominal": 1.99999488,
+        "bypass": false,
+        "zero_coeff": false,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mic_full_scale_samples": 0,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0
+        }
+      },
+      "gain_q12": 130,
+      "hp_volume": 40,
+      "bit_sha256": "66c34e6dcbad6209da770f14cad1587706f87e90dead13eb9188f471e373098a"
+    }
+  ],
+  "interpretation": "Exporter fixture only; no playback, PCM, hearing, MSG or ASG measurement",
+  "schema_version": 2,
+  "pairs": [
+    {
+      "gain_db_requested": -30,
+      "configuration_matches": true,
+      "bypass_hearing": "not_measured",
+      "cancel_hearing": "not_measured",
+      "digital_checks_pass": true,
+      "asg_db": null
+    }
+  ]
+}

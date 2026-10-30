@@ -1,0 +1,77 @@
+{
+  "a_commit": "50f30dd638cec571a56f0e3868d907a92a1a93fc",
+  "return_path": "report/verification/audio-replay/c-sprint-rc01-human-r1-close5cm.zip",
+  "return_bytes": 12328,
+  "return_sha256": "116373c98fc2472e6aad71fda285c6ca654178f9c0ab8075e522e08dc97c1053",
+  "member_hashes_passed": true,
+  "package_identity_passed": true,
+  "run": "sprint-45ee1d9583da",
+  "status": "stopped",
+  "trials_executed": 2,
+  "checks": {
+    "package": {
+      "status": "passed",
+      "level": "local_hash_and_compatibility"
+    },
+    "real_voice": {
+      "status": "failed",
+      "basis": "human_live_and_listening",
+      "reason": "human_hearing_stop",
+      "hearing_code": "NO_AMPLIFICATION",
+      "scope": "reported human outcome, not measured onset threshold"
+    },
+    "fir_comparison": {
+      "status": "not_tested"
+    },
+    "listener": {
+      "status": "not_tested"
+    },
+    "continuous_60s": {
+      "status": "not_tested",
+      "reason": "not scheduled in human session; r4 evidence reviewed separately",
+      "scope": "register timeline plus tail PCM; engineering only"
+    },
+    "stop_recovery": {
+      "status": "passed",
+      "unverified_trials": [],
+      "scope": "A driver sidecar reports per-trial cleanup; emergency/abnormal recovery still requires A acceptance"
+    },
+    "independent_reproduction": {
+      "status": "not_tested"
+    },
+    "path_gate": {
+      "status": "passed",
+      "source_on_frames": 14920,
+      "scope": "source-on tone path check; acoustic stability category is separate"
+    }
+  },
+  "real_voice": {
+    "hearing_code": "NO_AMPLIFICATION",
+    "hearing_basis": "human_live_and_listening",
+    "gain_q12": 817,
+    "hp_volume": 40,
+    "completed_frames": 390625,
+    "captured_frames": 16384,
+    "captured_seconds": 0.33554432,
+    "metadata_mic_rms_dbfs": -24.912642955545977,
+    "metadata_mic_peak_dbfs": -7.9488170352495775,
+    "metadata_mic_full_scale_samples": 0,
+    "full_scale_scope": "reported statistics of saved tail only; no independent PCM review or full-run microphone clipping counter"
+  },
+  "commit_title_claim": "near speech 5 cm still no discernible amplification; input not clipped",
+  "recorded_scene": {
+    "layout": "source-mic 15 cm, microphone on desk, speaker upright facing the microphone at 0.5 m, listener 0.5 m in front of the speaker; fixed recorded speech source, fixed position and volume, recorder gain fixed, AGC off; working point -14 dB",
+    "fixture_id": "room_v1_20261021",
+    "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a"
+  },
+  "scene_discrepancy": "commit title says 5 cm but summary.scene.layout still says source-mic 15 cm; actual distance/source and provenance need A correction from existing records, not a rerun",
+  "startup_D4": {
+    "file": "board/audio_replay/run_human_r1.sh",
+    "sha256": "51a57180f3f3e7f87297c93e284ad4450aed39f7a495427186e574c030c039ff",
+    "unchanged_since_47367f9": true,
+    "status": "open; None/CANCEL handling not fixed by this data-only commit"
+  },
+  "next_A": "Keep explicit failed human result and listener not_tested; resolve original START D4 plus existing scene facts, including 5 vs 15 cm. No new audible trial requested.",
+  "raw_pcm_review": false,
+  "hardware_access": false
+}

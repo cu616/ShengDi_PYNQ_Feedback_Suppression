@@ -1,0 +1,289 @@
+{
+  "a_commit": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+  "b_commit": "d033d0047542d5e50654a0333777c48ec08dce21",
+  "runtime": {
+    "python": "3.14.4",
+    "numpy": "2.5.4"
+  },
+  "packet_sha256": "3e327d04c940630c17ba90f607c6ab38e7f0fc02d356f965bcc3cc228aac1c7c",
+  "b_script_sha256": "2d075243b7d2ef73cb6fe1000172461b9631dbf77c77497f28a31141863f8497",
+  "b_counterexamples": [
+    {
+      "case": "negative-real-wrap",
+      "frequencies_hz": [
+        400.0,
+        410.0
+      ],
+      "phase_deg": [
+        179.0,
+        -179.0
+      ],
+      "gate": [
+        true,
+        true
+      ],
+      "expected_crossing": false,
+      "returned_crossing": false,
+      "check_passed": true,
+      "returned_db": null,
+      "returned_hz": null
+    },
+    {
+      "case": "low-coherence-hole",
+      "frequencies_hz": [
+        400.0,
+        410.0,
+        420.0
+      ],
+      "phase_deg": [
+        10.0,
+        0.0,
+        -10.0
+      ],
+      "gate": [
+        true,
+        false,
+        true
+      ],
+      "expected_crossing": false,
+      "returned_crossing": false,
+      "check_passed": true,
+      "returned_db": null,
+      "returned_hz": null
+    },
+    {
+      "case": "positive-real-control",
+      "frequencies_hz": [
+        400.0,
+        410.0
+      ],
+      "phase_deg": [
+        10.0,
+        -10.0
+      ],
+      "gate": [
+        true,
+        true
+      ],
+      "expected_crossing": true,
+      "returned_crossing": true,
+      "check_passed": true,
+      "returned_db": 6.1535707338809145,
+      "returned_hz": 405.0
+    },
+    {
+      "case": "last-bin-on-positive-real-axis",
+      "frequencies_hz": [
+        400.0,
+        410.0
+      ],
+      "phase_deg": [
+        10.0,
+        0.0
+      ],
+      "gate": [
+        true,
+        true
+      ],
+      "expected_crossing": true,
+      "returned_crossing": false,
+      "check_passed": false,
+      "returned_db": null,
+      "returned_hz": null
+    }
+  ],
+  "deployment": {
+    "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+    "q20_response_vs_direct_lag_polynomial_max_error": 4.6202888582150733e-14,
+    "b_response_q20_check_passed": true,
+    "float_vs_deployed_response_max_difference": 1.6591578685409034e-05,
+    "b_main_uses_float_coefficients": true
+  },
+  "same_model_bytes_as_previous_rc0": true,
+  "selection_decision": "default=calibrated_20261024; no old candidate fallback; EQ identity",
+  "numerical_review": [
+    {
+      "split": "all16",
+      "nfft": 4096,
+      "spectral_windows": 112,
+      "sampled_small_gain_estimate": {
+        "estimated_db": 7.009011787727793,
+        "worst_hz": 441.0743713378906,
+        "selected_bins": 568,
+        "coherence_at_worst": 0.8736243271882852
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 9.864900762562156,
+        "frequency_hz": 882.2781161693441,
+        "crossings": 88
+      },
+      "b_fixed_function": {
+        "estimated_db": 9.864900762562154,
+        "frequency_hz": 882.2781161693441,
+        "difference_from_c_estimate_db": -1.7763568394002505e-15
+      },
+      "gate_coverage": {
+        "selected_bins": 568,
+        "total_bins": 2049,
+        "fraction": 0.2772083943387018
+      }
+    },
+    {
+      "split": "all16",
+      "nfft": 8192,
+      "spectral_windows": 48,
+      "sampled_small_gain_estimate": {
+        "estimated_db": 4.746729468692438,
+        "worst_hz": 441.0743713378906,
+        "selected_bins": 1203,
+        "coherence_at_worst": 0.9286928100229864
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 7.945200807412618,
+        "frequency_hz": 881.9340290626964,
+        "crossings": 126
+      },
+      "b_fixed_function": {
+        "estimated_db": 7.945200807412625,
+        "frequency_hz": 881.9340290626964,
+        "difference_from_c_estimate_db": 6.217248937900877e-15
+      },
+      "gate_coverage": {
+        "selected_bins": 1203,
+        "total_bins": 4097,
+        "fraction": 0.29362948498901636
+      }
+    },
+    {
+      "split": "holdout6",
+      "nfft": 4096,
+      "spectral_windows": 42,
+      "sampled_small_gain_estimate": {
+        "estimated_db": 4.5599461702565165,
+        "worst_hz": 441.0743713378906,
+        "selected_bins": 558,
+        "coherence_at_worst": 0.882015394652297
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 10.705488769948364,
+        "frequency_hz": 884.1339084147264,
+        "crossings": 77
+      },
+      "b_fixed_function": {
+        "estimated_db": 10.705488769948357,
+        "frequency_hz": 884.1339084147264,
+        "difference_from_c_estimate_db": -7.105427357601002e-15
+      },
+      "gate_coverage": {
+        "selected_bins": 558,
+        "total_bins": 2049,
+        "fraction": 0.27232796486090777
+      }
+    },
+    {
+      "split": "holdout6",
+      "nfft": 8192,
+      "spectral_windows": 18,
+      "sampled_small_gain_estimate": {
+        "estimated_db": 2.7748984229237115,
+        "worst_hz": 435.11390686035156,
+        "selected_bins": 1188,
+        "coherence_at_worst": 0.9450399949368921
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 6.598164435468535,
+        "frequency_hz": 424.17976525502087,
+        "crossings": 121
+      },
+      "b_fixed_function": {
+        "estimated_db": 6.598164435468565,
+        "frequency_hz": 424.1797652550208,
+        "difference_from_c_estimate_db": 3.019806626980426e-14
+      },
+      "gate_coverage": {
+        "selected_bins": 1189,
+        "total_bins": 4097,
+        "fraction": 0.29021235050036615
+      }
+    },
+    {
+      "split": "all16_old_candidate_cross_session",
+      "nfft": 4096,
+      "spectral_windows": 112,
+      "sampled_small_gain_estimate": {
+        "estimated_db": -0.38739874341236225,
+        "worst_hz": 3635.883331298828,
+        "selected_bins": 568,
+        "coherence_at_worst": 0.899673947981207
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": 0.08611019812555674,
+        "frequency_hz": 3641.635901257557,
+        "crossings": 33
+      }
+    },
+    {
+      "split": "all16_old_candidate_cross_session",
+      "nfft": 8192,
+      "spectral_windows": 48,
+      "sampled_small_gain_estimate": {
+        "estimated_db": -1.0491465437087104,
+        "worst_hz": 8708.23860168457,
+        "selected_bins": 1203,
+        "coherence_at_worst": 0.8107829823078715
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": -0.6462459021851499,
+        "frequency_hz": 3640.659685760614,
+        "crossings": 37
+      }
+    },
+    {
+      "split": "all16_no_cancellation",
+      "nfft": 4096,
+      "spectral_windows": 112,
+      "sampled_small_gain_estimate": {
+        "estimated_db": -6.110617080509151,
+        "worst_hz": 417.2325134277344,
+        "selected_bins": 568,
+        "coherence_at_worst": 0.9183709044723689
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": -5.611427794548385,
+        "frequency_hz": 431.0237609427174,
+        "crossings": 20
+      }
+    },
+    {
+      "split": "all16_no_cancellation",
+      "nfft": 8192,
+      "spectral_windows": 48,
+      "sampled_small_gain_estimate": {
+        "estimated_db": -6.573851530953875,
+        "worst_hz": 411.2720489501953,
+        "selected_bins": 1203,
+        "coherence_at_worst": 0.9687742781494447
+      },
+      "phase_crossing_estimate": {
+        "estimated_db": -6.352949508543295,
+        "frequency_hz": 431.42926619379693,
+        "crossings": 19
+      }
+    }
+  ],
+  "not_accepted_as_performance": [
+    "mixed small-gain/phase-crossing 2.8..6.6 dB interval",
+    "external +3dB claim",
+    "748-frame protection treated as threshold",
+    "universal +/-2dB precision from window sensitivity",
+    "automatic same-gain bypass on calibration failure",
+    "old candidate equal to/worse than FIR-off inferred from near-zero predicted bound; compare H rather than digital gain zero"
+  ],
+  "remaining_b_items": [
+    "last positive-real endpoint is missed (new controlled case)",
+    "main scripts still use floating coefficients rather than deployed Q20",
+    "segmented time-domain fitter and ridge/weight screening executable provenance not present in this commit; not independently reproduced",
+    "EQ script has real magnitude only, no causal complex SOS response; prediction not accepted as deployable EQ"
+  ]
+}

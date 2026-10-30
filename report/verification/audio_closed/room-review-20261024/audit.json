@@ -1,0 +1,145 @@
+{
+  "review_version": "c-room-return-review-1.0.0",
+  "waveform_recomputed": false,
+  "evidence_kind": "board_recording_metadata_review",
+  "runs": [
+    {
+      "run_id": "room-1c2e1d49a239",
+      "source_zip_sha256": "76d9fe6c39f5ff792eb8167e590639893a1a1a0c9e41ce274184971b34d14216",
+      "trials": 9,
+      "closed_trials": 3,
+      "pair_groups": 2,
+      "complete_pairs": 1,
+      "configuration_matched_pairs": 1,
+      "effect_eligible_pairs": 0,
+      "valid_closed_tails": 0,
+      "stop_reason": "RuntimeError: amplifier_gate_failed:gate_drift_exceeds_1p5_db",
+      "gate_repeatability": {
+        "count": 6,
+        "std_convention": "population; ddof=0",
+        "rms_dbfs": {
+          "count": 6,
+          "range_db": 1.8098629929888403,
+          "std_db": 0.7080818914742707
+        },
+        "reference_rms_dbfs": {
+          "count": 6,
+          "range_db": 0.0,
+          "std_db": 0.0
+        },
+        "mic_over_ref_db": {
+          "count": 6,
+          "range_db": 1.8098629929888403,
+          "std_db": 0.7080818914742707
+        }
+      }
+    },
+    {
+      "run_id": "room-be9cf767dc44",
+      "source_zip_sha256": "346576d386c299f9b2d609b02a61cdae8d26308539996926e4098618d58bc599",
+      "trials": 28,
+      "closed_trials": 13,
+      "pair_groups": 7,
+      "complete_pairs": 6,
+      "configuration_matched_pairs": 6,
+      "effect_eligible_pairs": 0,
+      "valid_closed_tails": 2,
+      "stop_reason": "RuntimeError: runtime saturation guard stopped playback; packed_prediction_residual=4 gain=0 mix=0; no further gain authorized",
+      "gate_repeatability": {
+        "count": 15,
+        "std_convention": "population; ddof=0",
+        "rms_dbfs": {
+          "count": 15,
+          "range_db": 1.98897572507164,
+          "std_db": 0.5561045938191339
+        },
+        "reference_rms_dbfs": {
+          "count": 15,
+          "range_db": 0.0,
+          "std_db": 7.105427357601002e-15
+        },
+        "mic_over_ref_db": {
+          "count": 15,
+          "range_db": 1.98897572507164,
+          "std_db": 0.556104593819134
+        }
+      }
+    }
+  ],
+  "independent_fixture_repeatability": {
+    "count": 6,
+    "std_convention": "population; ddof=0",
+    "rms_dbfs": {
+      "count": 6,
+      "range_db": 4.710000000000001,
+      "std_db": 1.5900777409366578
+    },
+    "reference_rms_dbfs": {
+      "count": 0,
+      "range_db": null,
+      "std_db": null
+    },
+    "mic_over_ref_db": {
+      "count": 0,
+      "range_db": null,
+      "std_db": null
+    }
+  },
+  "prediction_review": {
+    "kind": "A_reported_prediction; not independently refitted",
+    "formula": "gain_db < -20*log10(max_f abs(H(f)-Hhat(f)))",
+    "proposed_design_target_db": 6.0,
+    "bands": [
+      {
+        "band_hz": "300-1000",
+        "residual_path_max_db": -5.42,
+        "predicted_gain_bound_db": 5.42,
+        "worst_hz": 435,
+        "coherence_reported": 0.93,
+        "meets_proposed_band_target": false
+      },
+      {
+        "band_hz": "1000-2000",
+        "residual_path_max_db": -8.62,
+        "predicted_gain_bound_db": 8.62,
+        "worst_hz": 1585,
+        "coherence_reported": 0.96,
+        "meets_proposed_band_target": true
+      },
+      {
+        "band_hz": "2000-3400",
+        "residual_path_max_db": -12.38,
+        "predicted_gain_bound_db": 12.38,
+        "worst_hz": 3231,
+        "coherence_reported": 0.95,
+        "meets_proposed_band_target": true
+      },
+      {
+        "band_hz": "8200-8600",
+        "residual_path_max_db": -11.8,
+        "predicted_gain_bound_db": 11.8,
+        "worst_hz": 8315,
+        "coherence_reported": 0.81,
+        "meets_proposed_band_target": true
+      }
+    ],
+    "fullband_predicted_gain_bound_db": null,
+    "fullband_target_pass": null,
+    "measured_msg_db": null,
+    "measured_asg_db": null,
+    "missing": [
+      "raw_complex_transfer_estimates_and_frequency_grid",
+      "fullband_including_DC_and_9131_Hz",
+      "model_file_and_Q20_hashes",
+      "independent_validation_and_repeated_path_uncertainty"
+    ],
+    "interpretation": "Strict small-gain sufficient condition for the assumed stable linear path. Selected frequency bands and a finite spectral grid do not certify the full loop. A +3 dB failure below a proposed +5.42 dB bound is an unresolved consistency check, not confirmation of that bound. Speech and linear headroom require separate evidence."
+  },
+  "input_hashes": {
+    "field-report.json": "0293caf0a637d0da3109aa2d9c98459c552be75b5d9b057887a3f20c81cb70ad",
+    "lowband.json": "da6f4e281a9a54aa84b4c7c160ce056317832362423605b8459ea6a9c8025dfc",
+    "repeatability.json": "3a9e7804355b90a31013c57d7c6fc509a1b16a791ba912fae20e1092f01cd879",
+    "room-return-1.zip": "76d9fe6c39f5ff792eb8167e590639893a1a1a0c9e41ce274184971b34d14216",
+    "room-return-2.zip": "346576d386c299f9b2d609b02a61cdae8d26308539996926e4098618d58bc599"
+  }
+}

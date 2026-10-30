@@ -1,0 +1,43 @@
+{
+  "source_b_commit": "67e5b098747444e7aa934c256463aaef04c5a5ed",
+  "file": "scripts/diagnose_peak_margin.py",
+  "line": 80,
+  "end_line": 101,
+  "source_sha256": "192abe82ce4e94fbbfbd172485134bb19a153be9e657c5e382e075c203ed1da9",
+  "counterexample": {
+    "freqs_hz": [
+      300.0,
+      400.0
+    ],
+    "loop_response_real": [
+      -1.0,
+      -1.0
+    ],
+    "loop_response_imag": [
+      0.1,
+      -0.1
+    ],
+    "eligible": [
+      true,
+      true
+    ]
+  },
+  "original_function_result_db": -0.04321373782642462,
+  "original_function_result_hz": 350.0,
+  "expected": "no positive-real-axis crossing; response stays in left half plane",
+  "recommendation": "Check original adjacent eligible bins, interpolate imaginary zero and require real>0; never bridge coherence holes or identify wrapped +/-pi as zero phase.",
+  "actual_16_segment_negative_axis_bracket": [
+    {
+      "bin_hz": 452.99530029296875,
+      "loop_real": -0.37144911945985004,
+      "loop_imag": -0.057790131352601054,
+      "phase_degrees": -171.15680632211206
+    },
+    {
+      "bin_hz": 464.9162292480469,
+      "loop_real": -0.20297328288744435,
+      "loop_imag": 0.2223214130044464,
+      "phase_degrees": 132.39521237204858
+    }
+  ]
+}

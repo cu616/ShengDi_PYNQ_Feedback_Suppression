@@ -34,3 +34,4 @@ A 工作树内也有受 Git 管理的同名目录。两者不是自动同步目�
 选交海报 `final/shengdi-poster.pdf`。授权书由用户保存在 `private/` 后单独上传，不打入公开源码包。
 
 工程版本、实测配置和引用证据由交付清单绑定。教程动画中的合成信号不能当实测；一份文件放进 `final/` 也不表示已经上传后台。
+- C 本轮交付：[核验与缺件清单](work/c/release-checklist.md)、[报告正文](work/c/technical-report.md)、[测量引用表](work/c/claims.md)、[冲突建议](work/c/conflicts.md)、[协作纠错记录](work/c/session-record.md)。

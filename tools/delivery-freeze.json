@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "scope": "ShengDi two offline acceptance deliveries only",
+  "package": {
+    "path": "build/packages/c-sprint-rc01-human-r1.zip",
+    "sha256": "0d0a006b12df0c5b45f7049db44aa52e07769cb1b7f17b2f827bcb30f5e69c0e",
+    "source_commits": {
+      "A": "85f4967f242eed61eaa6b74041be931c2f5bc7a0",
+      "B": "d033d0047542d5e50654a0333777c48ec08dce21",
+      "C": "59f2b2a6ec27cd9b138b419c0bbb43db81f2cc68"
+    }
+  },
+  "assets": {
+    "commit": "85f4967f242eed61eaa6b74041be931c2f5bc7a0",
+    "contract": "audio-replay-v2+audio-closed-v2",
+    "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+    "hwh_sha256": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b",
+    "max_run_frames": 3000000
+  },
+  "model": {
+    "file_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+    "q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+    "taps": 512,
+    "lag_first": 1
+  },
+  "source_sha256": {
+    "tools/deliver_check.py": "0d812eb5fc06cc5bb3ea96706f66ac7bb58e3b840e2506ba79a3a0a0b3518461",
+    "board/audio_replay/listener_metrics.py": "584d9d4835d0078826073ce894e5fece0006d960122aa4b434dfe40933999336",
+    "board/audio_replay/sprint_experiment.py": "fc9787047c51ef35481ba6c6a0181f6400768ccb52155c4d40ffaac5a0e1f8cb",
+    "board/audio_replay/sprint_selftest.py": "6fcd4da63a78736e7e35ea278e0a9b211fde034a1d472d3a7a3de9111644ee17",
+    "scripts/assemble_experiment.py": "30581d0ed566c846a1e20dddee7d372116f76a08695e3176e2421a2868ea27df"
+  },
+  "source_encoding": "UTF-8 LF for source text; binary assets unchanged",
+  "runtime": "Python 3.10+ standard library and Git; tested runtime recorded per report"
+}

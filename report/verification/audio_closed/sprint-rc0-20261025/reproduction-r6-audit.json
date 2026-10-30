@@ -1,0 +1,191 @@
+{
+  "workflow_commit": "0f17c74f21360ca8d84240be8a50be35ddeb8cbc",
+  "date": "2026-10-27",
+  "r4_source_sha256": "2fb088edb723818a91fa42ed01911a2e49cdf98173a6a24ba9bc73b7a1e4e0b8",
+  "first_return_sha256": "71d883e49dc3bbaf84712ae3ff10e826e12c23bb7568f5fa77573892ef79bff0",
+  "raw_quality_control": "existing verified intake, no discrepancies; no closed-loop candidate pairs",
+  "reference_and_intervals": [
+    {
+      "file": "01-mic-precheck-quiet-zero.npz",
+      "role": "mic-precheck-quiet",
+      "first_frame": 0,
+      "end_frame": 14648,
+      "frames": 14648,
+      "loaded_source_frames": 1,
+      "loaded_source_overlap_frames": 1,
+      "nonzero_reference_frames": 0,
+      "actual_reference_equals_loaded_source_global": true,
+      "source_schedule_verified": true,
+      "actual_gain_q12": 0,
+      "zero_coeff": true,
+      "actual_Q20": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+      "bit_exact": true
+    },
+    {
+      "file": "02-quiet-matched.npz",
+      "role": "quiet",
+      "first_frame": 33420,
+      "end_frame": 49804,
+      "frames": 16384,
+      "loaded_source_frames": 1,
+      "loaded_source_overlap_frames": 0,
+      "nonzero_reference_frames": 0,
+      "actual_reference_equals_loaded_source_global": true,
+      "source_schedule_verified": true,
+      "actual_gain_q12": 0,
+      "zero_coeff": true,
+      "actual_Q20": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+      "bit_exact": true
+    },
+    {
+      "file": "03-mic-precheck-positive-zero.npz",
+      "role": "mic-precheck-positive",
+      "first_frame": 0,
+      "end_frame": 14648,
+      "frames": 14648,
+      "loaded_source_frames": 1,
+      "loaded_source_overlap_frames": 1,
+      "nonzero_reference_frames": 0,
+      "actual_reference_equals_loaded_source_global": true,
+      "source_schedule_verified": true,
+      "actual_gain_q12": 0,
+      "zero_coeff": true,
+      "actual_Q20": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+      "bit_exact": true
+    },
+    {
+      "file": "04-positive-matched.npz",
+      "role": "positive",
+      "first_frame": 33420,
+      "end_frame": 49804,
+      "frames": 16384,
+      "loaded_source_frames": 48828,
+      "loaded_source_overlap_frames": 15408,
+      "nonzero_reference_frames": 15403,
+      "actual_reference_equals_loaded_source_global": true,
+      "source_schedule_verified": true,
+      "actual_gain_q12": 0,
+      "zero_coeff": true,
+      "actual_Q20": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+      "bit_exact": true
+    }
+  ],
+  "window": {
+    "first_frame": 33420,
+    "end_frame": 48340,
+    "frames": 14920,
+    "source_end_frame_exclusive": 48828,
+    "source_on_saved_overlap": 15408
+  },
+  "background_and_tone": {
+    "background_rms_dbfs": -27.306359698768645,
+    "active_rms_dbfs": -32.65393199889685,
+    "old_tonal_fraction": 0.27468839768683884,
+    "projection_tone_dbfs": -38.26552883850981,
+    "relative_contrast_db": 27.571389995242214
+  },
+  "source_state": {
+    "first": "A reports phone playing; violates clean background premise",
+    "second": "A reports phone paused; summary only, raw unavailable",
+    "first_contamination_kind": "Recording playback was not paused during the tone, per A. No evidence identifies an isolated cue or notification.",
+    "registered_phone_source": {
+      "file": "1101.m4a",
+      "displayed_volume": "8/15",
+      "route": "phone_speaker_to_microphone",
+      "nominal_start_seconds": 0.0,
+      "nominal_segment_seconds": 8.0,
+      "actual_phone_sample_timeline": "unknown; registration is not proof of synchronized playback"
+    },
+    "gain_and_agc": "First binding records gain and AGC as unknown/not controllable. Drift has not been demonstrated; a fixed volume display does not prove fixed acoustic output or identical content across windows.",
+    "window_excision": "No timestamped isolated event or verified clean remainder; do not excise arbitrary windows to certify the control.",
+    "third_explanation": "Unsynchronized speech content/envelope can change between windows even without gain or AGC drift. Continuing external playback is not itself evidence of AGC drift."
+  },
+  "routing": {
+    "first_four_roles": [
+      "mic-precheck-quiet",
+      "quiet",
+      "mic-precheck-positive",
+      "positive"
+    ],
+    "first_four_do_not_ask_START": true,
+    "machine_branch_returns_true_without_READY_input": true,
+    "READY_print_was_misleading": true,
+    "A_claim_START_autoanswered": "mechanism not reconstructable from frozen C first-four routing; may involve external harness; retain as A report, not a confirmed C route"
+  },
+  "conclusions": {
+    "actual_digital_tone_and_capture_window_verified": true,
+    "analog_output_route": "A report only, no timestamped explicit loudspeaker confirmation in this packet",
+    "first_clean_control_valid": false,
+    "second_independent_spectral_recalculation": false,
+    "distance_as_unique_cause": false,
+    "r5_relative_pass": "diagnostic only under contaminated conditions; not a clean path certification",
+    "historical_success": "two listener confirmations retained; later fault does not prove same fault during success"
+  },
+  "minimal_field_discriminator": "Same registered short probe after explicit SOURCES_STOPPED; record actual speech input response and named loudspeaker TONE_HEARD, with actual reference and raw windows. Numeric tone estimates remain diagnostic.",
+  "new_flow": "zero-FIR -8dB baseline first; output-muted 5cm input test, one distance-only nonclipping variant; two live repeats with muted listener controls; conditional 60s human use; optional same-gain candidate pairs",
+  "unchanged_guards": {
+    "peak_limit_dbfs": -6.0,
+    "strict": true,
+    "disarm_before_save": true
+  },
+  "limits": [
+    "Raw first packet phone contamination prevents retrospective clean control",
+    "Second ZIP still absent at A=0f17c74; retrieve existing file after network recovery, no rerun",
+    "Software tests are synthetic, no C board/audio actions"
+  ],
+  "loaded_probe_matches_registered_C_pcm16": true,
+  "registered_probe_pcm16_sha256": "332e4dd78977552119f4d5ccce03a25f63499ae3d32618ca0d518292095f24a9",
+  "positive_missing_waveform_intervals": [
+    [
+      0,
+      33420
+    ]
+  ],
+  "positive_source_off_tail_frames": 976,
+  "positive_tail_scope": "source-on control window; saved 20ms after source is shorter than 50ms transition, not pure acoustic tail",
+  "baseline_dependency": "Frozen loader transport is independent; zero_coeff=True sends Q20 all zero. Candidate qualification is deferred until after baseline/human use.",
+  "B_pairing_clarification_20261027": {
+    "r4_closed_loop_zero_candidate_pairs": 0,
+    "r4_328hz_algorithm_gain": "not measured",
+    "quantitative_328hz_condition": "State actual bin/frequency, window and bandwidth, with a valid independent source reference/normalization. If source level, AGC or content is noncomparable and normalization absent, mark dependent gain and FIR attribution unresolved.",
+    "manual_comparability_limit": "A manual COMPARABLE response cannot override contrary source/scene evidence in C final QC. Existing r6 code does not automatically detect phone AGC drift.",
+    "independent_observations": "Retain listener verbatim responses, actual levels, counters, frame coverage and other valid observations even when source-normalized attribution is unresolved.",
+    "r6_voice_scope": "Uncalibrated qualitative listener comparisons, no source-normalized 328Hz gain or measured MSG/ASG.",
+    "historical_success_originals_required_for_candidate": false,
+    "historical_originals_purpose": "Explain historical reproduction differences; their late arrival does not block same-round candidate evaluation.",
+    "cross_gain_statement": "B's candidate@-6 approximately zero@-12 (or proposed zero@-14) is an unverified operating-point prediction, not observed equivalence or a measured FIR gain. Zero at reduced gain remains closed loop and is not an independent source denominator.",
+    "cross_gain_attribution": "Changing model and gain compares operating-point combinations; an actual stable gain difference or ASG needs its own comparable valid endpoint evidence, not the numerical knob gap alone.",
+    "active_flow": "Keep frozen r6: same-session zero-FIR -8 baseline/human reproduction, then optional same--8 candidate pairs. No new trials, model, code or ZIP in this clarification."
+  },
+  "controls": {
+    "new_methods_finally_passed": 9,
+    "affected_legacy_methods_passed": 2,
+    "initial_run": {
+      "methods": 9,
+      "failed": 1,
+      "seconds": 47.579,
+      "log": "reproduction-tests-r6.txt"
+    },
+    "resolved_distance_and_affected_legacy": {
+      "methods": 4,
+      "failed": 0,
+      "seconds": 43.569,
+      "log": "reproduction-controls-r6.txt"
+    },
+    "final_quality_and_actual_source_schedule": {
+      "methods": 2,
+      "failed": 0,
+      "seconds": 18.451,
+      "log": "reproduction-final-quality-r6.txt"
+    },
+    "final_prompt_linkage": {
+      "methods": 1,
+      "failed": 0,
+      "seconds": 13.685,
+      "log": "reproduction-prompt-intake-r6.txt"
+    },
+    "unchanged_B_145_repeated": false,
+    "hardware_executed": false
+  },
+  "correction_trace": "Initial full-scale input label was invalid due to clipping plus external-human tail uncertainty. Only that input-only rejection may enter the one distance branch; actual digital schedule, cleanup, protection and save failures still stop."
+}

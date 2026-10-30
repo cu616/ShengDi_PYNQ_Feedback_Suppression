@@ -1,0 +1,131 @@
+{
+  "A_report_commit": "26aaedd310af25f7b44259e4114b032aa28c97a1",
+  "A_raw_commit": "083f31ca5cc5530d8aabbbb4326bfb547d706964",
+  "raw_sha256": "71d883e49dc3bbaf84712ae3ff10e826e12c23bb7568f5fa77573892ef79bff0",
+  "source": "authenticated GitHub REST commit/blob read; blob and SHA256 checked",
+  "first_run_phone_contaminated": true,
+  "second_run_raw_available": false,
+  "interpretation": "Diagnostic replay only. Registered 10dB relative contrast chosen before raw intake. Tone component is observable; not a clean positive control, algorithm or listener result. Distance is not a uniquely established cause.",
+  "old_gate": {
+    "passed": false,
+    "baseline_dbfs": null,
+    "capture_sha256": "ca56c406ed42dfd564725d1d126e147e30a773aa47ff1cffbd18d70afed81b74",
+    "first_frame": 33420,
+    "end_frame": 48340,
+    "reasons": [
+      "gate_at_noise_floor",
+      "gate_tone_not_observed"
+    ],
+    "rms_dbfs": -32.65393199889685,
+    "tonal_fraction": 0.27468839768683884,
+    "drift_db": null,
+    "reference_rms_dbfs": -23.011081979678153,
+    "mic_over_ref_db": -9.642850019218699,
+    "operational_drift_limit_db": 5.0
+  },
+  "same_window_background": {
+    "rms_dbfs": -27.306359698768645,
+    "first_frame": 33420,
+    "end_frame": 48340,
+    "frames": 14920
+  },
+  "new_relative_diagnostic": {
+    "passed": true,
+    "method": "relative-tone-projection-v1",
+    "reasons": [],
+    "capture_sha256": "ca56c406ed42dfd564725d1d126e147e30a773aa47ff1cffbd18d70afed81b74",
+    "background_sha256": "bfdf5deee72985e298f21f6156cc0873ddf3c3f2379cfe2ee1e610327094bb23",
+    "minimum_contrast_db": 10.0,
+    "drift_db": null,
+    "scope": "1 kHz path presence only; no broadband model, MSG or ASG qualification",
+    "first_frame": 33420,
+    "end_frame": 48340,
+    "frames": 14920,
+    "nominal_bin_width_hz": 3.2726625335120643,
+    "neighbour_hz": [
+      973.8186997319035,
+      970.5460371983914,
+      967.2733746648794,
+      964.0007121313673,
+      960.7280495978553,
+      957.4553870643432,
+      954.1827245308311,
+      950.9100619973191,
+      1026.1813002680965,
+      1029.4539628016087,
+      1032.7266253351206,
+      1035.9992878686328,
+      1039.2719504021447,
+      1042.544612935657,
+      1045.8172754691689,
+      1049.089938002681
+    ],
+    "rms_dbfs": -32.65393199889685,
+    "background_rms_dbfs": -27.306359698768645,
+    "tonal_fraction": 0.27468839768683984,
+    "reference_rms_dbfs": -23.011081979678153,
+    "reference_tonal_fraction": 1.0000019613960391,
+    "tone_rms_dbfs": -38.26552883850981,
+    "reference_tone_rms_dbfs": -23.011073461451737,
+    "mic_over_ref_db": -15.254455377058072,
+    "tone_power": 0.00014908951987362127,
+    "quiet_tone_power": 2.608003180114414e-07,
+    "quiet_neighbour_mean_power": 1.1401248505188377e-07,
+    "concurrent_neighbour_mean_power": 1.5209938994540828e-07,
+    "noise_power_used": 2.608003180114414e-07,
+    "detection_contrast_db": 27.571389995242214,
+    "operational_drift_limit_db": 5.0,
+    "contrast_definition": "tone projection / max(quiet target, quiet neighbour mean, concurrent neighbour mean); equal duration and projection normalization",
+    "signal_snr_estimate_db": 27.56378628704757,
+    "snr_assumptions": "conditional estimate only: locally representative, stationary uncorrelated noise; contrast is not itself pure-signal SNR"
+  },
+  "second_summary": {
+    "quiet_rms_dbfs": -29.1,
+    "positive_rms_dbfs": -24.9,
+    "difference_db": 4.2,
+    "scope": "A summary only; raw unavailable; positive is louder but below old 6dB requirement"
+  },
+  "missing_once": [
+    "Second existing return-results.zip when A board network recovers; no old field rerun requested"
+  ],
+  "hardware_executed_by_C": false,
+  "method_declared_before_raw_intake": true,
+  "old_runtime_gate": {
+    "broadband_margin_db": 6.0,
+    "minimum_tonal_fraction": 0.8,
+    "not_growth_parameters": ".55/-55 belong to growth monitor, not this gate"
+  },
+  "same_window_broadband_difference_db": -5.347572300128206,
+  "first_run_calls": {
+    "total": 4,
+    "input_prechecks": 2,
+    "quiet_direct": 1,
+    "positive_direct": 1,
+    "closed_zero_candidate_pairs": 0
+  },
+  "decision": "Use relative equal-window spectral path detection, keep it mandatory for acoustic interpretation; no level/duration increase or optional bypass",
+  "unchanged": {
+    "source_frequency_hz": 1000.0,
+    "source_peak_dbfs": -20.0,
+    "source_seconds": 1.0,
+    "run_seconds": 1.02,
+    "gains_db": [
+      -14,
+      -12,
+      -10,
+      -8,
+      -6
+    ],
+    "model_Q20": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+    "hardware_guard": true,
+    "microphone_peak_limit_dbfs": -6.0
+  },
+  "tests": {
+    "relative_methods": 4,
+    "relative_seconds": 2.252,
+    "runtime_intake_methods": 4,
+    "runtime_seconds": 28.871,
+    "old_B_145_repeated": false
+  },
+  "operational_exit": "New relative control failure stops acoustic branches, preserves numeric/config evidence and unattempted grades. No original-gate third run. A retrieves second existing packet after network recovery."
+}

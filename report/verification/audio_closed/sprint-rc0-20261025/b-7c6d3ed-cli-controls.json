@@ -1,0 +1,415 @@
+{
+  "b_commit": "7c6d3ede5e3d57b353206d712a0ede13183d7bdf",
+  "a_commit": "63f6a69ee679f992d1e459d9447262fa1db6b403",
+  "c_summary_commit": "23f176755f79ae5fb9785530f6bf72acdc5bac48",
+  "script_sha256": "a24e2cd677a20b57d6446df8f8f9c9a798dc7b991e4724eae5aca53118ec93ff",
+  "model_file_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+  "raw_package_sha256": "e9aedd0d865b40f880d8578d5275a592ce8322086def620b86654702cf787b48",
+  "summary_package_sha256": "474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367",
+  "python": "3.14.4 (tags/v3.14.4:23116f9, Apr  7 2026, 14:10:54) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.5.4",
+  "work_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru",
+  "positive_passed": true,
+  "bad_inputs_rejected": 8,
+  "bad_inputs_total": 8,
+  "all_ok": true,
+  "hardware_access": false,
+  "production_B_code_modified": false,
+  "cases": [
+    {
+      "case": "original",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\original\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\original\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\original\\summary-v3.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\original\\out"
+      ],
+      "exit_code": 0,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": true,
+      "reported_failures": [],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\original\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              463531 B  sha 6701db8afebd6237  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：5/5 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=1\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  09-fir-on.npz      文件核验 通过\n  09-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  文件核验 通过\n  pred 不符 0/15872｜residual 不符 0/15872｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）\n  repeat 1 身份：off 07-fir-off.npz / on 09-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 1 总：本侧 -0.171053 / 汇总 -0.171053（差 0.00e+00）\n           300-1000   本侧 -0.756043 / 汇总 -0.756043（差 0.00e+00）\n           1000-3000  本侧 -0.119597 / 汇总 -0.119597（差 7.11e-15）\n           8200-8600  本侧 +0.379475 / 汇总 +0.379475（差 0.00e+00）\n  repeat 2 身份：off 13-fir-off.npz / on 11-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  最大差 7.105e-15 dB（容差 1e-03；超了就是两套数字对不上）\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**合格** — 文件齐全（角色件数一致）、模型绑定一致、4 试次算术 0 失配、60 s 尾环 prediction/residual 0 失配、与 summary-v3 及复核 JSON 在容差 1e-03 内一致\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\original\\out\n",
+      "stderr": "",
+      "passed": true,
+      "model_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "model_lag_first": 1,
+      "trial_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "prediction_mismatches": 0,
+      "manifest_entries": 5,
+      "tail_present": true,
+      "first_total_difference_db": 0.0,
+      "summary_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+      "actual_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c"
+    },
+    {
+      "case": "prediction_mismatch",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\prediction_mismatch\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\prediction_mismatch\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\prediction_mismatch\\summary-v3.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\prediction_mismatch\\out"
+      ],
+      "exit_code": 2,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": false,
+      "reported_failures": [
+        {
+          "code": "arithmetic",
+          "detail": "09-fir-on.npz：prediction 1 / residual 0 / output 0 帧失配"
+        }
+      ],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\prediction_mismatch\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              462861 B  sha be1be02ac6c16a57  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：5/5 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=1\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  09-fir-on.npz      文件核验 通过\n  09-fir-on.npz      bypass=False pred 不符 1/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  [不合格] arithmetic：09-fir-on.npz：prediction 1 / residual 0 / output 0 帧失配\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  文件核验 通过\n  pred 不符 0/15872｜residual 不符 0/15872｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）\n  repeat 1 身份：off 07-fir-off.npz / on 09-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 1 总：本侧 -0.171053 / 汇总 -0.171053（差 0.00e+00）\n           300-1000   本侧 -0.756043 / 汇总 -0.756043（差 0.00e+00）\n           1000-3000  本侧 -0.119597 / 汇总 -0.119597（差 7.11e-15）\n           8200-8600  本侧 +0.379475 / 汇总 +0.379475（差 0.00e+00）\n  repeat 2 身份：off 13-fir-off.npz / on 11-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  最大差 7.105e-15 dB（容差 1e-03；超了就是两套数字对不上）\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**不合格**（1 项）— 以下任一项存在时，本次数字只能当诊断，不能当合格测量结果：\n  - arithmetic：09-fir-on.npz：prediction 1 / residual 0 / output 0 帧失配\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\prediction_mismatch\\out\n",
+      "stderr": "",
+      "rejected": true,
+      "model_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "model_lag_first": 1,
+      "trial_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "prediction_mismatches": 1,
+      "manifest_entries": 5,
+      "tail_present": true,
+      "first_total_difference_db": 0.0,
+      "summary_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+      "actual_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c"
+    },
+    {
+      "case": "missing_unlisted_tail",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_unlisted_tail\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_unlisted_tail\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_unlisted_tail\\summary-v3.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_unlisted_tail\\out"
+      ],
+      "exit_code": 2,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": false,
+      "reported_failures": [
+        {
+          "code": "missing_file",
+          "detail": "15-continuous-60s.npz 不存在"
+        },
+        {
+          "code": "package_incomplete",
+          "detail": "角色件数不符（期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 0}）——少件或多了同一臂的重复件"
+        }
+      ],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_unlisted_tail\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              463531 B  sha 6701db8afebd6237  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  结论：4/4 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=1\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  09-fir-on.npz      文件核验 通过\n  09-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  缺文件\n  [不合格] missing_file：15-continuous-60s.npz 不存在\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 0}\n  [不合格] package_incomplete：角色件数不符（期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 0}）——少件或多了同一臂的重复件\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）\n  repeat 1 身份：off 07-fir-off.npz / on 09-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 1 总：本侧 -0.171053 / 汇总 -0.171053（差 0.00e+00）\n           300-1000   本侧 -0.756043 / 汇总 -0.756043（差 0.00e+00）\n           1000-3000  本侧 -0.119597 / 汇总 -0.119597（差 7.11e-15）\n           8200-8600  本侧 +0.379475 / 汇总 +0.379475（差 0.00e+00）\n  repeat 2 身份：off 13-fir-off.npz / on 11-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  最大差 7.105e-15 dB（容差 1e-03；超了就是两套数字对不上）\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**不合格**（2 项）— 以下任一项存在时，本次数字只能当诊断，不能当合格测量结果：\n  - missing_file：15-continuous-60s.npz 不存在\n  - package_incomplete：角色件数不符（期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 0}）——少件或多了同一臂的重复件\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_unlisted_tail\\out\n",
+      "stderr": "",
+      "rejected": true,
+      "model_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "model_lag_first": 1,
+      "trial_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "prediction_mismatches": 0,
+      "manifest_entries": 4,
+      "tail_present": false,
+      "first_total_difference_db": 0.0,
+      "summary_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+      "actual_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c"
+    },
+    {
+      "case": "wrong_frozen_model",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_frozen_model\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_frozen_model\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_frozen_model\\summary-v3.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_frozen_model\\out"
+      ],
+      "exit_code": 2,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": false,
+      "reported_failures": [
+        {
+          "code": "model_binding",
+          "detail": "07-fir-off.npz 记录的 coefficients_sha256 与给定模型不符"
+        },
+        {
+          "code": "model_binding",
+          "detail": "09-fir-on.npz 记录的 coefficients_sha256 与给定模型不符"
+        },
+        {
+          "code": "model_binding",
+          "detail": "11-fir-on.npz 记录的 coefficients_sha256 与给定模型不符"
+        },
+        {
+          "code": "model_binding",
+          "detail": "13-fir-off.npz 记录的 coefficients_sha256 与给定模型不符"
+        },
+        {
+          "code": "model_binding",
+          "detail": "15-continuous-60s.npz 记录的 coefficients_sha256 与给定模型不符"
+        },
+        {
+          "code": "arithmetic",
+          "detail": "15-continuous-60s.npz：prediction 250 / residual 250 帧失配"
+        }
+      ],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_frozen_model\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              463531 B  sha 6701db8afebd6237  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：5/5 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=ca557c8fa0ce2649  taps=512  lag_first=1\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 **不一致**；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  [不合格] model_binding：07-fir-off.npz 记录的 coefficients_sha256 与给定模型不符\n  09-fir-on.npz      文件核验 通过\n  09-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 **不一致**；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  [不合格] model_binding：09-fir-on.npz 记录的 coefficients_sha256 与给定模型不符\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 **不一致**；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  [不合格] model_binding：11-fir-on.npz 记录的 coefficients_sha256 与给定模型不符\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 **不一致**；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n  [不合格] model_binding：13-fir-off.npz 记录的 coefficients_sha256 与给定模型不符\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  文件核验 通过\n  pred 不符 250/15872｜residual 不符 250/15872｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n  [不合格] model_binding：15-continuous-60s.npz 记录的 coefficients_sha256 与给定模型不符\n  [不合格] arithmetic：15-continuous-60s.npz：prediction 250 / residual 250 帧失配\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）\n  repeat 1 身份：off 07-fir-off.npz / on 09-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 1 总：本侧 -0.171053 / 汇总 -0.171053（差 0.00e+00）\n           300-1000   本侧 -0.756043 / 汇总 -0.756043（差 0.00e+00）\n           1000-3000  本侧 -0.119597 / 汇总 -0.119597（差 7.11e-15）\n           8200-8600  本侧 +0.379475 / 汇总 +0.379475（差 0.00e+00）\n  repeat 2 身份：off 13-fir-off.npz / on 11-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  最大差 7.105e-15 dB（容差 1e-03；超了就是两套数字对不上）\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**不合格**（6 项）— 以下任一项存在时，本次数字只能当诊断，不能当合格测量结果：\n  - model_binding：07-fir-off.npz 记录的 coefficients_sha256 与给定模型不符\n  - model_binding：09-fir-on.npz 记录的 coefficients_sha256 与给定模型不符\n  - model_binding：11-fir-on.npz 记录的 coefficients_sha256 与给定模型不符\n  - model_binding：13-fir-off.npz 记录的 coefficients_sha256 与给定模型不符\n  - model_binding：15-continuous-60s.npz 记录的 coefficients_sha256 与给定模型不符\n  - arithmetic：15-continuous-60s.npz：prediction 250 / residual 250 帧失配\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_frozen_model\\out\n",
+      "stderr": "",
+      "rejected": true,
+      "model_q20_sha256": "ca557c8fa0ce264932878a1d883614f32bb8428c9505220f000690ad5c7ece4b",
+      "model_lag_first": 1,
+      "trial_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "prediction_mismatches": 0,
+      "manifest_entries": 5,
+      "tail_present": true,
+      "first_total_difference_db": 0.0,
+      "summary_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+      "actual_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c"
+    },
+    {
+      "case": "wrong_summary_value",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_summary_value\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_summary_value\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_summary_value\\summary-v3.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_summary_value\\out"
+      ],
+      "exit_code": 2,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": false,
+      "reported_failures": [
+        {
+          "code": "summary_mismatch",
+          "detail": "与 summary-v3 的配对差 1.000e+00 dB 超过容差 1e-03"
+        }
+      ],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_summary_value\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              463531 B  sha 6701db8afebd6237  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：5/5 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=1\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  09-fir-on.npz      文件核验 通过\n  09-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  文件核验 通过\n  pred 不符 0/15872｜residual 不符 0/15872｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）\n  repeat 1 身份：off 07-fir-off.npz / on 09-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 1 总：本侧 -0.171053 / 汇总 +0.828947（差 1.00e+00）\n           300-1000   本侧 -0.756043 / 汇总 -0.756043（差 0.00e+00）\n           1000-3000  本侧 -0.119597 / 汇总 -0.119597（差 7.11e-15）\n           8200-8600  本侧 +0.379475 / 汇总 +0.379475（差 0.00e+00）\n  repeat 2 身份：off 13-fir-off.npz / on 11-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  最大差 1.000e+00 dB（容差 1e-03；超了就是两套数字对不上）\n  [不合格] summary_mismatch：与 summary-v3 的配对差 1.000e+00 dB 超过容差 1e-03\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**不合格**（1 项）— 以下任一项存在时，本次数字只能当诊断，不能当合格测量结果：\n  - summary_mismatch：与 summary-v3 的配对差 1.000e+00 dB 超过容差 1e-03\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\wrong_summary_value\\out\n",
+      "stderr": "",
+      "rejected": true,
+      "model_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "model_lag_first": 1,
+      "trial_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "prediction_mismatches": 0,
+      "manifest_entries": 5,
+      "tail_present": true,
+      "first_total_difference_db": 1.0,
+      "summary_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+      "actual_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c"
+    },
+    {
+      "case": "missing_requested_summary",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\not-present.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\out"
+      ],
+      "exit_code": 2,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": false,
+      "reported_failures": [
+        {
+          "code": "summary_missing",
+          "detail": "显式指定了 --summary-v3，但文件不存在：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\not-present.json"
+        }
+      ],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              463531 B  sha 6701db8afebd6237  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：5/5 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=1\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  09-fir-on.npz      文件核验 通过\n  09-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  文件核验 通过\n  pred 不符 0/15872｜residual 不符 0/15872｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] summary-v3 不存在：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\not-present.json\n  [不合格] summary_missing：显式指定了 --summary-v3，但文件不存在：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\not-present.json\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**不合格**（1 项）— 以下任一项存在时，本次数字只能当诊断，不能当合格测量结果：\n  - summary_missing：显式指定了 --summary-v3，但文件不存在：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\not-present.json\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\missing_requested_summary\\out\n",
+      "stderr": "",
+      "rejected": true,
+      "model_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "model_lag_first": 1,
+      "trial_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "prediction_mismatches": 0,
+      "manifest_entries": 5,
+      "tail_present": true
+    },
+    {
+      "case": "used_file_unlisted",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\used_file_unlisted\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\used_file_unlisted\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\used_file_unlisted\\summary-v3.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\used_file_unlisted\\out"
+      ],
+      "exit_code": 2,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": false,
+      "reported_failures": [
+        {
+          "code": "unverified_file",
+          "detail": "09-fir-on.npz：不在 manifest 内（未经哈希核验）"
+        },
+        {
+          "code": "package_incomplete",
+          "detail": "角色件数不符（期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 1, 'continuous': 1}）——少件或多了同一臂的重复件"
+        },
+        {
+          "code": "pair_identity",
+          "detail": "repeat 1：汇总里的 capture id 在本包找不到（off='dbb60f98-5c0b-44a2-99cb-840ef1c3a74c' on='05a1c814-567e-4cdf-84df-817385174a5b'）"
+        },
+        {
+          "code": "pair_identity",
+          "detail": "配对未覆盖全部四个试次：汇总用到 2 个，本侧 3 个"
+        }
+      ],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\used_file_unlisted\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：4/4 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=1\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  09-fir-on.npz      文件核验 **未通过**（不在 manifest 内（未经哈希核验））\n  [不合格] unverified_file：09-fir-on.npz：不在 manifest 内（未经哈希核验）\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  文件核验 通过\n  pred 不符 0/15872｜residual 不符 0/15872｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 1, 'continuous': 1}\n  [不合格] package_incomplete：角色件数不符（期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 1, 'continuous': 1}）——少件或多了同一臂的重复件\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 缺文件\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）\n  [不合格] pair_identity：repeat 1：汇总里的 capture id 在本包找不到（off='dbb60f98-5c0b-44a2-99cb-840ef1c3a74c' on='05a1c814-567e-4cdf-84df-817385174a5b'）\n  repeat 2 身份：off 13-fir-off.npz / on 11-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  [不合格] pair_identity：配对未覆盖全部四个试次：汇总用到 2 个，本侧 3 个\n  最大差 0.000e+00 dB（容差 1e-03；超了就是两套数字对不上）\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**不合格**（4 项）— 以下任一项存在时，本次数字只能当诊断，不能当合格测量结果：\n  - unverified_file：09-fir-on.npz：不在 manifest 内（未经哈希核验）\n  - package_incomplete：角色件数不符（期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 1, 'continuous': 1}）——少件或多了同一臂的重复件\n  - pair_identity：repeat 1：汇总里的 capture id 在本包找不到（off='dbb60f98-5c0b-44a2-99cb-840ef1c3a74c' on='05a1c814-567e-4cdf-84df-817385174a5b'）\n  - pair_identity：配对未覆盖全部四个试次：汇总用到 2 个，本侧 3 个\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\used_file_unlisted\\out\n",
+      "stderr": "",
+      "rejected": true,
+      "model_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "model_lag_first": 1,
+      "trial_q20_sha256": null,
+      "prediction_mismatches": null,
+      "manifest_entries": 4,
+      "tail_present": true,
+      "first_total_difference_db": 0.0730925874084214,
+      "summary_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+      "actual_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c"
+    },
+    {
+      "case": "model_lag_first_changed",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\model_lag_first_changed\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\model_lag_first_changed\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\model_lag_first_changed\\summary-v3.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\model_lag_first_changed\\out"
+      ],
+      "exit_code": 2,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": false,
+      "reported_failures": [
+        {
+          "code": "model_convention",
+          "detail": "模型声明 lag_first=2，部署位流的约定是 1：因果语义已变，算术不能沿用旧约定"
+        },
+        {
+          "code": "arithmetic",
+          "detail": "07-fir-off.npz：prediction 15871 / residual 0 / output 0 帧失配"
+        },
+        {
+          "code": "arithmetic",
+          "detail": "09-fir-on.npz：prediction 15871 / residual 15871 / output 0 帧失配"
+        },
+        {
+          "code": "arithmetic",
+          "detail": "11-fir-on.npz：prediction 15871 / residual 15871 / output 0 帧失配"
+        },
+        {
+          "code": "arithmetic",
+          "detail": "13-fir-off.npz：prediction 15871 / residual 0 / output 0 帧失配"
+        },
+        {
+          "code": "arithmetic",
+          "detail": "15-continuous-60s.npz：prediction 15869 / residual 15869 帧失配"
+        }
+      ],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\model_lag_first_changed\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              463531 B  sha 6701db8afebd6237  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：5/5 一致\n  [不合格] model_convention：模型声明 lag_first=2，部署位流的约定是 1：因果语义已变，算术不能沿用旧约定\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=2\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 15871/15871｜residual 不符 0/15871｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  [不合格] arithmetic：07-fir-off.npz：prediction 15871 / residual 0 / output 0 帧失配\n  09-fir-on.npz      文件核验 通过\n  09-fir-on.npz      bypass=False pred 不符 15871/15871｜residual 不符 15871/15871｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  [不合格] arithmetic：09-fir-on.npz：prediction 15871 / residual 15871 / output 0 帧失配\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 15871/15871｜residual 不符 15871/15871｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  [不合格] arithmetic：11-fir-on.npz：prediction 15871 / residual 15871 / output 0 帧失配\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 15871/15871｜residual 不符 0/15871｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n  [不合格] arithmetic：13-fir-off.npz：prediction 15871 / residual 0 / output 0 帧失配\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  文件核验 通过\n  pred 不符 15869/15871｜residual 不符 15869/15871｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n  [不合格] arithmetic：15-continuous-60s.npz：prediction 15869 / residual 15869 帧失配\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）\n  repeat 1 身份：off 07-fir-off.npz / on 09-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 1 总：本侧 -0.171053 / 汇总 -0.171053（差 0.00e+00）\n           300-1000   本侧 -0.756043 / 汇总 -0.756043（差 0.00e+00）\n           1000-3000  本侧 -0.119597 / 汇总 -0.119597（差 7.11e-15）\n           8200-8600  本侧 +0.379475 / 汇总 +0.379475（差 0.00e+00）\n  repeat 2 身份：off 13-fir-off.npz / on 11-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  最大差 7.105e-15 dB（容差 1e-03；超了就是两套数字对不上）\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**不合格**（6 项）— 以下任一项存在时，本次数字只能当诊断，不能当合格测量结果：\n  - model_convention：模型声明 lag_first=2，部署位流的约定是 1：因果语义已变，算术不能沿用旧约定\n  - arithmetic：07-fir-off.npz：prediction 15871 / residual 0 / output 0 帧失配\n  - arithmetic：09-fir-on.npz：prediction 15871 / residual 15871 / output 0 帧失配\n  - arithmetic：11-fir-on.npz：prediction 15871 / residual 15871 / output 0 帧失配\n  - arithmetic：13-fir-off.npz：prediction 15871 / residual 0 / output 0 帧失配\n  - arithmetic：15-continuous-60s.npz：prediction 15869 / residual 15869 帧失配\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\model_lag_first_changed\\out\n",
+      "stderr": "",
+      "rejected": true,
+      "model_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "model_lag_first": 2,
+      "trial_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "prediction_mismatches": 15871,
+      "manifest_entries": 5,
+      "tail_present": true,
+      "first_total_difference_db": 0.0,
+      "summary_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c",
+      "actual_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c"
+    },
+    {
+      "case": "summary_capture_identity_changed",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\verify_r4_waveforms.py",
+        "--pack",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\summary_capture_identity_changed\\pack",
+        "--model",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\summary_capture_identity_changed\\model.json",
+        "--summary-v3",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\summary_capture_identity_changed\\summary-v3.json",
+        "--out-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\summary_capture_identity_changed\\out"
+      ],
+      "exit_code": 2,
+      "waveform_report_written": true,
+      "package_ok": true,
+      "reported_ok": false,
+      "reported_failures": [
+        {
+          "code": "pair_identity",
+          "detail": "repeat 1：汇总里的 capture id 在本包找不到（off='different-capture-not-the-original' on='05a1c814-567e-4cdf-84df-817385174a5b'）"
+        },
+        {
+          "code": "pair_identity",
+          "detail": "配对未覆盖全部四个试次：汇总用到 2 个，本侧 4 个"
+        }
+      ],
+      "stdout": "==============================================================================\n[1] 包完整性（D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\summary_capture_identity_changed\\pack）\n  07-fir-off.npz             464159 B  sha 7f5aa465a08293a7  一致\n  09-fir-on.npz              463531 B  sha 6701db8afebd6237  一致\n  11-fir-on.npz              463517 B  sha 388aec33188f332e  一致\n  13-fir-off.npz             464295 B  sha 36c05b05a5d93565  一致\n  15-continuous-60s.npz      235923 B  sha 5eb60b3b244f9534  一致\n  结论：5/5 一致\n\n[2] 整数算术（4 个 replay 试次）\n  模型 model.json  q20=c9d3b1e658fd2ed8  taps=512  lag_first=1\n  07-fir-off.npz     文件核验 通过\n  07-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.455 dBFS\n  09-fir-on.npz      文件核验 通过\n  09-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.626 dBFS\n  11-fir-on.npz      文件核验 通过\n  11-fir-on.npz      bypass=False pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.586 dBFS\n  13-fir-off.npz     文件核验 通过\n  13-fir-off.npz     bypass=True  pred 不符 0/15872｜residual 不符 0/15872｜output 不符 0/16382｜满幅 0\n                     模型绑定 一致；响应窗 107174–121582（14408 帧），总 -25.342 dBFS\n\n[3] 60 s 尾环（15-continuous-60s.npz）\n  文件核验 通过\n  pred 不符 0/15872｜residual 不符 0/15872｜满幅 0\n  output 检查：包里没有 source_pcm16，本轮**无法重算**（记为未测，不当作通过）\n  timeline 点 2951，环覆盖帧 2913303–2929686（16384 帧），占整次 2929687 帧的 0.559%\n\n[3b] 角色齐备性：期望 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}，实际 {'fir_off': 2, 'fir_on': 2, 'continuous': 1}\n\n[4] 受迫响应窗与三带（Hann，2/(N·Σw²) 功率积分）\n  试次                          总   300-1000  1000-3000  8200-8600\n  07-fir-off.npz        -25.455    -37.203    -35.107    -33.798\n  09-fir-on.npz         -25.626    -37.959    -35.227    -33.419\n  11-fir-on.npz         -25.586    -37.534    -35.421    -33.506\n  13-fir-off.npz        -25.342    -37.585    -34.976    -33.759\n\n[5] 配对 ON−OFF（逐 repeat，不取平均）\n  repeat 1 总 -0.1711 dB｜300-1000 -0.7560｜1000-3000 -0.1196｜8200-8600 +0.3795\n  repeat 2 总 -0.2441 dB｜300-1000 +0.0506｜1000-3000 -0.4446｜8200-8600 +0.2531\n\n[6] 与 C 的 summary-v3 对照（按 capture 身份绑定，不按行序）\n  [不合格] pair_identity：repeat 1：汇总里的 capture id 在本包找不到（off='different-capture-not-the-original' on='05a1c814-567e-4cdf-84df-817385174a5b'）\n  repeat 2 身份：off 13-fir-off.npz / on 11-fir-on.npz，窗 107174–121582（14408 帧），臂别与 gain 已独立核对\n  repeat 2 总：本侧 -0.244145 / 汇总 -0.244145（差 0.00e+00）\n           300-1000   本侧 +0.050619 / 汇总 +0.050619（差 0.00e+00）\n           1000-3000  本侧 -0.444562 / 汇总 -0.444562（差 0.00e+00）\n           8200-8600  本侧 +0.253090 / 汇总 +0.253090（差 0.00e+00）\n  [不合格] pair_identity：配对未覆盖全部四个试次：汇总用到 2 个，本侧 4 个\n  最大差 0.000e+00 dB（容差 1e-03；超了就是两套数字对不上）\n\n[7] 未给 C 的复核 JSON：跳过逐文件对照\n\n判定：**不合格**（2 项）— 以下任一项存在时，本次数字只能当诊断，不能当合格测量结果：\n  - pair_identity：repeat 1：汇总里的 capture id 在本包找不到（off='different-capture-not-the-original' on='05a1c814-567e-4cdf-84df-817385174a5b'）\n  - pair_identity：配对未覆盖全部四个试次：汇总用到 2 个，本侧 4 个\n\n输出：D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-7c6d3ed-final-review\\b-waveform-cli-t291xnru\\summary_capture_identity_changed\\out\n",
+      "stderr": "",
+      "rejected": true,
+      "model_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "model_lag_first": 1,
+      "trial_q20_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+      "prediction_mismatches": 0,
+      "manifest_entries": 5,
+      "tail_present": true,
+      "first_total_difference_db": 0.0,
+      "summary_first_off_capture_id": "different-capture-not-the-original",
+      "actual_first_off_capture_id": "dbb60f98-5c0b-44a2-99cb-840ef1c3a74c"
+    }
+  ],
+  "checker_command": [
+    "C:\\Python314\\python.exe",
+    "tools/check_b_waveform_cli.py",
+    "--out-dir",
+    "tmp/b-7c6d3ed-final-review"
+  ],
+  "checker_exit_code": 0,
+  "checker_stdout": "B_WAVEFORM_CLI_REVIEW passed | positive=passed | bad_rejected=8/8\n",
+  "checker_stderr": "",
+  "checker_sha256": "369ffe9050ca3970ea9ad702eb6547f68f944ae9d793a71bbdd438e85a2fbe15"
+}

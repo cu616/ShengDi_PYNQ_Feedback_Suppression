@@ -1,0 +1,214 @@
+{
+  "ok": true,
+  "review_level": "C local identity/window/derived-arithmetic audit of A board-produced JSON; PCM not obtained by C",
+  "source_commit": "facd3de",
+  "source_json_sha256": "f380c9178a3d0381c6be13f054c4e01d1c907770a6d6f030395982c5d64581ba",
+  "producer_git_sha256": "3e7b5b367a719cd0ed14ddf2ccf6a2e38d2e8756adfd212f0bef37a1ac612732",
+  "producer_returned_sha256": "81297e8aaa7a245a68e70ac265dbc2f970e02ccd4e3b0bf2f966d6936a76366b",
+  "checks": [
+    {
+      "name": "round selected exactly",
+      "passed": true
+    },
+    {
+      "name": "pairing and numeric review clear",
+      "passed": true
+    },
+    {
+      "name": "producer BOM/CRLF transformation exact",
+      "passed": true
+    },
+    {
+      "name": "open original hash binds review",
+      "passed": true
+    },
+    {
+      "name": "open bit_sha256",
+      "passed": true
+    },
+    {
+      "name": "open hwh_sha256",
+      "passed": true
+    },
+    {
+      "name": "open driver_sha256",
+      "passed": true
+    },
+    {
+      "name": "open replay_tools_sha256",
+      "passed": true
+    },
+    {
+      "name": "open model and fixture",
+      "passed": true
+    },
+    {
+      "name": "open completed without protection",
+      "passed": true
+    },
+    {
+      "name": "open captured extent",
+      "passed": true
+    },
+    {
+      "name": "bypass original hash binds review",
+      "passed": true
+    },
+    {
+      "name": "bypass bit_sha256",
+      "passed": true
+    },
+    {
+      "name": "bypass hwh_sha256",
+      "passed": true
+    },
+    {
+      "name": "bypass driver_sha256",
+      "passed": true
+    },
+    {
+      "name": "bypass replay_tools_sha256",
+      "passed": true
+    },
+    {
+      "name": "bypass model and fixture",
+      "passed": true
+    },
+    {
+      "name": "bypass completed without protection",
+      "passed": true
+    },
+    {
+      "name": "bypass captured extent",
+      "passed": true
+    },
+    {
+      "name": "cancel original hash binds review",
+      "passed": true
+    },
+    {
+      "name": "cancel bit_sha256",
+      "passed": true
+    },
+    {
+      "name": "cancel hwh_sha256",
+      "passed": true
+    },
+    {
+      "name": "cancel driver_sha256",
+      "passed": true
+    },
+    {
+      "name": "cancel replay_tools_sha256",
+      "passed": true
+    },
+    {
+      "name": "cancel model and fixture",
+      "passed": true
+    },
+    {
+      "name": "cancel completed without protection",
+      "passed": true
+    },
+    {
+      "name": "cancel captured extent",
+      "passed": true
+    },
+    {
+      "name": "one actual source identity",
+      "passed": true
+    },
+    {
+      "name": "open is gain zero",
+      "passed": true
+    },
+    {
+      "name": "paired gain and Codec",
+      "passed": true
+    },
+    {
+      "name": "bypass/cancel semantic switch",
+      "passed": true
+    },
+    {
+      "name": "common interval intersection",
+      "passed": true
+    },
+    {
+      "name": "original_full_capture five differences",
+      "passed": true
+    },
+    {
+      "name": "original_full_capture decomposition",
+      "passed": true
+    },
+    {
+      "name": "common_source_active five differences",
+      "passed": true
+    },
+    {
+      "name": "common_source_active decomposition",
+      "passed": true
+    }
+  ],
+  "configs": {
+    "open": {
+      "gain_q12": 0,
+      "hp_volume": 40,
+      "bypass": false,
+      "zero_coeff": false,
+      "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+      "source_frames": 97656,
+      "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa"
+    },
+    "bypass": {
+      "gain_q12": 1631,
+      "hp_volume": 40,
+      "bypass": true,
+      "zero_coeff": false,
+      "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+      "source_frames": 97656,
+      "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa"
+    },
+    "cancel": {
+      "gain_q12": 1631,
+      "hp_volume": 40,
+      "bypass": false,
+      "zero_coeff": false,
+      "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+      "source_frames": 97656,
+      "source_pcm16_sha256": "e989bc2339c99857c22f0941bf3b149f92e6bc78bfbb6a65bb76496c499abeaa"
+    }
+  },
+  "arithmetic": {
+    "original_full_capture": {
+      "cd_322_db": 8.433647346207337,
+      "loop_boost_db": 4.243546544801141,
+      "acoustic_difference_db": 5.449666295070287,
+      "overshoot_db": 1.2061197502691456,
+      "played_bypass_minus_cancel_db": 5.169875214521834
+    },
+    "common_source_active": {
+      "cd_322_db": 8.46091229607277,
+      "loop_boost_db": 3.7015958121092076,
+      "acoustic_difference_db": 4.950227626816222,
+      "overshoot_db": 1.2486318147070143,
+      "played_bypass_minus_cancel_db": 4.618040303299804
+    }
+  },
+  "active_frames": 6619,
+  "active_duration_seconds": 0.13555712,
+  "hardware_operations": 0,
+  "unexecuted": [
+    "local original PCM recalculation",
+    "new recording",
+    "listening benefit/SPL",
+    "MSG/ASG"
+  ],
+  "limits": [
+    "Original full capture may mix source-on/off; reported separately from source-active view.",
+    "Tone projection and FFT remain sensitive to background and finite windows; no automatic SNR/coherence pass.",
+    "Board PCM timing does not prove an external phone/talker was silent.",
+    "Played digital level is not calibrated speaker SPL, listener benefit or ASG."
+  ]
+}

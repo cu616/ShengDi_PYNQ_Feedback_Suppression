@@ -1,0 +1,78 @@
+{
+  "suite": "c-a-continuous-consumer-acceptance",
+  "hardware_access": false,
+  "driver_sha256": "9ba253e57cce67e0a73fdbed30004a7488a936c1f15d5ce5bbcff486df9bfc67",
+  "a_fixture_sha256": "7986a147db4c8c7e203f7ef982fc1c5a4f07d939e0806c0abbf673174622a22b",
+  "cases": [
+    {
+      "name": "saturation",
+      "passed": true,
+      "stop_reason": "saturation",
+      "counts": {
+        "prediction": 2,
+        "residual": 3,
+        "gain": 0,
+        "mix": 0
+      }
+    },
+    {
+      "name": "terminal_saturation",
+      "passed": true,
+      "stop_reason": "completed_with_protection",
+      "counts": {
+        "prediction": 2,
+        "residual": 3,
+        "gain": 5,
+        "mix": 0
+      }
+    },
+    {
+      "name": "clean",
+      "passed": true,
+      "stop_reason": "completed",
+      "counts": {
+        "prediction": 0,
+        "residual": 0,
+        "gain": 0,
+        "mix": 0
+      }
+    },
+    {
+      "name": "armed_shutdown_mute_failure",
+      "passed": true,
+      "arm_reached": true,
+      "muted": false,
+      "recovered": false,
+      "cleanup_errors": [
+        "Codec mute: C injected shutdown mute failure",
+        "Codec mute: C injected shutdown mute failure"
+      ]
+    },
+    {
+      "name": "npz_save_failure_sidecar",
+      "passed": true,
+      "save_error": "OSError: C injected disk full"
+    },
+    {
+      "name": "callback_before_codec_unmute",
+      "passed": false,
+      "callback_facts": {
+        "armed": false,
+        "codec_muted": false
+      }
+    },
+    {
+      "name": "cancel_records_verified_cleanup",
+      "passed": false,
+      "stop_reason": "cancelled_before_start",
+      "callback_facts": {
+        "armed": false,
+        "codec_muted": false
+      },
+      "disarm_ok": null,
+      "mute_ok": null,
+      "recovered": false
+    }
+  ],
+  "accepted": false
+}

@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "ok": false,
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "checks": [
+    {
+      "name": "candidate file/model identity",
+      "args": [
+        "materials/work/c/verify_candidate.py",
+        "--candidate",
+        "."
+      ],
+      "cwd": "materials\\staging\\tmp\\submission-candidate-r2",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "{\"ok\": true, \"hardware_operations\": 0, \"payload_checks\": [{\"file\": \"audio_replay.bit\", \"ok\": true}, {\"file\": \"audio_replay.hwh\", \"ok\": true}, {\"file\": \"replay_trial.py\", \"ok\": true}, {\"file\": \"replay_tools.py\", \"ok\": true}, {\"file\": \"closed_tools.py\", \"ok\": true}, {\"file\": \"residual_tools.py\", \"ok\": true}, {\"file\": \"test_runtime_stop.py\", \"ok\": true}, {\"file\": \"test_verify_replay_v3.py\", \"ok\": true}, {\"file\": \"tone_round_guard.py\", \"ok\": true}, {\"file\": \"test_tone_round_guard.py\", \"ok\": true}], \"inventory_files\": 118, \"candidate_q20_sha256\": \"6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927\", \"issues\": [], \"scope\": \"file identity and loader only; no hardware/effect/release pass implied\"}\n"
+    },
+    {
+      "name": "A golden reference in exported v3",
+      "args": [
+        "board/audio_replay/v3/test_verify_replay_v3.py"
+      ],
+      "cwd": "materials\\staging\\tmp\\submission-candidate-r2",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "legal -8388608 is not an overflow                          OK counted 0\n-8388609 is an overflow                                    OK counted 1\n+8388608 is an overflow                                    OK counted 1\nprefix overflow is counted, not dropped                    OK checked=1 prefix=1 partial=False\nclean prefix counts zero                                   OK \nshortest acceptable ring still verifies one output frame   OK checked=1 bit_exact=True\nordinary capture still verifies                            OK tm=0\nVERIFY_REPLAY_V3_TEST PASS (7 checks)\n"
+    },
+    {
+      "name": "B PCM/Q20 unit counterexamples with A RTL",
+      "args": [
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "sim/feedback",
+        "-p",
+        "test_unit_scale_guard.py",
+        "-v"
+      ],
+      "cwd": "materials\\staging\\tmp\\submission-candidate-r2",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "test_coefficient_full_scale_is_not_pcm_full_scale (test_unit_scale_guard.PcmFullScaleTest.test_coefficient_full_scale_is_not_pcm_full_scale) ... ok\ntest_pcm_full_scale_is_2_pow_23 (test_unit_scale_guard.PcmFullScaleTest.test_pcm_full_scale_is_2_pow_23) ... ok\ntest_rtl_clips_against_the_same_number (test_unit_scale_guard.PcmFullScaleTest.test_rtl_clips_against_the_same_number)\nRTL 的裁剪常数必须是 8388607 / -8388608；变了就说明语义变了，本测试要重审。 ... ok\ntest_candidate_l1_exceeds_unity_so_no_blanket_guarantee (test_unit_scale_guard.SaturationClaimTest.test_candidate_l1_exceeds_unity_so_no_blanket_guarantee) ... ok\ntest_peak_band_gain_exceeds_unity_and_locates_the_risk (test_unit_scale_guard.SaturationClaimTest.test_peak_band_gain_exceeds_unity_and_locates_the_risk) ... ok\ntest_threshold_just_below_is_clean (test_unit_scale_guard.SaturationClaimTest.test_threshold_just_below_is_clean)\n阈值下方 1.6 dB 必须干净——与上一条一起把阈值夹在 ±5 % 内。 ... ok\ntest_tone_at_analytic_threshold_actually_saturates (test_unit_scale_guard.SaturationClaimTest.test_tone_at_analytic_threshold_actually_saturates)\n解析阈值 1/|Ĥ|max 必须能被整数路径复现——不接受只写在报告里的数。 ... ok\ntest_tone_below_threshold_does_not_saturate (test_unit_scale_guard.SaturationClaimTest.test_tone_below_threshold_does_not_saturate) ... ok\ntest_wrong_denominator_would_predict_never_saturating (test_unit_scale_guard.SaturationClaimTest.test_wrong_denominator_would_predict_never_saturating)\n把系数满量程 8 当 PCM 满量程时，需要的单音幅度是 8/|Ĥ|max > 1，即\"永远不饱和\"。 ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.116s\n\nOK\n"
+    },
+    {
+      "name": "C exact round/source/window/amplitude regressions",
+      "args": [
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "sim/feedback",
+        "-p",
+        "test_replay_v3_consumer.py",
+        "-k",
+        "round",
+        "-v"
+      ],
+      "cwd": "materials\\staging\\tmp\\submission-candidate-r2",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "test_round_cli_missing_original_saves_failure_without_audio (test_replay_v3_consumer.V3ConsumerTests.test_round_cli_missing_original_saves_failure_without_audio) ... ok\ntest_round_known_tone_peak_units_are_length_independent (test_replay_v3_consumer.V3ConsumerTests.test_round_known_tone_peak_units_are_length_independent) ... ok\ntest_round_manifest_recalculates_both_windows_and_keeps_originals (test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_recalculates_both_windows_and_keeps_originals) ... ok\ntest_round_manifest_rejects_a_replaced_round_identity (test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_rejects_a_replaced_round_identity) ... ok\ntest_round_manifest_shared_bad_frames_and_failed_status_refuse (test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_shared_bad_frames_and_failed_status_refuse) ... ok\ntest_round_manifest_source_change_blocks_paired_differences (test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_source_change_blocks_paired_differences) ... ok\ntest_round_manifest_tail_only_does_not_invent_active_playback (test_replay_v3_consumer.V3ConsumerTests.test_round_manifest_tail_only_does_not_invent_active_playback) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 1.656s\n\nOK\n"
+    },
+    {
+      "name": "C wide arithmetic/identity with A helper",
+      "args": [
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "sim/feedback",
+        "-p",
+        "test_replay_v3_consumer.py",
+        "-k",
+        "wide",
+        "-v"
+      ],
+      "cwd": "materials\\staging\\tmp\\submission-candidate-r2",
+      "exit_code": 1,
+      "expected_exit_code": 0,
+      "passed": false,
+      "output": "test_negative_rail_does_not_count_as_wide_overflow (test_replay_v3_consumer.V3ConsumerTests.test_negative_rail_does_not_count_as_wide_overflow) ... ok\ntest_observed_prefix_wide_events_survive_replay_exclusion (test_replay_v3_consumer.V3ConsumerTests.test_observed_prefix_wide_events_survive_replay_exclusion) ... ok\ntest_tail_wide_statistics_do_not_call_pre_gain_range_input_clipping (test_replay_v3_consumer.V3ConsumerTests.test_tail_wide_statistics_do_not_call_pre_gain_range_input_clipping) ... ok\ntest_wide_output_matches_scalar_trace_and_old_oracle_differs (test_replay_v3_consumer.V3ConsumerTests.test_wide_output_matches_scalar_trace_and_old_oracle_differs) ... FAIL\n\n======================================================================\nFAIL: test_wide_output_matches_scalar_trace_and_old_oracle_differs (test_replay_v3_consumer.V3ConsumerTests.test_wide_output_matches_scalar_trace_and_old_oracle_differs)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\submission-candidate-r2\\sim\\feedback\\test_replay_v3_consumer.py\", line 273, in test_wide_output_matches_scalar_trace_and_old_oracle_differs\n    self.assertGreater(old_verify(raw, q, False, 2048, source, 1024)['output_mismatches'], 0)\nAssertionError: 0 not greater than 0\n\n----------------------------------------------------------------------\nRan 4 tests in 0.012s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "name": "selected pure imports",
+      "args": [
+        "-c",
+        "import sys; sys.path[:0]=['src','scripts','board/audio_replay']; import feedback.calibration, feedback.cancellation, feedback.path_analysis, feedback.closed_loop_sim, fit_newlayout_candidate, verify_r4_waveforms, evaluation, model_comparison, tail_metrics; print('PURE_IMPORTS_OK')"
+      ],
+      "cwd": "materials\\staging\\tmp\\submission-candidate-r2",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "PURE_IMPORTS_OK\n"
+    },
+    {
+      "name": "report and candidate scripts compile",
+      "args": [
+        "-m",
+        "compileall",
+        "-q",
+        "src",
+        "scripts",
+        "board/audio_replay",
+        "materials/work/c"
+      ],
+      "cwd": "materials\\staging\\tmp\\submission-candidate-r2",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": ""
+    },
+    {
+      "name": "independent extraction identity",
+      "args": [
+        "materials/work/c/verify_candidate.py",
+        "--candidate",
+        "."
+      ],
+      "cwd": "materials\\staging\\tmp\\clean-extraction-r2",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "{\"ok\": true, \"hardware_operations\": 0, \"payload_checks\": [{\"file\": \"audio_replay.bit\", \"ok\": true}, {\"file\": \"audio_replay.hwh\", \"ok\": true}, {\"file\": \"replay_trial.py\", \"ok\": true}, {\"file\": \"replay_tools.py\", \"ok\": true}, {\"file\": \"closed_tools.py\", \"ok\": true}, {\"file\": \"residual_tools.py\", \"ok\": true}, {\"file\": \"test_runtime_stop.py\", \"ok\": true}, {\"file\": \"test_verify_replay_v3.py\", \"ok\": true}, {\"file\": \"tone_round_guard.py\", \"ok\": true}, {\"file\": \"test_tone_round_guard.py\", \"ok\": true}], \"inventory_files\": 118, \"candidate_q20_sha256\": \"6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927\", \"issues\": [], \"scope\": \"file identity and loader only; no hardware/effect/release pass implied\"}\n"
+    },
+    {
+      "name": "skill negative: mismatched helper rejected",
+      "args": [
+        "materials/work/c/verify_candidate.py",
+        "--candidate",
+        "."
+      ],
+      "cwd": "materials\\staging\\tmp\\bad-identity-r2",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "output": "{\"ok\": false, \"hardware_operations\": 0, \"payload_checks\": [{\"file\": \"audio_replay.bit\", \"ok\": true}, {\"file\": \"audio_replay.hwh\", \"ok\": true}, {\"file\": \"replay_trial.py\", \"ok\": true}, {\"file\": \"replay_tools.py\", \"ok\": false}, {\"file\": \"closed_tools.py\", \"ok\": true}, {\"file\": \"residual_tools.py\", \"ok\": true}, {\"file\": \"test_runtime_stop.py\", \"ok\": true}, {\"file\": \"test_verify_replay_v3.py\", \"ok\": true}, {\"file\": \"tone_round_guard.py\", \"ok\": true}, {\"file\": \"test_tone_round_guard.py\", \"ok\": true}], \"inventory_files\": 118, \"candidate_q20_sha256\": \"6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927\", \"issues\": [\"v3 identity mismatch: replay_tools.py\", \"inventory mismatch: board/audio_replay/v3/replay_tools.py\"], \"scope\": \"file identity and loader only; no hardware/effect/release pass implied\"}\n"
+    }
+  ],
+  "report": {
+    "path": "materials/final/shengdi-report.pdf",
+    "sha256": "8ec9e1b5c4056264da18de887f83ba3d1f3943dd5a382f87dcc28c852485d694",
+    "bytes": 182282,
+    "pages": 9,
+    "draft": true,
+    "visual_review": "all nine rendered pages inspected; no clipping/overlap; template pending"
+  },
+  "initial_failures": [
+    "default Python3.14 lacked NumPy and PyYAML; switched to bundled document runtime / existing Anaconda for skill validator",
+    "first docs scan included white-list export copies with omitted historical links; moved generated copies beneath materials/staging/tmp and changed omitted reference links to pinned source URLs"
+  ],
+  "hardware_operations": 0,
+  "rar": {
+    "found": false,
+    "created": false,
+    "search": "PATH and common C:/Program Files, C:/Program Files (x86), D:/Program Files, D:/Ksoftware; no executable found",
+    "blocker": "RAR executable unavailable; ZIP is extraction-only test evidence, never renamed or delivered as RAR"
+  },
+  "pending": [
+    "A/B integration manifests and report fragments",
+    "captain main conflict decisions",
+    "official report template",
+    "final media and anonymity review",
+    "actual RAR generation and independent RAR extraction"
+  ]
+}

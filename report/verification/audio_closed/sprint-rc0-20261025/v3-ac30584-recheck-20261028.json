@@ -1,0 +1,591 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "kind": "C-five-item-recheck-of-A-ac30584",
+  "A_commit": "ac3058452f01e777c25ca29c33bc447da9116478",
+  "question": "Which of A's five requested fixes are valid in the delivered v3 bytes, and which failures still block the field flow?",
+  "deadline_local": "2026-10-28 18:00 Asia/Shanghai",
+  "hardware_operations": 0,
+  "source_materialization": "git archive of ac30584 into an isolated workspace; compare materialized delivery files to manifest, not git-show-normalized source hashes",
+  "manifest_identity_checks": [
+    {
+      "file": "audio_replay.bit",
+      "expected": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "observed": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "matched": true
+    },
+    {
+      "file": "audio_replay.hwh",
+      "expected": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "observed": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "matched": true
+    },
+    {
+      "file": "replay_trial.py",
+      "expected": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+      "observed": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+      "matched": true
+    },
+    {
+      "file": "replay_tools.py",
+      "expected": "5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d",
+      "observed": "5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d",
+      "matched": true
+    },
+    {
+      "file": "closed_tools.py",
+      "expected": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "observed": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "matched": true
+    },
+    {
+      "file": "residual_tools.py",
+      "expected": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "observed": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "matched": true
+    },
+    {
+      "file": "test_runtime_stop.py",
+      "expected": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "observed": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "matched": true
+    },
+    {
+      "file": "test_verify_replay_v3.py",
+      "expected": "165b9849ad91a48217659b315c7f9e6132b14a69676ed47d21e9d15ed8aa9ef5",
+      "observed": "165b9849ad91a48217659b315c7f9e6132b14a69676ed47d21e9d15ed8aa9ef5",
+      "matched": true
+    }
+  ],
+  "delivered_manifest": {
+    "schema_version": 1,
+    "overlay": "audio_replay",
+    "version": "v3",
+    "contract": "docs/contracts/audio-replay-v3.md",
+    "branch": "A",
+    "commit": "snapshot introduced at 05f5c69; identity is the hashes below, see branch A for later commits",
+    "sample_rate_hz": 48828.125,
+    "taps": 512,
+    "lag_first": 1,
+    "source_frames_max": 131072,
+    "source_format": "signed16 -> signed24 << 8",
+    "build": {
+      "tool": "Vivado 2018.3",
+      "script": "build/scripts/create_audio_replay.tcl",
+      "wns_ns": 0.548,
+      "whs_ns": 0.015,
+      "tns_ns": 0.0,
+      "ths_ns": 0.0,
+      "failing_endpoints": 0,
+      "block_ram_pct": 80.0,
+      "dsp": 3,
+      "timing_statement": "constraints as applied are met; NOT a full timing sign-off (four external I/O delay constraints are still missing, unchanged since v1)"
+    },
+    "hashes": {
+      "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+      "replay_trial.py": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+      "replay_tools.py": "5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d",
+      "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+      "test_verify_replay_v3.py": "165b9849ad91a48217659b315c7f9e6132b14a69676ed47d21e9d15ed8aa9ef5"
+    },
+    "model": {
+      "path_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/rewired_512_20261026.json",
+      "sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+      "fixture_id": "room_v1_20261026b",
+      "fixture_confirmed": "same physical rig the model was fitted on (microphone to speaker 100 cm, side-facing, metal plate and cotton), confirmed by the operator 2026-10-27",
+      "coefficients_sha256_q20": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+      "logical_taps": 512,
+      "loaded_taps": 512
+    },
+    "changed_against_v2": [
+      "gain multiplies the unclamped 25-bit difference; the only clamp is after the gain",
+      "capture_status bit22 = independent input full-scale sticky flag",
+      "driver stops on bit22 with stop_reason=\"input_clip\"; pre-gain residual overflow alone still only counts",
+      "driver refuses to start when the bit/hwh next to it is not the declared v3 pair (sha256 constants)",
+      "evidence adds input_full_scale_seen; the status.json written on a capture-save failure still carries capture_status, input_full_scale_seen, the v3 marker and every version hash",
+      "replay_tools verifies the output against the wide residual, skips skip+2 of a truncated ring, uses the asymmetric 24-bit rail, reports prefix overflows as unverifiable and refuses to pass with no output frames"
+    ],
+    "unchanged_against_v2": [
+      "bitstream register map except bit22",
+      "coefficient format Q20/24-bit, lag_first=1, two-frame schedule",
+      "prediction / post-gain / mix saturation, protocol fault, timeout, manual stop",
+      "24-bit residual and residual_saturated meanings"
+    ],
+    "hardware_status": {
+      "bitstream_executed_on_board": true,
+      "executed_driver_sha256": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
+      "note": "the bitstream has run on the board with the driver 6b397359 (before the input_clip stop fix). The delivered driver 1b07586f has NOT run on hardware yet: the board is offline. First hardware step when power returns: upload 1b07586f, force or inject an input full-scale event, confirm stop_reason=\"input_clip\", mute, saved evidence and recovery."
+    },
+    "rollback": {
+      "package_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_live",
+      "bitstream_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+      "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+      "successful_baseline": "zero coefficients, PL -8 dB, Codec 40, phone 5 cm / volume 8 of 15"
+    },
+    "review_2026_10_27_C": {
+      "fixed_in_this_version": [
+        "1 save failure keeps capture_status / input_full_scale_seen / v3 marker / full hashes",
+        "2 wide-residual count: legal -8388608 no longer counted; prefix events reported; no-output-frames is not a pass",
+        "3 gate precedes the arm, a failed gate or a protection stop ends the branch, operator confirmation is a token",
+        "4 tone analysis pairs one explicit round, checks identity/window/input validity, refuses otherwise",
+        "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); stale not-run summaries overwritten"
+      ]
+    }
+  },
+  "driver_recheck": {
+    "schema_version": 1,
+    "suite": "c-a-driver-acceptance-v3",
+    "hardware_access": false,
+    "driver_sha256": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+    "package_hashes": {
+      "replay_trial.py": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+      "replay_tools.py": "5b11b656255d2406a3b08bfc14ac6fbd76380ab264b380ee32a6679c43e8941d",
+      "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+      "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e"
+    },
+    "accepted": true,
+    "cases": [
+      {
+        "name": "v3_input_sticky_recorded_with_clean_tail",
+        "passed": true
+      },
+      {
+        "name": "v3_input_sticky_survives_save_failure",
+        "passed": true
+      },
+      {
+        "name": "v3_identity_in_failure_sidecar",
+        "passed": true
+      }
+    ]
+  },
+  "supplied_verify_replay_checks": {
+    "executed": 7,
+    "passed": 7,
+    "source_sha256": "165b9849ad91a48217659b315c7f9e6132b14a69676ed47d21e9d15ed8aa9ef5",
+    "scope": "Five requested arithmetic input types plus two directly affected controls; no old8 or full23 rerun"
+  },
+  "bounded_probes": {
+    "A_commit": "ac3058452f01e777c25ca29c33bc447da9116478",
+    "hardware_operations": 0,
+    "scripts_sha256": {
+      "field_human_pair_v3.sh": "00a965c690b3fd9be5852c7e714f7a6d9e1fc6619690d755695676a31cfc2411",
+      "field_stationary_v3.sh": "a1ff178c8aaa1d3761d72e7fafc7e8e640622e92c4eebfe0e91ddbb0bc09b691",
+      "tone_arms_v3.sh": "7b0bcb2034b6d343b3235ebf9707e76523314246d1bafb302294241f894b9d0f",
+      "tone_analyze.sh": "16b7ed87994c8d070af5a8b84607fc905766810ee2d82f16fa0d04e365b8f051"
+    },
+    "field": [
+      {
+        "script": "field_human_pair_v3.sh",
+        "scenario": "gate_missing",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 1,
+        "passed": true,
+        "error": "SystemExit:0",
+        "stdout": "HUMAN gate  FAILED RuntimeError('synthetic missing capture')\nGATE_FAIL: branch stopped before anyone was asked to speak (peak n/a)\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          }
+        ]
+      },
+      {
+        "script": "field_human_pair_v3.sh",
+        "scenario": "gate_guard",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 3,
+        "passed": false,
+        "error": null,
+        "stdout": "HUMAN gate  stop=guard       frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True\nHUMAN_PAIR cue: speak the same sentence continuously for about 20 s from now\nHUMAN zero  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True\nHUMAN cand  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True\nHUMAN_PAIR_SUMMARY zero_mic=-40.0 cand_mic=-40.0 delta=+0.0 dB conf=SYNTHETIC_TEST_ONLY\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": true,
+            "direct_only": false
+          },
+          {
+            "zero_coeff": false,
+            "direct_only": false
+          }
+        ]
+      },
+      {
+        "script": "field_human_pair_v3.sh",
+        "scenario": "zero_guard",
+        "expected_driver_calls": 2,
+        "observed_driver_calls": 2,
+        "passed": true,
+        "error": "SystemExit:0",
+        "stdout": "HUMAN gate  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True\nHUMAN_PAIR cue: speak the same sentence continuously for about 20 s from now\nHUMAN zero  stop=guard       frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True\nBRANCH_STOPPED after the zero arm (stop=guard bit22=0)\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": true,
+            "direct_only": false
+          }
+        ]
+      },
+      {
+        "script": "field_human_pair_v3.sh",
+        "scenario": "zero_restore",
+        "expected_driver_calls": 2,
+        "observed_driver_calls": 3,
+        "passed": false,
+        "error": null,
+        "stdout": "HUMAN gate  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True\nHUMAN_PAIR cue: speak the same sentence continuously for about 20 s from now\nHUMAN zero  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True\nHUMAN cand  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 rsat=0 psat=0 gsat=0 wide=0 bitexact=True\nHUMAN_PAIR_SUMMARY zero_mic=-40.0 cand_mic=-40.0 delta=+0.0 dB conf=SYNTHETIC_TEST_ONLY\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": true,
+            "direct_only": false
+          },
+          {
+            "zero_coeff": false,
+            "direct_only": false
+          }
+        ]
+      },
+      {
+        "script": "field_stationary_v3.sh",
+        "scenario": "gate_missing",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 1,
+        "passed": true,
+        "error": "SystemExit:0",
+        "stdout": "ARM gate  FAILED RuntimeError('synthetic missing capture')\nGATE_FAIL: branch stopped, no arm was run (peak n/a)\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          }
+        ]
+      },
+      {
+        "script": "field_stationary_v3.sh",
+        "scenario": "gate_input",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 3,
+        "passed": false,
+        "error": null,
+        "stdout": "ARM gate  stop=input_clip  frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=1 share=0.0000 rsat=0 psat=0\nARM zero  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 share=0.0000 rsat=0 psat=0\nARM cand  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 share=0.0000 rsat=0 psat=0\nSTATIONARY_SUMMARY share_zero=0.0000 share_cand=0.0000 delta_db=+0.0 level=-8.0 conf=SYNTHETIC_TEST_ONLY\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": true,
+            "direct_only": false
+          },
+          {
+            "zero_coeff": false,
+            "direct_only": false
+          }
+        ]
+      },
+      {
+        "script": "field_stationary_v3.sh",
+        "scenario": "zero_guard",
+        "expected_driver_calls": 2,
+        "observed_driver_calls": 2,
+        "passed": true,
+        "error": "SystemExit:0",
+        "stdout": "ARM gate  stop=completed   frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 share=0.0000 rsat=0 psat=0\nARM zero  stop=guard       frames=   640 mic= -40.0 peak= -40.0 fs=0 bit22=0 share=0.0000 rsat=0 psat=0\nBRANCH_STOPPED after the zero arm (stop=guard bit22=0)\n",
+        "calls": [
+          {
+            "zero_coeff": true,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": true,
+            "direct_only": false
+          }
+        ]
+      },
+      {
+        "script": "tone_arms_v3.sh",
+        "scenario": "first_missing",
+        "expected_driver_calls": 1,
+        "observed_driver_calls": 3,
+        "passed": false,
+        "error": null,
+        "stdout": "TONE open   RuntimeError('synthetic missing capture')\nTONE bypass ok\nTONE cancel ok\nTONE_ROUND_WRITTEN D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\c-a-ac30584-review\\field-tone_arms_v3.sh-first_missing\\tone_round.json round 1793156011172798900\n",
+        "calls": [
+          {
+            "zero_coeff": false,
+            "direct_only": true
+          },
+          {
+            "zero_coeff": false,
+            "direct_only": false
+          },
+          {
+            "zero_coeff": false,
+            "direct_only": false
+          }
+        ]
+      }
+    ],
+    "tokens": [
+      {
+        "script": "field_human_pair_v3.sh",
+        "exit_code": 3,
+        "passed": true,
+        "scope": "local shell prefix only; board setup removed, token redirected, no Python or hardware entry",
+        "stdout": "NO_OPERATOR_CONFIRMATION: refusing to arm (create D:/Flushbonading_Contest/ShengDi_PYNQ_Feedback_Suppression/tmp/c-a-ac30584-review/NONEXISTENT_OPERATOR_TOKEN first)\n",
+        "stderr": "",
+        "initial_environment_failure": "Default Windows policy blocked MSYS named-object creation; only these token-prefix cases retried with local shell execution enabled."
+      },
+      {
+        "script": "field_stationary_v3.sh",
+        "exit_code": 3,
+        "passed": true,
+        "scope": "local shell prefix only; board setup removed, token redirected, no Python or hardware entry",
+        "stdout": "NO_OPERATOR_CONFIRMATION: refusing to arm (create D:/Flushbonading_Contest/ShengDi_PYNQ_Feedback_Suppression/tmp/c-a-ac30584-review/NONEXISTENT_OPERATOR_TOKEN first)\n",
+        "stderr": "",
+        "initial_environment_failure": "Default Windows policy blocked MSYS named-object creation; only these token-prefix cases retried with local shell execution enabled."
+      },
+      {
+        "script": "tone_arms_v3.sh",
+        "exit_code": 3,
+        "passed": true,
+        "scope": "local shell prefix only; board setup removed, token redirected, no Python or hardware entry",
+        "stdout": "NO_OPERATOR_CONFIRMATION: refusing to arm (create D:/Flushbonading_Contest/ShengDi_PYNQ_Feedback_Suppression/tmp/c-a-ac30584-review/NONEXISTENT_OPERATOR_TOKEN first)\n",
+        "stderr": "",
+        "initial_environment_failure": "Default Windows policy blocked MSYS named-object creation; only these token-prefix cases retried with local shell execution enabled."
+      }
+    ],
+    "tone": [
+      {
+        "case": "plumbing_control",
+        "should_print_depth": true,
+        "printed_depth": true,
+        "exit_code": 0,
+        "passed": true,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      },
+      {
+        "case": "identity_mismatch",
+        "should_print_depth": false,
+        "printed_depth": false,
+        "exit_code": 1,
+        "passed": true,
+        "stdout": "TONE_FAIL refusing to compute a depth:\n  - identity mismatch on driver_sha256: {'open': 'c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493', 'bypass': 'c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493', 'cancel': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'}\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      },
+      {
+        "case": "window_mismatch",
+        "should_print_depth": false,
+        "printed_depth": false,
+        "exit_code": 1,
+        "passed": true,
+        "stdout": "TONE_FAIL refusing to compute a depth:\n  - window mismatch on frames: {'open': 16384, 'bypass': 16384, 'cancel': 16383}\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      },
+      {
+        "case": "input_bit22",
+        "should_print_depth": false,
+        "printed_depth": false,
+        "exit_code": 1,
+        "passed": true,
+        "stdout": "TONE_FAIL refusing to compute a depth:\n  - cancel: input full scale (bit22) set\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      },
+      {
+        "case": "missing_all_identity",
+        "should_print_depth": false,
+        "printed_depth": true,
+        "exit_code": 0,
+        "passed": false,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      },
+      {
+        "case": "changed_source_and_gain",
+        "should_print_depth": false,
+        "printed_depth": true,
+        "exit_code": 0,
+        "passed": false,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      },
+      {
+        "case": "actual_frames_mismatch",
+        "should_print_depth": false,
+        "printed_depth": true,
+        "exit_code": 0,
+        "passed": false,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=-0.00 dB cancel_minus_bypass_mic=-0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      },
+      {
+        "case": "actual_input_rail",
+        "should_print_depth": false,
+        "printed_depth": true,
+        "exit_code": 0,
+        "passed": false,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      },
+      {
+        "case": "stopped_arm",
+        "should_print_depth": false,
+        "printed_depth": true,
+        "exit_code": 0,
+        "passed": false,
+        "stdout": "TONE_open mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_bypass mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_cancel mic@322=170.71 pred@322=-240.00 residual@322=170.71\nTONE_DEPTH cancel_minus_bypass_residual=+0.00 dB cancel_minus_bypass_mic=+0.00 dB bypass_minus_open_mic=+0.00 dB (round 123, confirmation: SYNTHETIC_TEST_ONLY)\nTONE_NOTE denominators are the bypass arm; open is a level reference only\n",
+        "scope": "synthetic analyzer plumbing, not an acoustic positive control"
+      }
+    ],
+    "oracle": [
+      {
+        "case": "legal_recorded_prefix_events",
+        "observed_physical_wide_events": 512,
+        "verifier": {
+          "bit_exact": true,
+          "verified": true,
+          "verification_note": null,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "wide_residual_frames": 0,
+          "wide_residual_frames_prefix_unverifiable": 0,
+          "wide_residual_count_partial": false,
+          "wide_rail_definition": "overflow iff wide > 8388607 or wide < -8388608",
+          "history_excluded_frames": 512,
+          "evaluated_frames": 128,
+          "output_checked_frames": 126,
+          "interpretation": "played[n]=source[n]+gain(wide residual[n-2]), one clamp after gain; arithmetic only"
+        },
+        "passed": false,
+        "note": "recorded mic/pred are both signed24 legal; zero-filled local model misses the 512 observed prefix differences"
+      }
+    ],
+    "reproduction_source_utf8": "\"\"\"C's bounded offline recheck of A ac30584; never executes hardware drivers/shell payloads.\"\"\"\nimport ast\nimport contextlib\nimport hashlib\nimport importlib.util\nimport io\nimport json\nimport pathlib\nimport subprocess\nimport sys\nimport types\nfrom unittest.mock import patch\n\nimport numpy as np\n\nROOT=pathlib.Path(__file__).resolve().parent\nSCRIPTS=ROOT/'board/audio_replay'\nSNAP=SCRIPTS/'v3'\nsys.path.insert(0,str(SNAP))\nimport replay_tools\n\nMAN=json.loads((SNAP/'manifest.json').read_text(encoding='utf-8-sig'))\nresults=dict(A_commit='ac3058452f01e777c25ca29c33bc447da9116478',hardware_operations=0,\n             scripts_sha256={},field=[],tokens=[],tone=[],oracle=[])\n\n\ndef payload(name, folder):\n    path=SCRIPTS/name\n    text=path.read_text(encoding='utf-8')\n    results['scripts_sha256'][name]=hashlib.sha256(path.read_bytes()).hexdigest()\n    code=text.split(\"<<'PY'\\n\",1)[1].rsplit('\\nPY',1)[0]\n    tree=ast.parse(code)\n    class Redirect(ast.NodeTransformer):\n        def visit_Constant(self,node):\n            if node.value=='/home/xilinx/jupyter_notebooks/base/audio/audio_wide':\n                return ast.copy_location(ast.Constant(str(folder)),node)\n            return node\n    return compile(ast.fix_missing_locations(Redirect().visit(tree)),name,'exec')\n\n\ndef field(name,scenario,expected):\n    folder=ROOT/('field-'+name+'-'+scenario);folder.mkdir(exist_ok=True)\n    calls=[]\n    def trial(path,*args,**kwargs):\n        calls.append(dict(zero_coeff=kwargs.get('zero_coeff'),direct_only=kwargs.get('direct_only')))\n        n=len(calls)\n        if scenario=='gate_missing' and n==1 or scenario=='first_missing' and n==1:\n            raise RuntimeError('synthetic missing capture')\n        stop='completed';bits=0;err=None;recovery=True\n        if scenario=='gate_guard' and n==1:stop='guard';err='synthetic protection'\n        if scenario=='gate_input' and n==1:stop='input_clip';bits=1<<22;err='synthetic input clip'\n        if scenario=='zero_guard' and n==2:stop='guard';err='synthetic protection'\n        if scenario=='zero_restore' and n==2:recovery=False;err='synthetic restoration failure'\n        meta=dict(capture_status=1|bits,stop_reason=stop,completed_frames=640,\n                  prediction_saturations=0,residual_saturations=0,gain_saturations=0,mix_saturations=0,\n                  verification=dict(bit_exact=True,wide_residual_frames=0))\n        np.savez(path,microphone=np.full(640,.01),metadata_json=json.dumps(meta))\n        pathlib.Path(path).with_suffix('.status.json').write_text(json.dumps(dict(recovery_ok=recovery,error=err)))\n        if err:raise RuntimeError(err)\n        return meta\n    stub=types.ModuleType('replay_trial');stub.replay_trial=trial\n    log=io.StringIO();error=None\n    argv=[name,'-8','SYNTHETIC_TEST_ONLY'] if 'stationary' in name else [name,'SYNTHETIC_TEST_ONLY']\n    try:\n        with patch.dict(sys.modules,{'replay_trial':stub}),patch.object(sys,'argv',argv),contextlib.redirect_stdout(log):\n            exec(payload(name,folder),{'__name__':'__main__'})\n    except SystemExit as e:error='SystemExit:'+str(e.code)\n    except Exception as e:error=repr(e)\n    results['field'].append(dict(script=name,scenario=scenario,expected_driver_calls=expected,\n                                  observed_driver_calls=len(calls),passed=len(calls)==expected,\n                                  error=error,stdout=log.getvalue(),calls=calls))\n\n\nfor name,scenario,expected in [\n ('field_human_pair_v3.sh','gate_missing',1),('field_human_pair_v3.sh','gate_guard',1),\n ('field_human_pair_v3.sh','zero_guard',2),('field_human_pair_v3.sh','zero_restore',2),\n ('field_stationary_v3.sh','gate_missing',1),('field_stationary_v3.sh','gate_input',1),\n ('field_stationary_v3.sh','zero_guard',2),('tone_arms_v3.sh','first_missing',1)]:\n    field(name,scenario,expected)\n\nfor name in ('field_human_pair_v3.sh','field_stationary_v3.sh','tone_arms_v3.sh'):\n    text=(SCRIPTS/name).read_text(encoding='utf-8')\n    header=text.split('CONF=$(cat',1)[0]\n    header='\\n'.join(x for x in header.splitlines() if not x.startswith('source '))\n    token=(ROOT/'NONEXISTENT_OPERATOR_TOKEN').as_posix()\n    assert not pathlib.Path(token).exists()\n    header=header.replace('TOKEN=/home/xilinx/OPERATOR_READY',\"TOKEN='\"+token+\"'\")\n    p=ROOT/('no-token-'+name);p.write_bytes((header+'\\necho UNEXPECTED_AFTER_GATE\\nexit 99\\n').encode('utf-8'))\n    done=subprocess.run(['C:/Program Files/Git/bin/bash.exe','--noprofile','--norc',p.as_posix()],capture_output=True)\n    results['tokens'].append(dict(script=name,exit_code=done.returncode,\n        passed=done.returncode==3 and b'NO_OPERATOR_CONFIRMATION' in done.stdout,\n        scope='local shell prefix only; board setup removed, token redirected, no Python or hardware entry'))\n\n\ndef tone(case):\n    folder=ROOT/('tone-'+case);folder.mkdir(exist_ok=True)\n    n=16384;mic=.01*np.sin(2*np.pi*322*np.arange(n)/48828.125)\n    entries=[]\n    for tag in ('open','bypass','cancel'):\n        meta=dict(bit_sha256=MAN['hashes']['audio_replay.bit'],hwh_sha256=MAN['hashes']['audio_replay.hwh'],\n                  driver_sha256=MAN['hashes']['replay_trial.py'],replay_tools_sha256=MAN['hashes']['replay_tools.py'],\n                  package_version='audio-replay-v3',model_sha256=MAN['model']['sha256'],\n                  frames=n,first_frame=0,completed_frames=n,sound_seconds_nominal=n/48828.125,\n                  capture_status=1,input_full_scale_seen=False,mic_full_scale_samples=0,\n                  prediction_saturations=0,gain_saturations=0,mix_saturations=0,\n                  gain_q12=0 if tag=='open' else 1631,hp_volume=40,stop_reason='completed',bypass=tag=='bypass')\n        signal=mic.copy();source=np.zeros(1000,dtype='<i2')\n        if case=='identity_mismatch' and tag=='cancel':meta['driver_sha256']='a'*64\n        if case=='window_mismatch' and tag=='cancel':meta['frames']=n-1\n        if case=='input_bit22' and tag=='cancel':meta['capture_status']|=1<<22\n        if case=='missing_all_identity':\n            for k in ('bit_sha256','hwh_sha256','driver_sha256','model_sha256','package_version'):meta.pop(k)\n        if case=='changed_source_and_gain' and tag=='cancel':\n            source[5]=123;meta.update(gain_q12=2048,hp_volume=30)\n        if case=='actual_frames_mismatch' and tag=='cancel':signal=signal[:-1]\n        if case=='actual_input_rail' and tag=='cancel':signal[0]=1.0\n        if case=='stopped_arm' and tag=='cancel':meta['stop_reason']='guard'\n        p=folder/(tag+'.npz')\n        np.savez(p,microphone=signal,prediction_pcm=np.zeros(len(signal),dtype=np.int64),\n                 residual_pcm=np.rint(signal*2**23).astype(np.int64),source_pcm16=source,\n                 metadata_json=json.dumps(meta))\n        entries.append(dict(tag=tag,path=str(p),exists=True,error=None))\n    (folder/'tone_round.json').write_text(json.dumps(dict(round_id=123,tone_hz=322,files=entries,\n                                                       operator_confirmation='SYNTHETIC_TEST_ONLY')))\n    log=io.StringIO();code=0\n    try:\n        with contextlib.redirect_stdout(log):exec(payload('tone_analyze.sh',folder),{'__name__':'__main__'})\n    except SystemExit as e:code=e.code\n    except Exception as e:code=99;log.write(repr(e))\n    printed='TONE_DEPTH' in log.getvalue();should_print=case=='plumbing_control'\n    results['tone'].append(dict(case=case,should_print_depth=should_print,printed_depth=printed,\n                                exit_code=code,passed=printed==should_print,stdout=log.getvalue(),\n                                scope='synthetic analyzer plumbing, not an acoustic positive control'))\n\n\nfor name in ('plumbing_control','identity_mismatch','window_mismatch','input_bit22','missing_all_identity',\n             'changed_source_and_gain','actual_frames_mismatch','actual_input_rail','stopped_arm'):tone(name)\n\nq=np.zeros(512,dtype=np.int64);raw=np.zeros((640,4),dtype=np.int64)\nq[-1]=1<<20;raw[:,1]=2**23-51;raw[:,3]=raw[:,1]\nraw[:512,2]=-256;raw[:512,3]=2**23-1\nobserved=int(np.count_nonzero((raw[:,1]-raw[:,2]>2**23-1)|(raw[:,1]-raw[:,2]<-2**23)))\nr=replay_tools.verify_replay(raw,q,False,0,np.zeros(1,dtype='<i2'),1000)\nresults['oracle'].append(dict(case='legal_recorded_prefix_events',observed_physical_wide_events=observed,\n    verifier=r,passed=r.get('wide_residual_frames_prefix_unverifiable')==observed,\n    note='recorded mic/pred are both signed24 legal; zero-filled local model misses the 512 observed prefix differences'))\nresults['reproduction_source_utf8']=pathlib.Path(__file__).read_text(encoding='utf-8')\n(ROOT/'bounded-results.json').write_bytes((json.dumps(results,ensure_ascii=False,indent=2)+'\\n').encode('utf-8'))\nfor group in ('field','tokens','tone','oracle'):\n    rows=results[group];print(group, sum(x['passed'] for x in rows),'/',len(rows))\n    for r in rows:\n        if not r['passed']:print(' remaining',r.get('script',r.get('case')),r.get('scenario',''))\n"
+  },
+  "item_verdicts": [
+    {
+      "item": 1,
+      "verdict": "pass",
+      "evidence": "3/3 fake-MMIO driver rechecks pass. Save failure retains raw bit22, input flag, package_version and all four hashes. Post-start PL mute and recovery precede save attempt."
+    },
+    {
+      "item": 2,
+      "verdict": "partial_fail",
+      "evidence": "A supplied7/7 pass; legal actual mic/pred prefix counterexample still reports0 for512 physically observed wide differences. Prefix result is reconstructed from zero-filled model history, not recorded prediction."
+    },
+    {
+      "item": 3,
+      "verdict": "partial_fail",
+      "evidence": "Field Python failure scenarios4/8 pass; no-token local shell prefixes3/3 pass. Protected gates, zero-arm restore failure and first tone failure still permit later calls."
+    },
+    {
+      "item": 4,
+      "verdict": "fail",
+      "evidence": "Analyzer plumbing control and three obvious mismatch checks pass (4/9). Missing identities, source/gain changes, actual array-length conflict, raw input rail and stopped arm all still print TONE_DEPTH."
+    },
+    {
+      "item": 5,
+      "verdict": "gain_wording_pass_evidence_cleanup_incomplete",
+      "evidence": "Q4.12 gain bound corrected to8.0. Manifest and report still contain contradictory version/measurement summaries and a zero-array SHA in the candidate model identity."
+    }
+  ],
+  "required_A_fixes": [
+    {
+      "id": "observed_prefix_wide_count",
+      "file": "board/audio_replay/v3/replay_tools.py",
+      "action": "Compute physical full-window/prefix counts from actual raw mic-recorded prediction (mic in bypass), strict asymmetric rails. Keep missing-history flags only on the model-replay scope. Retain skip+2 and no-output rejection already passed."
+    },
+    {
+      "id": "gate_and_cleanup_failure_exit",
+      "files": [
+        "field_human_pair_v3.sh",
+        "field_stationary_v3.sh",
+        "tone_arms_v3.sh"
+      ],
+      "action": "Before any dependent arm, require the gate stop/completion/input/protocol status and finalized status/recovery/save results, not only peak. Preserve exceptions as failures even if NPZ exists. Stop tone sequence on first error/protection; save incomplete-round manifest after stopping. Legacy SUPERSEDED entries remain historical and were not rerun as current failures; optionally hard-refuse them to prevent misuse."
+    },
+    {
+      "id": "tone_evidence_qualification",
+      "file": "tone_analyze.sh",
+      "action": "Reject missing identity rather than None==None. Check explicit arm roles, candidate/zero actual Q20, helper/source identity, open gain0 and same bypass/cancel actual gain/Codec/rate. Check stop, recovery, arithmetic/input validity, actual array extent/frame domain. Validate raw rail samples and source-active/common windows; do not compute depth for rejected input."
+    },
+    {
+      "id": "tone_units_and_label",
+      "file": "tone_analyze.sh",
+      "action": "Separate source-on from source-off within the 2.0s source/2.2s run final ring; normalize reported levels or label FFT magnitudes. Printed cancel_minus_bypass currently computes bypass-minus-cancel: correct its name/sign and denominator. No ASG/listener claim from this single tone."
+    },
+    {
+      "id": "manifest_and_report_facts",
+      "files": [
+        "v3/manifest.json",
+        "wide-residual-v3/evidence.json",
+        "audio-replay-v3.md"
+      ],
+      "action": "Candidate file01c9102a corresponds to Q20 6118e85d, while manifest model.coefficients_sha256_q20 currently equals zero512 e5a00aa9. Separate candidate identity and loaded zero arm. Update stale hardware_status/note_on_deployed_copy/honest_position and scope contract hardware claims by driver: c2 input stop and60s remain not rerun. Preserve old observations as historical evidence."
+    }
+  ],
+  "consumer_changes": {
+    "version": "c-measurement-2.4.1",
+    "summary_revision": "3.2.2",
+    "intent": "Recognize complete delivered c2b2/5b11 tuple and historical6b39/0d4e tuple, reject cross-pairs, keep independent wide arithmetic; recognizing identity does not admit the full field flow.",
+    "tests_executed": 4,
+    "tests_passed": 4,
+    "tests": [
+      "test_delivered_and_historical_release_tuples_do_not_mix",
+      "test_mixed_driver_bit_and_helper_identity_are_rejected",
+      "test_itemized_adapter_requires_v3_identity_binding",
+      "test_flat_summary_keeps_residual_diagnostic_and_rejects_input_sticky"
+    ]
+  },
+  "hardware_scope": {
+    "A_reports_current_driver_pass": [
+      "mixed-package rejection",
+      "quiet self-check with full sidecar identity"
+    ],
+    "current_driver_not_rerun": [
+      "input-full-scale stopping on hardware",
+      "60-second continuity"
+    ],
+    "audible_PA_benefit": "not established",
+    "C_independent_board_replay": false
+  },
+  "overall_field_admission": false,
+  "unchanged": [
+    "A driver/RTL/bitstream/model sources",
+    "protected stop policy",
+    "v2 rollback",
+    "frozen r6 ZIP"
+  ],
+  "next_action": "A fixes remaining software/manifest issues once; C rebinds new hashes and repeats only failures/affected cases. The two acknowledged hardware checks are returned separately by A; no full-field rerun or new B model required.",
+  "Q4_12_check": {
+    "gain_word_cap": 32768,
+    "scale": 4096,
+    "gain_cap": 8.0,
+    "largest_wide_magnitude": 16777215,
+    "largest_raw_product": 549755781120,
+    "signed41_limit": 1099511627775,
+    "fits": true
+  },
+  "C_source_hashes": {
+    "scripts/check_a_driver.py": "baf36c49414412f87f77edb6cbe78d537283079a94b75c3c71b9d9c8b27e04b3",
+    "scripts/review_itemized_20261027.py": "49c5139b71d14517fb31f207d217fc474c05468ffbb3a1e68798a4b0caa965f0",
+    "board/audio_replay/model_comparison.py": "cbe541f8dd538f1c0086b648f38ed9db5d54ea63d54a10acd499769385e3ca55",
+    "board/audio_replay/evaluation.py": "678167f6f01ca3424b673450b42dda032ef64dfe042110c552d002bd82108753",
+    "sim/feedback/test_replay_v3_consumer.py": "12319bcb95182b1cc7a50279af8294f39f360b7990fe8dee66395525da9c2c8a"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "source_commit": "be3200ecf4a5b1df8901f1111da4685c0f8fedc8",
+  "cwd": "D:\\Flushbonading_Contest\\_c_cold_be3200e",
+  "runs": [
+    {
+      "artifact": "cold-start",
+      "chunk_id": "373ad5",
+      "wall_time_seconds": 2.0709147,
+      "exit_code": 0,
+      "original_token_count": 44,
+      "output": "ARTIFACT D:\\Flushbonading_Contest\\_c_cold_be3200e\\build\\generated\\delivery\\cold-start.zip\r\nPACKAGE_COMPLETE aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a\r\n"
+    },
+    {
+      "artifact": "listener-pipeline",
+      "chunk_id": "7787dd",
+      "wall_time_seconds": 2.2489725,
+      "exit_code": 0,
+      "original_token_count": 46,
+      "output": "ARTIFACT D:\\Flushbonading_Contest\\_c_cold_be3200e\\build\\generated\\delivery\\listener-pipeline.zip\r\nPACKAGE_COMPLETE e6325c23de965f695bed7ba730c60168ed55512036f242f1d0f78c6f26a2ea58\r\n"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "package_version": "c-tail-review-3.1.0",
+  "package_sha256": "bb939b8ef1bb88978d603460e01f545a4a77db314e3f2454c64b9ed3658d18bd",
+  "manifest_hashes_valid": true,
+  "notebook_executed": true,
+  "hardware_access": false,
+  "pynq_imported": false,
+  "return_contains_raw_pcm": false,
+  "summary_revision": "3.1.0",
+  "b_commit": "59ab1ee55bf54d1e075647afffd14a9e0f4eff32",
+  "model_manifest_sha256": "71d13ca927b23213b491ecc0af3a405210c99550dedb11f2878ddd6905573fcc",
+  "output": [
+    "SILENT_PACKAGE_OK; no board devices or playback",
+    "SILENT_REVIEW_COMPLETE 2 CAPTURES 0 ELIGIBLE_PAIRS",
+    "RETURN_ONE_FILE D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp\\b-followup-package-1g0178a4\\extracted\\results\\review-8b461caed37d\\return-results.zip",
+    "PACKAGE_NOTEBOOK_VERIFIED"
+  ]
+}

@@ -1,0 +1,1461 @@
+{
+  "a_commit": "1219851deae14f45e098e30ba00ac8b2c56467a9",
+  "return_zip_sha256": "bdc9fc6105835424e3a0785e5db7f0f8e13c23006ed447b8da510597e811fcec",
+  "member_hash_checks": {
+    "05-listener-on.status.json": true,
+    "04-path-gate.status.json": true,
+    "03-listener-off.status.json": true,
+    "summary-v3.json": true,
+    "summary.json": true,
+    "summary-v3.csv": true,
+    "01-path-gate.status.json": true,
+    "summary.csv": true,
+    "07-fir-off.status.json": true,
+    "02-real-voice.status.json": true,
+    "06-path-gate.status.json": true
+  },
+  "package_identity": {
+    "policy": true,
+    "plan": true,
+    "source_commits": true,
+    "payload_hashes": true
+  },
+  "verification_level": "independent_metadata_integrity_and_fixed_git_asset_inventory; no PCM or board reproduction",
+  "trials": [
+    {
+      "id": 1,
+      "role": "path-gate",
+      "category": "unknown",
+      "acoustic_reasons": [
+        "source_or_transition_overlap"
+      ],
+      "path_gate": {
+        "passed": true,
+        "baseline_dbfs": null,
+        "capture_sha256": "d8c00eb4b21537d3b5a5b8a0071320c3fa5e6fb5f7b4adad113f6ac90fdc32f2",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [],
+        "rms_dbfs": -22.24895998242331,
+        "tonal_fraction": 0.9750701444904594,
+        "drift_db": null,
+        "reference_rms_dbfs": -23.011081979678153,
+        "mic_over_ref_db": 0.762121997254841,
+        "operational_drift_limit_db": 5.0
+      },
+      "completed_frames": 49804,
+      "duration_seconds": 1.01998592,
+      "frames": 16384,
+      "first_frame": 33420,
+      "stop_reasons": [],
+      "tail_statistics": {
+        "tail_valid": false,
+        "tail_rms_dbfs": null,
+        "tail_slope_db_per_s": null,
+        "tail_slope_fit_r2": null,
+        "tail_residual_over_mic_db": {
+          "300-1000": null,
+          "1000-3000": null,
+          "8200-8600": null
+        },
+        "tail_band_reasons": {},
+        "tail_reasons": [
+          "source_or_transition_overlap"
+        ],
+        "tail_config": {
+          "block_seconds": 0.02,
+          "minimum_blocks": 8,
+          "minimum_mic_dbfs": -55.0,
+          "minimum_band_mic_dbfs": -80.0
+        }
+      },
+      "observation_kind": "proxy",
+      "capture_window": {
+        "first_frame": 33420,
+        "end_frame": 49804,
+        "frames": 16384,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "planned_source_frames": 48828,
+        "transition_frames": 2442,
+        "pure_tail": false,
+        "reason": "source_or_transition_overlap",
+        "source_active_at_stop": false,
+        "waveform_coverage_fraction": 0.3289695606778572,
+        "waveform_missing_intervals": [
+          [
+            0,
+            33420
+          ]
+        ],
+        "counter_coverage": "unknown"
+      },
+      "mic_rms_dbfs": -22.538169792921863,
+      "sidecar": {
+        "schema_version": 1,
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "capture": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-b7bf8d7d6a51/01-path-gate.npz",
+        "fixture_id": "room_v1_20261021",
+        "recovery_ok": true,
+        "cleanup_errors": [],
+        "salvage_errors": [],
+        "save_error": null,
+        "stop_reason": "completed",
+        "error": null,
+        "armed": true,
+        "completed_frames": 49804,
+        "frames": 16384,
+        "first_frame": 33420,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+      },
+      "counts_from_raw": {
+        "prediction": 0,
+        "residual": 0,
+        "gain": 0,
+        "mix": 0
+      }
+    },
+    {
+      "id": 2,
+      "role": "real-voice",
+      "category": "unknown",
+      "acoustic_reasons": [
+        "source_end_unverified"
+      ],
+      "path_gate": null,
+      "completed_frames": 390625,
+      "duration_seconds": 8.0,
+      "frames": 16384,
+      "first_frame": 374241,
+      "stop_reasons": [],
+      "tail_statistics": {
+        "tail_valid": false,
+        "tail_rms_dbfs": null,
+        "tail_slope_db_per_s": null,
+        "tail_slope_fit_r2": null,
+        "tail_residual_over_mic_db": {
+          "300-1000": null,
+          "1000-3000": null,
+          "8200-8600": null
+        },
+        "tail_band_reasons": {},
+        "tail_reasons": [
+          "source_end_unverified"
+        ],
+        "tail_config": {
+          "block_seconds": 0.02,
+          "minimum_blocks": 8,
+          "minimum_mic_dbfs": -55.0,
+          "minimum_band_mic_dbfs": -80.0
+        }
+      },
+      "observation_kind": "proxy",
+      "capture_window": {
+        "first_frame": 374241,
+        "end_frame": 390625,
+        "frames": 16384,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": false,
+        "planned_source_frames": null,
+        "transition_frames": 2442,
+        "pure_tail": false,
+        "reason": "source_end_unverified",
+        "source_active_at_stop": null,
+        "waveform_coverage_fraction": 0.04194304,
+        "waveform_missing_intervals": [
+          [
+            0,
+            374241
+          ]
+        ],
+        "counter_coverage": "unknown"
+      },
+      "mic_rms_dbfs": -37.96086588377297,
+      "sidecar": {
+        "schema_version": 1,
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "capture": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-b7bf8d7d6a51/02-real-voice.npz",
+        "fixture_id": "room_v1_20261021",
+        "recovery_ok": true,
+        "cleanup_errors": [],
+        "salvage_errors": [],
+        "save_error": null,
+        "stop_reason": "completed",
+        "error": null,
+        "armed": true,
+        "completed_frames": 390625,
+        "frames": 16384,
+        "first_frame": 374241,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": true,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+      },
+      "counts_from_raw": {
+        "prediction": 0,
+        "residual": 0,
+        "gain": 0,
+        "mix": 0
+      }
+    },
+    {
+      "id": 3,
+      "role": "listener-off",
+      "category": "unknown",
+      "acoustic_reasons": [
+        "source_end_unverified"
+      ],
+      "path_gate": null,
+      "completed_frames": 390625,
+      "duration_seconds": 8.0,
+      "frames": 16384,
+      "first_frame": 374241,
+      "stop_reasons": [],
+      "tail_statistics": {
+        "tail_valid": false,
+        "tail_rms_dbfs": null,
+        "tail_slope_db_per_s": null,
+        "tail_slope_fit_r2": null,
+        "tail_residual_over_mic_db": {
+          "300-1000": null,
+          "1000-3000": null,
+          "8200-8600": null
+        },
+        "tail_band_reasons": {},
+        "tail_reasons": [
+          "source_end_unverified"
+        ],
+        "tail_config": {
+          "block_seconds": 0.02,
+          "minimum_blocks": 8,
+          "minimum_mic_dbfs": -55.0,
+          "minimum_band_mic_dbfs": -80.0
+        }
+      },
+      "observation_kind": "proxy",
+      "capture_window": {
+        "first_frame": 374241,
+        "end_frame": 390625,
+        "frames": 16384,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": false,
+        "planned_source_frames": null,
+        "transition_frames": 2442,
+        "pure_tail": false,
+        "reason": "source_end_unverified",
+        "source_active_at_stop": null,
+        "waveform_coverage_fraction": 0.04194304,
+        "waveform_missing_intervals": [
+          [
+            0,
+            374241
+          ]
+        ],
+        "counter_coverage": "unknown"
+      },
+      "mic_rms_dbfs": -36.088124364380356,
+      "sidecar": {
+        "schema_version": 1,
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "capture": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-b7bf8d7d6a51/03-listener-off.npz",
+        "fixture_id": "room_v1_20261021",
+        "recovery_ok": true,
+        "cleanup_errors": [],
+        "salvage_errors": [],
+        "save_error": null,
+        "stop_reason": "completed",
+        "error": null,
+        "armed": true,
+        "completed_frames": 390625,
+        "frames": 16384,
+        "first_frame": 374241,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": true,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+      },
+      "counts_from_raw": {
+        "prediction": 0,
+        "residual": 0,
+        "gain": 0,
+        "mix": 0
+      }
+    },
+    {
+      "id": 4,
+      "role": "path-gate",
+      "category": "unknown",
+      "acoustic_reasons": [
+        "source_or_transition_overlap"
+      ],
+      "path_gate": {
+        "passed": true,
+        "baseline_dbfs": -22.24895998242331,
+        "capture_sha256": "403cc113c0002b989e4627dadff9b1033fb5c72731162a2401bc7c112551ffa0",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [],
+        "rms_dbfs": -22.792293844742943,
+        "tonal_fraction": 0.9697436652243092,
+        "drift_db": -0.5433338623196313,
+        "reference_rms_dbfs": -23.011081979678153,
+        "mic_over_ref_db": 0.21878813493520965,
+        "operational_drift_limit_db": 5.0
+      },
+      "completed_frames": 49804,
+      "duration_seconds": 1.01998592,
+      "frames": 16384,
+      "first_frame": 33420,
+      "stop_reasons": [],
+      "tail_statistics": {
+        "tail_valid": false,
+        "tail_rms_dbfs": null,
+        "tail_slope_db_per_s": null,
+        "tail_slope_fit_r2": null,
+        "tail_residual_over_mic_db": {
+          "300-1000": null,
+          "1000-3000": null,
+          "8200-8600": null
+        },
+        "tail_band_reasons": {},
+        "tail_reasons": [
+          "source_or_transition_overlap"
+        ],
+        "tail_config": {
+          "block_seconds": 0.02,
+          "minimum_blocks": 8,
+          "minimum_mic_dbfs": -55.0,
+          "minimum_band_mic_dbfs": -80.0
+        }
+      },
+      "observation_kind": "proxy",
+      "capture_window": {
+        "first_frame": 33420,
+        "end_frame": 49804,
+        "frames": 16384,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "planned_source_frames": 48828,
+        "transition_frames": 2442,
+        "pure_tail": false,
+        "reason": "source_or_transition_overlap",
+        "source_active_at_stop": false,
+        "waveform_coverage_fraction": 0.3289695606778572,
+        "waveform_missing_intervals": [
+          [
+            0,
+            33420
+          ]
+        ],
+        "counter_coverage": "unknown"
+      },
+      "mic_rms_dbfs": -23.073026016047905,
+      "sidecar": {
+        "schema_version": 1,
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "capture": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-b7bf8d7d6a51/04-path-gate.npz",
+        "fixture_id": "room_v1_20261021",
+        "recovery_ok": true,
+        "cleanup_errors": [],
+        "salvage_errors": [],
+        "save_error": null,
+        "stop_reason": "completed",
+        "error": null,
+        "armed": true,
+        "completed_frames": 49804,
+        "frames": 16384,
+        "first_frame": 33420,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+      },
+      "counts_from_raw": {
+        "prediction": 0,
+        "residual": 0,
+        "gain": 0,
+        "mix": 0
+      }
+    },
+    {
+      "id": 5,
+      "role": "listener-on",
+      "category": "unknown",
+      "acoustic_reasons": [
+        "source_end_unverified"
+      ],
+      "path_gate": null,
+      "completed_frames": 390625,
+      "duration_seconds": 8.0,
+      "frames": 16384,
+      "first_frame": 374241,
+      "stop_reasons": [],
+      "tail_statistics": {
+        "tail_valid": false,
+        "tail_rms_dbfs": null,
+        "tail_slope_db_per_s": null,
+        "tail_slope_fit_r2": null,
+        "tail_residual_over_mic_db": {
+          "300-1000": null,
+          "1000-3000": null,
+          "8200-8600": null
+        },
+        "tail_band_reasons": {},
+        "tail_reasons": [
+          "source_end_unverified"
+        ],
+        "tail_config": {
+          "block_seconds": 0.02,
+          "minimum_blocks": 8,
+          "minimum_mic_dbfs": -55.0,
+          "minimum_band_mic_dbfs": -80.0
+        }
+      },
+      "observation_kind": "proxy",
+      "capture_window": {
+        "first_frame": 374241,
+        "end_frame": 390625,
+        "frames": 16384,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": false,
+        "planned_source_frames": null,
+        "transition_frames": 2442,
+        "pure_tail": false,
+        "reason": "source_end_unverified",
+        "source_active_at_stop": null,
+        "waveform_coverage_fraction": 0.04194304,
+        "waveform_missing_intervals": [
+          [
+            0,
+            374241
+          ]
+        ],
+        "counter_coverage": "unknown"
+      },
+      "mic_rms_dbfs": -37.93109866154068,
+      "sidecar": {
+        "schema_version": 1,
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "capture": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-b7bf8d7d6a51/05-listener-on.npz",
+        "fixture_id": "room_v1_20261021",
+        "recovery_ok": true,
+        "cleanup_errors": [],
+        "salvage_errors": [],
+        "save_error": null,
+        "stop_reason": "completed",
+        "error": null,
+        "armed": true,
+        "completed_frames": 390625,
+        "frames": 16384,
+        "first_frame": 374241,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": true,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+      },
+      "counts_from_raw": {
+        "prediction": 0,
+        "residual": 0,
+        "gain": 0,
+        "mix": 0
+      }
+    },
+    {
+      "id": 6,
+      "role": "path-gate",
+      "category": "unknown",
+      "acoustic_reasons": [
+        "source_or_transition_overlap"
+      ],
+      "path_gate": {
+        "passed": true,
+        "baseline_dbfs": -22.24895998242331,
+        "capture_sha256": "b054138ef3a5a81090763982d83a26de98633075bd6e622145b62952b7e4c646",
+        "first_frame": 33420,
+        "end_frame": 48340,
+        "reasons": [],
+        "rms_dbfs": -20.949925133024784,
+        "tonal_fraction": 0.9824206406170722,
+        "drift_db": 1.2990348493985273,
+        "reference_rms_dbfs": -23.011081979678153,
+        "mic_over_ref_db": 2.0611568466533683,
+        "operational_drift_limit_db": 5.0
+      },
+      "completed_frames": 49804,
+      "duration_seconds": 1.01998592,
+      "frames": 16384,
+      "first_frame": 33420,
+      "stop_reasons": [],
+      "tail_statistics": {
+        "tail_valid": false,
+        "tail_rms_dbfs": null,
+        "tail_slope_db_per_s": null,
+        "tail_slope_fit_r2": null,
+        "tail_residual_over_mic_db": {
+          "300-1000": null,
+          "1000-3000": null,
+          "8200-8600": null
+        },
+        "tail_band_reasons": {},
+        "tail_reasons": [
+          "source_or_transition_overlap"
+        ],
+        "tail_config": {
+          "block_seconds": 0.02,
+          "minimum_blocks": 8,
+          "minimum_mic_dbfs": -55.0,
+          "minimum_band_mic_dbfs": -80.0
+        }
+      },
+      "observation_kind": "proxy",
+      "capture_window": {
+        "first_frame": 33420,
+        "end_frame": 49804,
+        "frames": 16384,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "planned_source_frames": 48828,
+        "transition_frames": 2442,
+        "pure_tail": false,
+        "reason": "source_or_transition_overlap",
+        "source_active_at_stop": false,
+        "waveform_coverage_fraction": 0.3289695606778572,
+        "waveform_missing_intervals": [
+          [
+            0,
+            33420
+          ]
+        ],
+        "counter_coverage": "unknown"
+      },
+      "mic_rms_dbfs": -21.229314950819493,
+      "sidecar": {
+        "schema_version": 1,
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "capture": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-b7bf8d7d6a51/06-path-gate.npz",
+        "fixture_id": "room_v1_20261021",
+        "recovery_ok": true,
+        "cleanup_errors": [],
+        "salvage_errors": [],
+        "save_error": null,
+        "stop_reason": "completed",
+        "error": null,
+        "armed": true,
+        "completed_frames": 49804,
+        "frames": 16384,
+        "first_frame": 33420,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+      },
+      "counts_from_raw": {
+        "prediction": 0,
+        "residual": 0,
+        "gain": 0,
+        "mix": 0
+      }
+    },
+    {
+      "id": 7,
+      "role": "fir-off",
+      "category": "no_instability_observed_in_window",
+      "acoustic_reasons": [],
+      "path_gate": null,
+      "completed_frames": 122070,
+      "duration_seconds": 2.4999936,
+      "frames": 16384,
+      "first_frame": 105686,
+      "stop_reasons": [],
+      "tail_statistics": {
+        "tail_valid": false,
+        "tail_rms_dbfs": null,
+        "tail_slope_db_per_s": null,
+        "tail_slope_fit_r2": null,
+        "tail_residual_over_mic_db": {
+          "300-1000": null,
+          "1000-3000": null,
+          "8200-8600": null
+        },
+        "tail_band_reasons": {},
+        "tail_reasons": [
+          "tail_below_signal_floor"
+        ],
+        "tail_config": {
+          "block_seconds": 0.02,
+          "minimum_blocks": 8,
+          "minimum_mic_dbfs": -31.799999999999997,
+          "minimum_band_mic_dbfs": -80.0
+        }
+      },
+      "observation_kind": "proxy",
+      "capture_window": {
+        "first_frame": 105686,
+        "end_frame": 122070,
+        "frames": 16384,
+        "source_end_frame_exclusive": 91308,
+        "source_schedule_verified": true,
+        "planned_source_frames": 91308,
+        "transition_frames": 2442,
+        "pure_tail": true,
+        "reason": "verified_source_off_tail",
+        "source_active_at_stop": false,
+        "waveform_coverage_fraction": 0.1342180715982633,
+        "waveform_missing_intervals": [
+          [
+            0,
+            105686
+          ]
+        ],
+        "counter_coverage": "unknown"
+      },
+      "mic_rms_dbfs": -38.014081812917766,
+      "sidecar": {
+        "schema_version": 1,
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "capture": "/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-b7bf8d7d6a51/07-fir-off.npz",
+        "fixture_id": "room_v1_20261021",
+        "recovery_ok": true,
+        "cleanup_errors": [],
+        "salvage_errors": [],
+        "save_error": null,
+        "stop_reason": "completed",
+        "error": null,
+        "armed": true,
+        "completed_frames": 122070,
+        "frames": 16384,
+        "first_frame": 105686,
+        "source_end_frame_exclusive": 91308,
+        "source_schedule_verified": true,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+      },
+      "counts_from_raw": {
+        "prediction": 0,
+        "residual": 0,
+        "gain": 0,
+        "mix": 0
+      }
+    }
+  ],
+  "reported_checks": {
+    "package": {
+      "status": "passed",
+      "level": "local_hash_and_compatibility"
+    },
+    "real_voice": {
+      "status": "not_tested",
+      "basis": "proxy",
+      "hearing_code": "PROXY",
+      "scope": "human live speech and human listening required; proxy cannot pass; saved waveform is a tail only"
+    },
+    "fir_comparison": {
+      "status": "not_tested"
+    },
+    "listener": {
+      "status": "not_tested",
+      "reason": "[Errno 2] No such file or directory: '/home/xilinx/jupyter_notebooks/base/audio/c-sprint-rc01-r2/results/sprint-b7bf8d7d6a51/listener/off-speech.wav'",
+      "absolute_spl": null
+    },
+    "continuous_60s": {
+      "status": "not_tested",
+      "reason": "frozen A driver has 10 s ceiling and tail-only PCM; no stitched-window substitute",
+      "owner": "A",
+      "request": "OPERATIONS.md: A minimal observation and continuous-run request"
+    },
+    "stop_recovery": {
+      "status": "passed",
+      "scope": "A driver sidecar reports per-trial cleanup; emergency/abnormal recovery still requires A acceptance"
+    },
+    "independent_reproduction": {
+      "status": "not_tested"
+    },
+    "path_gate": {
+      "status": "passed",
+      "source_on_frames": 14920,
+      "scope": "source-on tone path check; acoustic stability category is separate"
+    }
+  },
+  "reported_stop_reason": "RuntimeError:fir_observation_insufficient",
+  "raw_capture_inventory": [
+    {
+      "file": "01-path-gate.npz",
+      "sha256": "d8c00eb4b21537d3b5a5b8a0071320c3fa5e6fb5f7b4adad113f6ac90fdc32f2",
+      "metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "8eecf7f3-e848-4752-8475-aea62ab58fd8",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": true,
+        "fixture_id": "room_v1_20261021",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 0,
+        "gain_db_actual": null,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 49804,
+        "first_frame": 33420,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 1.01998592,
+        "completion_poll_seconds": 1.0209044729999732,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 48828,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "source_pcm16_sha256": "f65c5606890ffb0ca2624396a8b7bd4f874dff7b13c5a4d8b6bc17208c560684",
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+        "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+        "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -22.538169792921863,
+        "mic_peak_dbfs": -15.442221500384807,
+        "mic_full_scale_samples": 0
+      }
+    },
+    {
+      "file": "02-real-voice.npz",
+      "sha256": "a996c5323fdd92f2d2cf37ed46eb8a5b9731874d544f6eb77d96db2301b3fe0b",
+      "metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "fa4ae943-e488-45d9-88ad-d3336875e7dd",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "room_v1_20261021",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 817,
+        "gain_db_actual": -14.002757828707178,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 390625,
+        "first_frame": 374241,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 8.0,
+        "completion_poll_seconds": 8.001442745000531,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 1,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": true,
+        "source_pcm16_sha256": "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7",
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+        "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+        "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -37.96086588377297,
+        "mic_peak_dbfs": -24.487660282216822,
+        "mic_full_scale_samples": 0
+      }
+    },
+    {
+      "file": "03-listener-off.npz",
+      "sha256": "63366ccb5d91641ebe375301f0639cc16ac4c7423bb263a5d9ef7fbf85908254",
+      "metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "ef42b737-ba50-499c-8721-40da5dea08c5",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": true,
+        "fixture_id": "room_v1_20261021",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 0,
+        "gain_db_actual": null,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 390625,
+        "first_frame": 374241,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 8.0,
+        "completion_poll_seconds": 8.001225982001415,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 1,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": true,
+        "source_pcm16_sha256": "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7",
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+        "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+        "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -36.088124364380356,
+        "mic_peak_dbfs": -22.812500086863867,
+        "mic_full_scale_samples": 0
+      }
+    },
+    {
+      "file": "04-path-gate.npz",
+      "sha256": "403cc113c0002b989e4627dadff9b1033fb5c72731162a2401bc7c112551ffa0",
+      "metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "9de6a63c-5f42-46da-8a14-f4be23513027",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": true,
+        "fixture_id": "room_v1_20261021",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 0,
+        "gain_db_actual": null,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 49804,
+        "first_frame": 33420,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 1.01998592,
+        "completion_poll_seconds": 1.0220271310008684,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 48828,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "source_pcm16_sha256": "f65c5606890ffb0ca2624396a8b7bd4f874dff7b13c5a4d8b6bc17208c560684",
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+        "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+        "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -23.073026016047905,
+        "mic_peak_dbfs": -16.24191483739264,
+        "mic_full_scale_samples": 0
+      }
+    },
+    {
+      "file": "05-listener-on.npz",
+      "sha256": "bfff284593e06a0678bc52a941101d6be057263998f9be490568a51cd81ac3c2",
+      "metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "b71a0e64-f284-4afe-8103-c56d6a66456a",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "room_v1_20261021",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 817,
+        "gain_db_actual": -14.002757828707178,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 390625,
+        "first_frame": 374241,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 8.0,
+        "completion_poll_seconds": 8.00097665299836,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 1,
+        "source_end_frame_exclusive": 1,
+        "source_schedule_verified": true,
+        "source_pcm16_sha256": "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7",
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+        "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+        "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -37.93109866154068,
+        "mic_peak_dbfs": -23.397726067220436,
+        "mic_full_scale_samples": 0
+      }
+    },
+    {
+      "file": "06-path-gate.npz",
+      "sha256": "b054138ef3a5a81090763982d83a26de98633075bd6e622145b62952b7e4c646",
+      "metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "b3d59433-a2fc-49bf-ad96-c48713580ee2",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": true,
+        "fixture_id": "room_v1_20261021",
+        "bypass": false,
+        "zero_coeff": false,
+        "gain_q12": 0,
+        "gain_db_actual": null,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 49804,
+        "first_frame": 33420,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 1.01998592,
+        "completion_poll_seconds": 1.0227726020002592,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 48828,
+        "source_end_frame_exclusive": 48828,
+        "source_schedule_verified": true,
+        "source_pcm16_sha256": "f65c5606890ffb0ca2624396a8b7bd4f874dff7b13c5a4d8b6bc17208c560684",
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+        "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+        "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -21.229314950819493,
+        "mic_peak_dbfs": -15.211596646871484,
+        "mic_full_scale_samples": 0
+      }
+    },
+    {
+      "file": "07-fir-off.npz",
+      "sha256": "4b14d270c6c7d5c243d5b073eda129b0df62af7529c095cb03b11ae85dbaff71",
+      "metadata": {
+        "schema_version": 1,
+        "artifact_kind": "replay_trial",
+        "capture_id": "5444e069-3e6f-4ffd-82d4-a335357a8aa3",
+        "driver_evidence_version": "a-replay-evidence-v2",
+        "source": "board",
+        "forward_path_open": false,
+        "fixture_id": "room_v1_20261021",
+        "bypass": true,
+        "zero_coeff": false,
+        "gain_q12": 817,
+        "gain_db_actual": -14.002757828707178,
+        "hp_volume": 40,
+        "sample_rate_hz": 48828.125,
+        "pll_readback": "000000002803",
+        "frames": 16384,
+        "completed_frames": 122070,
+        "first_frame": 105686,
+        "capture_status": 32769,
+        "sound_seconds_nominal": 2.4999936,
+        "completion_poll_seconds": 2.501952986998731,
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0,
+        "clip_counts_raw": [
+          0,
+          0,
+          0
+        ],
+        "early_stop": false,
+        "stop_reason": "completed",
+        "source_frames": 91308,
+        "source_end_frame_exclusive": 91308,
+        "source_schedule_verified": true,
+        "source_pcm16_sha256": "2c21009ce7f6e83f025645bca979c45855fe9098d56c68ce4648cca349e2ccd7",
+        "bit_sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339",
+        "model_sha256": "c8be7f78e7ccb73c8b023aa9e74ddaa0914bc4dabf1e2de91ce46114a0679f9a",
+        "coefficients_sha256": "c9d3b1e658fd2ed8b731904eaa1f2bec62677b732f5bebe1acf34f1d96fa2160",
+        "logical_taps": 512,
+        "loaded_taps": 512,
+        "coefficient_status": 8202,
+        "zero_padded": false,
+        "verification": {
+          "bit_exact": true,
+          "prediction_mismatches": 0,
+          "residual_mismatches": 0,
+          "output_mismatches": 0,
+          "history_excluded_frames": 512,
+          "evaluated_frames": 15872,
+          "interpretation": "played[n]=source[n]+gain(residual[n-2]); arithmetic only"
+        },
+        "interpretation": "bounded closed loop; NOT measured MSG/ASG",
+        "mic_rms_dbfs": -38.014081812917766,
+        "mic_peak_dbfs": -24.558054980664107,
+        "mic_full_scale_samples": 0
+      }
+    }
+  ],
+  "raw_npz_in_return": false,
+  "hearing_provenance": {
+    "user_report": "PROXY; SSH noninteractive",
+    "explicit_top_level_proxy_field_present": true,
+    "assessment": "human speech and hearing not independently verified; must not mark passed"
+  },
+  "asset_inventory": [
+    {
+      "path": "board/audio_bringup/audio_bringup.bit",
+      "bytes": 4045674,
+      "sha256": "10e56e5a007822032477cff9125399d52246cd50c8586578263da6b82c548e5a"
+    },
+    {
+      "path": "board/audio_bringup/audio_bringup.hwh",
+      "bytes": 195151,
+      "sha256": "3b690c0320d8a48359563f94ef99907b11328ae092ffde06a369a5decbe62475"
+    },
+    {
+      "path": "board/audio_calibrate/audio_calibrate.bit",
+      "bytes": 4045674,
+      "sha256": "6e22cbfcf0d0e9c553b8d8c2b39a06e824dd4b0389a952deb115f25d717b18a7"
+    },
+    {
+      "path": "board/audio_calibrate/audio_calibrate.hwh",
+      "bytes": 255054,
+      "sha256": "944f97237e74fc45c7b8664c89c21caa3680c0afe8be7395e4a2b8263ddd3ae3"
+    },
+    {
+      "path": "board/audio_capture/audio_capture.bit",
+      "bytes": 4045674,
+      "sha256": "da6bdd6062af29396bf94395aa13f169d977f54e9436d34080ce65e55e100039"
+    },
+    {
+      "path": "board/audio_capture/audio_capture.hwh",
+      "bytes": 254925,
+      "sha256": "9ac54f34f32efde95d2b81bab41eac540fa895a5d181c08cb1533d39bc0753a2"
+    },
+    {
+      "path": "board/audio_closed/audio_closed.bit",
+      "bytes": 4045674,
+      "sha256": "4d49dfbe53180536f0c2302a19ed6ead23e3336e959dd50567dc647473635316"
+    },
+    {
+      "path": "board/audio_closed/audio_closed.hwh",
+      "bytes": 344318,
+      "sha256": "328a1c608192328434dcd6b5be0c0e1d6e8b1c483bfc92a1b243129a997cf010"
+    },
+    {
+      "path": "board/audio_diag/audio_diag.bit",
+      "bytes": 4045674,
+      "sha256": "dcc3dee7279a22f11f8b4489ef263a63fbb159165c08e382e50708b2768c1d58"
+    },
+    {
+      "path": "board/audio_diag/audio_diag.hwh",
+      "bytes": 254757,
+      "sha256": "907f7dfbca743732e36a66b3134bf4a037cecb8af60003633963b613c616ae2c"
+    },
+    {
+      "path": "board/audio_probe/audio_probe.bit",
+      "bytes": 4045674,
+      "sha256": "610a31727e243f0c83ce912e8105aa1c8ef6eaff037ebd13a817dd2c816dd06e"
+    },
+    {
+      "path": "board/audio_probe/audio_probe.hwh",
+      "bytes": 224968,
+      "sha256": "96710b7de3d8c842f821434f2f9dd6ed96036138e48547b10b779dbf79ba12b5"
+    },
+    {
+      "path": "board/audio_replay/audio_replay.bit",
+      "bytes": 4045674,
+      "sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+    },
+    {
+      "path": "board/audio_replay/audio_replay.hwh",
+      "bytes": 403965,
+      "sha256": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb"
+    },
+    {
+      "path": "board/audio_replay/rollback-v1/audio_replay.bit",
+      "bytes": 4045674,
+      "sha256": "8b2426f4fbcf27425731899557b179d2aea8a4ec2fa26dcc11b60102ecb45339"
+    },
+    {
+      "path": "board/audio_replay/rollback-v1/audio_replay.hwh",
+      "bytes": 403965,
+      "sha256": "3873b16b0e273945be8acff0cdebcfbc6e41a6b694d179d3b62955fd452505bb"
+    },
+    {
+      "path": "board/audio_replay/v2/audio_replay.bit",
+      "bytes": 4045674,
+      "sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa"
+    },
+    {
+      "path": "board/audio_replay/v2/audio_replay.hwh",
+      "bytes": 403966,
+      "sha256": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b"
+    },
+    {
+      "path": "board/audio_residual/audio_residual.bit",
+      "bytes": 4045674,
+      "sha256": "d42651d8c3a3e4ee0d885e214603ede75b81152bddd0dba40de49f6a5cceba57"
+    },
+    {
+      "path": "board/audio_residual/audio_residual.hwh",
+      "bytes": 285072,
+      "sha256": "01cf3507f6ec7d785b3d0328265369123dd7aa26039ad71c27a2a19aebab48d1"
+    },
+    {
+      "path": "board/audio_tone/audio_tone.bit",
+      "bytes": 4045674,
+      "sha256": "c6dfd6e64b2e60548142438dccc9984387bd28c26201c13120a9be9d49ce9a5d"
+    },
+    {
+      "path": "board/audio_tone/audio_tone.hwh",
+      "bytes": 254757,
+      "sha256": "f65f552d18ef666136af725dce65d737f4db4d2e2244c7856dedb977601e369d"
+    }
+  ],
+  "declared_v2_assets": {
+    "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+    "hwh_sha256": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b"
+  },
+  "declared_v2_found": {
+    "bit_sha256": true,
+    "hwh_sha256": true
+  },
+  "continuous_report": {
+    "schema_version": 1,
+    "topic": "v2 bitstream build and continuous-run acceptance (captain-approved 2026-10-25)",
+    "recorded_at": "2026-10-25",
+    "recorded_by": "A",
+    "build": {
+      "vivado": "2018.3",
+      "part": "xc7z020clg400-1",
+      "built_from": "A branch 1c84de9 exported to D:\\a (short path; the worktree path is 108 characters and Vivado then fails to resolve the BD module source)",
+      "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+      "hwh_sha256": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b",
+      "max_run_frames_in_hwh": 3000000,
+      "timing": "All user specified timing constraints are met (route report WNS 0.799 ns, WHS 0.012 ns)",
+      "utilization": {
+        "slice_luts_pct": 6.62,
+        "block_ram_pct": 80.0,
+        "dsps_pct": 1.36
+      },
+      "note": "same LUT/BRAM/DSP as v1; the only change is the MAX_RUN_FRAMES comparison constant"
+    },
+    "deployment": {
+      "board_dir": "/home/xilinx/jupyter_notebooks/base/audio/audio_live",
+      "v2_bit_on_board": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+      "v1_kept_on_board_as": [
+        "rollback_v1_audio_replay.bit",
+        "rollback_v1_audio_replay.hwh"
+      ],
+      "pitfall": "live_run reads MAX_RUN_FRAMES from the HWH next to the output file; a stale copy in runs/ made it report v1 (488281) until the output directory was pointed at the v2 files"
+    },
+    "acceptance": {
+      "5s": {
+        "frames_requested": 244140,
+        "frames_completed": 244140,
+        "elapsed_s": 5.007,
+        "stop_reason": "completed",
+        "status": 32769,
+        "counts": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "pl_contract": "v2"
+      },
+      "60s": {
+        "frames_requested": 2929687,
+        "frames_completed": 2929687,
+        "elapsed_s": 60.016,
+        "stop_reason": "completed",
+        "status": 32769,
+        "status_decoded": {
+          "done": true,
+          "config_rejected": false,
+          "fault": false
+        },
+        "counts": {
+          "prediction": 0,
+          "residual": 0,
+          "gain": 0,
+          "mix": 0
+        },
+        "timeline_points": 2952,
+        "max_poll_gap_s": 0.0251,
+        "first": [
+          0.0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "last": [
+          60.015,
+          2929687,
+          32769,
+          0,
+          0,
+          0,
+          0
+        ],
+        "pl_contract": "v2"
+      },
+      "stop_file_test": {
+        "requested_s": 20.0,
+        "frames_requested": 976562,
+        "frames_completed": 81612,
+        "elapsed_s": 1.672,
+        "stop_reason": "operator_stop_file",
+        "t_stop_request": 1.6713,
+        "t_stop_detected": 1.6713,
+        "t_disarm_ok": 0.0001,
+        "t_mute_ok": 0.0008,
+        "t_cleanup_done": 1.6723,
+        "stop_latency_s": 0.001,
+        "muted": true,
+        "disarm_ok": true,
+        "mute_ok": true
+      }
+    },
+    "observation_scope": "register timeline (~49 Hz, 2952 points over 60 s) plus the tail PCM (last 16384 frames = 0.336 s). This is run/protection/stop evidence only; it does not claim 60 s of audio quality or howling suppression.",
+    "conditions_closed": {
+      "1_contract_and_capability": true,
+      "2_counters_and_protection_recording": true,
+      "3_stop_measurement": true,
+      "5_continuous_60s": true,
+      "6_rollback_package": true,
+      "4_fault_injection": "pending: to be done with simulated registers or output-muted injection, not by creating audible runaway"
+    }
+  },
+  "continuous_raw_timeline_present": false,
+  "continuous_tail_pcm_present": false,
+  "continuous_acceptance": "A reports engineering completion and stop; C accepts scope, not yet independently reproduced",
+  "live_run_static_review": {
+    "before_start_parameter_present": false,
+    "npz_save_in_protected_try": false,
+    "integration_requests": [
+      "A-owned muted after-configuration start/cancel callback",
+      "NPZ write error must not skip independent status save; preserve save_error and cleanup facts"
+    ]
+  },
+  "missing_for_v2": [
+    "raw evidence and driver acceptance tracked by later fixed commit 1cddd52"
+  ],
+  "decisions": {
+    "workpoint": "reported -14 dB runs completed without counters; no human/acoustic acceptance",
+    "fir": "16384 source-off frames present; -38.014 dBFS below -31.8 dBFS floor; longer waiting does not solve eligibility",
+    "r3": "same -14 dB v1 assets; sustained fixed forcing and same-frame source-on response pairs; no lower floors",
+    "v2": "actual bit/hwh hashes matched; inspect later raw evidence and patched driver separately"
+  },
+  "board_access": false,
+  "v2_build_artifacts": {
+    "files": {
+      "board/audio_replay/v2/audio_replay.bit": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+      "board/audio_replay/v2/audio_replay.hwh": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b",
+      "board/audio_replay/v2/timing.txt": "7645e0595a8c68556af9b83604a40e5fecf71c32729879018494cd54e5a84d69",
+      "board/audio_replay/v2/utilization.txt": "7171f628fc1655d15542b4a49a1e63136a835870e9d1c46c7ba707173e7620b2",
+      "board/audio_replay/v2/drc.txt": "cac6bac5e6f43fc051385c7114702741a176139cd7836fc47df2900710c53fb0"
+    },
+    "timing_wns_ns": 0.801,
+    "timing_whs_ns": 0.015,
+    "input_ports_without_delay": 1,
+    "output_ports_without_delay": 3,
+    "full_external_io_signoff": false,
+    "hwh_max_run_frames": 3000000
+  }
+}

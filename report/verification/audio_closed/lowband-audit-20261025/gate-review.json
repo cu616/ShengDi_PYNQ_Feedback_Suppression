@@ -1,0 +1,126 @@
+{
+  "gates": [
+    {
+      "passed": true,
+      "baseline_dbfs": null,
+      "capture_sha256": "2ae433769215933e9415c5c0c13e8bac502b80ad5673ed508811024e5a2412d9",
+      "first_frame": 47092,
+      "end_frame": 49316,
+      "reasons": [],
+      "rms_dbfs": -26.511922873225153,
+      "tonal_fraction": 0.9209871949412609,
+      "drift_db": null,
+      "reference_rms_dbfs": -23.014578347513837,
+      "mic_over_ref_db": -3.4973445257113163,
+      "operational_drift_limit_db": 5.0,
+      "path": "gate_tones/tone_0.npz",
+      "drift_from_first_db": 0.0,
+      "would_pass_original_1p5_db_gate": true
+    },
+    {
+      "passed": true,
+      "baseline_dbfs": null,
+      "capture_sha256": "4994a79b1a3f9cd1a5c3e2f7b581fbb980f0d1288a322f57c8fc2498f6efa1e8",
+      "first_frame": 47092,
+      "end_frame": 49316,
+      "reasons": [],
+      "rms_dbfs": -27.87408080889564,
+      "tonal_fraction": 0.9283463095011487,
+      "drift_db": null,
+      "reference_rms_dbfs": -23.014578347513837,
+      "mic_over_ref_db": -4.859502461381805,
+      "operational_drift_limit_db": 5.0,
+      "path": "gate_tones/tone_1.npz",
+      "drift_from_first_db": -1.3621579356704885,
+      "would_pass_original_1p5_db_gate": true
+    },
+    {
+      "passed": true,
+      "baseline_dbfs": null,
+      "capture_sha256": "3b964c7a597fd449fab587de54c11506980e912e7a7a2da23bc66fd2a1700977",
+      "first_frame": 47092,
+      "end_frame": 49316,
+      "reasons": [],
+      "rms_dbfs": -27.480094468387847,
+      "tonal_fraction": 0.9174498596890318,
+      "drift_db": null,
+      "reference_rms_dbfs": -23.014578347513837,
+      "mic_over_ref_db": -4.46551612087401,
+      "operational_drift_limit_db": 5.0,
+      "path": "gate_tones/tone_2.npz",
+      "drift_from_first_db": -0.9681715951626941,
+      "would_pass_original_1p5_db_gate": true
+    },
+    {
+      "passed": true,
+      "baseline_dbfs": null,
+      "capture_sha256": "7899da884b2f6a926f254d41a868a79706c1e4db3aa21f09df49c8f474b0049b",
+      "first_frame": 47092,
+      "end_frame": 49316,
+      "reasons": [],
+      "rms_dbfs": -27.385990597919655,
+      "tonal_fraction": 0.9123804314232501,
+      "drift_db": null,
+      "reference_rms_dbfs": -23.014578347513837,
+      "mic_over_ref_db": -4.371412250405818,
+      "operational_drift_limit_db": 5.0,
+      "path": "gate_tones/tone_3.npz",
+      "drift_from_first_db": -0.8740677246945019,
+      "would_pass_original_1p5_db_gate": true
+    },
+    {
+      "passed": true,
+      "baseline_dbfs": null,
+      "capture_sha256": "b6a9b827da18c1dd1e4d9693e72544a3e9ee3e2455d49151d83d84608d9726fb",
+      "first_frame": 47092,
+      "end_frame": 49316,
+      "reasons": [],
+      "rms_dbfs": -25.73374877099875,
+      "tonal_fraction": 0.8611889479340109,
+      "drift_db": null,
+      "reference_rms_dbfs": -23.014578347513837,
+      "mic_over_ref_db": -2.719170423484915,
+      "operational_drift_limit_db": 5.0,
+      "path": "gate_tones/tone_4.npz",
+      "drift_from_first_db": 0.7781741022264015,
+      "would_pass_original_1p5_db_gate": true
+    },
+    {
+      "passed": true,
+      "baseline_dbfs": null,
+      "capture_sha256": "43427ba13cce3a5e68b670403c23fcc84dd0f1de0ce44604d46e736e4d35c650",
+      "first_frame": 47092,
+      "end_frame": 49316,
+      "reasons": [],
+      "rms_dbfs": -27.168041813366234,
+      "tonal_fraction": 0.8896578280766511,
+      "drift_db": null,
+      "reference_rms_dbfs": -23.014578347513837,
+      "mic_over_ref_db": -4.153463465852397,
+      "operational_drift_limit_db": 5.0,
+      "path": "gate_tones/tone_5.npz",
+      "drift_from_first_db": -0.6561189401410807,
+      "would_pass_original_1p5_db_gate": true
+    }
+  ],
+  "repeatability": {
+    "count": 6,
+    "std_convention": "population; ddof=0",
+    "rms_dbfs": {
+      "count": 6,
+      "range_db": 2.14033203789689,
+      "std_db": 0.7082136840392325
+    },
+    "reference_rms_dbfs": {
+      "count": 6,
+      "range_db": 0.0,
+      "std_db": 0.0
+    },
+    "mic_over_ref_db": {
+      "count": 6,
+      "range_db": 2.14033203789689,
+      "std_db": 0.7082136840392326
+    }
+  },
+  "maximum_drift_from_first_db": 1.3621579356704885
+}

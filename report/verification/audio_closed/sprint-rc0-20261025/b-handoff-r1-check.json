@@ -1,0 +1,20 @@
+{
+  "artifact": "build/packages/c-r4-to-b-r1.zip",
+  "size_bytes": 376395,
+  "sha256": "474975275f63173e490c23ea3d97ad77c0a78a5d0977ba8da807bb7bdfc20367",
+  "c_source_commit": "c0af3796569f621a3c4c48e91e5958796809058a",
+  "a_result_commit": "d013930f0624c35101c92cc8b62d985f10e21e0c",
+  "b_revision_commit": "71d6a349af3af2675e5be95b583180902ab9a090",
+  "payload_hashes_verified": 14,
+  "original_a_return_and_summaries_byte_identical": true,
+  "pairs": 2,
+  "metadata_qualified": true,
+  "raw_waveform_independent_review": "pending five existing NPZ files",
+  "publication_wording_open": [
+    "N1",
+    "N2",
+    "N3"
+  ],
+  "raw_audio_included": false,
+  "hardware_access": false
+}

@@ -1,0 +1,17 @@
+test_negative_full_scale_is_legal (b_boundary_cases.RailBoundaryTest.test_negative_full_scale_is_legal) ... ok
+test_clamp_keeps_negative_rail (b_boundary_cases.RailBoundaryTest.test_clamp_keeps_negative_rail) ... ok
+test_half_value_away_from_zero_negative (b_boundary_cases.GainRoundingTest.test_half_value_away_from_zero_negative)
+RTL：(|p|+2048)>>12 再恢复符号。−2048 应得 −1，Python 向下取整会得 0。 ... ok
+test_half_value_away_from_zero_positive (b_boundary_cases.GainRoundingTest.test_half_value_away_from_zero_positive) ... ok
+test_sign_symmetry (b_boundary_cases.GainRoundingTest.test_sign_symmetry) ... ok
+test_floor_would_differ (b_boundary_cases.GainRoundingTest.test_floor_would_differ)
+证明这里确实不是向下取整：同一组值两种算法结果不同。 ... ok
+test_history_prefix_is_excluded (b_boundary_cases.AnalyzeTest.test_history_prefix_is_excluded) ... ok
+test_substituted_model_stops_attribution (b_boundary_cases.AnalyzeTest.test_substituted_model_stops_attribution) ... ok
+test_growth_coverage_is_reported_in_ms (b_boundary_cases.AnalyzeTest.test_growth_coverage_is_reported_in_ms) ... ok
+test_valid_window_in_ms (b_boundary_cases.AnalyzeTest.test_valid_window_in_ms) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.115s
+
+OK

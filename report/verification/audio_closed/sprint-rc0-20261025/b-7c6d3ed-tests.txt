@@ -1,0 +1,33 @@
+手机保持静音。3项：直放确认、旁路、抵消；每项2.40秒，总发声最多7.20秒。
+反馈增益−35 dB；录音注入峰值-30.00 dBFS（两模式完全相同）。
+[1/3] direct 配置完成，当前静音。
+[2/3] bypass 配置完成，当前静音。
+[3/3] cancel 配置完成，当前静音。
+结束。返回这个文件：D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\tmp\b-7c6d3ed\tmp\tmpi4xhhqj2\out\replay_c29e5ab3980d\summary.json
+原始WAV/NPZ留在板卡。
+手机保持静音。3项：直放确认、旁路、抵消；每项2.40秒，总发声最多7.20秒。
+反馈增益−35 dB；录音注入峰值-30.00 dBFS（两模式完全相同）。
+[1/3] direct 配置完成，当前静音。
+结束。返回这个文件：D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\tmp\b-7c6d3ed\tmp\tmptl7wq7dg\out\replay_8e2de72117c9\summary.json
+原始WAV/NPZ留在板卡。
+手机保持静音。3项：直放确认、旁路、抵消；每项2.40秒，总发声最多7.20秒。
+反馈增益−35 dB；录音注入峰值-30.00 dBFS（两模式完全相同）。
+[1/3] direct 配置完成，当前静音。
+停止阶段：direct；原因：KeyboardInterrupt:
+结束。返回这个文件：D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\tmp\b-7c6d3ed\tmp\tmpcw55htp5\out\replay_2450a896fa1e\summary.json
+原始WAV/NPZ留在板卡。
+手机保持静音。3项：直放确认、旁路、抵消；每项2.40秒，总发声最多7.20秒。
+反馈增益−35 dB；录音注入峰值-30.00 dBFS（两模式完全相同）。
+[1/3] direct 配置完成，当前静音。
+停止阶段：direct；原因：RuntimeError: 数字核对或饱和检查失败，停止后续项目
+结束。返回这个文件：D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\tmp\b-7c6d3ed\tmp\tmph_l656o9\out\replay_64388d802af6\summary.json
+原始WAV/NPZ留在板卡。
+手机保持静音。3项：直放确认、旁路、抵消；每项2.40秒，总发声最多7.20秒。
+反馈增益−35 dB；录音注入峰值-30.00 dBFS（两模式完全相同）。
+结束。返回这个文件：D:\Flushbonading_Contest\ShengDi_PYNQ_Feedback_Suppression\tmp\b-7c6d3ed\tmp\tmphtle2ytd\out\replay_e222101c9f0f\summary.json
+原始WAV/NPZ留在板卡。
+......................................................................................................................................
+----------------------------------------------------------------------
+Ran 134 tests in 15.255s
+
+OK

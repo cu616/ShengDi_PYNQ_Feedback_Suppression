@@ -1,0 +1,39 @@
+{
+  "artifact": "build/packages/c-sprint-rc0.zip",
+  "sha256": "ff262845026255998b700bd8b731da43622ea2451bd28e4335cb9c61c42a71d0",
+  "size_bytes": 293574,
+  "source_commits": {
+    "A": "bb56ef13300dbfecb6bbd525528a0dcf47ebd7e6",
+    "C": "c546c459eb4b3dcd1c2e0550cc953d2cc09d00d2"
+  },
+  "source_tree_clean": true,
+  "payload_hashes_verified": 22,
+  "c_source_blob_matches": 6,
+  "a_exact_blob_matches": 6,
+  "notebook_code_cells": 1,
+  "notebook_first_line": "# C sprint RC0: fixed baseline, single entry",
+  "actual_packaged_notebook_cancel_executed": true,
+  "board_imports": false,
+  "driver_acceptance_passed": true,
+  "driver_acceptance_cases": 8,
+  "full_software_regression": {
+    "tests": 142,
+    "status": "passed",
+    "evidence": "tests.txt"
+  },
+  "full_software_orchestration": {
+    "trials": 13,
+    "fir_pairs": 2,
+    "status": "passed",
+    "evidence": "b-consumer.json"
+  },
+  "prior_packaging_failure": {
+    "reason": "Python cache declared in manifest but excluded from ZIP",
+    "detected_by": "independent extraction",
+    "fixed_in": "c546c459eb4b3dcd1c2e0550cc953d2cc09d00d2",
+    "final_archive_verified": true
+  },
+  "hardware_test": "not_tested",
+  "continuous_60s": "not_tested",
+  "independent_board_reproduction": "not_tested"
+}

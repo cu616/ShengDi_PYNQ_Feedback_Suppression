@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "suite": "c-a-driver-acceptance-v3",
+  "hardware_access": false,
+  "driver_sha256": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
+  "accepted": false,
+  "cases": [
+    {
+      "name": "v3_oracle_legal_negative_rail",
+      "passed": false,
+      "reason": "wide diagnostic disagrees with strict observed mic-pred range",
+      "observed": {
+        "bit_exact": true,
+        "prediction_mismatches": 0,
+        "residual_mismatches": 0,
+        "output_mismatches": 0,
+        "wide_residual_frames": 640,
+        "history_excluded_frames": 0,
+        "evaluated_frames": 640,
+        "output_checked_frames": 638,
+        "interpretation": "played[n]=source[n]+gain(wide residual[n-2]), one clamp after gain; arithmetic only"
+      }
+    }
+  ]
+}

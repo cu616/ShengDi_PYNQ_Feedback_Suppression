@@ -1,0 +1,31 @@
+{
+  "audit_version": "c-lowband-audit-1.0.0",
+  "source_a_commit": "1003728",
+  "packet_sha256": "3e327d04c940630c17ba90f607c6ab38e7f0fc02d356f965bcc3cc228aac1c7c",
+  "members": 39,
+  "npz_files": 27,
+  "original_manifest_npz_hashes_verified": 27,
+  "model_hash_and_Q20_verified": true,
+  "metadata_binding_issues": [],
+  "original_manifest_unbound_members": [
+    "scripts/a-band-12k-2026-10-24.json",
+    "scripts/a-lowband-2026-10-24.json",
+    "scripts/band_12k.py",
+    "scripts/bandlimit_feasibility.py",
+    "scripts/decimation_bands.py",
+    "scripts/fit_side_merged.py",
+    "scripts/fractional_delay.py",
+    "scripts/memory_sweep.py",
+    "scripts/replay_calibration.py",
+    "scripts/replay_trial.py"
+  ],
+  "manifest_missing_claim": [],
+  "metadata_missing_fields_retained": true,
+  "raw_PCM_written_to_report": false,
+  "board_access": false,
+  "new_field_acquisitions": 0,
+  "measured_msg_db": null,
+  "measured_asg_db": null,
+  "memory_sweep_independently_reproduced": false,
+  "memory_sweep_reason": "A memory_sweep uses a different 20-segment sideways dataset absent from this 16-segment upright package"
+}

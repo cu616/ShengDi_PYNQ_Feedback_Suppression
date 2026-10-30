@@ -1,0 +1,3 @@
+﻿index,gain_db_requested,mode,hearing,error,gain_q12,hp_volume,bit_sha256,gain_db_actual,mic_rms_dbfs,mic_peak_dbfs,prediction_saturations,residual_saturations,gain_saturations,bit_exact,file
+1,-30,bypass,not_measured,,130,40,66c34e6dcbad6209da770f14cad1587706f87e90dead13eb9188f471e373098a,,,,0,0,0,True,
+2,-30,cancel,not_measured,,130,40,66c34e6dcbad6209da770f14cad1587706f87e90dead13eb9188f471e373098a,,,,0,0,0,True,
