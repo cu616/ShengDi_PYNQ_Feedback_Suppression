@@ -1,0 +1,14 @@
+/raw/
+/private/
+/staging/
+/final/
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.m4a
+*.rar
+*.zip
+*.npz
+*.npz.*
+__pycache__/

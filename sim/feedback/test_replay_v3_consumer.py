@@ -14,8 +14,16 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'board/audio_replay'))
 from evaluation import analyze_npz, classify, verify_v3_words
 from model_comparison import V3_BIT, V3_IDENTITY, V3_IDENTITY_PROFILES, v3_identity_errors, protection_evidence, flat_trial
-from replay_tools import verify_replay as old_verify
 from tail_metrics import tail_statistics
+
+# The running helper can legitimately be A's corrected v3 helper after integration.
+# Pin the historical numerical counterexample separately; never put it on the runtime path.
+legacy_path = ROOT/'sim/feedback/fixtures/legacy-replay-tools-v2.py'
+assert hashlib.sha256(legacy_path.read_bytes()).hexdigest() == 'e3c748e07a6e87e9dd1522eebe11a24e171407039d35142590e70a85dc6bb767'
+legacy_spec = importlib.util.spec_from_file_location('legacy_replay_oracle', legacy_path)
+legacy_module = importlib.util.module_from_spec(legacy_spec)
+legacy_spec.loader.exec_module(legacy_module)
+old_verify = legacy_module.verify_replay
 
 spec = importlib.util.spec_from_file_location('itemized_consumer', ROOT/'scripts/review_itemized_20261027.py')
 itemized = importlib.util.module_from_spec(spec)

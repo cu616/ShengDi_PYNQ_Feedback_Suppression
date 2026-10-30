@@ -1,0 +1,1451 @@
+diff --git a/.gitattributes b/.gitattributes
+index bbcadb9..7974894 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -7,9 +7,6 @@
+ *.xdc -text
+ *.hwh -text
+ *.bit binary
+-board/audio_replay/README.md -text
+-board/audio_replay/*.ipynb -text
+-board/audio_replay/*.json -text
+ 
+ # 时间线是只追加的：两个人同时往顶部加条目时，git 默认会判冲突。
+ # union 合并会把双方新增的行都保留，正好符合"谁都不许删别人的条目"的规则。
+@@ -20,6 +17,15 @@ board/audio_replay/*.json -text
+ # 副作用：合并后两条同日条目的先后顺序不保证，所以每条都必须自带日期。
+ docs/log/progress.md merge=union
+ 
++board/audio_replay/README.md -text
++board/audio_replay/*.ipynb -text
++board/audio_replay/*.json -text
+ board/audio_replay/*.html -text
+-
+ board/audio_replay/start-panel.sh -text
++
++# Preserve B model-package SHA256 across checkout.
++/models/** -text
++
++# The room review is a byte-frozen evidence bundle, including original models.
++/report/verification/audio_closed/room-review-20261024/** -text
++/report/verification/audio_closed/lowband-audit-20261025/** -text
+diff --git a/board/audio_replay/README.md b/board/audio_replay/README.md
+index 8fd1824..4b1ca30 100644
+--- a/board/audio_replay/README.md
++++ b/board/audio_replay/README.md
+@@ -1,51 +1,85 @@
+-# audio_replay：发布入口与历史版本索引
+-
+-动态状态、允许配置、验证范围只查 [STATE](../../docs/STATE.md)。本页回答“文件用来做什么、哪些不能混用”，不是新的发声授权。
+-
+-## 从哪里取发布文件
+-
+-电脑端从 [v3/manifest.json](v3/manifest.json) 取得文件清单，按其 `hashes` 核对 [v3/](v3/) 内整组载荷。
+-该目录保存 bit/hwh、配套驱动与检查器；模型另按 manifest 的 `model` 身份取得，**v3 目录本身不包含全部场景数据和现场入口**。
+-
+-A 记录的板卡部署目录为 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide/`。
+-不要将 `board/audio_replay/` 整目录上传：顶层 `audio_replay.bit/.hwh`、顶层 `manifest.json` 是历史版本，顶层维护脚本又已更新，混装会造成版本错误。
+-
+-## 文件分类
+-
+-| 文件 / 目录 | 标注 | 保留用途与使用限制 |
+-|---|---|---|
+-| [v3/](v3/) | 工程基线载荷 | 使用自己的 manifest；精确身份和验证状态见 STATE |
+-| 顶层 `replay_trial.py`、`replay_tools.py`、`tone_round_guard.py` 及相应测试 | 维护源码 | 对应发布时按 v3 哈希核验；不与顶层旧 bit/hwh 组合运行 |
+-| [v2/](v2/) | 历史回退材料 | 只有 bit/hwh 和实现报告；配套驱动需取已记录版本，不能借用 v3 驱动 |
+-| [rollback-v1/](rollback-v1/) | v1 回退快照 | 保留原 manifest 和文件，按快照恢复；恢复前核对其他导入依赖，不能当 v3 启动步骤 |
+-| 顶层 `audio_replay.bit/.hwh`、`manifest.json` | 早期构建原件 | 保留审计；顶层历史 manifest 不描述后来更新的维护源码，不修改旧哈希凑通过 |
+-| `click_panel.py`、`click-panel.html`、`start-panel.sh`、`replay_trial.ipynb`、`replay_session.py`、`sweep_plan.py`、`sweep_session.py` | 历史交互 / 扫档入口 | 早期盒内实验使用，未经现行整包集成不得直接作为演示入口 |
+-| `live_pa.py`、`live_pa.ipynb`、`live_run.py`、`run_rc4_human*.sh`、`run_human_r1.sh` | 历史使用 / 验收入口 | 保留流程与故障复现价值；旧时长、路径和模型不能当成新配置 |
+-| [field_ac_segments_v3.sh](field_ac_segments_v3.sh) | v3 已有分段现场入口 | 读取板上 `ac_mode.txt` 的 tone/speech，使用真实现场确认令牌；实际参数和版本先核对 STATE，不自动运行 |
+-| [long60_v3.sh](long60_v3.sh) | 专项连续运行脚本 | 使用零系数；不把它的运行结果当成候选算法收益。已通过无变化不重复 |
+-| [tone_arms_v3.sh](tone_arms_v3.sh) | 已替代的纯音入口 | 留作追溯；三臂 manifest 统一由 `field_ac_segments_v3.sh` 的 tone 模式生成 |
+-| [field_ab_alternate_v3.sh](field_ab_alternate_v3.sh)、[played_level_report.sh](played_level_report.sh) | 有已知测量限制的历史尝试 | 源停止尾窗、全目录 glob、无有效源行回退问题未完成修复；**排除在正式收益测量入口之外** |
+-| `verify_*v3*.sh`、`clap_test_v3.sh`、`speaker_check_v3.sh`、`listen_probe_v3.sh`、`level_ladder_v3.sh`、`peak_scan_v3.sh`、其他 `field_*` | 专项诊断 / 当时现场脚本 | 名含 v3 不等于发布默认入口；只有受影响故障需要时才核对并采用 |
+-| `candidate_room_v1_512.json`、`model_lowcut_250_470_512.json`、`scene.json` 等 | 历史模型 / 配置 | 文件名不是适用性证明；按场景、文件和实际 Q20 哈希识别，不能替代 manifest 指定候选 |
+-
+-## 旧驱动怎样辨认
+-
+-以下是版本索引，不改变任何旧程序字节。短哈希用于识别，真正装载仍核对完整哈希。
+-
+-| 驱动 SHA256 前缀 | 保留位置 / 历史来源 | 说明 |
+-|---|---|---|
+-| `79c4d9f7` | [v3/replay_trial.py](v3/replay_trial.py) | 发布驱动身份以 manifest 为准 |
+-| `c2b2a86a` | A 历史提交 `f404948` 的 v3 文件 | 解除静音等待修复前的版本；仅用于复现旧问题 |
+-| `82787262` | A 历史提交 `e05bb73` 的 v3 文件 | 有输入满幅停声与整对核验，但不是最后交付字节 |
+-| `6b397359` | A 历史提交 `68e19fa` 的驱动 | 早期 v3，不能拿其验收范围替代后续版本 |
+-| `2127663` | [rollback-v1/replay_trial.py](rollback-v1/replay_trial.py)；板上历史 `audio_live` | 旧保护语义；v1/v2 的具体 bit/hwh 必须按各次记录配对 |
+-
+-板上 `audio_live` 是保留的 v2 回退目录，`audio_wide` 是 v3 目录；本轮没有连接或更改它们。
+-需要找旧驱动时先用 Git 的只读查看或导出到单独目录，勿覆盖当前 v3 同名文件。
+-
+-## 已有数据复算与恢复
+-
+-C 的精确轮次分析入口与固定提交见 [STATE 的 C 段](../../docs/STATE.md#c-测评与工具)。A 已生成的派生回包直接用于后续复核，不能把“等待 C 回执”误写成“请 A 再跑一次”。
+-回退也必须整组核对版本、依赖、模型与保护语义；先保留当前配置和采集文件，再由 A 安排。目录名含 rollback 不代表可以无条件覆盖正在使用的包。
+-
+-原来的“三格操作”、旧上传目录及按钮页说明已完整保存在 [整理前原文](../../docs/archive/pre-freeze-guide-2026-10-29.md)。它们用于理解历史记录，不作为今天的执行单。
++# 逐档增益 A/B：只按这三格操作
++
++## 优先使用按钮页（2026-10-21）
++
++A已获SSH部署和静默调试授权；上传、版本核验、选档和读摘要均由A完成。用户打开A提供的现场链接即可，勿同时运行Notebook。
++页面不会自动加载overlay或播放。先关闭音响电源，勾选条件、点“准备录音”；等提示后启动手机语音并点“开始录音 · 2秒”。
++录完停止手机外放、恢复音响供电，点“开始本批”。每次按页面勾选现场条件后点“开始本项”，结束点听感。
++“停止后续项目”不能保证实时急停；持续尖叫直接断音响电源。连接掉线时停止后续操作，A负责恢复；单次仍受PL帧预算限制。
++已有source.wav则复用，用户无需重新录音。摘要由A通过SSH读回，原始PCM留板。
++
++下面的Notebook步骤仅作手动备用。
++
++
++本轮回答：手机停止外放后，同一录音、不同反馈增益下，抵消和旁路分别是否出现啸叫、失真或无声。先静默读取已有标定数据选档，不重新标定。
++
++## 1. 上传一次
++
++电脑本地完整包：`D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\build\packages\audio-replay.zip`。
++解压后进入`audio_replay`，共有15个交付文件：
++
++`audio_replay.bit`、`audio_replay.hwh`、`replay_trial.ipynb`、`manifest.json`、`README.md`、`replay_trial.py`、`replay_tools.py`、`replay_session.py`、`closed_tools.py`、`residual_tools.py`、`replay_calibration.py`、`sweep_plan.py`、`sweep_session.py`、`click_panel.py`、`click-panel.html`、`start-panel.sh`。
++
++板卡Jupyter进入 **base → audio → audio_replay**；完整目录：
++`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/`。
++没有目录则在`base → audio`点击`New → Folder`，命名`audio_replay`并进入。
++点击`Upload`选择上述15个文件，再点击列表中的确认`Upload`；更新时覆盖同名程序文件。
++**保留已有source.wav、replay_results及其他目录。** 上传后文件列表应有全部15项。
++
++仅打开这个音频Notebook：
++`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/replay_trial.ipynb`。
++不要同时运行其他音频Notebook，不用Run All。更新旧包后先重启该Notebook内核，关闭音响电源。
++
++## 2. 第1格：静默选档
++
++- 找标题“第1格：静默选档”，代码首行`from pathlib import Path`。点击代码格，Shift+Enter一次。
++- 该格不加载overlay、不发声。复用板卡已有配置：
++  `/home/xilinx/jupyter_notebooks/base/audio/audio_closed/field_setup.json`。
++- 从板卡`/home/xilinx/jupyter_notebooks/base/audio/audio_calibrate/`读取：
++  `training_box_v1.npz`、`validation_box_v1.npz`、`candidate_box_v1_256.json`。
++- 等到列出全部可测档位并显示“静默选档完成”才继续。分析耗时依板卡而定；这时不用讲话或播放手机。
++- 若缺文件、夹具不符、模型无改善或不足两档，返回屏幕打印路径的`summary.json`，到此结束。不要改限制强行通过。
++
++## 3. 第2格：录2秒，然后停手机
++
++- 音响保持断电，箱盖、麦克风与两只音响位置保持原标定状态。
++- 找“第2格：录音2秒”，首行`assert plan_path is not None, ...`，Shift+Enter一次。
++- 等到RECORD提示出现，再让手机在原位置播放语音，输入`RECORD`回车，立即录2秒。
++- 录完**停止手机外放**。已有`source.wav`自动复用；如要换录音，先把旧文件改名备份。
++
++## 4. 第3格：连续完成整批
++
++- 手机已停止外放，恢复音响供电。只用固定音响，勿戴耳机；音响电源须能立即切断。
++- 找“第3格：逐档听音”，首行`result = sweep_session.run_sweep(plan_path)`，Shift+Enter一次。
++- 先看总项数、每项时长，现场就绪输入`READY`。
++- 每项配置完成、提示START后，准备听再输入`START`。立即播放并采样，默认约2.4秒后自动静音。
++- 先做一次直放可听确认；然后按升序每档**先抵消、后旁路**。只改变反馈增益和指定的bypass，整批录音电平固定。
++- 每项结束输入：**0无声，1语音清楚且结束安静，2杂音失真，3啸叫增长，4结束仍响**。只有1继续，其他值停止整批。若旁路出现啸叫，同档抵消项已经完成。
++- 持续尖叫时先断音响电源。输入框不是播放中的实时急停。饱和软件轮询会尝试提前停止，PL帧预算限制单次时长；都不能代替现场断电。
++
++最多8档、17项；录2秒时总发声最多约40.8秒，整轮预留10–15分钟（含分析、上传和操作，非板上实测耗时）。不必每项回聊天。
++
++## 5. 结束，只返回一个文件
++
++在Jupyter **base → audio → audio_replay → replay_results → sweep_<编号>** 下载`summary.json`。
++完整路径：`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/replay_results/sweep_<编号>/summary.json`。
++它包含选档依据、文件哈希、每档实际增益、配对、听感和停止原因。WAV/NPZ留板。
++
++出错或中断：先关闭音响，保留摘要，不连续重跑；内核重启后可重跑第1格产生新批次，已有录音不需重录。配置若修改，必须保存并重新执行第1格，内存中的旧计划不会自动更新。
++
++本流程是预录数字声源下的声反馈增益对照，直放可听不等同于正常麦克风扩声成立。若全部档位均正常，记录“已测范围未找到旁路失稳阈值”；不虚构MSG/ASG。已有数据不支持更高档位时，程序停止而非盲目升增益。
++
++
++### 第1格报Notebook哈希不匹配的恢复
++
++这是旧版把执行次数/输出也计入Notebook文件哈希导致的误判风险。新版只核验按顺序排列的代码格内容。
++已有旧包时，只需从电脑`D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\board\audio_replay\`上传新版`replay_session.py`与`manifest.json`，覆盖板卡`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/`同名文件；Upload后再次点击确认Upload。
++保留Notebook、标定数据、录音和已有结果，然后只重跑“第1格：静默选档”（首行`from pathlib import Path`）。
++这一步不发声；成功列出档位才继续第2格。若报“Notebook代码与程序包不匹配”，则需恢复配套Notebook，因为代码格内容确有差异。
++
++
++### A维护按钮服务
++
++板卡启动解释器固定为 `/usr/local/share/pynq-venv/bin/python`，不可用系统 `/usr/bin/python3`。服务启动仅导入PYNQ检查环境，不配置音频。重启前读取状态确认busy=false，并核对PID对应本目录click_panel.py；保留原会话令牌及计划。错误会显示在主区域，由A处理；录音成功后用户点击下方“2 开始本批”。
++
++启动服务必须用 `bash /home/xilinx/jupyter_notebooks/base/audio/audio_replay/start-panel.sh --plan <板卡计划摘要绝对路径>`，由A提供会话令牌环境变量。脚本加载板卡自带XRT和BOARD配置；只指定Python解释器仍会缺少设备注册。启动会检查设备可发现，不加载overlay。
+diff --git a/board/audio_replay/closed_tools.py b/board/audio_replay/closed_tools.py
+index 2f243c2..64b4e2a 100644
+--- a/board/audio_replay/closed_tools.py
++++ b/board/audio_replay/closed_tools.py
+@@ -8,7 +8,7 @@ RATE = 48828.125
+ def trial_parameters(gain_db, seconds):
+     if not math.isfinite(gain_db) or not -60 <= gain_db <= 18.06179973983887:
+         raise ValueError("gain_db must be finite in -60..20*log10(8)")
+-    if not math.isfinite(seconds) or not 0.02 <= seconds <= 61.44:
++    if not math.isfinite(seconds) or not 0.02 <= seconds <= 10:
+         raise ValueError("seconds must be finite in 0.02..10")
+     return int(math.floor(4096 * 10**(gain_db / 20) + .5)), int(seconds * RATE)
+ 
+diff --git a/board/audio_replay/replay_tools.py b/board/audio_replay/replay_tools.py
+index c7a871d..c0d4584 100644
+--- a/board/audio_replay/replay_tools.py
++++ b/board/audio_replay/replay_tools.py
+@@ -77,58 +77,18 @@ def verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first_frame
+     acc = np.convolve(raw[:, 0], np.r_[np.int64(0), q])[:len(raw)]
+     prediction = np.clip(rounded_shift(acc, 20), -2**23, 2**23-1)
+     residual = raw[:, 1] if bypass else np.clip(raw[:, 1]-prediction, -2**23, 2**23-1)
+-    # audio-replay v3 (docs/contracts/audio-replay-v3.md): the gain multiplies the UNCLAMPED
+-    # 25-bit difference and the only clamp is after the gain. The captured residual is still the
+-    # clamped 24-bit diagnostic value, so the output oracle must be rebuilt from mic - prediction
+-    # instead of from the captured residual; otherwise every clipped transient looks like a
+-    # datapath mismatch. In bypass the hardware multiplies the sign-extended microphone.
+-    #
+-    # The prediction used here is the RECORDED one (raw[:,2]), not the recomputed convolution.
+-    # C 2026-10-27: with a truncated ring the recomputed prediction has no history for the first
+-    # `skip` frames, so an overflow that already happened there was reported as 0. The recorded
+-    # prediction is exactly what the hardware subtracts, so the wide residual is exact for every
+-    # frame, including the prefix. The model itself is still cross-checked separately by `pm`/`rm`
+-    # against the recomputed prediction.
+-    wide = raw[:, 1] if bypass else raw[:, 1] - raw[:, 2]
+     skip = q.size if first_frame else 0
+     indices = np.arange(first_frame, first_frame+len(raw))
+     injected = np.zeros(len(raw), dtype=np.int64)
+     valid = indices < len(source_pcm16)
+     injected[valid] = np.asarray(source_pcm16, dtype=np.int64)[indices[valid]] * 256
++    expected = np.clip(injected[2:] + gain_pcm(raw[:-2, 3], gain_q12), -2**23, 2**23-1)
+     pm = int(np.count_nonzero(raw[skip:, 2] != prediction[skip:]))
+     rm = int(np.count_nonzero(raw[skip:, 3] != residual[skip:]))
+-    # The played word at ring frame n is gain(wide[n-2]). With the recorded prediction the wide
+-    # value is exact for every frame, so only the two-frame schedule needs to be respected.
+-    out_start = 2
+-    frames = np.arange(out_start, len(raw))
+-    expected = np.clip(injected[frames] + gain_pcm(wide[frames-2], gain_q12), -2**23, 2**23-1)
+-    tm = int(np.count_nonzero(raw[frames, 0] != expected))
++    tm = int(np.count_nonzero(raw[2:, 0] != expected))
+     if first_frame == 0:
+         tm += int(np.count_nonzero(raw[:2, 0] != injected[:2]))
+-    # Wide-residual counting:
+-    #  (a) the 24-bit rail is ASYMMETRIC: +8388607 and -8388608 are both legal values, so an
+-    #      overflow needs `> 8388607` or `< -8388608`;
+-    #  (b) the prefix of a truncated ring is counted, not dropped, because the recorded prediction
+-    #      makes it exact;
+-    #  (c) a capture with no checkable output frame must not read as a pass (defensive: the shape
+-    #      guard above already requires len(raw) > q.size).
+-    rail_pos, rail_neg = 2**23 - 1, -2**23
+-    over = (wide > rail_pos) | (wide < rail_neg)
+-    wide_count = int(np.count_nonzero(over))
+-    prefix_count = int(np.count_nonzero(over[:skip])) if skip else 0
+-    no_output_frames = len(frames) == 0
+-    bit_exact = (pm == rm == tm == 0) and not no_output_frames
+-    return dict(bit_exact=bit_exact,
+-                verified=not no_output_frames,
+-                verification_note=(None if not no_output_frames else
+-                                   "no verifiable output frames in this capture; not a pass"),
+-                prediction_mismatches=pm, residual_mismatches=rm, output_mismatches=tm,
+-                wide_residual_frames=wide_count,
+-                wide_residual_frames_prefix=prefix_count,
+-                wide_residual_count_partial=False,
+-                wide_prediction_source="recorded prediction column (exact for the prefix too)",
+-                wide_rail_definition="overflow iff wide > 8388607 or wide < -8388608",
++    return dict(bit_exact=pm == rm == tm == 0, prediction_mismatches=pm,
++                residual_mismatches=rm, output_mismatches=tm,
+                 history_excluded_frames=skip, evaluated_frames=len(raw)-skip,
+-                output_checked_frames=len(frames),
+-                interpretation="played[n]=source[n]+gain(wide residual[n-2]), one clamp after "
+-                               "gain; arithmetic only")
++                interpretation="played[n]=source[n]+gain(residual[n-2]); arithmetic only")
+diff --git a/board/audio_replay/replay_trial.py b/board/audio_replay/replay_trial.py
+index 0ba6ae9..0328798 100644
+--- a/board/audio_replay/replay_trial.py
++++ b/board/audio_replay/replay_trial.py
+@@ -16,87 +16,9 @@ from pynq import MMIO, Overlay
+ from pynq.overlays.base import BaseOverlay
+ from residual_tools import load_candidate
+ from closed_tools import trial_parameters
+-import replay_tools
+ from replay_tools import verify_replay
+ 
+ FRAMES = 16384
+-# Tap count of the shipped audio_replay.bit. A model with fewer coefficients is loaded
+-# zero-padded up to this count (see load path); the evidence records both numbers so a
+-# padded 256-tap model is never reported as a trained 512-tap model.
+-HARDWARE_TAPS = 512
+-# Wait between unmuting the codec and arming, so the unmute pop decays before the run starts
+-# (observed 2026-10-28: a "du" from the speaker railed the ADC on the first frames).
+-CODEC_SETTLE_SECONDS = 0.25
+-
+-
+-def decode_counts(packed_word, gain_word, mix_word):
+-    """Unpack the clip words. packed = {residual[31:16], prediction[15:0]}."""
+-    packed = int(packed_word) & 0xFFFFFFFF
+-    return [packed & 0xFFFF, (packed >> 16) & 0xFFFF,
+-            int(gain_word) & 0xFFFFFFFF, int(mix_word) & 0xFFFFFFFF]
+-
+-
+-# capture_status bit that reports the independent input full-scale detector (audio-replay v3).
+-INPUT_CLIP_BIT = 22
+-
+-# The bitstream this driver is written against (audio-replay v3). A driver and a bitstream from
+-# different versions may both run, but their semantics differ (v2 stops on a pre-gain residual
+-# overflow and has no bit22), so evidence from a mixed pair would mean nothing. Refuse BEFORE
+-# arming: no overlay download, no sound.
+-EXPECTED_BIT_SHA256 = "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78"
+-EXPECTED_HWH_SHA256 = "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e"
+-
+-
+-def _file_sha256(path):
+-    """sha256 of a file, or None when it cannot be read. Never raises."""
+-    try:
+-        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+-    except Exception:
+-        return None
+-
+-
+-def verify_paired_bitstream(bit_path):
+-    """Refuse to run when the bit/hwh next to this driver is not the declared pair.
+-
+-    Pure enough to test without hardware: it only reads the two files.
+-    """
+-    bit_path = Path(bit_path)
+-    hwh_path = bit_path.with_suffix(".hwh")
+-    if not bit_path.is_file() or not hwh_path.is_file():
+-        raise FileNotFoundError("matching bit/hwh required")
+-    for path, expected, label in ((bit_path, EXPECTED_BIT_SHA256, "bitstream"),
+-                                  (hwh_path, EXPECTED_HWH_SHA256, "hwh")):
+-        got = hashlib.sha256(path.read_bytes()).hexdigest()
+-        if got != expected:
+-            raise RuntimeError(
+-                "%s does not match this driver: expected %s, got %s. Driver and bitstream must be "
+-                "released together (docs/contracts/audio-replay-v3.md); refusing to start."
+-                % (label, expected, got))
+-
+-
+-def runtime_stop(status, clip_word, gain_word, mix_word):
+-    """Decide whether one poll of the run should stop the sound, and why.
+-
+-    Pure function so the semantics can be checked without hardware.
+-
+-    Two different things are kept apart on purpose (captain 2026-10-28):
+-      * INPUT OVERLOAD IS A STOP CONDITION. capture_status bit22 is the only counter that can see
+-        an overloaded microphone when the prediction is zero, because the residual then equals the
+-        microphone and can never overflow. It stops the run and is reported as "input_clip".
+-      * A PRE-GAIN RESIDUAL OVERFLOW IS NOT. The packed word is {residual[31:16],
+-        prediction[15:0]}; the wide residual may exceed the old 24-bit rail while the post-gain
+-        output is still representable, so its half of the word only keeps counting and is read and
+-        reported after the run.
+-    Prediction saturation, post-gain saturation and mix saturation keep their existing stop path.
+-    """
+-    if int(status or 0) >> INPUT_CLIP_BIT & 1:
+-        return "input_clip"
+-    if int(clip_word or 0) & 0xFFFF:      # prediction half only
+-        return "guard"
+-    if int(gain_word or 0) or int(mix_word or 0):
+-        return "guard"
+-    return None
+-
+ # 阅读主线：参数检查→静音/配置→限时闭环→静音读RAM→恢复→本地保存。
+ # RATE来自自定义100MHz/2048分频，不是官方录音常见的48000 Hz。
+ RATE = 48828.125
+@@ -134,39 +56,13 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
+     if output_path.suffix != ".npz" or output_path.exists() or not output_path.parent.is_dir():
+         raise ValueError("choose a NEW .npz path in an existing board directory")
+     bit = Path(__file__).resolve().with_name("audio_replay.bit")
+-    verify_paired_bitstream(bit)
++    if not bit.is_file() or not bit.with_suffix(".hwh").is_file():
++        raise FileNotFoundError("matching bit/hwh required")
+     model, coefficients = load_candidate(model_path, fixture_id, hp_volume, RATE)
+-    logical_taps = int(len(coefficients))
+-    if len(coefficients) < HARDWARE_TAPS:
+-        # The 512-tap RTL only sets `fresh` after exactly HARDWARE_TAPS coefficients, so a
+-        # 256-tap model must be zero-padded. Zero taps change nothing mathematically; the
+-        # evidence keeps logical_taps/loaded_taps so the padding stays visible.
+-        coefficients = np.concatenate(
+-            [coefficients, np.zeros(HARDWARE_TAPS - len(coefficients), dtype=np.int64)])
+     if zero_coeff:
+         coefficients = np.zeros(len(coefficients), dtype=np.int64)
+-    # Identity is resolved BEFORE anything can fail, so a capture-save failure still leaves a
+-    # complete version record next to the trial (C check: save failure must keep the identity).
+-    identity = dict(
+-        package_version="audio-replay-v3",
+-        driver_sha256=_file_sha256(__file__),
+-        bit_sha256=_file_sha256(bit),
+-        hwh_sha256=_file_sha256(bit.with_suffix(".hwh")),
+-        model_sha256=_file_sha256(model_path),
+-        # The checker is part of the identity: a capture verified by a different replay_tools is
+-        # not the same evidence (C 2026-10-27, "complete version hashes").
+-        replay_tools_sha256=_file_sha256(replay_tools.__file__),
+-        coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
+-        source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
+-    )
+     fd, control, raw = None, None, None
+-    cleanup_errors, salvage_errors = [], []
+-    armed, stop_reason, error, save_error = False, None, None, None
+-    completed, count, first, elapsed = 0, 0, 0, 0.0
+-    status, clip_word, gain_word, mix_word = 0, 0, 0, 0
+-    counts = [0, 0, 0, 0]
+-    source_loaded_ok = False
+-    coeff_status_word = 0
++    cleanup_errors = []
+ 
+     def write_reg(addr, data):
+         # Codec用两字节大端I2C寄存器地址；与PL的MMIO控制是两条不同通路。
+@@ -200,22 +96,6 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
+         write_reg(0x4000, [0x0F])
+         return value
+ 
+-    def read_ring(first_index, frame_count):
+-        """Read the capture ring chronologically; returns int64 [frames, 4]."""
+-        out = np.empty((frame_count, 4), dtype=np.int64)
+-        for i in range(frame_count):
+-            address = (first_index + i) % FRAMES
+-            command.write(0, address)
+-            command.read(0)
+-            out[i, 0] = samples.read(0) & 0xFFFFFF
+-            out[i, 1] = samples.read(8) & 0xFFFFFF
+-            command.write(0, (1 << 16) | address)
+-            command.read(0)
+-            out[i, 2] = samples.read(0) & 0xFFFFFF
+-            out[i, 3] = samples.read(8) & 0xFFFFFF
+-        out[out >= 0x800000] -= 0x1000000
+-        return out
+-
+     def cleanup_step(name, action):
+         try:
+             action()
+@@ -252,8 +132,6 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
+         loaded = source.read(8)
+         if (loaded & 0x3ffff) != len(source_pcm16) or loaded & (1 << 18) or not loaded & (1 << 19):
+             raise RuntimeError("source load incomplete: %08x" % loaded)
+-        # Verified from the ABI readback, not from the requested duration.
+-        source_loaded_ok = True
+         coeff = MMIO(overlay.ip_dict["audio_coefficients"]["phys_addr"], 0x1000)
+         coeff.write(0, 0)
+         coeff.write(4, 0)
+@@ -265,7 +143,6 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
+             coeff_word = ((coeff_word ^ (1 << 24)) & 0x03000000) | (int(value) & 0xFFFFFF)
+             coeff.write(0, coeff_word)
+         coeff_status = coeff.read(8)
+-        coeff_status_word = int(coeff_status)
+         if ((coeff_status >> 4) & 0xFFFF) != len(coefficients) or (coeff_status & 0xE) != 0xA:
+             raise RuntimeError("coefficient load rejected: %08x" % coeff_status)
+         runtime = MMIO(overlay.ip_dict["audio_runtime"]["phys_addr"], 0x1000)
+@@ -286,71 +163,79 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
+         hp = (hp_volume << 2) | 3
+         for addr, value in ((0x401C, 0x21), (0x401E, 0x41), (0x4023, hp), (0x4024, hp)):
+             write_reg(addr, [value])
+-        # Codec unmute produces an audible pop: on 2026-10-28 the operator heard a "du" from the
+-        # speaker and the microphone hit the ADC rail for a few milliseconds at the very first
+-        # frames, which trips the input-full-scale stop before any program material arrives.
+-        # Let the pop decay BEFORE the run starts, so the protection counters never latch on a
+-        # startup transient. This moves no threshold and relaxes nothing: the arm point moves, the
+-        # protection stays exactly as strict as before.
+-        time.sleep(CODEC_SETTLE_SECONDS)
+         start = time.monotonic()
+         control.write(0, 1 | (int(bypass) << 1) | (gain_q12 << 16))
+-        armed = True
+         deadline = start + budget / RATE + 2
+         status = command.read(8)
+-        # Stop on config/protocol fault, on input full scale, on prediction/post-gain/mix
+-        # saturation. A pre-gain residual overflow alone never stops the run (see runtime_stop).
+-        while time.monotonic() < deadline:
+-            status = command.read(8)
+-            if status & (1 | (3 << 17)):
+-                break
+-            reason = runtime_stop(status, int(clips.read(0)), clips.read(8), source_len.read(8))
+-            if reason is not None:
+-                stop_reason = reason
+-                break
++        # Stop on config/protocol fault. Saturation is counted, NEVER called ASG.
++        while not (status & (1 | (3 << 17))) and time.monotonic() < deadline:
++            clip_counts = (clips.read(0), clips.read(8), source_len.read(8))
++            if any(clip_counts):
++                control.write(0, 0)
++                mute_codec()
++                # Save what the ring buffer already holds BEFORE raising: a guard trip is
++                # evidence, and without the capture it cannot be judged afterwards.
++                guard_completed = runtime.read(8)
++                guard_count = min(FRAMES, guard_completed)
++                guard_first = guard_completed - guard_count
++                guard_raw = np.empty((guard_count, 4), dtype=np.int64)
++                for i in range(guard_count):
++                    address = (guard_first + i) % FRAMES
++                    command.write(0, address)
++                    command.read(0)
++                    guard_raw[i, 0] = samples.read(0) & 0xFFFFFF
++                    guard_raw[i, 1] = samples.read(8) & 0xFFFFFF
++                    command.write(0, (1 << 16) | address)
++                    command.read(0)
++                    guard_raw[i, 2] = samples.read(0) & 0xFFFFFF
++                    guard_raw[i, 3] = samples.read(8) & 0xFFFFFF
++                guard_raw[guard_raw >= 0x800000] -= 0x1000000
++                guard_mic = guard_raw[:, 1] / 2**23
++                guard_meta = dict(schema_version=1, artifact_kind="replay_trial_guard",
++                                  guard_tripped=True, fixture_id=fixture_id, bypass=bypass,
++                                  gain_q12=gain_q12, hp_volume=hp_volume, sample_rate_hz=RATE,
++                                  frames=guard_count, completed_frames=guard_completed,
++                                  first_frame=guard_first,
++                                  prediction_saturations=min(65535, clip_counts[0]),
++                                  residual_saturations=min(65535, clip_counts[1]),
++                                  gain_saturations=clip_counts[2],
++                                  mic_rms_dbfs=float(20 * np.log10(max(float(np.std(guard_mic)), 2**-23))),
++                                  interpretation="guard trip; capture kept for envelope judgement")
++                with output_path.open("xb") as stream:
++                    np.savez_compressed(stream, reference=guard_raw[:, 0] / 2**23,
++                                        microphone=guard_mic,
++                                        prediction_pcm=guard_raw[:, 2],
++                                        residual_pcm=guard_raw[:, 3],
++                                        coefficients_q20=coefficients, sample_rate_hz=RATE,
++                                        metadata_json=json.dumps(guard_meta))
++                print("GUARD_CAPTURE_SAVED", str(output_path), "FRAMES", guard_count)
++                raise RuntimeError('runtime saturation guard stopped playback; packed_prediction_residual=%d gain=%d mix=%d; no further gain authorized' % clip_counts)
+             time.sleep(0.002)
+-        # Stop the sound first, then freeze the capture and read every counter AFTER the run.
+-        control.write(0, 0)
++            status = command.read(8)
+         mute_codec()
++        control.write(0, 0)
+         elapsed = time.monotonic() - start
+-        status = command.read(8)
+         completed = runtime.read(8)
+-        clip_word, gain_word, mix_word = clips.read(0), clips.read(8), source_len.read(8)
+-        counts = decode_counts(clip_word, gain_word, mix_word)
+-        if stop_reason is None:
+-            # Re-check here as well: an input full-scale event in the last polling interval must
+-            # not be lost just because the loop exited on the deadline or on `done`.
+-            if int(status or 0) >> INPUT_CLIP_BIT & 1:
+-                stop_reason = "input_clip"
+-            elif status & (3 << 17):
+-                stop_reason = "fault"
+-            elif not status & 1 or completed != budget:
+-                stop_reason = "incomplete"
++        clip_word, gain_clips = clips.read(0), clips.read(8)
++        mix_clips = source_len.read(8)
++        if not (status & 1) or status & (3 << 17) or completed != budget:
++            raise RuntimeError("closed trial incomplete/fault: status=%08x completed=%d budget=%d" %
++                               (status, completed, budget))
+         count = min(FRAMES, completed)
+         first = completed - count
+-        raw = read_ring(first, count)
+-    except BaseException as exc:
+-        # Any failure after arming must still yield evidence: stop sound, freeze, read back.
+-        error = exc
+-        if armed and control is not None:
+-            for attempt in (lambda: control.write(0, 0), mute_codec):
+-                try:
+-                    attempt()
+-                except Exception:
+-                    pass
+-            try:
+-                if stop_reason is None:
+-                    stop_reason = "exception"
+-                status = command.read(8)
+-                completed = runtime.read(8)
+-                clip_word, gain_word, mix_word = clips.read(0), clips.read(8), source_len.read(8)
+-                counts = decode_counts(clip_word, gain_word, mix_word)
+-                count = min(FRAMES, completed)
+-                first = completed - count
+-                if raw is None:
+-                    raw = read_ring(first, count)
+-            except Exception as salvage_error:
+-                salvage_errors.append(str(salvage_error))
++        raw = np.empty((count, 4), dtype=np.int64)
++        # Ring buffer is read chronologically AFTER mute; only last 16384 frames persist.
++        for i in range(count):
++            address = (first + i) % FRAMES
++            command.write(0, address)
++            command.read(0)
++            raw[i, 0] = samples.read(0) & 0xFFFFFF
++            raw[i, 1] = samples.read(8) & 0xFFFFFF
++            command.write(0, (1 << 16) | address)
++            command.read(0)
++            raw[i, 2] = samples.read(0) & 0xFFFFFF
++            raw[i, 3] = samples.read(8) & 0xFFFFFF
++        raw[raw >= 0x800000] -= 0x1000000
+     finally:
+         # 正常完成和异常均走恢复；任一步失败会记录，其他恢复步骤仍尝试执行。
+         # Attempt every recovery step even if a preceding I2C/MMIO operation fails.
+@@ -378,119 +263,40 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
+             print("RESTORE_ERRORS", cleanup_errors)
+         else:
+             print("STOCK_BASE_RESTORED_AND_CODEC_MUTED")
+-
+-    # ---- one evidence path, used by every outcome (C: a-replay-evidence-v2) ----
+-    recovery_ok = not cleanup_errors
+-    metadata = None
+-    if armed:
+-        count = min(FRAMES, max(int(completed or 0), 0))
+-        first = max(int(completed or 0) - count, 0)
+-        mic = (raw[:, 1] / 2**23) if raw is not None and len(raw) else np.zeros(0)
+-        checks = {}
+-        if stop_reason is None and raw is not None and len(raw) > len(coefficients):
+-            try:
+-                checks = verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first)
+-            except Exception as exc:
+-                checks = {"verification_skipped": str(exc)}
+-        metadata = dict(
+-            schema_version=1, artifact_kind="replay_trial", capture_id=str(uuid.uuid4()),
+-            driver_evidence_version="a-replay-evidence-v2", source="board",
+-            forward_path_open=direct_only, fixture_id=fixture_id, bypass=bypass,
+-            zero_coeff=zero_coeff, gain_q12=gain_q12,
+-            gain_db_actual=(float(20 * np.log10(gain_q12 / 4096)) if gain_q12 else None),
+-            hp_volume=hp_volume, sample_rate_hz=RATE, pll_readback=pll_readback,
+-            frames=count, completed_frames=int(completed or 0), first_frame=first,
+-            capture_status=status,
+-            # capture_status bit22 is the independent input full-scale sticky flag added with the
+-            # wide-residual change. It is the ONLY counter that can see an overloaded microphone
+-            # when the prediction is zero (the residual then equals the microphone and can never
+-            # overflow); the residual counter must not be used for that. A trial with this set is
+-            # rejected for field evidence rather than being allowed a quiet reinterpretation.
+-            input_full_scale_seen=bool(int(status or 0) >> 22 & 1),
+-            sound_seconds_nominal=budget / RATE, completion_poll_seconds=elapsed,
+-            prediction_saturations=counts[0], residual_saturations=counts[1],
+-            gain_saturations=counts[2], mix_saturations=counts[3],
+-            clip_counts_raw=[int(clip_word), int(gain_word), int(mix_word)],
+-            early_stop=bool(stop_reason is not None),
+-            stop_reason=(stop_reason or "completed"),
+-            source_frames=int(len(source_pcm16)),
+-            source_end_frame_exclusive=int(source_pcm16.shape[0]),
+-            source_schedule_verified=bool(source_loaded_ok),
+-            **identity,
+-            logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
+-            coefficient_status=int(coeff_status_word),
+-            zero_padded=bool(len(coefficients) > int(logical_taps)),
+-            verification=checks,
+-            interpretation="bounded closed loop; NOT measured MSG/ASG")
+-        if len(mic):
+-            metadata["mic_rms_dbfs"] = float(20 * np.log10(max(float(np.std(mic)), 2**-23)))
+-            metadata["mic_peak_dbfs"] = float(20 * np.log10(max(float(np.max(np.abs(mic))), 2**-23)))
+-            metadata["mic_full_scale_samples"] = int(np.count_nonzero(
+-                (raw[:, 1] <= -2**23) | (raw[:, 1] >= 2**23 - 1)))
+-        try:
+-            with output_path.open("xb") as stream:
+-                np.savez_compressed(stream,
+-                                    reference=(raw[:, 0] / 2**23) if raw is not None else np.zeros(0),
+-                                    microphone=mic,
+-                                    prediction_pcm=(raw[:, 2] if raw is not None else np.zeros(0)),
+-                                    residual_pcm=(raw[:, 3] if raw is not None else np.zeros(0)),
+-                                    coefficients_q20=coefficients,
+-                                    source_pcm16=source_pcm16,
+-                                    sample_rate_hz=RATE,
+-                                    metadata_json=json.dumps(metadata))
+-            print("LOCAL_CAPTURE_SAVED", str(output_path), "FRAMES", count)
+-            if "mic_rms_dbfs" in metadata:
+-                print({k: metadata[k] for k in ("mic_rms_dbfs", "mic_peak_dbfs",
+-                                                "mic_full_scale_samples")})
+-            print("CLOSED_VERIFICATION", checks)
+-            print("STOP_REASON", metadata["stop_reason"], "early_stop", metadata["early_stop"])
+-            print("NO_DATA_UPLOADED")
+-        except Exception as exc:
+-            save_error = str(exc)
+-            print("CAPTURE_SAVE_FAILED", save_error)
+-
+-    status_path = output_path.with_suffix(".status.json")
+-    status_payload = dict(
+-        schema_version=1, driver_evidence_version="a-replay-evidence-v2",
+-        **identity,
+-        # The two v3 status facts a save failure must not swallow.
+-        capture_status=int(status or 0),
+-        input_full_scale_seen=bool(int(status or 0) >> INPUT_CLIP_BIT & 1),
+-        capture=str(output_path), fixture_id=fixture_id,
+-        recovery_ok=bool(recovery_ok), cleanup_errors=list(cleanup_errors),
+-        salvage_errors=list(salvage_errors), save_error=save_error,
+-        stop_reason=(stop_reason or "completed"),
+-        error=(str(error) if error is not None else None),
+-        armed=bool(armed),
+-        completed_frames=int(completed or 0), frames=int(count or 0), first_frame=int(first or 0),
+-        source_end_frame_exclusive=int(source_pcm16.shape[0]),
+-        source_schedule_verified=bool(source_loaded_ok),
+-        clip_counts_raw=[int(clip_word), int(gain_word), int(mix_word)],
+-        prediction_saturations=int(counts[0]), residual_saturations=int(counts[1]),
+-        gain_saturations=int(counts[2]), mix_saturations=int(counts[3]),
+-        logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
+-        coefficient_status=int(coeff_status_word))
+-    try:
+-        status_path.write_text(json.dumps(status_payload, indent=2, ensure_ascii=False),
+-                               encoding="utf-8")
+-        print("STATUS_SAVED", str(status_path))
+-    except Exception as exc:
+-        print("STATUS_SAVE_FAILED", str(exc))
+-
+-    if save_error is not None:
+-        raise RuntimeError("capture save failed: " + save_error)
+-    if stop_reason == "guard":
+-        raise RuntimeError('runtime saturation guard stopped playback; packed_prediction_residual=%d '
+-                           'gain=%d mix=%d; no further gain authorized'
+-                           % (int(clip_word), int(gain_word), int(mix_word)))
+-    if stop_reason == "input_clip":
+-        raise RuntimeError('input full scale (capture_status bit22) stopped playback; the microphone '
+-                           'hit the ADC rail, so this trial carries no usable input evidence; '
+-                           'reduce the level or move the source back and repeat')
+-    if error is not None:
+-        raise error
+-    if not recovery_ok:
++    if cleanup_errors:
++        # 恢复失败不保存成功数据；原始采集异常也会在finally后继续向外抛出。
+         raise RuntimeError("restoration failed; do not run another audio test")
++    checks = verify_replay(raw, coefficients, bypass, gain_q12, source_pcm16, first)
++    metadata = dict(schema_version=1, artifact_kind="replay_trial", capture_id=str(uuid.uuid4()),
++                    source="board", forward_path_open=direct_only, fixture_id=fixture_id,
++                    bypass=bypass, zero_coeff=zero_coeff, gain_q12=gain_q12,
++                    gain_db_actual=(float(20*np.log10(gain_q12/4096)) if gain_q12 else None), hp_volume=hp_volume,
++                    sample_rate_hz=RATE, pll_readback=pll_readback, frames=count,
++                    completed_frames=completed, first_frame=first, capture_status=status,
++                    sound_seconds_nominal=budget/RATE, completion_poll_seconds=elapsed,
++                    prediction_saturations=min(65535, clip_word & 65535),
++                    residual_saturations=min(65535, clip_word >> 16), gain_saturations=gain_clips,
++                    mix_saturations=mix_clips, source_frames=len(source_pcm16),
++                    source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
++                    bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest(),
++                    model_sha256=hashlib.sha256(Path(model_path).read_bytes()).hexdigest(),
++                    coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
++                    verification=checks, interpretation="bounded closed loop; NOT measured MSG/ASG")
++    mic = raw[:, 1] / 2**23
++    # PCM/2^23转为满幅单位。std对应去直流RMS，下面的峰值则包含直流分量。
++    metadata["mic_rms_dbfs"] = float(20 * np.log10(max(float(np.std(mic)), 2**-23)))
++    metadata["mic_peak_dbfs"] = float(20 * np.log10(max(float(np.max(np.abs(mic))), 2**-23)))
++    metadata["mic_full_scale_samples"] = int(np.count_nonzero((raw[:, 1] <= -2**23) | (raw[:, 1] >= 2**23-1)))
++    # Exclusive creation prevents overwriting a previous calibration capture.
++    with output_path.open("xb") as stream:
++        np.savez_compressed(stream, reference=raw[:, 0] / 2**23,
++                            microphone=raw[:, 1] / 2**23, prediction_pcm=raw[:, 2],
++                            residual_pcm=raw[:, 3], coefficients_q20=coefficients, sample_rate_hz=RATE,
++                            metadata_json=json.dumps(metadata))
++    print("LOCAL_CAPTURE_SAVED", str(output_path), "FRAMES", count)
++    print({k: metadata[k] for k in ("mic_rms_dbfs", "mic_peak_dbfs", "mic_full_scale_samples")})
++    print("CLOSED_VERIFICATION", checks)
++    print("NO_DATA_UPLOADED")
+     return metadata
+ 
+ 
+diff --git a/docs/REQUESTS.md b/docs/REQUESTS.md
+new file mode 100644
+index 0000000..d67f422
+--- /dev/null
++++ b/docs/REQUESTS.md
+@@ -0,0 +1,42 @@
++# 线间诉求（AI↔AI 的任务通道）
++
++> **这是"我需要你做什么"的唯一位置。** 现状看 [STATE](STATE.md)，过程看 [log](log/progress.md)，
++> **要办事的看这里**。
++>
++> 规则：
++> - 只有两种状态：`open` / `done`。没有"进行中"——进行中就写清楚还差什么，仍然是 open。
++> - 一条诉求必须能被执行：**要什么、阻塞什么、怎么算完成**，三项缺一不可。
++> - 请求方负责建行，被请求方完成时把状态改成 `done` 并填交付物链接。
++> - 不许写"等你那边搞好"这类占位。要指到文件/版本/动作。
++> - 开工时第一件事：扫一遍 `状态=open` 且 `到` 是你这条线的行。
++
++## 未完成
++
++| ID | 从 → 到 | 要什么（可直接执行） | 阻塞什么 | 完成判据 | 日期 | 状态 |
++|---|---|---|---|---|---|---|
++| R-001 | B → A | 把 `training_box_v1.npz`、`validation_box_v1.npz`、`candidate_box_v1_256.json` 从板卡 `base/audio/audio_calibrate/` 拷到电脑任意目录并发给 B（约 1 MB，不含人声）。或按 `board/audio_calibrate/path_analysis_box_v1.py` 在板上跑一次，回传 `path_analysis_v1.json` | B 线全部真实数据分析：真实共振峰、CD 最差频点、128/256/512 的 ASG 对照、现场增益点位 | 三个文件能被 `calibration.load_capture` 读入且哈希记录在案；或回传的 JSON 含 `shipped` 与 `tap_sweep` | 2026-10-20 | open |
++| R-003 | B → A | 真实数据到手后，按 B 给的增益点位做**成对**记录：同一 `hp_volume`、同一夹具、同一时长，只切 bypass | 无 ASG 实测；无法判断抵消是否真的提高了稳定增益 | 每档给出旁路/抵消两项，含 `gain_q12`、听感类别、是否起振；至少覆盖 B 给的"对照点" | 2026-10-20 | open |
++| R-006 | C → A | 只补回已经存在的侧放20段NPZ、model_512_side.json、memory_sweep实际使用的有序文件名单及14训练/6验证身份、过滤/边界/参数和原结果；逐文件哈希/provenance，推A分支一个side-memory-return.zip。已有仓库位置可直接给提交与路径，缺项注明原因，不重采、不重新执行扫描 | 独立核对-12.83扫描及+11～+13 dB上限说法；原lowband2包只有直立16段 | 原侧放20段与模型可读，实际扫描输入/划分可复现；不以手写表格代替原材料 | 2026-10-25 | open |
++
++| R-009 | C → A | 接受bfca2dd路由与记录修正，匹配原包夹具下routing已PASS；start_control仍硬编码旧路径导致整体退出1。修相对原件/环境绑定及与原ZIP对应prompt哈希核对。另一次补已有扫描−6/−5非人声NPZ及status/配置，真人只metadata/status，不上传人声；缺项写未保存、不重采 | 独立软件交付未过，新扫描模型/增益/覆盖未完整绑定；真人仍failed/未测 | [配齐夹具实跑](../report/verification/audio_closed/sprint-rc0-20261025/a26-delivery-binding-review.json)、[最新增益/采集复核](../report/verification/audio_closed/sprint-rc0-20261025/a26-gain-and-capture-review.json)；checker独立退出0，原件/bit/hwh/实际Q20/gain/Codec/源状态/时窗/清理可追溯。不得手改旧包−6或重复原保护注入 | 2026-10-26 | open |
++| R-012 | C → B | 合并A已有新场重标定请求：在answer_new_layout_325.py唯一入口导出一套512 taps/lag_first=1部署Q20模型与file/Q20哈希、fixture/输入逐文件哈希、原始及对齐诊断分别的分段留出结果、两拍调度仅一次、v2兼容/风险/否定条件。不重开旧候选；−5.5中点/0.16精确一致及“噪声只压CD因此下界”撤回或注明未证实，不先向A发裸系数升档 | 当前仅浮点离线答案，无冻结可装载新场模型；不能形成新真人包 | [10/26复核与交接范围](../report/verification/audio_closed/batch-control.md#2026-10-26-增益决定与连续采集请求)；原六片可先独立训练/验证，Q20实际频响/未平移原时序留出可复算，覆盖缺口未知；给C固定B提交一次交模型+配置+机器清单，未通过如实不交，无需等连续采集增强 | 2026-10-26 | open |
++| R-013 | C → A | 评估并补单overlay单arm连续ref/mic采集，目标8×16384帧，含银行稳定确认/全局帧号/掉帧覆盖，先静音读取基准验证0.336秒排空预算；原底层由A维护，不改FIR/保护语义。字段/API及验收见C请求；当前v2不能把轮询尾环或多arm段宣称连续 | 当前只保最后一环，不能验证全段增长或无缝反卷积 | [机器字段与控制证据](../report/verification/audio_closed/sprint-rc0-20261025/a26-gain-and-capture-review.json)capture_request、[具体操作/验收](../report/verification/audio_closed/batch-control.md#2026-10-26-增益决定与连续采集请求)；A先报吞吐/资源/工期可行性，升级先版本化契约/bit/hwh及回退，正常无缝、慢读/缺块/重复/覆盖/停止均有真实回执。非连续模式显式缺口，不拼接冒充 | 2026-10-26 | open |
++
++## 已完成
++
++| ID | 从 → 到 | 要什么 | 完成情况 | 日期 | 状态 |
++|---|---|---|---|---|---|
++| R-000 | B → 全体 | 文档重整后，各线提示词里写死的旧路径需要换成新路径 | 已在 `AGENTS.md` 与 `docs/lines/` 三份任务卡中改为新阅读顺序；旧路径映射见 [archive/MIGRATION-2026-10-20.md](archive/MIGRATION-2026-10-20.md) | 2026-10-20 | done |
++| R-002 | B → C | 批次汇总每项提供实际 `gain_q12`、`hp_volume`、bit 哈希并校验成对配置 | 已实现 JSON 每项与 CSV 同名字段，保留原 metadata；未知留空，不一致停止。[软件验收与示例](../report/verification/audio_closed/batch-control.md#2026-10-20-r-002实际配置字段导出)，[字段读取与兼容](contracts/audio-closed-v1.md#批次软件汇总-v22026-10-20r-002) | 2026-10-20 | done |
++| R-004 | C → A | 回传已有lowband2的16段、强模型、四项闭环、六次定音及修线证据，不新增采集 | A=1003728原ZIP已取得；27个NPZ及原模型/Q20哈希通过，原字段空值保留，清单不足另作资格说明。[收包与波形复核](../report/verification/audio_closed/batch-control.md#2026-10-25-lowband2-原包复核) | 2026-10-25 | done |
++| R-005 | C → B | 修正原负实轴±π误判/跨低相干缺口，按实际Q20与明确留出名单分开报告两类预测 | B=9937113原反例、Q20入口及留出基线复算通过，原诉求闭合；不代表本轮全项通过。新发现的孤立端点、5a重复加权、输入资格和表述问题集中交B修原件，见[修订独立验收](../report/verification/audio_closed/batch-control.md#2026-10-25-独立验收-b9937113) | 2026-10-25 | done |
++| R-007 | C → B | 修原波形CLI输入/模型/配对身份、整体失败判定及N1发布口径 | B=7c6d3ed原134回归通过，C原件正例及八坏例整体退出0，坏例均退出2/ok=false；原14408帧与配对值不变，N1指定修订接受。[最终验收](../report/verification/audio_closed/sprint-rc0-20261025/b-7c6d3ed-review.json)、[完整控制回执](../report/verification/audio_closed/sprint-rc0-20261025/b-7c6d3ed-cli-controls.json)。限既定软件/记录范围，不代表预算独立数字复算或物理稳定/人声验收 | 2026-10-25 | done |
++| R-008 | C → A | 补同轮四个FIR与60秒共5个原NPZ，不重新采集 | 固定A=63f6a69提交[r4-review-return.zip](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/63f6a69ee679f992d1e459d9447262fa1db6b403/report/verification/audio-replay/r4-review-return.zip)，原哈希5/5一致；C独立功率/两组差分/五份尾部整数算术/原时间线核对通过。[波形复算](../report/verification/audio_closed/sprint-rc0-20261025/a-63f6a69-waveform-review.json) | 2026-10-25 | done |
++| R-010 | A → C | 干净检出一条命令离线冷启动，附冻结资产/报告/检查器 | 固定源码be3200e的独立干净检出用隔离Python真实退出0，独立解压包内检查器也退出0；[完整包](../build/packages/c-cold-start-r1.zip)、[报告与命令](ref/cold-start-reproduction.md)、[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/cold-start.json)、[正式回执](../report/verification/audio_closed/sprint-rc0-20261025/delivery-r1-check.json)。不替代板端现场复现 | 2026-10-25 | done |
++| R-011 | A → C | 四份合成PCM16已知+3dB及三类坏输入，交检查器 | 固定源码be3200e干净检出及独立解压检查均退出0；语音变化2.999839dB、误差−0.000161dB，长度不等/削顶/采样率不同全failed；[完整包](../build/packages/c-listener-pipeline-r1.zip)、[机器报告](../report/verification/audio_closed/sprint-rc0-20261025/listener-pipeline.json)。不冒充真人结果 | 2026-10-25 | done |
++
++## 怎么提一条
++
++在"未完成"表末尾加一行，把 6 个字段填满即可。举例：不要写"需要板卡数据"，
++要写"拷这三个文件 / 阻塞什么 / 能 load 成功就算完成"。
++**判据写不出来的，说明这件事还没想清楚，先别提。**
+diff --git a/docs/STATE.md b/docs/STATE.md
+index 701dda6..6a5bec4 100644
+--- a/docs/STATE.md
++++ b/docs/STATE.md
+@@ -1,91 +1,93 @@
+ # 项目现状
+ 
+-> 唯一状态与数字口径入口。最后整理：2026-10-30；队长已 fetch 核对 A=`2c7b955`、B=`86061a7`、C=`330e135`，硬件载荷沿用既有版本。
+-> 本轮安排视频、教程、报告与提交候选集成，未操板或改变程序/位流；提示词已生成，队友接收与执行仍以实际回复为准。
++> **本文件是"现在是什么状态"的唯一权威。**
++> 每次会话结束**原地覆盖**本文件中自己负责的那一段，不要新建副本、不要在别处复述。
++> 其他文档若与本文件冲突，以本文件为准。
++
++最后更新：2026-10-20 12:55，B 线（数据与算法）
+ 
+ ## 一句话
+ 
+-v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护与连续运行已有工程证据；扩声有定性阳性观察，固定单频的抵消有派生复算结果。正常语音下的抵消附加收益与可重复 ASG 仍未完成验收。
++在 PYNQ-Z2 上用 PL 侧 256 抽头定点 FIR 抵消声反馈，目标是提高稳定扩声音量；
++**目前只有工程链路和数字核对通过的证据，没有任何正常扩声条件下的抗啸叫效果证据。**
+ 
+ ## 当前唯一目标
+ 
+-保留可恢复的 v3 基线，完成真人使用演示、HTML教程、报告与完整提交候选。具体分工、指南要求、合并冲突及内部排期见 [材料交付安排](../materials/planning/submission-plan.md)，视频按 [分镜方案](../materials/planning/video-plan.md)。使用 [版本及旧入口索引](../board/audio_replay/README.md)，不再从历史 Notebook、临时脚本或旧日志自动生成新试验。
+-10 月 28 日排期保留在 [原冻结计划](ref/development-plan.md) 供追溯；截止已过不等于未测项目自动通过，也不要求补跑过期计划。
++在正常可听扩声、同一硬件同一增益的条件下，得到旁路/抵消的成对对照，
++并测出可重复的稳定增益差（ASG）。其他一切工作都应指向这一件事。
+ 
+-## 三条线
++## 三条线（各改各的段，减少合并冲突）
+ 
+-### A 板卡底层、硬件集成与现场
++### A 实物与板卡
+ 
+-**最后动作**：A 在 `800dcf9` 回传既有三臂静默分析，`f8f3df5` 汇总，`2c7b955` 完成旧入口标注；队长本轮准备 [A 拍摄与硬件交付任务](../materials/prompts/a.txt)。主驱动、RTL 和位流未变。
+-**当前卡点**：新任务尚未确认接收；真人拍摄需要现场人员，硬件清单与操作单可先独立完成。既有派生 JSON 仍待 C 确认，不重复采集。
++**最后动作**：2026-10-19 完成闭环零/真实模型的低增益数字核对（−36 dB）。
++**当前卡点**：三个标定数据文件还没拷出板卡，B 因此拿不到真实数据。见 [R-001](REQUESTS.md)。
+ 
+-- 发布载荷以 [v3/manifest.json](../board/audio_replay/v3/manifest.json) 的整组哈希为准，维护源码与历史顶层包不要整目录混传。板卡部署位置及回退位置见“板卡占用”。
+-- 最新驱动已记录混搭拒绝、静默自检、输入满幅停声恢复与连续运行四项硬件检查，见 [工程证据](../report/verification/audio-replay/wide-residual-v3/evidence.json) 的 `driver_79c4d9f7_full_verification`。无改动不重跑。
+-- 新 [三臂派生回包](../report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json) 保留原件及副车哈希，配对和捕获数值检查通过。完整捕获窗与共同含源窗分别计算，原始 PCM 留板。
+-- 分析脚本字节差异已核对：Git C 脚本加 UTF-8 BOM 并转 CRLF 后，恰好得到回包中的 producer SHA256；不据此安排重采。
+-- 停声条件包括输入满幅、预测/增益后/混音饱和及故障；增益前残差越过旧窄位宽上限只记录。保护停声不标成“检测到啸叫”。
+-- `played_level_report.sh` 保留为问题复现样本，排除在正式测量入口外。现有三臂记录可以取共同含源窗，不要求把有声运行缩短到环形缓存时长或改捕获架构。
++- 唯一操板者。
++- 下一个可交付：把 `training_box_v1.npz`、`validation_box_v1.npz`、
++  `candidate_box_v1_256.json` 拷到电脑任意目录（约 1 MB，不含人声）。
++- 之后：建立正常扩声基线 + 一轮成对对照。
+ 
+ ### B 数据与算法
+ 
+-**最后动作**：已 fetch 核对 B=`86061a7`；队长准备 [B 教程、算法报告与模型交付任务](../materials/prompts/b.txt)，没有重训或缩放模型。
+-**当前卡点**：新任务尚未确认接收；教程与模型清单可独立推进，最终实测数字需引用 C 确认口径。正常语音的抵消附加收益与最终 ASG 仍缺证据。
++**最后动作**：2026-10-20 交付逐频点分析与闭环参考模拟（62 项测试通过），结论全部来自合成夹具。
++**当前卡点**：等 A 的三个文件（[R-001](REQUESTS.md)）；不依赖它的部分可先做。
+ 
+-- 候选身份见“关键数字”；模型、夹具、Codec 档位和实际系数哈希必须一起核对。
+-- 单频相位/响度估算保留在 [B 当时的分析](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/86061a7/report/verification/v3-working-point-2026-10-28/README.md)。不能由幅度峰值超过小增益界单独推出“必啸叫”，也不能由单频曲线推出所有语音场景提增益均无收益。
+-- 本轮不新增 AFC、多速率、抽头扩展或模型候选；后续改进另立版本，不覆盖冻结基线。
++- 已交付的东西在 [契约](contracts/path-analysis-v1.md)，代码在 `src/feedback/`。
++- 拿到三个文件后，一条命令即可产出真实共振峰、CD 最差频点、128/256/512 的 ASG
++  对照与现场增益点位：`python scripts/analyze_path.py --data-dir <目录>`。
++- 可选并行：512 抽头的 RTL 仿真与布局布线（现在只有公式推算）。
+ 
+ ### C 测评与工具
+ 
+-**最后动作**：C=`330e135` 的定向验收和分析入口已有，A 已回传派生 JSON；队长准备 [C 候选集成、报告与 Skill 任务](../materials/prompts/c.txt)，已完成分支合并预演。
+-**当前卡点**：派生回包最终复核与新任务接收均未确认；main/A/B/C 存在已列出的合并冲突，不能宣布 Git 集成完成。C 可先整理无冲突候选文件与报告，不重复已过硬件检查。
++**最后动作**：2026-10-28验收A=c1a180f单位修复：快照10项匹配，0.25FS三种定向单音3/3；四差值摘要算术一致，撤回源停尾窗的扩声负结论。现有C静默入口补按真实manifest/round_id选择，新增8项通过，受影响范围与路径兼容复验通过。
++**当前卡点**：真实round1746930178556850644原件仍未在C可见材料中取得，未完成独立PCM复算。A只需按操作单在既有原件旁静默运行一次C入口，回一个派生JSON，缺原件留失败不补采。单位缺陷已闭合，无需再应用旧建议补丁、缩短有声运行或改捕获架构。
+ 
+-- [C 已交付的验收及操作说明](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/330e135/report/verification/audio_closed/sprint-rc0-20261025/v3-c1a180f-review-20261028.json) 与 [A 回包](../report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json) 是本次交接材料。
+-- 测量必须指定真实 round_id/manifest，分别报告完整捕获窗与共同含源窗；不使用全目录 glob 的混合均值。
+-- 旧“输出太小、可听收益为负”的结论已撤回：该次交替段保存的是源停止后的尾窗。听众阳性与阴性原话均保留为定性证据，不自动互相覆盖，也不代替量化差值。
++- [Ac1三项结论及范围](../report/verification/audio_closed/batch-control.md#2026-10-28-ac1单位修复与原件静默入口)、[机器证据](../report/verification/audio_closed/sprint-rc0-20261025/v3-c1a180f-review-20261028.json)、[一次静默操作](../board/audio_closed/BATCH_GUIDE.md#2026-10-28-ac1既有三臂静默复算)。bit48e38f78…/HWH9411adb5…/driver79c4d9f7…/helperbba22102…/guard76413d84…按整对绑定；C未改A源或操板。
++- A65门禁/保护及三类资格修复已通过，不退回旧缺陷；Ac1补齐Hann幅度单位，0.25FS约−12.0412dBFS。CD8.43/回路抬升4.24/麦端差5.45/过冲1.21按A报告与摘要算术保留，尚不是C原件级复算、ASG或听众收益。
++- C精确轮入口保留原件SHA、确认原话和实际源/帧域，整窗FFT与共同含源窗加权拟合/RMS分别出数；配对完整、捕获数值资格、算法差异、听众及持续运行分别报告。原件缺失/被替换或资格失败不补造，PCM留板，软件退出0不暗示效果通过。
++- 后续83源停末圈含源0帧，四行dB均差1.905≈1.91只属尾窗；A已撤回“输出太小/听众收益为负”。现有2秒源/2.2秒三臂按参数应有6619含源帧，可先复用，实际范围待原件核对。A played报告仍全局glob且零含源行回退整窗，不用其混合均值作有效节目电平。
++- 新e5/83听众“听不出差别”与既往“能听出放大”均保留；自听掩蔽仅为解释，两次真人麦RMS差不当同波形收益。手机6/15、5cm属于变更条件，不能冒充原样真人复现、ASG或独立听众静音对照。
++- C消费者2.4.3支持79/bba及历史完整整对，拒绝混搭。79运行门限未变，四项硬件按A对应版本报告接收；本轮未重跑旧8/停声16/硬件/60秒或B模型。既往计数/33点局部核对及成功/失败证据继续保留；普通证据缺口交A，不等B新参数或队长重规划。
+ 
+-## 已验证 / 未验证
++## 已验证 / 未验证（只在这里写一次）
+ 
+-**已有证据**
++**已验证（有证据）**
+ 
+-- v3 算术仿真、带既有约束的综合实现、板上逐样本核对、保护和恢复；源码、载荷、构建与现场证据见 [v3 证据](../report/verification/audio-replay/wide-residual-v3/evidence.json)。
+-- 零系数扩声配置的连续运行及多次“能听出放大”观察；此前 [真人短时阳性](../report/verification/audio-replay/live-human-first-confirmed-2026-10-27.json) 和 [手机复现](../report/verification/audio-replay/reproduction-result-2026-10-27.json) 分开保留。
+-- 固定单频三臂已有实际捕获的派生分析，支持该条件下的抵消差异；不扩大为语音收益或最大稳定增益。
++- 最小 PL 直通、开环采集、256 抽头 Q20 FIR 板上逐样本一致，误差降 6.92 dB。
++- 闭环零模型与真实模型两模式在约 −36 dB 下回读 bit_exact、无饱和、能恢复静音。
++- 38 项既有软件测试 + B 线新增 24 项，共 62 项通过。
+ 
+-**尚未完成的发布指标与限制**
++**未验证（不得当作已实现）**
+ 
+-- 正常语音下抵消开启相对关闭的可辨、可量化附加收益，以及重复 MSG/ASG。
+-- 听众位置定量声压、完整音质评价、端到端电学延迟。
+-- 四项外部 I/O 延迟约束仍缺失；实现报告只能写“已施加约束满足”，不能写完整时序签核。
+-- 环形 PCM 只覆盖保存窗口，全程状态记录不等于全程声音记录。候选语音的短时完成不自动成为候选持续使用验收。
++- 正常扩声下的旁路/抵消对照；MSG / ASG 实测。
++- 端到端电学延迟；音质；人声误切率。
++- 512 抽头的 RTL 仿真与布局布线。
++- 完整板级 I/O 时序签核（仍缺 1 输入 / 3 输出延迟约束）。
+ 
+-## 关键数字
++## 关键数字（只在这里写一次，其他文档一律链接到本节）
+ 
+-| 项目 | 数值与口径 | 来源 / 使用边界 |
++| 项 | 值 | 口径 |
+ |---|---|---|
+-| 发布版本 | A=`f8f3df5` 的 v3 载荷；bit `48e38f78…`、hwh `9411adb5…`、driver `79c4d9f7…`、helper `bba22102…` | 整组精确哈希见 [manifest](../board/audio_replay/v3/manifest.json)；本次只改说明 |
+-| 采样与模型 | 48828.125 Hz；512 抽头，Q20、lag_first=1；前向两帧调度 | 参考历史和前向调度分开，不重复计延迟 |
+-| 当前候选 | `rewired_512_20261026.json`；文件 `01c9102a…`，候选 Q20 `6118e85d…`，零系数 `e5a00aa9…` | fixture=`room_v1_20261026b`；零系数哈希不能填到候选字段 |
+-| 最近演示配置 | 手机 6/15、距麦 5 cm、PL −8 dB、Codec 40；麦—音响 100 cm 侧对、金属板与棉 | 与历史手机 8/15、真人 12/20 cm 分开；不自动扩大允许范围 |
+-| 既有现场允许档位 | −14/−12/−10/−8/−6 dB；预检含 DC 绝对输入峰值严格低于 −6 dBFS | 保持原范围，运行期输入满幅仍停；不把 −3 dB 计划列为待执行冻结步骤 |
+-| 最新驱动连续运行 | 2929687/2929687 帧，约 60 秒；bit22=0、四类计数0、bit_exact | 零系数配置；A 记录听众“能听出放大”，不是候选 ASG |
+-| v3 资源与时序 | WNS +0.548 ns、WHS +0.015 ns、TNS/THS 0；BRAM 80%、DSP 3、LUT 3588、FF 5018 | 已施加约束满足；外部 I/O 缺口单列 |
+-| 纯音复算窗口 | round=`1746930178556850644`；共同源激活帧 `[91037,97656)`，共6619帧 | 从既有末尾16384帧中选取；不含停源尾段 |
+-| 322 Hz 共同含源窗 | 残差差 8.4609 dB；旁路相对开环麦端抬升 3.7016 dB；抵消相对旁路麦端降低 4.9502 dB；相对开环再低 1.2486 dB | [派生 JSON](../report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json)；投影仍受噪声与有限窗影响，不是 ASG |
+-| 整窗旧数字 | 8.43 / 4.24 / 5.45 / 1.21 dB | 完整16384帧包含停源尾段，与共同含源窗是不同统计口径；不混报 |
+-| 派生文件身份 | JSON `f380c917…`；producer `81297e8a…` | producer 对应 C Git 脚本 `3e7b5b36…` 的 UTF-8 BOM＋CRLF 字节版本 |
+-| 宽残差修复依据 | 旧事件宽残差1.0230×满幅，乘增益后0.4074×满幅，输出未越界 | [旧事件分析](../report/verification/audio-replay/residual-overflow-result-2026-10-27.json)；增长窗口不足时不排除声学再生 |
++| 开环预测误差降低（板上） | 6.92 dB | 宽带 RMS，16128 帧，**不是 ASG** |
++| 开环预测误差降低（开发集） | 9.69 / 9.80 dB | 不同评价窗口，不可与 6.92 直接比 |
++| 长度对照（真实数据 256/512） | 9.80 / 10.17 dB | 复用验证集，属开发比较 |
++| 环路总延迟 | ≈71 采样 ≈1.45 ms | 2 帧调度 + 69 帧路径，**推算非实测** |
++| 起振频点间隔 | ≈688 Hz | fs/71；只能在此整数倍附近起振 |
++| 数字增益上限 | +18.06 dB（8×） | Q4.12 系数上限 32768 |
++| 架构抽头上限 | ≈680 | 每抽头 3 拍，3N+3 ≤ 2048 |
++| 抽头覆盖距离 | 256→1.79 m，512→3.60 m | 343 m/s，按抽头数换算 |
++| ASG | **无实测值** | 只有合成预测，禁止写进报告当性能 |
+ 
+ ## 板卡占用
+ 
+-- 最近 A 记录：空闲，部署在 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`。本轮仅整理电脑文件，未连接板卡；实时在线/占用状态由 A 与现场再次核实。
+-- v2 回退位置：`/home/xilinx/jupyter_notebooks/base/audio/audio_live`。本轮未覆盖、删除或部署任何板卡文件。
+-- 操作前核对场景、整套版本与现场值守；A 为唯一操板者。电脑工作区的“空闲”文字不是实时锁。
++- **空闲**。2026-10-20 12:22 由 B 探测 `192.168.2.99:9090` 不可达（板子在 A 处）。
++- 规则：谁要操作板卡，先在这里改一行「占用中 / 线 / 时间」，用完改回空闲。
++  单板排他，比任何聊天约定都可靠。
+ 
+ ## 下一步
+ 
+-1. 用户转发 [A](../materials/prompts/a.txt)、[B](../materials/prompts/b.txt)、[C](../materials/prompts/c.txt) 三份任务。材料汇入 [materials](../materials/README.md)，授权书与 GitHub 公开事项由用户处理。
+-2. A 固定硬件与拍摄配置；B 做教程/模型清单；C 复核已有回包、整合提交候选与报告，按 [内部排期](../materials/planning/submission-plan.md) 并行推进。
+-3. 具体冲突由责任线提出处理建议后交队长；本轮未合并 main、未删历史文件。需要新增算法或实质修改时另立版本，不能混入冻结包。
+-
+-整理前的状态、矛盾句和早期操作单保存在 [历史原文](archive/pre-freeze-guide-2026-10-29.md)，历史证据与日志原件未删除。撤回的“负增益必无扩声”“预测无饱和即可排除再生”“0 dB 必啸叫”“运行必须≤0.336秒”等说法不再作为行动依据。
++1. A：把三个标定文件拷出来 → B 当天可交付真实增益范围与 ASG 预测。
++2. A：用 B 给的增益点位做一轮成对对照（旁路叫、抵消静才算证据）。
++3. B：真数据到手后重算真实 CD(f) 与抽头对照，并给出 512 的可行性结论。
++4. C：补全过程观测覆盖与啸叫判据。
+diff --git a/report/verification/audio-replay/2026-10-22-512-taps.md b/report/verification/audio-replay/2026-10-22-512-taps.md
+index 2dd63f9..d2bc73e 100644
+--- a/report/verification/audio-replay/2026-10-22-512-taps.md
++++ b/report/verification/audio-replay/2026-10-22-512-taps.md
+@@ -236,7 +236,7 @@ B 在六段数据上确认 8.3–8.5 kHz 有 +9~10 dB 的峰（相干 0.85–0.9
+ - **不要用低通切掉 6 kHz 以上**：切掉之后旁路在该点仍是 10 dB，环路增益从"抵消后 2.56"
+   变成"旁路 9.26"，更容易叫。
+ - 判断某个负 CD 要不要管，**看该频点的 \|H\| 绝对值，不看 CD 的符号**
+-  （箱体 6–12 kHz 的 CD 也是 −3…−4.5，但那里 \|H\| 只有 2.9 dB，不影响稳定性）。
++  （箱体 6–12 kHz 的 CD 也是 −3…−4.5，但那里 \|H\| 只有 2.9 dB，不影响稳定性）。
+ 
+ ## 13. 高信噪比标定与残差带测试（按 B 的两条指令）
+ 
+@@ -274,15 +274,13 @@ B 给的判决法：在稳定点看 8.2–8.6 kHz 的 |residual|/|mic|，
+ 
+ 注意这也与离线拟合矛盾：同一批数据离线验证集降低有 5.7（256）/ 6.3（512）dB，
+ 闭环里却只有约 3 dB。**这个离线与闭环之间的差本身就是待查项**，
+-优先怀疑：捕获里 
+-esidual_pcm 的口径（增益前/后）、预测所用参考与捕获参考是否同一时刻序列。
++优先怀疑：捕获里 esidual_pcm 的口径（增益前/后）、预测所用参考与捕获参考是否同一时刻序列。
+ 
+ ### 13.3 本轮给 B 的三个数
+ 
+ 1. 高信噪比 CD：256 最差 +0.52、512 最差 +5.81（300–1000 Hz），**256 不是负的**。
+ 2. 8.2–8.6 kHz 残差比：**−1.8（512）/ −3.7（256）dB**，落入"残差真差"分支。
+-3. 离线 6.3 dB 与闭环 ~3 dB 的差异，需查 
+-esidual_pcm 口径与参考对齐。
++3. 离线 6.3 dB 与闭环 ~3 dB 的差异，需查 esidual_pcm 口径与参考对齐。
+ 
+ ## 14. 追查 11–12 dB 缺口：我的起振判据测的是饱和阈值，不是失稳阈值
+ 
+@@ -294,13 +292,11 @@ esidual_pcm 口径与参考对齐。
+ 
+ | 检查 | 结果 |
+ |---|---|
+-| 存储 
+-esidual 是否等于 mic − pred | scale **1.0000**、corr **1.0000** |
++| 存储 esidual 是否等于 mic − pred | scale **1.0000**、corr **1.0000** |
+ | 存储 prediction 是否等于 conv(reference, q) | corr **0.9965** |
+ | 预测与麦克风的最佳滞后 | **lag = 0**（4.24 dB），其余滞后 −3.5…+3.7 dB |
+ 
+-所以 
+-esidual_pcm 是增益前残差、RTL 与离线卷积一致、时延对齐正确。
++所以 esidual_pcm 是增益前残差、RTL 与离线卷积一致、时延对齐正确。
+ **缺口不是口径或对齐造成的。**
+ 
+ ### 14.2 决定性证据：同一个增益，激励大 4 倍就"起振"
+@@ -322,9 +318,7 @@ esidual_pcm 是增益前残差、RTL 与离线卷积一致、时延对齐正确
+ 
+ ### 14.3 稳定点（−8 dB）的残差比
+ 
+-| 子带 | 512 
+-esidual/mic | 512 pred/mic | 256 
+-esidual/mic | 256 pred/mic |
++| 子带 | 512 esidual/mic | 512 pred/mic | 256 esidual/mic | 256 pred/mic |
+ |---|---:|---:|---:|---:|
+ | 300–1000 Hz | **−6.6** | −1.4 | −3.3 | −3.7 |
+ | 1000–3000 Hz | **−8.2** | −0.4 | −7.2 | −0.8 |
+@@ -351,7 +345,7 @@ esidual/mic | 256 pred/mic |
+ 要回答"环路真正能推多高"，必须用**失稳判据**（例如在固定激励下用增益扫描找
+ "麦克风包络随时间指数增长"的最小增益），而不是等保护触发。
+ 在低激励（−26 dBFS）下保护不会误触发，那批数据（§11）给的 −0.5 / −5.5 dB 更接近失稳阈值，
+-但仍受"麦克风触顶"影响，需要用更低的激励重复确认。
++但仍受"麦克风触顶"影响，需要用更低的激励重复确认。
+ 
+ ## 15. 失稳阈值：用尾段余振测（不再依赖保护触发）
+ 
+@@ -399,308 +393,4 @@ RTL 的注入只在 scheduled < source_length 时发生，源播完后环路继
+ 
+ 根本制约是房间夹具的**可观测余量只有约 14 dB（底噪 −38 → 削波 −1）**，
+ 而环路上在起振附近每 0.3 s 放大 40 dB。要拿到精确阈值，需要扩大动态范围
+-（更高灵敏度的麦克风或更大的音响音量）——属现场决定。
+-
+-## 16. 实时扩声现场结果（0.5 m 房间夹具，连续放音）
+-
+-### 16.1 通路成立
+-
+-live_pa.py 一次装载 overlay 与模型，连续跑多段（每段 ≤9.5 s），话筒→PL→音响。
+-自检（旁路 −18 dB、3 s、无人声）：completed_frames=146484、status=0x00008001、三路计数全 0。
+-
+-开源电平（环路开到 −60 dB，只量手机）：**RMS −25.5 dBFS、峰值 −11.7 dBFS**，输入本身健康。
+-
+-### 16.2 但听得见的增益上会起振
+-
+-连续放音（手机在麦克风旁循环播放），每次 8 s：
+-
+-| 段 | 模式 | 增益 | 结果 | 起振频率 |
+-|---|---|---:|---|---:|
+-| A | 旁路 | −9 dB | 8 s 内起振，保护中止 | **751 Hz** |
+-| B | 抵消 | −9 dB | 8 s 内起振，保护中止 | **763 Hz** |
+-| C | 抵消 | 0 dB | 8 s 内起振，保护中止 | **8285 Hz** |
+-| D | 抵消 | +3 dB | 13 ms 内起振 | — |
+-
+-旁路 −12 dB 时能跑满 8 s 且麦克风电平等于开源电平（−25.3 对 −25.5），即**环路几乎没有贡献**。
+-
+-### 16.3 结论与归属
+-
+-- **在这个夹具上，旁路扩声的可用增益上限约 −12 dB**，即比原声低 12 dB 左右；
+-  再高就会振（−9 dB 起振于 751 Hz）。
+-- **抵消在 0 dB 时振在 8285 Hz**，正是实测的 8.4 kHz 强共振（max|H| 约 +10 dB），
+-  也正是 §14.3 里 pred/mic = +2.6 dB（模型过预测）的那一段。
+-  **模型在 8.4 kHz 过预测，使抵消在该频段比旁路更差**，这是"抵消并不能提高可用增益"的直接现场证据。
+-- 归属：8.4 kHz 过预测属**模型**问题（B）；"哪个增益算可听、听感如何"属**现场**判断；
+-  判据与复算属 **C**。A 本轮只交付通路、驱动与现场事实。
+-
+-### 16.4 本轮修掉的底层缺陷（两处，都是驱动层）
+-
+-1. **每段 arm 前必须重装源与系数**：RTL 在每次 arm 时清 resh，不重装则第二段起 ault（status bit18），
+-   表现为 completed_frames=0。
+-2. **egin 是边沿触发**：重装前必须先写 0 清掉命令字，否则写同一个值不产生边沿，
+-   表现为 coefficient loader not ready。
+-
+-### 16.5 三臂对照（bypass / cancel / cancel_zero）与它的致命混淆
+-
+-新增 live_pa(zero_coeff=True)：同一条代码路径，系数全零，即"不用模型"。
+-设计意图是在同一增益下比较"用模型"与"不用模型"，从而判断模型是帮忙还是添乱。
+-
+-12 段结果（源经门禁确认存在，gate rms −18.6 / peak −3.9 dBFS；每段 6 s）：
+-
+-| 增益 | bypass（无预测） | cancel（有模型） | cancel_zero（同路径、零系数） |
+-|---:|---|---|---|
+-| −12 dB | −31.5 / −16.0 干净 | **−13.7 / 0.0 削顶** | −21.2 / −6.4 干净 |
+-| −9 dB | −35.7 / −24.1 干净 | −29.0 / −13.1 干净 | −18.0 / −5.6 干净 |
+-| −6 dB | **−3.7 / 0.0 失控** | −16.2 / −0.5，bit19+20 削顶 | −20.8 / −9.5 干净 |
+-| −3 dB | **−1.5 / 0.0 失控** | −29.7 / −7.7，bit19+20 削顶 | **−2.6 / 0.0 失控** |
+-
+-**表面结论**：−12 dB 时"有模型"削顶、而"零系数"干净，看起来模型在该点有害。
+-
+-**但这条结论不可用，原因是致命的**：ypass 与 cancel_zero 在数学上完全等价
+-（都是 played = gain·mic），两者在 −12 dB 却差了 10 dB（−31.5 对 −21.2）。
+-唯一解释是**源在各窗口之间不平稳**——手机循环播放的人声，各段响度不同，且本轮
+-源电平（peak −3.9）比上一次（−11.7）高了 8 dB。
+-
+-**因此**：手机录音不能作为跨窗口比较的声源。要判定模型的作用，必须用**平稳声源**
+-（恒定电平的噪声或长音）并把电平固定在麦克风峰值约 −20 dBFS。
+-在满足这个条件之前，§16.5 的三臂数字只作记录，不作结论。
+-
+-### 16.6 平稳声源下的三臂阈值（本轮唯一可用于判定的对照）
+-
+-声源改为**平稳白噪声**（门禁 rms −36.5 / peak −23.0 dBFS），三臂同增益、同窗口（6 s）：
+-
+-| 臂 | −12 | −9 | −6 | −3 | 0 dB |
+-|---|---|---|---|---|---|
+-| bypass（无预测） | 稳 | 稳 | 稳 | 稳 | **稳** |
+-| **cancel（有模型）** | 稳 | 稳 | **啸叫** | **啸叫** | **啸叫** |
+-| cancel_zero（零系数） | 稳 | 稳 | 稳 | 稳 | **稳** |
+-
+-**"稳定"不是"没输出"**：核对了捕获里的 `reference`（PL 实际播放）
+-
+-- bypass 0 dB：`ref = mic = −36.5 dBFS` → 1:1 播放，确实稳定；
+-- cancel −9 dB：`ref −43.8` 比 `mic −35.2` 低 8.6 dB → **模型在帮忙**；
+-- cancel −6 dB：`ref −21.3` 比 `mic −35.8` **高 14 dB** → 环路再生，已失控。
+-
+-**结论**：当前模型在 −9 dB 有效、在 −6 dB 起反作用；不用模型的纯扩声到 0 dB 仍然稳定。
+-即**模型把可用增益从 0 dB（无模型）拉低到 −6 dB（有模型）**——这是"抵消反而降低可用增益"的直接证据。
+-与 §16.2 的 8285 Hz 起振一致：模型在 8.4 kHz 处过预测，使该频段的 `H−Ĥ` 相位反向。
+-
+-**归属**：模型问题交 B。A 只交付"同一平稳源下三臂阈值"这一现场事实与可复现脚本
+-（`live_pa(zero_coeff=...)` + 源电平门禁 + 6 s 窗口）与 `ref` 电平佐证。
+-
+-**本轮的一个操作事故**：追加本节时 PowerShell 参数写错，把整个报告清空过一次，
+-已从提交 `1b0aa93` 恢复并重写本节；恢复后文件 16 个小节齐全。
+-
+-## 17. 抵消惩罚的逐频段测量（**本节结论已作废，见 17.1**）
+-
+-初版结论：8.4 kHz 处 `|H| 9.14 dB` 对 `|Ĥ| 9.17 dB`（幅度准），相位差约 33°，
+-`|H−Ĥ| ≈ |H|`，惩罚 +0.29 dB，因此判定"模型在 8.4 kHz 无效且略有害"。
+-
+-### 17.1 作废原因：漏掉模型固有的 1 帧滞后（A 的错）
+-
+-RTL 的预测是 `pred[n] = Σ q[k]·ref[n−1−k]`（`lag_first=1`），所以
+-
+-    Hhat(f) = Σ q[k]·e^{−jω(k+1)} = e^{−jω} · fft(q)
+-
+-初版直接用 `fft(q)`，在 8285 Hz 处相当于少乘 `e^{−j61°}`——**我报的"33° 相位差"就是这 61° 的残差**。
+-B 在 2026-10-23 指出该频段相位差只有 −2.8…+4.8°，是我这边算错。
+-
+-加上滞后后重算（同一批 6 段、相干门控 0.7、n=8192、系数取 C 包内
+-`models/room_v1/candidate_512.json`）：
+-
+-| 频段 | CD 中位 | CD 最差 | 初版（错） |
+-|---|---:|---:|---:|
+-| 300–1000 Hz | **+12.05** | +5.88 | −11.16 |
+-| 1000–3000 Hz | **+16.18** | +1.56 | −10.77 |
+-| 3000–6000 Hz | **+19.68** | +5.91 | −4.47 |
+-| **8200–8600 Hz** | **+29.16** | **+20.84** | +0.29 |
+-| 6000–12000 Hz | **+25.18** | +5.71 | +0.07 |
+-
+-8285 Hz：`|Hhat| 8.43 dB`、`|H−Hhat| −20.82 dB`（相对 `|H| 8.14 dB`）、**CD +28.96 dB**。
+-B 在他那批算得 +32.1 dB，**同一结论**。
+-
+-**所以：模型在 8.4 kHz 是准的，"模型反相/有害"这个结论撤回。**
+-现场三臂对照里 `cancel` 在 −6 dB 起振而 `cancel_zero` 在 0 dB 不发散，不能用"模型相位错"解释，
+-只能按 B 的假设查"现场 H 与标定批 H 的差异（会话传递）"。
+-
+-## 18. 会话传递已证实：现场 H 在 8.4 kHz 掉了约 6 dB
+-
+-模型是在 `room_cal520` 那 6 段上拟合的。2026-10-23 用**同样的数字注入、同样的估计方法**
+-（白噪声、n=8192、相干 >0.7、无外部声源）又测了 3 段：
+-
+-| 频段 | 标定批 \|H\| | 现在 \|H\| | Δ 幅度 | Δ 相位 |
+-|---|---:|---:|---:|---:|
+-| 300–1000 Hz | 5.05 | 4.71 | −0.51 | +2.1° |
+-| 1000–3000 Hz | 0.52 | 0.57 | +0.07 | −7.6° |
+-| 3000–6000 Hz | 2.03 | 1.61 | −0.60 | +11.8° |
+-| **8200–8600 Hz** | **9.12** | **5.01** | **−4.97** | **+38.9°** |
+-| 8380 Hz 单点 | 11.13 | 5.15 | **−5.98** | **+39.5°** |
+-
+-新批：麦克风 −28.8/−28.7/−29.1 dBFS、`ref→mic` 延迟 125/124/124。
+-
+-**B 给的反证条件是「现场与标定批差 <1 dB、<10° 则会话传递解释错误」。实测 −5.98 dB / +39.5°，
+-远超出该门限——会话传递证实。**
+-
+-机理闭环：标定时该峰 11.1 dB，现在只有 5.2 dB，而模型仍按 11 dB 去预测，
+-于是该频段**过预测约 6 dB**，抵消后环路增益反而上升——这正解释了
+-`cancel` 在 −6 dB 发散、而零系数臂（`cancel_zero`）到 0 dB 仍稳定。
+-也解释了先前观察到的 `pred/mic = +2.6 dB`。
+-
+-**结论**：不是系数要改，是**模型对应的 H 已经不是现场这个 H**。必须先按现场 H 重标定。
+-数据：`a-session-transfer.json`。
+-
+-## 19. 按现场 H 重标定后：cancel 的上限从 −6 dB 抬到 +1.5 dB
+-
+-用现场 H 重新采集 6 段（白噪声 −14 dBFS RMS、麦克风 −18.1 dBFS、延迟 124/125、6/6 可用），
+-拟合 256 = 6.05 dB、512 = 6.60 dB。然后**声源关闭**，三臂同增益各 4 s：
+-
+-| 臂 | −9 | −6 | −3 | 0 | +3 |
+-|---|---|---|---|---|---|
+-| **cancel（新模型）** | 稳 −37.4 | 稳 −37.3 | 稳 −35.9 | **稳 −31.3** | 发散 |
+-| cancel_zero | 稳 −37.4 | −23.9 | **满幅 −1.4** | **满幅 −1.2** | 发散 |
+-| bypass | 稳 −37.2 | −8.3 | 发散 | 发散 | 发散 |
+-
+-旧模型（标定批）下 `cancel` 在 **−6 dB** 就发散；重标定后到 **0 dB 仍稳**、**+3 dB** 才发散，
+-**阈值抬高约 7 dB**。零系数臂与旁路在 0 dB 附近已到满幅。
+-
+-**结论：先前"抵消反而降低可用增益"是标定失配造成的，不是算法缺陷。重标定即解决。**
+-
+-### 19.1 一处未解释的矛盾（必须先解决才能引用 ASG）
+-
+-`bypass` 与 `cancel_zero` 在数学上等价（都是 `played = gain·mic`），但同一增益下差很多：
+-−6 dB 时 bypass 麦克风 −8.3 dBFS、cancel_zero −23.9 dBFS（差 15 dB）；−3 dB 时 bypass 发散、
+-cancel_zero 满幅未触发。**在查清之前，不能从这两臂引用任何 ASG 数字。**
+-
+-## 20. 门禁版三臂：重标定后抵消 ≥ 6 dB（本轮最终结论）
+-
+-§19 的三臂横比被污染：`bypass` 与 `cancel_zero` 数学等价却在 −6 dB 差 15 dB。
+-查捕获内部量：两臂都严格满足 `ref = gain·mic`、`residual = mic`，**内部无差错**；
+-差的是麦克风电平，即**音响限幅器在一次啸叫后介入**。
+-
+-因此改为**每次试次前先放 −20 dBFS 定音、环路打开测麦克风**，偏离场次基线 >1.5 dB 就跳过该试次；
+-三臂按增益交织。结果：
+-
+-| 增益 | bypass | cancel（重标定模型） | cancel_zero |
+-|---|---|---|---|
+-| −6 dB | 门禁失败 | **稳，mic −37.0** | 保护未触发但**已顶满幅**：mic −2.7、峰值 0.0 |
+-| −3 dB | 门禁失败 | 门禁失败 | 门禁失败 |
+-| 0 dB | **发散（955 帧）** | **稳，mic −35.4** | 保护未触发但**已顶满幅**：mic −1.17、峰值 0.0 |
+-
+-−3 dB 整行门禁失败的原因：−6 dB 那记满幅把音响推进限幅，后续基线掉下来被门禁拦住——
+-**这正是门禁该做的事**。
+-
+-**结论**：同一门禁场次内，重标定模型让 `cancel` 在 0 dB 仍稳（mic −35.4），
+-而零系数臂在 −6 dB 就已满幅（mic −2.7）。**抵消带来 ≥6 dB 的可用增益。**
+-此前"`cancel` 在 −6 dB 就发散"是标定批失配造成的，不是算法缺陷。
+-
+-**两条必须记住的口径**：
+-1. **保护不统计麦克风削顶**，所以"held"必须和麦克风电平一起读；满幅电平是发散，不是稳定。
+-2. 任何到达满幅的试次之后，**必须重新过门禁**再继续。
+-
+-数据：`a-gated-three-arm.json`。
+-
+-## 21. A 现场重拟合 vs B 会话掩模系数（同一门禁场次）
+-
+-B 用我报的频带偏差做掩模、乘到部署模型上，交付 `candidate_512_session_20261024.json`
+-（Q20 数组 sha256 `e353c10e…`，与他公布的值一致；文件 sha256 因序列化不同为 `22d898b4…`）。
+-预测阈值 +6.74 dB、限制点 381 Hz。
+-
+-协议：声源关闭；每次试次前 −20 dBFS 定音测音响状态；静置 8 s，连续 3 次落在 1.2 dB 内取中位数作基线，
+-偏离 >1.5 dB 跳过。
+-
+-| 模型 | −9 dB | −6 dB | −3 dB | 0 dB |
+-|---|---|---|---|---|
+-| **A 现场重拟合** | **稳，mic −37.2** | 门禁失败 | 啸叫，8.35 kHz，mic −12.5 | 啸叫，8.34 kHz，mic −13.1 |
+-| **B 掩模系数** | **啸叫，405 Hz，顶满幅 −23.8** | 啸叫，8.36 kHz，−12.8 | 啸叫，8.35 kHz，−14.6 | 门禁失败 |
+-
+-**结论**
+-1. B 预测的低频限制点是真的：他的系数在 −9 dB 就先在 **405 Hz** 起振（他算 381 Hz）。
+-2. 但 +6.74 dB 的阈值没有实现——**他在 −9 dB 就啸叫**，而 A 的重拟合在 −9 dB 仍稳。
+-3. 限制点在 **8.35 kHz 与约 400 Hz 之间切换，取决于用哪份系数**，不是固定频段。
+-
+-**门禁带来的第二个发现**：同一份 A 重拟合系数，早前场次"0 dB 稳（mic −35.4）"，
+-本场次却在 −3 dB 就啸叫。**说明系统距边界只有约 1–2 dB，单场次的"稳"不能当余量引用。**
+-
+-**两个测量坑（已写进 STATE）**
+-- 纯音不能测 `ref→mic` 延迟：1 kHz 每 48.8 样本重复，会报 70/118/21 这类值，实为同一延迟的周期模糊；
+-  只认白噪声的 124/125。
+-- `|H|` 列与 Δ 列口径不同（逐点中位数 vs 差的中位数），8200–8600 段 9.12→5.01 但 Δ=−4.97；
+-  交付必须注明，否则 0.86 dB 会直接进余量预算。
+-
+-数据：`a-model-ab-2026-10-24.json`，npz 三段落 `_a_work/for_b_npz`。
+-
+-## 22. 夹具电平重复性 4.7 dB：这是当前最大的测量障碍
+-
+-6 次完全相同的 1 kHz −20 dBFS 定音（环路打开、直放、hp_volume 40、麦克风取音体 RMS）：
+-
+-| 次数 | 1 | 2 | 3 | 4 | 5 | 6 |
+-|---|---:|---:|---:|---:|---:|---:|
+-| mic dBFS | −32.85 | −34.07 | −30.91 | −29.36 | −31.37 | −33.27 |
+-
+-**极差 4.71 dB，标准差 1.59 dB。**
+-
+-后果：
+-- C 的 `c-room-ready-v1` 两次运行都停在 `amplifier_gate_failed:gate_drift_exceeds_1p5_db`；
+-  两次人声尝试分别停在 `gate_tone_not_observed` 与 `gate_drift`，**人声项一次都没采到**。
+-- 之前归因于"会话传递"的跨场次差异（8.38 kHz 差 −5.98 dB），幅度与这个重复性同量级，
+-  **不能再排除是同一因素**。
+-- 任何低于 5 dB 的绝对电平门禁在这套夹具上都过不了；**本夹具的绝对 ASG 数字不可引用**，
+-  只能在同一个捕获窗口内做配对比较（mic/ref 同窗比值）。
+-
+-操作者反馈（两次人声尝试）：「纯啸叫、没有讲话声」。由于批次在门禁阶段就已中止，
+-可听见的是 1 kHz 定音本身，不是环路自激；此条按**操作者印象**记录，不作为测量结论。
+-
+-## 23. 带限可行性 + 低频标定加强：+3.65 → +5.42 dB
+-
+-**问题**：8.4 kHz 的 `|H|` 达 +11.3 dB，是 bypass 的必啸叫点。若把前向通路做成 300–3400 Hz 带通，
+-环路在该频点就没有增益。算下来确实如此（6 阶）：8200–8600 Hz 的 `|F·H|` 降到 **−35.75 dB**。
+-
+-**但没用**——限制点早就不在 8.4 kHz：
+-
+-| 配置 | bypass 可稳增益 | cancel 可稳增益 | 限制点 |
+-|---|---:|---:|---|
+-| 不加滤波 | −11.31 dB | +3.65 dB | 8386 Hz / 381 Hz |
+-| 带通 300–3400（6 阶） | −6.62 dB | **+3.89 dB** | 381 Hz |
+-
+-带通只救了 bypass（+4.7 dB），对抵消几乎无效，因为**381 Hz 就在通带里**。
+-
+-**真正的杠杆是 300–1000 Hz 的标定质量**（相干只有 0.81）。按此重做：16 段、注入 −12 dBFS、
+-相干升到 **0.93**，重拟合后：
+-
+-| 频段 | 相干 | `max|H|` | `max|H−Ĥ|` | 可稳增益 |
+-|---|---:|---:|---:|---:|
+-| 300–1000 | 0.93 | +6.43 | **−5.42** @435 Hz | **+5.42 dB** |
+-| 1000–2000 | 0.96 | +5.27 | −8.62 | +8.62 dB |
+-| 2000–3400 | 0.95 | +2.77 | −12.38 | +12.38 dB |
+-| 8200–8600 | 0.81 | +6.82 | −11.80 | +11.80 dB |
+-
+-**上板验证**（声源关闭、3 s、每档两次）：**0 dB 稳 2/2**（mic −28.6），**+3 dB 稳 1/2**（啸叫那次峰值 −1.7 dBFS）。
+-主频多为 **9131 Hz**，啸叫那次是 457 Hz。
+-
+-**结论**：预测 +5.42 dB 与实测阈值 +3～+5 dB 吻合，**这个度量可以作为设计目标**。
+-比部署模型（−3 dB 就啸叫）好约 6 dB；但**当扩音器需要约 +20 dB，仍差约 15 dB**。
+-带限不是出路，300–1000 Hz 才是。
+-
+-## 24. 记忆长度扫描：抽头不是瓶颈，地板是相干决定的
+-
+-20 段侧放数据、14 训练 / 6 留出、−12 dBFS 注入、直通。
+-
+-| 抽取 | 抽头 | 等效记忆 | 300–1000 Hz `max|H−Ĥ|` | 阈值 |
+-|---:|---:|---:|---:|---:|
+-| 8× | 384 | 63 ms | **−12.83** | +12.83 |
+-| 8× | 768 | 126 ms | −12.27 | +12.27 |
+-| 8× | 1536 | 252 ms | −12.53 | +12.53 |
+-| 8× | 3072 | 503 ms | −7.49 | +7.49 |
+-| 16× | 384 | 126 ms | −8.44 | +8.44 |
+-| 16× | 1536 | 503 ms | −6.94 | +6.94 |
+-
+-**加抽头没收益，超过 250 ms 反而变差**（在拟合测量噪声）。残差在 63–250 ms 之间稳定在 −12.8 dB 左右。
+-
+-分带（8× / 384 抽头）：300–400 `−12.82 @358`、400–1000 `−12.86 @453`、
+-1000–2000 `−14.46 @1836`、2000–2600 `−17.36 @2259`。
+-
+-**地板由相干决定**（358–453 Hz 相干仅 0.87–0.89），不是抽头数。因此 **B 的 8× 抽取方案也到不了
+-−18…−20 dB**，可稳增益天花板约 **+11…+13 dB**。
+-
+-**真正能解决的是"让麦克风听到的耦合更小、语音更强"**：近讲（头戴/领夹）麦克风把说话人抬到
+-房间之上约 20 dB，同时降低扬声器→麦克风的耦合。这是真实扩声系统避免啸叫的标准做法，**不需要改 RTL**。
++（更高灵敏度的麦克风或更大的音响音量）——属现场决定。
+diff --git a/report/verification/audio-replay/README.md b/report/verification/audio-replay/README.md
+index d131144..2d5c985 100644
+--- a/report/verification/audio-replay/README.md
++++ b/report/verification/audio-replay/README.md
+@@ -55,11 +55,8 @@ python scripts/package_audio_replay.py
+ 完成直放、旁路、抵消三项，最多约7.2秒发声。只有听感1且数字检查通过继续，
+ 否则停止并返回该次summary；持续尖叫立即切断音响电源。
+ 
+-**状态更正（2026-10-28）**：这条路径自 2026-10-20 起已在板上运行，v3 位流自 2026-10-27 起在板上
+-（`48e38f78…`；驱动当前为 `c2b2a86a…`）。本文件下方按当时状态保留的叙述不再代表现状，现状只看
+-[STATE](../../../docs/STATE.md)。不能预先保证音响响度、音质或抵消有效。保存的末尾 16384 帧主要是
+-声源关闭后的尾段，不代表整个语音段。全程内部饱和计数也不等于全程 ADC 监测
+-（v3 起另有 `capture_status` bit22 输入满幅粘滞位，并可让驱动停声）。
++新路径尚未上板；不能预先保证音响响度、音质或抵消有效。保存的末尾16384帧主要是
++声源关闭后的尾段，不代表整个语音段。全程内部饱和计数也不等于全程ADC监测。
+ 若两模式均正常，结论是已测范围未找到旁路失稳阈值；不输出精确MSG/ASG。
+ 如直放无声，停止后续两项，依据输出电平和现场音量处理可听性问题。
+ 
+@@ -136,7 +133,3 @@ SSH部署15项核对通过，HTTP只读读取确认busy=false、plan_ready=true
+ 用户截图报RuntimeError: There is no current event loop in thread 'Thread-278 (work)'。板卡pynq/uio.py第74行在构造UIO控制器时调用asyncio.get_event_loop().add_reader；旧面板每次新建后台线程且未设置事件循环。
+ 
+ 面板改为max_workers=1的持久执行器，线程初始化时创建并设置事件循环，录音、批次和清理复用同一线程，避免UIO对象跨任务失去所属循环。启动预检向实际工作线程提交get_event_loop，异常保留完整栈。16项部署文件核对通过，备份deploy-backup-20261021-174532；重启前确认busy=false及PID命令行身份。未触发录音、播放；此次设备与事件循环预检不代表完整音频初始化已通过。
+-
+-## 2026-10-25 只读独立复核证据
+-
+-[复核数据](independent-review-2026-10-25.json) 保存包哈希核验、相位穿越反例、闭环元数据和频域重算方法/输出。计算在前一轮只读复核执行，本轮归档；没有新增板卡试验。解释见 [复核答复](../../analysis/2026-10-24-situation-and-limits.md#独立复核答复2026-10-25)，发布数字以 [STATE](../../../docs/STATE.md) 为准。
+diff --git a/src/rtl/audio_pl_replay.v b/src/rtl/audio_pl_replay.v
+index f09bedb..28db2c3 100644
+--- a/src/rtl/audio_pl_replay.v
++++ b/src/rtl/audio_pl_replay.v
+@@ -1,6 +1,6 @@
+ // Bounded closed-loop path. Bypass and cancellation share gain and scheduling.
+ // Register contract: docs/contracts/audio-replay-v1.md.
+-module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_RUN_FRAMES=3000000, SOURCE_FRAMES=131072)(
++module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_RUN_FRAMES=488281, SOURCE_FRAMES=131072)(
+     input wire clk, resetn,
+     input wire [31:0] control, capture_cmd, coefficient_cmd, frame_limit,
+     input wire [31:0] source_cmd, source_length,
+@@ -10,13 +10,9 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+     output wire sdata_o, bclk, lrclk,
+     output reg [31:0] frame_count=0,
+     output wire active,
+-    // One initialiser per port declaration: Icarus Verilog cannot parse two in one item
+-    // (Vivado accepts both spellings, so this is a parse-portability change only).
+-    output reg [23:0] capture_left=0,
+-    output reg [23:0] capture_right=0,
++    output reg [23:0] capture_left=0, capture_right=0,
+     output wire [31:0] capture_status, coefficient_status,
+-    output reg [31:0] completed_count=0,
+-    output reg [31:0] gain_clip_count=0,
++    output reg [31:0] completed_count=0, gain_clip_count=0,
+     output wire [31:0] saturation_counts
+ );
+     reg [10:0] divider=0;
+@@ -41,8 +37,7 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+     reg u_ready=0;
+     reg signed [40:0] gain_product=0;
+     reg gain_valid=0;
+-    reg [15:0] prediction_clips=0, residual_clips=0, input_clips=0;
+-    reg input_clip_seen=0;
++    reg [15:0] prediction_clips=0, residual_clips=0;
+     reg arm_d=0, frame_active=0, done=0, fault=0, session=0;
+     reg [15:0] captured=0;
+     reg [23:0] tx_word=0, reference_hold=0, microphone_hold=0;
+@@ -76,21 +71,12 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+     wire [23:0] gain_limited=gain_rounded>41'sd8388607 ? 24'h7fffff :
+                                gain_rounded< -41'sd8388608 ? 24'h800000 : gain_rounded[23:0];
+     assign saturation_counts={residual_clips,prediction_clips};
++    wire [23:0] rx_left, rx_right;
+     wire rx_valid, serial_out;
+     wire begin_event=coefficient_cmd[25]!=command_d[1];
+     wire data_event=coefficient_cmd[24]!=command_d[0];
+     wire fir_ready, coeff_ready, fir_valid, fir_error, psat, rsat;
+     wire signed [23:0] prediction, residual;
+-    wire signed [24:0] residual_wide;
+-    // Sign-extend both operands to the product width so the multiply is explicit rather than
+-    // relying on context sizing. Gain is never negative (0..32768), so its extension is unsigned.
+-    wire signed [40:0] residual_wide_ext={{16{residual_wide[24]}},residual_wide};
+-    wire signed [40:0] gain_ext={24'd0,1'b0,gain_latched};
+-    wire [23:0] rx_left, rx_right;
+-    // Input full scale is counted on its own. It is NOT inferred from the residual: with zero
+-    // coefficients the residual equals the microphone and can never overflow, so a residual
+-    // counter cannot see an overloaded input.
+-    wire input_fullscale=(rx_left==24'sh7fffff)||(rx_left==24'sh800000);
+     // Starting a new run requires a COMPLETE fresh coefficient load: history is then zero.
+     wire sample_valid=rx_valid && frame_active && session && arm && !fault && !done;
+     wire run_ok=session && arm && !done && !fault && !fir_error && config_ok;
+@@ -98,7 +84,7 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+     assign lrclk=divider[10];
+     assign active=frame_active && run_ok && resetn;
+     assign sdata_o=(run_ok && resetn) ? serial_out : 1'b0;
+-    assign capture_status={9'd0,input_clip_seen,(gain_clip_count!=0),residual_clip_seen,prediction_clip_seen,fault|fir_error,
++    assign capture_status={10'd0,(gain_clip_count!=0),residual_clip_seen,prediction_clip_seen,fault|fir_error,
+                            (arm && !config_ok),captured,done};
+     assign coefficient_status={12'd0,loaded_count,fresh,fir_error,fir_ready,coeff_ready};
+     feedback_fir #(.TAPS(TAPS)) fir(.clk(clk),.resetn(resetn),
+@@ -106,7 +92,6 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+         .coeff_data(coefficient_cmd[23:0]),.coeff_ready(coeff_ready),
+         .in_valid(sample_valid),.bypass(control[1]),.reference_pcm(tx_word),.microphone_pcm(rx_left),
+         .in_ready(fir_ready),.out_valid(fir_valid),.predicted_pcm(prediction),.residual_pcm(residual),
+-        .residual_wide_pcm(residual_wide),
+         .prediction_saturated(psat),.residual_saturated(rsat),.protocol_error(fir_error));
+     iis_deser receiver(.CLK_100MHZ(clk),.SCLK(bclk),.LRCLK(lrclk),.SDATA(adc_sync[1]),
+         .EN(resetn),.LDATA(rx_left),.RDATA(rx_right),.VALID(rx_valid));
+@@ -118,10 +103,10 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+             source_length_latched<=0;mix_clip_count<=0;
+             divider<=0;adc_sync<=0;frame_count<=0;arm_d<=0;frame_active<=0;
+             gain_latched<=0;limit_latched<=0;u_hold<=0;u_ready<=0;gain_product<=0;gain_valid<=0;
+-            completed_count<=0;gain_clip_count<=0;prediction_clips<=0;residual_clips<=0;input_clips<=0;done<=0;fault<=0;session<=0;captured<=0;scheduled<=0;
++            completed_count<=0;gain_clip_count<=0;prediction_clips<=0;residual_clips<=0;done<=0;fault<=0;session<=0;captured<=0;scheduled<=0;
+             tx_word<=0;reference_hold<=0;microphone_hold<=0;read_word<=0;page_d<=0;
+             capture_left<=0;capture_right<=0;command_d<=0;fresh<=0;loaded_count<=0;
+-            prediction_clip_seen<=0;residual_clip_seen<=0;input_clip_seen<=0;
++            prediction_clip_seen<=0;residual_clip_seen<=0;
+         end else begin
+             divider<=divider+1'b1;adc_sync<={adc_sync[0],sdata_i};arm_d<=arm;
+             command_d<=coefficient_cmd[25:24];
+@@ -139,13 +124,7 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+             end
+             if (arm && (source_begin || source_data)) fault<=1;
+             if (arm && session && source_length!=source_length_latched) fault<=1;
+-            if (rx_valid) begin
+-                frame_count<=frame_count+1'b1;
+-                if (input_fullscale) begin
+-                    if (input_clips!=65535) input_clips<=input_clips+1'b1;
+-                    input_clip_seen<=1;
+-                end
+-            end
++            if (rx_valid) frame_count<=frame_count+1'b1;
+             gain_valid<=0;
+             if (arm && session && (control[31:16]!=gain_latched || frame_limit!=limit_latched)) fault<=1;
+             if (begin_event && !arm) begin fresh<=0;loaded_count<=0;end
+@@ -163,8 +142,8 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+                 source_length_latched<=source_length;source_fresh<=0;mix_clip_count<=0;
+                 fresh<=0;gain_latched<=control[31:16];limit_latched<=frame_limit;
+                 captured<=0;scheduled<=0;done<=0;completed_count<=0;u_ready<=0;u_hold<=0;
+-                gain_clip_count<=0;prediction_clips<=0;residual_clips<=0;input_clips<=0;
+-                frame_active<=0;tx_word<=0;prediction_clip_seen<=0;residual_clip_seen<=0;input_clip_seen<=0;
++                gain_clip_count<=0;prediction_clips<=0;residual_clips<=0;
++                frame_active<=0;tx_word<=0;prediction_clip_seen<=0;residual_clip_seen<=0;
+             end else begin
+                 if (divider==2047) begin
+                     // Prepare before the serializer observes falling LRCLK.
+@@ -191,10 +170,7 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
+                     memory[completed_count % CAPTURE_FRAMES]<={reference_hold,microphone_hold,prediction,residual};
+                     completed_count<=completed_count+1'b1;
+                     if(captured<CAPTURE_FRAMES) captured<=captured+1'b1;
+-                    // Multiply the WIDE residual, then clamp. The clamp at gain_limited is the
+-                    // authoritative one; because the gain is <= 1.0 the product can be represented
+-                    // even when the pre-gain difference exceeded the old 24-bit rail.
+-                    gain_product<=residual_wide_ext*gain_ext;gain_valid<=1;
++                    gain_product<=$signed(residual)*$signed({1'b0,gain_latched});gain_valid<=1;
+                     if(psat && prediction_clips!=65535) prediction_clips<=prediction_clips+1'b1;
+                     if(rsat && residual_clips!=65535) residual_clips<=residual_clips+1'b1;
+                     prediction_clip_seen<=prediction_clip_seen|psat;
