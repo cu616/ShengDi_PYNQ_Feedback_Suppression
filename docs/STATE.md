@@ -16,9 +16,10 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**（2026-10-31）：按队长授权在独立工作树完成主线集成，分支 `codex/integrate-abc`，以 origin/main `479a570` 为起点依次合入 A `e939bf0`、B `683493c`、C `51ebc38`（三次 `--no-ff` 合并各留一条记录）。**未推送 main**：合并后全量测试 374/379 通过，剩余 5 项全部落在 C 自己的交付冻结检查上，需 C 确认。硬件侧保持字节锁定：v3 载荷 10/10 哈希一致、RTL 与驱动均为 A 的现行版本，B/C 携带的旧 RTL、旧驱动未覆盖。
-**当前卡点**：① 等 C 回答两处过期钉死——`tools/delivery-freeze.json` 的 `source_sha256` 里 `board/audio_replay/sprint_selftest.py`（钉 `6fcd4da6…`，实际 `70e28d05…`）与 `scripts/assemble_experiment.py`（钉 `30581d0e…`，实际 `a8b0f5c0…`）在 **C 分支上就已经对不上**；② `test_tail_summary.py:94` 断言 `len(registry)==4`，而 B 现行 `models/manifest.json` 是 **5** 项（新增 `01c9102a…`）。这两项确认前不进 main。
-另：板卡不可达，`demo_take_v3.sh` 未在板上执行；素材与首剪待现场；可听收益未定；B 段（g=−3）需授权。
+**最后动作**（2026-10-31）：按队长授权在独立工作树完成主线集成并推送 main。分支起点 origin/main `479a570`，依次合入 A `e939bf0`、B `683493c`、C `51ebc38`，再 cherry-pick C 的修复 `2e7c205`。三次合并各留记录；17 处冲突逐项处理，没有 ours/theirs 批量覆盖。
+**合并后验证（真跑）**：`check_docs` 0 错误 0 警告（162 个 md）；v3 载荷 **10/10** 哈希一致；A 三套 16+7+17 全过；全量 `sim/feedback` **379/379**（C 修复后其 `test_delivery` 7/7、`test_tail_summary` 13/13）。
+**当前卡点**：main 已可交付；仍待现场的是真人素材与首剪（板卡当前不可达，`demo_take_v3.sh` 未在板上执行）；可听收益未定；B 段（g=−3）需授权。
+**本条补充**：全量测试里有一项仅因沙箱拒绝 `os.replace` 重命名而失败，不设限重跑为 379/379——这是环境限制，不是代码缺陷，测试与断言未改动。
 
 - 发布载荷以 [v3/manifest.json](../board/audio_replay/v3/manifest.json) 的整组哈希为准，维护源码与历史顶层包不要整目录混传。板卡部署位置及回退位置见“板卡占用”。
 - 最新驱动已记录混搭拒绝、静默自检、输入满幅停声恢复与连续运行四项硬件检查，见 [工程证据](../report/verification/audio-replay/wide-residual-v3/evidence.json) 的 `driver_79c4d9f7_full_verification`。无改动不重跑。
