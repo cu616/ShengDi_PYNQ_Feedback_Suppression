@@ -134,6 +134,27 @@ python -X utf8 board_run.py "wt-a\board\audio_replay\demo_take_v3.sh" --sudo
 4. 板卡输出里 `bit22=0`、`stop=completed` 与拍摄记录一致；
 5. 把结果填进 [takes.md](takes.md)（文件名、实际配置、版本、结果路径、可引用结论）。
 
+### 剪辑工具（已实测，2026-10-30）
+
+本机没有系统级 ffmpeg，已确认可用的一套在这里（含 ffprobe）：
+
+```
+C:\Users\lbc\.dsh\bili-whale\bin\ffmpeg.exe
+C:\Users\lbc\.dsh\bili-whale\bin\ffprobe.exe
+```
+
+编码链路已用 1 秒 1080p 测试图案验证：`-c:v h264_mf -pix_fmt yuv420p` → H.264，
+`ffprobe` 回读 `codec_name=h264 / 1920x1080 / 25 fps`。**没有 libx264**，所以用 `h264_mf`
+（MediaFoundation）；若画质不够再试 `h264_nvenc`。首剪命令模板：
+
+```
+ffmpeg -y -i a02_take01.mp4 -c:v h264_mf -b:v 8M -pix_fmt yuv420p -c:a aac -b:a 192k out.mp4
+ffprobe -show_entries stream=codec_name,width,height,r_frame_rate:format=duration,size out.mp4
+```
+
+验收口径：≤180 秒、H.264/AVC、≤300 MB；`.mp4` 后缀不算编码合格，必须 ffprobe 回读确认。
+
+
 ## 5. 与 B / C 的交接
 
 - 给 **B**：a03 的机位与时长、需要动画覆盖的时间段（42–67 秒原理段）、成片里动画的位置与尺寸。
