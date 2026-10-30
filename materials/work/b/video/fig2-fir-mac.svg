@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="Microsoft YaHei, PingFang SC, Segoe UI, sans-serif">
+  <title>声堤 · FIR 抽头与每帧预算（原理示意）</title>
+  <desc>左：三个抽头的乘加累加过程。右：一帧 2048 拍中 FIR 占用 1539 拍，对应抽头上限约 681。</desc>
+
+  <defs>
+    <style>
+      .h  { font-size:44px; font-weight:600; fill:#16181d; }
+      .s  { font-size:26px; fill:#68717e; }
+      .t  { font-size:30px; fill:#16181d; }
+      .m  { font-size:34px; fill:#16181d; font-family:Consolas, Menlo, monospace; }
+      .mb { font-size:34px; font-weight:600; fill:#1f5f7a; font-family:Consolas, Menlo, monospace; }
+      .cell { fill:#ffffff; stroke:#dfe3e9; stroke-width:2; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#ffffff"/>
+  <text x="90" y="100" class="h">FIR：三个抽头的手算，与 512 个抽头的排队</text>
+  <text x="90" y="146" class="s">p[n] = h[0]·u[n−1] + h[1]·u[n−2] + h[2]·u[n−3]　　取 h = [+0.5, −0.25, +0.125]</text>
+
+  <!-- 左：表格 -->
+  <g transform="translate(90,200)">
+    <rect class="cell" x="0" y="0" width="880" height="66"/>
+    <rect class="cell" x="0" y="66" width="880" height="66"/>
+    <rect class="cell" x="0" y="132" width="880" height="66"/>
+    <rect class="cell" x="0" y="198" width="880" height="66"/>
+
+    <text x="24" y="44" class="s">抽头 k</text>
+    <text x="190" y="44" class="s">系数 h[k]</text>
+    <text x="400" y="44" class="s">样本 u[n−1−k]</text>
+    <text x="700" y="44" class="s">乘积</text>
+
+    <text x="24" y="110" class="m">0</text>
+    <text x="190" y="110" class="m">+0.500</text>
+    <text x="400" y="110" class="m">+0.80</text>
+    <text x="700" y="110" class="mb">+0.400</text>
+
+    <text x="24" y="176" class="m">1</text>
+    <text x="190" y="176" class="m">−0.250</text>
+    <text x="400" y="176" class="m">−0.40</text>
+    <text x="700" y="176" class="mb">+0.100</text>
+
+    <text x="24" y="242" class="m">2</text>
+    <text x="190" y="242" class="m">+0.125</text>
+    <text x="400" y="242" class="m">+0.20</text>
+    <text x="700" y="242" class="mb">+0.025</text>
+
+    <text x="24" y="330" class="t">累加器</text>
+    <text x="190" y="330" class="mb" font-size="40">0.400 + 0.100 + 0.025 = 0.525</text>
+
+    <text x="24" y="392" class="t">麦克风 m = 0.600　→　残差 w = 0.600 − 0.525 =</text>
+    <text x="750" y="392" class="mb" font-size="40">0.075</text>
+
+    <rect x="0" y="430" width="880" height="96" rx="10" fill="#eaf3f8"/>
+    <text x="24" y="470" class="t">“麦克风里 0.525 那部分，是我自己放出去绕回来的”</text>
+    <text x="24" y="510" class="t">减掉它，剩下的 0.075 才送去放大</text>
+  </g>
+
+  <!-- 右：预算条 -->
+  <g transform="translate(1030,200)">
+    <text x="0" y="0" class="t">一帧 = 2048 拍（20.48 µs）</text>
+
+    <!-- 背景条 -->
+    <rect x="0" y="30" width="800" height="80" fill="#e6ebf1"/>
+
+    <!-- FIR 段 -->
+    <rect x="0" y="30" width="601" height="80" fill="#1f5f7a"/>
+    <text x="300" y="80" text-anchor="middle" font-size="30" fill="#ffffff">FIR 1539 拍</text>
+
+    <!-- 剩余 -->
+    <text x="700" y="80" text-anchor="middle" font-size="26" fill="#3d4653">509</text>
+
+    <!-- 上限刻度：标注放在条下方并右对齐，避免超出画布 -->
+    <line x1="798" y1="18" x2="798" y2="122" stroke="#a32323" stroke-width="4" stroke-dasharray="8 6"/>
+    <text x="800" y="196" font-size="24" fill="#a32323" text-anchor="end">681 抽头 = 2046 拍（每帧算得完的上限）</text>
+
+    <text x="0" y="164" class="s">0</text>
+    <text x="800" y="164" class="s" text-anchor="end">2048</text>
+
+    <!-- 每抽头三拍 -->
+    <text x="0" y="230" class="t">每个抽头分三拍：</text>
+    <rect x="0" y="250" width="150" height="64" rx="8" fill="#ffffff" stroke="#3d4653" stroke-width="2.5"/>
+    <text x="75" y="292" text-anchor="middle" class="t" font-size="26">读存储器</text>
+    <rect x="170" y="250" width="120" height="64" rx="8" fill="#ffffff" stroke="#3d4653" stroke-width="2.5"/>
+    <text x="230" y="292" text-anchor="middle" class="t" font-size="26">乘法</text>
+    <rect x="310" y="250" width="120" height="64" rx="8" fill="#ffffff" stroke="#3d4653" stroke-width="2.5"/>
+    <text x="370" y="292" text-anchor="middle" class="t" font-size="26">累加</text>
+    <text x="452" y="292" class="t" font-size="26">× 512 + 收尾 3 = 1539</text>
+
+    <!-- 结论 -->
+    <rect x="0" y="360" width="800" height="166" rx="10" fill="#fdf3e2" stroke="#8a5300" stroke-width="2"/>
+    <text x="24" y="404" class="t" font-size="28">681 是「每帧算得完」的上限，</text>
+    <text x="24" y="444" class="t" font-size="28">不是芯片容量上限。</text>
+    <text x="24" y="492" class="s" font-size="24">FIR 的系数与历史各 512×24 位，合计约 24.6 kbit；</text>
+  </g>
+
+  <!-- 底部三个数 -->
+  <line x1="90" y1="772" x2="1830" y2="772" stroke="#dfe3e9" stroke-width="2"/>
+  <text x="90" y="814" font-size="30" font-weight="600" fill="#16181d">记住三个数就够</text>
+
+  <g transform="translate(90,884)">
+    <text font-size="50" font-weight="600" fill="#1f5f7a" font-family="Consolas, Menlo, monospace">2048 拍</text>
+    <text y="46" font-size="26" fill="#68717e">一帧的全部计算预算（20.48 µs）</text>
+  </g>
+  <g transform="translate(700,884)">
+    <text font-size="50" font-weight="600" fill="#1f5f7a" font-family="Consolas, Menlo, monospace">1539 拍</text>
+    <text y="46" font-size="26" fill="#68717e">512 抽头要用的：3 × 512 + 3</text>
+  </g>
+  <g transform="translate(1310,884)">
+    <text font-size="50" font-weight="600" fill="#a32323" font-family="Consolas, Menlo, monospace">681 抽头</text>
+    <text y="46" font-size="26" fill="#68717e">每帧算得完的上限（3N+3 ≤ 2048）</text>
+  </g>
+
+  <!-- 角标 -->
+  <rect x="1590" y="1000" width="250" height="52" rx="8" fill="#f0ecfa" stroke="#5b3fa8" stroke-width="2"/>
+  <text x="1612" y="1036" font-size="24" fill="#5b3fa8">原理示意 · 非实测</text>
+</svg>

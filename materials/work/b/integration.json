@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "line": "B",
+  "owner": "B（算法与模型）",
+  "generated": "2026-10-30",
+  "purpose": "把本线对提交包的贡献（模型、拟合/分析代码、黄金参考、测试、数据生成方法）按精确路径与哈希固定下来，供 C 集成与复核。不宣称 Git 历史已合并。",
+
+  "source_commits": {
+    "current_head_at_generation": "86061a7",
+    "note": "本文件与 materials/ 下的教程、报告片段同属一个后续提交；模型与代码的有效版本见下面各项的 introduced_in。",
+    "integration_baseline_read": {
+      "capture": "A 分支 materials/planning/submission-plan.md、video-plan.md（提交 facd3de）",
+      "planning_inputs": ["A=2c7b955", "B=86061a7", "C=330e135"]
+    }
+  },
+
+  "model": {
+    "role": "final_candidate",
+    "path": "models/room_v1/rewired_512_20261026.json",
+    "sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+    "bytes": 17851,
+    "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+    "coefficients_sha256_convention": "int32 小端打包后取 SHA256，与 models/manifest.json 同口径",
+    "float_array_sha256": "17ea2b34c757bd1b7336959a584c857bf9befb9182735a3b970a6891d6049521",
+    "float_array_sha256_convention": "float64 小端连续数组的 SHA256",
+    "taps": 512,
+    "lag_first": 1,
+    "coefficient_format": "signed24_fraction20",
+    "q20_max_abs": 47879,
+    "l1_q20": 2398706,
+    "float_q20_max_diff": 4.7682583940210566e-07,
+    "bias": 0.0,
+    "bias_loaded": false,
+    "bias_note": "RTL 无偏置项；模型文件里的 bias 只作离线参考，评价按 bias=0",
+    "sample_rate_hz": 48828.125,
+    "frames_needed_3N_plus_3": 1539,
+    "frame_budget": 2048,
+    "zero_padded": false,
+    "logical_taps": 512,
+    "loaded_taps": 512,
+    "introduced_in": "b6bcfb2",
+    "manifest_registered_in": "b6bcfb2",
+    "manifest_path": "models/manifest.json",
+    "manifest_role": "candidate",
+    "manifest_status": "offline_candidate_not_board_validated",
+    "supersedes": "room_v1/newlayout_512_20261026.json（加棉前几何，不得与本份混用）",
+    "load_checks": [
+      "bitstream TAPS 必须为 512",
+      "lag_first 必须为 1",
+      "系数个数必须为 512",
+      "任一项超出 ±2^23 即拒绝",
+      "装载后回读 coefficients_sha256 必须等于 6118e85d…"
+    ]
+  },
+
+  "applicability": {
+    "fixture_id": "room_v1_20261026b",
+    "fixture_description": "麦–音响 100 cm、侧对；上方 30 cm 金属板，已盖隔音棉；声源为板载播放",
+    "codec": "ADAU1761，hp_volume = 40，24 位，I2S，采样率 48828.125 Hz",
+    "valid_for": [
+      "该夹具、该摆位下的闭环抵消",
+      "数字增益 −14…−6 dB 这一现场授权区间",
+      "输入峰值不超过 −6 dBFS 的采集"
+    ],
+    "not_valid_for": [
+      "换摆位或换房间：必须重标定，否则模型会放大残差而不是抵消",
+      "高于 −6 dBFS 的输入：先治输入（ADC 削顶后数字侧无法补偿）",
+      "作为 ASG 或可听收益的证据：模型只给出离线界，实测另需现场扫描"
+    ],
+    "evidence": "report/verification/rewired-candidate-2026-10-26/README.md"
+  },
+
+  "fit_and_analysis_code": [
+    {
+      "path": "scripts/fit_newlayout_candidate.py",
+      "introduced_in": "8a02757",
+      "role": "唯一拟合入口：对齐 → 分段 Gram → ridge 求解 → 量化 → 评价 → 写模型",
+      "outputs": ["模型 JSON", "report/verification/<dir>/metrics.json", "repro.txt"],
+      "run": "python scripts/fit_newlayout_candidate.py --packet-dir <采集目录> --out-model models/room_v1/rewired_512_20261026.json --out-dir report/verification/rewired-candidate-2026-10-26 --fixture-id room_v1_20261026b",
+      "dependencies": ["numpy", "scripts/answer_new_layout_325.py", "scripts/diagnose_peak_margin.py", "scripts/reproduce_b_screening.py", "src/feedback/calibration.py"]
+    },
+    {
+      "path": "scripts/answer_new_layout_325.py",
+      "introduced_in": "b4bc206",
+      "role": "输入资格校验（逐文件 SHA256、开环/旁路判定）、逐段延迟对齐、H 估计、小增益界与相位穿越",
+      "run": "python scripts/answer_new_layout_325.py --packet-dir <采集目录> --out-dir <输出目录>"
+    },
+    {
+      "path": "scripts/diagnose_peak_margin.py",
+      "introduced_in": "234abb6",
+      "role": "估计器与判据库：estimate_H / model_response / thresholds / shift_coefficients；Q20 生产入口带哈希绑定",
+      "note": "第 302 行的 --emit-dir 会生成含 '+' 的文件名，见 filename_mapping"
+    },
+    {
+      "path": "scripts/reproduce_b_screening.py",
+      "introduced_in": "9937113",
+      "role": "筛选与分段统计的唯一复算入口（输入清单与哈希、基线、FIR-off、ridge/权重、分段配对）",
+      "run": "python scripts/reproduce_b_screening.py --help"
+    },
+    {
+      "path": "scripts/analyze_residual_overflow.py",
+      "introduced_in": "186fd99",
+      "role": "残差越界与宽残差：主路径用抓包的 mic 与板上 prediction 重建（不依赖模型），辅路径整数重放交叉核对；另有 --ps-margin 只算裕量、--envelope 分块包络",
+      "run": "python scripts/analyze_residual_overflow.py --ps-margin --model models/room_v1/rewired_512_20261026.json",
+      "note": "单文件、只依赖 numpy，可拷到板上静默运行；输出只有数字，不导出音频"
+    },
+    {
+      "path": "scripts/answer_v3_working_point.py",
+      "introduced_in": "86061a7",
+      "role": "由 322 Hz 三点反解通路相位、played/source 上限、工作点与对照设计",
+      "run": "python scripts/answer_v3_working_point.py --json-out /tmp/wp.json"
+    },
+    {
+      "path": "src/feedback/calibration.py",
+      "role": "量化与定点辅助（quantize_coefficients 等），被上面多个脚本导入",
+      "note": "本线只依赖其中的定点函数，不声称整文件为本线产出"
+    }
+  ],
+
+  "golden_reference": {
+    "what": "与 RTL 逐样本一致的整数重放（Q20 累加 + 半值远离零舍入 + 24 位饱和 + 25 位宽残差过增益后再钳）",
+    "path": "scripts/analyze_residual_overflow.py",
+    "entry_point": "rtl_predict() / rtl_gain()",
+    "verified_against": "板上 prediction_pcm 与 residual_pcm",
+    "verification_result": "有效区 15871 帧失配 0；前缀失配 0（2026-10-27 抓包）",
+    "evidence": "report/verification/residual-overflow-2026-10-27/repro.txt",
+    "caveat": "前置条件：抓包内的 coefficients_q20 与所用模型逐值相同；不同则工具停止归因并退出码 2"
+  },
+
+  "tests": [
+    {"path": "sim/feedback/test_v3_working_point.py", "introduced_in": "86061a7", "pins": "三点分解自洽、相位反解与往返、临界增益、played/source 上顶与 −8 dB 已贴近顶"},
+    {"path": "sim/feedback/test_residual_overflow_tool.py", "introduced_in": "3e69ab5", "pins": "合法负满幅、负数半值远离零、历史前缀排除、Q20 身份、帧域整数性、整窗/有效区分"},
+    {"path": "sim/feedback/test_residual_headroom.py", "introduced_in": "186fd99", "pins": "PS 拓扑最小分母、门限余量、增益后输出上界"},
+    {"path": "sim/feedback/test_unit_scale_guard.py", "introduced_in": "da67305", "pins": "PCM 满量程 ±1 与系数满量程 ±8 不许混；窄带解析阈值必须被整数路径复现"},
+    {"path": "sim/feedback/test_newlayout_candidate.py", "introduced_in": "8a02757", "pins": "模型文件/系数/清单三者身份一致、Q20 范围、帧预算"},
+    {"path": "sim/feedback/test_new_layout_answer.py", "introduced_in": "b4bc206", "pins": "相邻 bin 取值、跨段对齐方向、CD 计算"},
+    {"path": "sim/feedback/test_causal_alignment.py", "pins": "lag_first=1 在拟合/预测/频响三处一致"},
+    {"path": "sim/feedback/test_phase_crossing.py", "pins": "相位穿越判据的端点独立扫描与 ±180° 折返排除"},
+    {"path": "sim/feedback/test_screening_controls.py", "pins": "分段配对、短片与有效片混合、清单缺失/破损/哈希不符的入口拒绝"},
+    {"path": "sim/feedback/test_r4_waveform.py", "pins": "波形侧复核的四项/五项资格判定与身份绑定"},
+    {"path": "sim/feedback/test_summary_v3.py", "pins": "汇总 v3 的可消费性字段"},
+    {"path": "sim/feedback/test_calibration.py | test_cancellation.py | test_capture_driver.py | test_closed_batch.py | test_closed_driver.py | test_closed_loop_sim.py | test_closed_tools.py | test_path_analysis.py | test_replay_session.py | test_residual_driver.py | test_residual_tools.py", "pins": "标定、抵消、驱动与闭环相关的既有回归；本线只保证它们不被本次改动破坏"}
+  ],
+
+  "test_command": "python -m unittest discover -s sim/feedback -p \"test_*.py\"",
+  "test_result_at_generation": {"count": 202, "status": "OK"},
+
+  "data_generation": {
+    "what": "开环采集：零系数（或 bypass）、数字增益 0 dB、白噪声激励，6 段 × 16384 帧",
+    "why_open_loop": "闭环下播放信号含反馈，参考不干净；开环才能把 H 单独辨识出来",
+    "per_segment_requirements": [
+      "reference 与 microphone 同时记录",
+      "metadata 含 first_frame、sample_rate、gain_q12、bypass、bit/系数哈希、饱和计数",
+      "段间停 0.5 s 重起，避免跨段不连续",
+      "输入峰值不超过 −6 dBFS，不削顶"
+    ],
+    "post_processing": [
+      "逐文件核对包内 manifest 的 SHA256",
+      "逐段估计 ref→mic 整数延迟并对齐到同一延迟（本批为 184/185 混排）",
+      "统计窗口只用源仍在播的帧；停源尾段单独判、不入统计",
+      "相干门控 ≥ 0.8；未过门控的频点记未知，不插值"
+    ],
+    "capture_used_for_this_model": {
+      "origin": "A 分支提交 52ee4e4，目录 report/verification/audio-replay/bind-capture-2026-10-26/",
+      "files": "6 个 npz + manifest.json + bind_manifest.json",
+      "file_count": 6,
+      "per_file_sha256": "见该目录 manifest.json（6/6 与文件一致）",
+      "known_note": "bind_manifest.json 在 git archive 解包时会被转成 CRLF，字节数与 SHA256 与仓库原件不同；它只是人读摘要，不参与数据身份"
+    },
+    "reproduce_note": "原始 npz 含现场录音，未进入本仓库；提交包只提供协议与判据，不提供录音。"
+  },
+
+  "dependencies": {
+    "python": ">=3.9（生成时使用 3.13）",
+    "third_party": ["numpy"],
+    "stdlib": ["argparse", "hashlib", "json", "math", "tempfile", "pathlib", "sys"],
+    "no_gpu": true,
+    "how_scripts_resolve_imports": "各脚本在文件头把仓库的 scripts/ 与 src/ 插入 sys.path，因此需在仓库根目录执行"
+  },
+
+  "not_this_line": {
+    "note": "以下文件虽在 B 分支可见，但不是本线对提交包的贡献，不要列为本线版本，也不要用它们代表硬件/驱动状态",
+    "items": [
+      {"path": "src/rtl/*.v", "why": "RTL 归 A；B 分支携带的是历史版本，v3 宽残差以 A 分支契约和位流为准"},
+      {"path": "board/audio_replay/*", "why": "板端驱动与现场脚本归 A，本线不操板"},
+      {"path": "docs/contracts/audio-replay-v3.md", "why": "契约由 A 维护；本线只按它核对语义"},
+      {"path": "report/verification/audio-replay/wide-residual-v3/", "why": "板上证据由 A 产出，本线只引用"}
+    ]
+  },
+
+  "filename_mapping": [
+    {
+      "original": "models/diagnostics/room_512_shift/model_512_shift+1.json",
+      "proposed": "models/diagnostics/room_512_shift/model_512_shift_plus1.json",
+      "reason": "'+' 在部分解压工具与 URL 中会被转义或截断",
+      "referenced_by": ["models/diagnostics/room_512_shift/README.md", "report/verification/peak-margin-2026-10-23/README.md"],
+      "generator_to_update_if_shipped": "scripts/diagnose_peak_margin.py 第 302 行（--emit-dir 用 %+d 生成文件名）",
+      "history_note": "原始文件与原始哈希保留不动；映射只作用于提交包，不改写历史证据",
+      "ship_recommendation": "可选：这是诊断产物（平移 ±1 拍用于验证延迟假设），复现最终模型不需要它。若不入选提交包，本条只作记录。"
+    }
+  ],
+
+  "limits": [
+    "本文件只描述 B 线贡献；合并、发布与最终口径由队长与 C 决定",
+    "模型 status 仍为 offline_candidate_not_board_validated：上板验证由 A 执行",
+    "ASG、宽带可听收益、听众可辨、跨场次、随电平变化均未测，不得由本文件的离线数字替代",
+    "本文件不含个人身份信息、不含原始录音，可直接进入公开仓库"
+  ]
+}
