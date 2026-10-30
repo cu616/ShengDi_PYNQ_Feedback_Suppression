@@ -16,8 +16,14 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**：A 在 `800dcf9` 回传既有三臂静默分析，`f8f3df5` 汇总，`2c7b955` 完成旧入口标注；队长本轮准备 [A 拍摄与硬件交付任务](../materials/prompts/a.txt)。主驱动、RTL 和位流未变。
-**当前卡点**：新任务尚未确认接收；真人拍摄需要现场人员，硬件清单与操作单可先独立完成。既有派生 JSON 仍待 C 确认，不重复采集。
+**最后动作**（2026-10-30）：接收队长拍摄任务，转入真人演示与硬件可集成版本；主驱动 `79c4d9f7…`、RTL、位流 `48e38f78…` 未变。
+已交 [integration.json](../materials/work/a/integration.json)（32 项硬件白名单）、
+[hardware.md](../materials/work/a/hardware.md)（PS/PL 分工、保护归属、构建复现）、
+[shooting-plan.md](../materials/work/a/shooting-plan.md)（一次现场窗口操作单）、
+[takes.md](../materials/work/a/takes.md)、入口 `demo_take_v3.sh`。
+
+**当前卡点**：板卡此刻不可达，`demo_take_v3.sh` **未在板上执行**（仅静态检查），现场开头先冒烟；
+素材与首剪待 10-31；可听收益未定；C 的原件级复算未做；B 段（g=−3）需授权。
 
 - 发布载荷以 [v3/manifest.json](../board/audio_replay/v3/manifest.json) 的整组哈希为准，维护源码与历史顶层包不要整目录混传。板卡部署位置及回退位置见“板卡占用”。
 - 最新驱动已记录混搭拒绝、静默自检、输入满幅停声恢复与连续运行四项硬件检查，见 [工程证据](../report/verification/audio-replay/wide-residual-v3/evidence.json) 的 `driver_79c4d9f7_full_verification`。无改动不重跑。

@@ -1,3 +1,29 @@
+## 2026-10-30 转入参赛材料制作　A　交付硬件白名单/说明、一次现场拍摄操作单、素材记录模板与单段演示入口（板卡不可达，入口仅静态检查）
+
+- 按队长 [A 拍摄与硬件交付任务](../../materials/prompts/a.txt) 与 [video-plan](../../materials/planning/video-plan.md)、
+  [submission-plan](../../materials/planning/submission-plan.md) 调转本轮重点：真人使用演示、视频素材、硬件可集成版本。
+- **`materials/work/a/integration.json`**：30 项硬件白名单，逐项写源提交/哈希/用途/依赖——
+  RTL（`audio_pl_replay.v`、`feedback_fir.v`）、厂商 VHDL（iis_ser/iis_deser + LICENSE）、
+  构建入口与约束（`create_audio_replay.tcl`、`audio_bringup.xdc`）、仿真入口与 4 个 testbench、
+  v3 整组 10 项发布载荷、9 个现场入口；另写恢复入口（配对校验 → 每次试次自动静音并恢复 stock →
+  `audio_live` 回退 → 失败原件成对保留）。位流字节锁定 `48e38f78…`，根目录旧位流与其它驱动不得混装。
+- **`materials/work/a/hardware.md`**：平台与工具链（保留 Vivado 2018.3 及理由）、PS/PL 实际分工、
+  **保护归属表（检测在 PL、判定与停声在 PS）**、块设计 IP 清单、从零复现位流 4 步、
+  时序资源（WNS +0.548 / WHS +0.015 / BRAM 80 % / DSP 3 / LUT 3 588 / FF 5 018），
+  并**如实标注不是完整时序签核**（四个外部 I/O 延迟约束未写）。
+- **`materials/work/a/shooting-plan.md`**：一次 50 分钟现场窗口的完整操作单——布景与设备分工
+  （3 手机 + 平板 + 懒人支架 + 台灯）、a01–a06 每条的**具体命令与时长**、真人站位 20 cm（不照搬手机 5 cm）、
+  开跑前门禁、失败出口（门禁失败退 5 cm 最多两次 / 保护停声保留失败原件 / 时间不够优先保 a02 与 a04）、
+  停止方法（固定预算自动停声；提前中断用 Ctrl-C，收尾路径会停声并恢复；不直接断电）、
+  拍摄后 10 分钟当场检查，以及与 B/C 的交接内容。
+- **`materials/work/a/takes.md`**：素材记录模板（文件/配置/结果/可引用结论/问题 + 板卡侧对应文件 + 失败素材区）。
+- **新增拍摄入口 `board/audio_replay/demo_take_v3.sh`**：单段"静音 → 通路开启 → 静音"（a02 20 s / a05 60 s），
+  带 `CUE` 时间戳便于与录像对齐、开跑前 0.6 秒静音门禁、结束自动静音；
+  `prep_demo_a02.sh` / `prep_demo_a05.sh` 只写操作者令牌。
+  **静态检查通过，但板卡当前 SSH 超时不可达，未在板上执行**——现场窗口开头先冒烟跑一次。
+- 未做：a01–a06 实拍、首剪、播放电平对照的有效测量（需运行 ≤0.336 秒或捕获可配）、B 段。
+- 采购：本轮**未下单**，按 video-plan 先试拍再决定（优先 0 元方案）。
+
 ## 2026-10-30 队长核对指南与分支，安排参赛材料并行交付
 
 - 阅读并渲染核对 AMD 指南自主选题条款：补入 Skill、AI纠错轨迹、构建复现、工具版本说明及决赛英文海报；用户已在办理授权书与GitHub事项。
