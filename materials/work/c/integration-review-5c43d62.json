@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "integration_commit": "5c43d62ab30cf681658cb5637b010e499b64c19c",
+  "C_base": "51ebc38f231ac77b2c269d0a9025bf1c2285979a",
+  "historical_freeze_commit": "be3200ecf4a5b1df8901f1111da4685c0f8fedc8",
+  "source_scope": "historical r1 LF-normalized source snapshot, not current v3 candidate; no pins changed",
+  "source_checks": [
+    {
+      "path": "tools/deliver_check.py",
+      "expected": "0d812eb5fc06cc5bb3ea96706f66ac7bb58e3b840e2506ba79a3a0a0b3518461",
+      "historical_git_sha256": "0d812eb5fc06cc5bb3ea96706f66ac7bb58e3b840e2506ba79a3a0a0b3518461",
+      "current_tree_sha256": "0d812eb5fc06cc5bb3ea96706f66ac7bb58e3b840e2506ba79a3a0a0b3518461"
+    },
+    {
+      "path": "board/audio_replay/listener_metrics.py",
+      "expected": "584d9d4835d0078826073ce894e5fece0006d960122aa4b434dfe40933999336",
+      "historical_git_sha256": "584d9d4835d0078826073ce894e5fece0006d960122aa4b434dfe40933999336",
+      "current_tree_sha256": "584d9d4835d0078826073ce894e5fece0006d960122aa4b434dfe40933999336"
+    },
+    {
+      "path": "board/audio_replay/sprint_experiment.py",
+      "expected": "fc9787047c51ef35481ba6c6a0181f6400768ccb52155c4d40ffaac5a0e1f8cb",
+      "historical_git_sha256": "fc9787047c51ef35481ba6c6a0181f6400768ccb52155c4d40ffaac5a0e1f8cb",
+      "current_tree_sha256": "fc9787047c51ef35481ba6c6a0181f6400768ccb52155c4d40ffaac5a0e1f8cb"
+    },
+    {
+      "path": "board/audio_replay/sprint_selftest.py",
+      "expected": "6fcd4da63a78736e7e35ea278e0a9b211fde034a1d472d3a7a3de9111644ee17",
+      "historical_git_sha256": "6fcd4da63a78736e7e35ea278e0a9b211fde034a1d472d3a7a3de9111644ee17",
+      "current_tree_sha256": "70e28d054ce11d12a4c9d31ccdf1345a890d1ad957afbeebe505e81cbf1586fe"
+    },
+    {
+      "path": "scripts/assemble_experiment.py",
+      "expected": "30581d0ed566c846a1e20dddee7d372116f76a08695e3176e2421a2868ea27df",
+      "historical_git_sha256": "30581d0ed566c846a1e20dddee7d372116f76a08695e3176e2421a2868ea27df",
+      "current_tree_sha256": "a8b0f5c0d4c3a271e8c1010fc94f2f94cd61858b351eb852653a2661a03db6c2"
+    }
+  ],
+  "cold_archive_sha256": "aba7466c675dd1829cbfae8a0db03621bac21a210692eac50923da0cedee790a",
+  "before": [
+    {
+      "suite": "test_delivery.py",
+      "exit_code": 1,
+      "output": "test_corrupt_asset_never_accepted (test_delivery.DeliveryChecks.test_corrupt_asset_never_accepted) ... ERROR\ntest_deployed_model_and_three_mapping_points (test_delivery.DeliveryChecks.test_deployed_model_and_three_mapping_points) ... ERROR\ntest_known_snr_and_three_bad_wav_inputs (test_delivery.DeliveryChecks.test_known_snr_and_three_bad_wav_inputs) ... ok\ntest_missing_artifact_exits_nonzero_without_completion_line (test_delivery.DeliveryChecks.test_missing_artifact_exits_nonzero_without_completion_line) ... FAIL\ntest_report_boolean_and_rehashed_manifest_cannot_fake_delivery (test_delivery.DeliveryChecks.test_report_boolean_and_rehashed_manifest_cannot_fake_delivery) ... ERROR\ntest_stdlib_pipeline_matches_frozen_production (test_delivery.DeliveryChecks.test_stdlib_pipeline_matches_frozen_production) ... ok\ntest_truncated_pcm_is_explicit_failure (test_delivery.DeliveryChecks.test_truncated_pcm_is_explicit_failure) ... ok\n\n======================================================================\nERROR: test_corrupt_asset_never_accepted (test_delivery.DeliveryChecks.test_corrupt_asset_never_accepted)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\sim\\feedback\\test_delivery.py\", line 71, in test_corrupt_asset_never_accepted\n    cfg=delivery.config();data=bytearray((ROOT/cfg['package']['path']).read_bytes());data[-1]^=1\n        ^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\tools\\deliver_check.py\", line 55, in config\n    require(digest(source_bytes(ROOT/name)) == expected, 'D2', 'source hash mismatch: '+name)\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\tools\\deliver_check.py\", line 37, in require\n    raise DeliveryError(defect, message)\nc_delivery_test.DeliveryError: source hash mismatch: board/audio_replay/sprint_selftest.py\n\n======================================================================\nERROR: test_deployed_model_and_three_mapping_points (test_delivery.DeliveryChecks.test_deployed_model_and_three_mapping_points)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\sim\\feedback\\test_delivery.py\", line 63, in test_deployed_model_and_three_mapping_points\n    cfg=delivery.config()\n        ^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\tools\\deliver_check.py\", line 55, in config\n    require(digest(source_bytes(ROOT/name)) == expected, 'D2', 'source hash mismatch: '+name)\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\tools\\deliver_check.py\", line 37, in require\n    raise DeliveryError(defect, message)\nc_delivery_test.DeliveryError: source hash mismatch: board/audio_replay/sprint_selftest.py\n\n======================================================================\nERROR: test_report_boolean_and_rehashed_manifest_cannot_fake_delivery (test_delivery.DeliveryChecks.test_report_boolean_and_rehashed_manifest_cannot_fake_delivery)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\sim\\feedback\\test_delivery.py\", line 76, in test_report_boolean_and_rehashed_manifest_cannot_fake_delivery\n    cfg=delivery.config()\n        ^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\tools\\deliver_check.py\", line 55, in config\n    require(digest(source_bytes(ROOT/name)) == expected, 'D2', 'source hash mismatch: '+name)\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\tools\\deliver_check.py\", line 37, in require\n    raise DeliveryError(defect, message)\nc_delivery_test.DeliveryError: source hash mismatch: board/audio_replay/sprint_selftest.py\n\n======================================================================\nFAIL: test_missing_artifact_exits_nonzero_without_completion_line (test_delivery.DeliveryChecks.test_missing_artifact_exits_nonzero_without_completion_line)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\sim\\feedback\\test_delivery.py\", line 99, in test_missing_artifact_exits_nonzero_without_completion_line\n    self.assertIn('DELIVERY_FAILED D3',output.getvalue());self.assertNotIn('PACKAGE_COMPLETE',output.getvalue())\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'DELIVERY_FAILED D3' not found in 'DELIVERY_FAILED D2 | command=\"C:\\\\Users\\\\Chen Zhiyuan\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\python\\\\python.exe\" \"python.exe -m unittest\" discover -s sim/feedback -p test_delivery.py -v | source hash mismatch: board/audio_replay/sprint_selftest.py\\n'\n\n----------------------------------------------------------------------\nRan 7 tests in 0.774s\n\nFAILED (failures=1, errors=3)\n"
+    },
+    {
+      "suite": "test_tail_summary.py",
+      "exit_code": 1,
+      "output": "test_analytic_three_band_ratio_and_slope (test_tail_summary.TailSummaryTests.test_analytic_three_band_ratio_and_slope) ... ok\ntest_clipping_zero_and_missing_bands_are_not_finite_performance (test_tail_summary.TailSummaryTests.test_clipping_zero_and_missing_bands_are_not_finite_performance) ... ok\ntest_corrupt_archive_preserved_as_invalid_row (test_tail_summary.TailSummaryTests.test_corrupt_archive_preserved_as_invalid_row) ... ok\ntest_derived_artifacts_do_not_register_and_claimed_hashes_are_checked (test_tail_summary.TailSummaryTests.test_derived_artifacts_do_not_register_and_claimed_hashes_are_checked) ... ok\ntest_gate_rejects_active_unknown_external_and_short (test_tail_summary.TailSummaryTests.test_gate_rejects_active_unknown_external_and_short) ... ok\ntest_legacy_capacity_and_hash_inference_preserve_unknown_load (test_tail_summary.TailSummaryTests.test_legacy_capacity_and_hash_inference_preserve_unknown_load) ... ok\ntest_missing_tail_safety_only_and_evidence_binding (test_tail_summary.TailSummaryTests.test_missing_tail_safety_only_and_evidence_binding) ... ok\ntest_padding_cannot_be_called_candidate_and_unknown_events_stay_null (test_tail_summary.TailSummaryTests.test_padding_cannot_be_called_candidate_and_unknown_events_stay_null) ... ok\ntest_positive_control_is_independent_of_tail_and_safety (test_tail_summary.TailSummaryTests.test_positive_control_is_independent_of_tail_and_safety) ... ok\ntest_registry_hashes_and_rejection_conditions (test_tail_summary.TailSummaryTests.test_registry_hashes_and_rejection_conditions) ... FAIL\ntest_retired_overlay_never_enters_acoustic_pairs (test_tail_summary.TailSummaryTests.test_retired_overlay_never_enters_acoustic_pairs) ... ok\ntest_same_gain_pair_and_read_only_csv (test_tail_summary.TailSummaryTests.test_same_gain_pair_and_read_only_csv) ... ok\ntest_scene_and_ambiguous_repeats_not_paired (test_tail_summary.TailSummaryTests.test_scene_and_ambiguous_repeats_not_paired) ... ok\n\n======================================================================\nFAIL: test_registry_hashes_and_rejection_conditions (test_tail_summary.TailSummaryTests.test_registry_hashes_and_rejection_conditions)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\integration-5c43d62\\sim\\feedback\\test_tail_summary.py\", line 94, in test_registry_hashes_and_rejection_conditions\n    registry=load_registry(ROOT/'models');self.assertEqual(len(registry),4)\n                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 5 != 4\n\n----------------------------------------------------------------------\nRan 13 tests in 0.878s\n\nFAILED (failures=1)\n"
+    }
+  ],
+  "after": [
+    {
+      "scope": "C branch",
+      "suite": "test_delivery.py",
+      "tests_run": 7,
+      "exit_code": 0
+    },
+    {
+      "scope": "C branch",
+      "suite": "test_tail_summary.py",
+      "tests_run": 13,
+      "exit_code": 0
+    },
+    {
+      "scope": "5c43d62 detached snapshot with only C test/doc patch",
+      "suite": "test_delivery.py",
+      "tests_run": 7,
+      "exit_code": 0
+    },
+    {
+      "scope": "5c43d62 detached snapshot with only C test/doc patch",
+      "suite": "test_tail_summary.py",
+      "tests_run": 13,
+      "exit_code": 0
+    }
+  ],
+  "after_output_source": "Actual execution responses in this Codex turn; counters recorded here, not fabricated raw console logs",
+  "v3_payload_checks": [
+    {
+      "file": "audio_replay.bit",
+      "ok": true
+    },
+    {
+      "file": "audio_replay.hwh",
+      "ok": true
+    },
+    {
+      "file": "replay_trial.py",
+      "ok": true
+    },
+    {
+      "file": "replay_tools.py",
+      "ok": true
+    },
+    {
+      "file": "closed_tools.py",
+      "ok": true
+    },
+    {
+      "file": "residual_tools.py",
+      "ok": true
+    },
+    {
+      "file": "test_runtime_stop.py",
+      "ok": true
+    },
+    {
+      "file": "test_verify_replay_v3.py",
+      "ok": true
+    },
+    {
+      "file": "tone_round_guard.py",
+      "ok": true
+    },
+    {
+      "file": "test_tone_round_guard.py",
+      "ok": true
+    }
+  ],
+  "docs_check": {
+    "scope": "C checkout",
+    "scanned_markdown": 126,
+    "errors": 0,
+    "warnings": 0
+  },
+  "registry": {
+    "C_entries": 4,
+    "integration_entries": 5,
+    "cardinality_assertion_removed": true,
+    "explicit_local_selector_approval": true,
+    "production_default_changed": false,
+    "missing_historical_default": "still rejected; no old-session fallback"
+  },
+  "runtime_files_changed": [],
+  "model_files_changed": [],
+  "manifest_changed": false,
+  "archive_changed": false,
+  "tests_skipped": 0,
+  "unit_test_count_changed": false,
+  "accepted_merge_choices": [
+    "03-metric.txt C three-column version",
+    "A current board/audio_replay/README.md with historical C page linked"
+  ],
+  "unexecuted": [
+    "full sim/feedback 379 suite delegated to A as requested",
+    "A 16+7+17 suites, unchanged payload",
+    "hardware execution",
+    "valid integrated-tree check_docs: temporary path caused zero-file scan; A runs it in integration worktree"
+  ],
+  "intermediate_correction": "An initial direct baseline-hash assertion exposed different historical MODEL_SELECTION; replaced by explicit test-local approval plus real-default fail-closed check. No production selection changed."
+}
