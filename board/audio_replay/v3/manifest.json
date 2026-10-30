@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "overlay": "audio_replay",
+  "version": "v3",
+  "contract": "docs/contracts/audio-replay-v3.md",
+  "branch": "A",
+  "commit": "snapshot introduced at 05f5c69; identity is the hashes below, see branch A for later commits",
+  "sample_rate_hz": 48828.125,
+  "taps": 512,
+  "lag_first": 1,
+  "source_frames_max": 131072,
+  "source_format": "signed16 -> signed24 << 8",
+  "build": {
+    "tool": "Vivado 2018.3",
+    "script": "build/scripts/create_audio_replay.tcl",
+    "wns_ns": 0.548,
+    "whs_ns": 0.015,
+    "tns_ns": 0.0,
+    "ths_ns": 0.0,
+    "failing_endpoints": 0,
+    "block_ram_pct": 80.0,
+    "dsp": 3,
+    "timing_statement": "constraints as applied are met; NOT a full timing sign-off (four external I/O delay constraints are still missing, unchanged since v1)"
+  },
+  "hashes": {
+    "audio_replay.bit": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+    "audio_replay.hwh": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+    "replay_trial.py": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+    "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+    "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+    "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+    "test_verify_replay_v3.py": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+    "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+    "test_tone_round_guard.py": "b32f348605edf8a14bb4a1299c74a0c174a147c1db764321a199e1e46a583ec6"
+  },
+  "model": {
+    "path_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide/rewired_512_20261026.json",
+    "sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+    "fixture_id": "room_v1_20261026b",
+    "fixture_confirmed": "same physical rig the model was fitted on (microphone to speaker 100 cm, side-facing, metal plate and cotton), confirmed by the operator 2026-10-27",
+    "logical_taps": 512,
+    "loaded_taps": 512,
+    "coefficients_sha256_q20_candidate": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+    "coefficients_sha256_q20_zero_arm": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad",
+    "coefficients_hash_note": "the two arms load different coefficient arrays, so they have different hashes: the candidate model is 6118e85d... and any zero_coeff=True arm is e5a00aa9... (all-zero, 512 taps after padding). C 2026-10-27: the manifest had the zero-arm hash in a field named as if it were the candidate. Both are now recorded explicitly."
+  },
+  "changed_against_v2": [
+    "gain multiplies the unclamped 25-bit difference; the only clamp is after the gain",
+    "capture_status bit22 = independent input full-scale sticky flag",
+    "driver stops on bit22 with stop_reason=\"input_clip\"; pre-gain residual overflow alone still only counts",
+    "driver refuses to start when the bit/hwh next to it is not the declared v3 pair (sha256 constants)",
+    "evidence adds input_full_scale_seen; the status.json written on a capture-save failure still carries capture_status, input_full_scale_seen, the v3 marker and every version hash",
+    "replay_tools verifies the output against the wide residual, skips skip+2 of a truncated ring, uses the asymmetric 24-bit rail, reports prefix overflows as unverifiable and refuses to pass with no output frames"
+  ],
+  "unchanged_against_v2": [
+    "bitstream register map except bit22",
+    "coefficient format Q20/24-bit, lag_first=1, two-frame schedule",
+    "prediction / post-gain / mix saturation, protocol fault, timeout, manual stop",
+    "24-bit residual and residual_saturated meanings"
+  ],
+  "hardware_status": {
+    "bitstream_executed_on_board": true,
+    "executed_driver_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+    "note": "Recorded hardware checks for the delivered driver 79c4d9f7: mixed bit/hwh rejection, silent bring-up, input_clip stop/recovery and a zero-coefficient 60-second run. Evidence: report/verification/audio-replay/wide-residual-v3/evidence.json, verification_board.driver_79c4d9f7_full_verification. This describes recorded execution, not live board connectivity or acceptance of speech cancellation benefit. Metadata corrected 2026-10-29; payload hashes unchanged."
+  },
+  "rollback": {
+    "package_on_board": "/home/xilinx/jupyter_notebooks/base/audio/audio_live",
+    "bitstream_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+    "driver_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+    "successful_baseline": "zero coefficients, PL -8 dB, Codec 40, phone 5 cm / volume 8 of 15"
+  },
+  "review_2026_10_27_C": {
+    "fixed_in_this_version": [
+      "1 save failure keeps capture_status / input_full_scale_seen / v3 marker / full hashes (incl. replay_tools)",
+      "2 wide residual is now computed from the RECORDED prediction column, so the prefix of a truncated ring is counted exactly instead of being reported as 0; the asymmetric rail test stays; on the real v2 capture the count is 8, equal to the hardware residual_saturations",
+      "3 scripts: gate before the arm, a failed gate / protection / failed recovery / stopped arm ends the branch, the tone round stops at the first failing arm, and the operator confirmation is a token the scripts consume but never create",
+      "4 tone analysis rejects five classes of bad input: missing identity, changed source or gain, conflicting actual length, input at the rail, and any arm that stopped",
+      "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); candidate and zero-arm coefficient hashes recorded separately",
+      "4b the tone eligibility rules were extracted into tone_round_guard.py and unit-tested off-board (test_tone_round_guard.py, 12 checks) so the five bad-input classes are proven, not just coded"
+    ]
+  }
+}

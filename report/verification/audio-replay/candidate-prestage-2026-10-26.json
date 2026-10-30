@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "topic": "rewired candidate pre-staged and identity-verified before any audible run",
+  "recorded_by": "A",
+  "source": "B branch b6bcfb2, models/room_v1/rewired_512_20261026.json",
+  "file_sha256": "01c9102af5e010e5",
+  "file_bytes": 17851,
+  "q20_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+  "q20_sha256_expected_by_C": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+  "match": true,
+  "fields": {
+    "taps": 512,
+    "lag_first": 1,
+    "coefficient_format": "signed24_fraction20",
+    "fixture_id": "room_v1_20261026b",
+    "hp_volume": 40,
+    "sample_rate_hz": 48828.125,
+    "training_source": "board"
+  },
+  "saturation": {
+    "sum_abs_q": 2398706,
+    "threshold": 8388608,
+    "margin_db": 10.9,
+    "note": "well inside the signed-24 prediction range; unlike the earlier candidate_room_v1_512.json which sat at 0.2 dB margin"
+  },
+  "board_state": {
+    "uploaded_to": "/home/xilinx/jupyter_notebooks/base/audio/audio_live/rewired_512_20261026.json",
+    "loader_check": "residual_tools.load_candidate(model, fixture_id=room_v1_20261026b, hp=40, rate=48828.125) returned LOAD_OK with 512 taps and the matching Q20 hash",
+    "armed": false,
+    "audible": false,
+    "note": "uploaded and loader-verified only; no overlay was armed and no source was played"
+  },
+  "zero_arm_definition": "zero arm loads 512 explicit zeros; verified earlier that zero_coeff=True with a valid model identity is the working path",
+  "pending": "C's final bound package (c-new-layout-r3, C=bbc89b2) with the single notebook entry, cell order, user actions, stop method and return path; no audible run until it arrives",
+  "not_claimed": [
+    "no audible test was run",
+    "no effect conclusion"
+  ],
+  "retracted": {
+    "claim": "10.9 dB saturation margin guarantees the candidate can be loaded safely",
+    "why_retracted": "C is right: LOAD_OK is a file/identity check, not a runtime guarantee. The saturation headroom is an arithmetic bound on sum|q| only, not a measured in-run margin. Per-run load count, status and capture arithmetic are recorded by the package itself.",
+    "still_valid": "the arithmetic bound itself (sum|q| = 2,398,706 versus the 8,388,608 threshold) and the identity match of the Q20 hash"
+  },
+  "zero_arm": "per C: the zero arm loads the legitimate rewired model file with zero_coeff=True; the driver sends 512 zeros. No separate zero-coefficient JSON is created."
+}

@@ -1,85 +1,51 @@
-# 逐档增益 A/B：只按这三格操作
+# audio_replay：发布入口与历史版本索引
 
-## 优先使用按钮页（2026-10-21）
+动态状态、允许配置、验证范围只查 [STATE](../../docs/STATE.md)。本页回答“文件用来做什么、哪些不能混用”，不是新的发声授权。
 
-A已获SSH部署和静默调试授权；上传、版本核验、选档和读摘要均由A完成。用户打开A提供的现场链接即可，勿同时运行Notebook。
-页面不会自动加载overlay或播放。先关闭音响电源，勾选条件、点“准备录音”；等提示后启动手机语音并点“开始录音 · 2秒”。
-录完停止手机外放、恢复音响供电，点“开始本批”。每次按页面勾选现场条件后点“开始本项”，结束点听感。
-“停止后续项目”不能保证实时急停；持续尖叫直接断音响电源。连接掉线时停止后续操作，A负责恢复；单次仍受PL帧预算限制。
-已有source.wav则复用，用户无需重新录音。摘要由A通过SSH读回，原始PCM留板。
+## 从哪里取发布文件
 
-下面的Notebook步骤仅作手动备用。
+电脑端从 [v3/manifest.json](v3/manifest.json) 取得文件清单，按其 `hashes` 核对 [v3/](v3/) 内整组载荷。
+该目录保存 bit/hwh、配套驱动与检查器；模型另按 manifest 的 `model` 身份取得，**v3 目录本身不包含全部场景数据和现场入口**。
 
+A 记录的板卡部署目录为 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide/`。
+不要将 `board/audio_replay/` 整目录上传：顶层 `audio_replay.bit/.hwh`、顶层 `manifest.json` 是历史版本，顶层维护脚本又已更新，混装会造成版本错误。
 
-本轮回答：手机停止外放后，同一录音、不同反馈增益下，抵消和旁路分别是否出现啸叫、失真或无声。先静默读取已有标定数据选档，不重新标定。
+## 文件分类
 
-## 1. 上传一次
+| 文件 / 目录 | 标注 | 保留用途与使用限制 |
+|---|---|---|
+| [v3/](v3/) | 工程基线载荷 | 使用自己的 manifest；精确身份和验证状态见 STATE |
+| 顶层 `replay_trial.py`、`replay_tools.py`、`tone_round_guard.py` 及相应测试 | 维护源码 | 对应发布时按 v3 哈希核验；不与顶层旧 bit/hwh 组合运行 |
+| [v2/](v2/) | 历史回退材料 | 只有 bit/hwh 和实现报告；配套驱动需取已记录版本，不能借用 v3 驱动 |
+| [rollback-v1/](rollback-v1/) | v1 回退快照 | 保留原 manifest 和文件，按快照恢复；恢复前核对其他导入依赖，不能当 v3 启动步骤 |
+| 顶层 `audio_replay.bit/.hwh`、`manifest.json` | 早期构建原件 | 保留审计；顶层历史 manifest 不描述后来更新的维护源码，不修改旧哈希凑通过 |
+| `click_panel.py`、`click-panel.html`、`start-panel.sh`、`replay_trial.ipynb`、`replay_session.py`、`sweep_plan.py`、`sweep_session.py` | 历史交互 / 扫档入口 | 早期盒内实验使用，未经现行整包集成不得直接作为演示入口 |
+| `live_pa.py`、`live_pa.ipynb`、`live_run.py`、`run_rc4_human*.sh`、`run_human_r1.sh` | 历史使用 / 验收入口 | 保留流程与故障复现价值；旧时长、路径和模型不能当成新配置 |
+| [field_ac_segments_v3.sh](field_ac_segments_v3.sh) | v3 已有分段现场入口 | 读取板上 `ac_mode.txt` 的 tone/speech，使用真实现场确认令牌；实际参数和版本先核对 STATE，不自动运行 |
+| [long60_v3.sh](long60_v3.sh) | 专项连续运行脚本 | 使用零系数；不把它的运行结果当成候选算法收益。已通过无变化不重复 |
+| [tone_arms_v3.sh](tone_arms_v3.sh) | 已替代的纯音入口 | 留作追溯；三臂 manifest 统一由 `field_ac_segments_v3.sh` 的 tone 模式生成 |
+| [field_ab_alternate_v3.sh](field_ab_alternate_v3.sh)、[played_level_report.sh](played_level_report.sh) | 有已知测量限制的历史尝试 | 源停止尾窗、全目录 glob、无有效源行回退问题未完成修复；**排除在正式收益测量入口之外** |
+| `verify_*v3*.sh`、`clap_test_v3.sh`、`speaker_check_v3.sh`、`listen_probe_v3.sh`、`level_ladder_v3.sh`、`peak_scan_v3.sh`、其他 `field_*` | 专项诊断 / 当时现场脚本 | 名含 v3 不等于发布默认入口；只有受影响故障需要时才核对并采用 |
+| `candidate_room_v1_512.json`、`model_lowcut_250_470_512.json`、`scene.json` 等 | 历史模型 / 配置 | 文件名不是适用性证明；按场景、文件和实际 Q20 哈希识别，不能替代 manifest 指定候选 |
 
-电脑本地完整包：`D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\build\packages\audio-replay.zip`。
-解压后进入`audio_replay`，共有15个交付文件：
+## 旧驱动怎样辨认
 
-`audio_replay.bit`、`audio_replay.hwh`、`replay_trial.ipynb`、`manifest.json`、`README.md`、`replay_trial.py`、`replay_tools.py`、`replay_session.py`、`closed_tools.py`、`residual_tools.py`、`replay_calibration.py`、`sweep_plan.py`、`sweep_session.py`、`click_panel.py`、`click-panel.html`、`start-panel.sh`。
+以下是版本索引，不改变任何旧程序字节。短哈希用于识别，真正装载仍核对完整哈希。
 
-板卡Jupyter进入 **base → audio → audio_replay**；完整目录：
-`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/`。
-没有目录则在`base → audio`点击`New → Folder`，命名`audio_replay`并进入。
-点击`Upload`选择上述15个文件，再点击列表中的确认`Upload`；更新时覆盖同名程序文件。
-**保留已有source.wav、replay_results及其他目录。** 上传后文件列表应有全部15项。
+| 驱动 SHA256 前缀 | 保留位置 / 历史来源 | 说明 |
+|---|---|---|
+| `79c4d9f7` | [v3/replay_trial.py](v3/replay_trial.py) | 发布驱动身份以 manifest 为准 |
+| `c2b2a86a` | A 历史提交 `f404948` 的 v3 文件 | 解除静音等待修复前的版本；仅用于复现旧问题 |
+| `82787262` | A 历史提交 `e05bb73` 的 v3 文件 | 有输入满幅停声与整对核验，但不是最后交付字节 |
+| `6b397359` | A 历史提交 `68e19fa` 的驱动 | 早期 v3，不能拿其验收范围替代后续版本 |
+| `2127663` | [rollback-v1/replay_trial.py](rollback-v1/replay_trial.py)；板上历史 `audio_live` | 旧保护语义；v1/v2 的具体 bit/hwh 必须按各次记录配对 |
 
-仅打开这个音频Notebook：
-`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/replay_trial.ipynb`。
-不要同时运行其他音频Notebook，不用Run All。更新旧包后先重启该Notebook内核，关闭音响电源。
+板上 `audio_live` 是保留的 v2 回退目录，`audio_wide` 是 v3 目录；本轮没有连接或更改它们。
+需要找旧驱动时先用 Git 的只读查看或导出到单独目录，勿覆盖当前 v3 同名文件。
 
-## 2. 第1格：静默选档
+## 已有数据复算与恢复
 
-- 找标题“第1格：静默选档”，代码首行`from pathlib import Path`。点击代码格，Shift+Enter一次。
-- 该格不加载overlay、不发声。复用板卡已有配置：
-  `/home/xilinx/jupyter_notebooks/base/audio/audio_closed/field_setup.json`。
-- 从板卡`/home/xilinx/jupyter_notebooks/base/audio/audio_calibrate/`读取：
-  `training_box_v1.npz`、`validation_box_v1.npz`、`candidate_box_v1_256.json`。
-- 等到列出全部可测档位并显示“静默选档完成”才继续。分析耗时依板卡而定；这时不用讲话或播放手机。
-- 若缺文件、夹具不符、模型无改善或不足两档，返回屏幕打印路径的`summary.json`，到此结束。不要改限制强行通过。
+C 的精确轮次分析入口与固定提交见 [STATE 的 C 段](../../docs/STATE.md#c-测评与工具)。A 已生成的派生回包直接用于后续复核，不能把“等待 C 回执”误写成“请 A 再跑一次”。
+回退也必须整组核对版本、依赖、模型与保护语义；先保留当前配置和采集文件，再由 A 安排。目录名含 rollback 不代表可以无条件覆盖正在使用的包。
 
-## 3. 第2格：录2秒，然后停手机
-
-- 音响保持断电，箱盖、麦克风与两只音响位置保持原标定状态。
-- 找“第2格：录音2秒”，首行`assert plan_path is not None, ...`，Shift+Enter一次。
-- 等到RECORD提示出现，再让手机在原位置播放语音，输入`RECORD`回车，立即录2秒。
-- 录完**停止手机外放**。已有`source.wav`自动复用；如要换录音，先把旧文件改名备份。
-
-## 4. 第3格：连续完成整批
-
-- 手机已停止外放，恢复音响供电。只用固定音响，勿戴耳机；音响电源须能立即切断。
-- 找“第3格：逐档听音”，首行`result = sweep_session.run_sweep(plan_path)`，Shift+Enter一次。
-- 先看总项数、每项时长，现场就绪输入`READY`。
-- 每项配置完成、提示START后，准备听再输入`START`。立即播放并采样，默认约2.4秒后自动静音。
-- 先做一次直放可听确认；然后按升序每档**先抵消、后旁路**。只改变反馈增益和指定的bypass，整批录音电平固定。
-- 每项结束输入：**0无声，1语音清楚且结束安静，2杂音失真，3啸叫增长，4结束仍响**。只有1继续，其他值停止整批。若旁路出现啸叫，同档抵消项已经完成。
-- 持续尖叫时先断音响电源。输入框不是播放中的实时急停。饱和软件轮询会尝试提前停止，PL帧预算限制单次时长；都不能代替现场断电。
-
-最多8档、17项；录2秒时总发声最多约40.8秒，整轮预留10–15分钟（含分析、上传和操作，非板上实测耗时）。不必每项回聊天。
-
-## 5. 结束，只返回一个文件
-
-在Jupyter **base → audio → audio_replay → replay_results → sweep_<编号>** 下载`summary.json`。
-完整路径：`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/replay_results/sweep_<编号>/summary.json`。
-它包含选档依据、文件哈希、每档实际增益、配对、听感和停止原因。WAV/NPZ留板。
-
-出错或中断：先关闭音响，保留摘要，不连续重跑；内核重启后可重跑第1格产生新批次，已有录音不需重录。配置若修改，必须保存并重新执行第1格，内存中的旧计划不会自动更新。
-
-本流程是预录数字声源下的声反馈增益对照，直放可听不等同于正常麦克风扩声成立。若全部档位均正常，记录“已测范围未找到旁路失稳阈值”；不虚构MSG/ASG。已有数据不支持更高档位时，程序停止而非盲目升增益。
-
-
-### 第1格报Notebook哈希不匹配的恢复
-
-这是旧版把执行次数/输出也计入Notebook文件哈希导致的误判风险。新版只核验按顺序排列的代码格内容。
-已有旧包时，只需从电脑`D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\board\audio_replay\`上传新版`replay_session.py`与`manifest.json`，覆盖板卡`/home/xilinx/jupyter_notebooks/base/audio/audio_replay/`同名文件；Upload后再次点击确认Upload。
-保留Notebook、标定数据、录音和已有结果，然后只重跑“第1格：静默选档”（首行`from pathlib import Path`）。
-这一步不发声；成功列出档位才继续第2格。若报“Notebook代码与程序包不匹配”，则需恢复配套Notebook，因为代码格内容确有差异。
-
-
-### A维护按钮服务
-
-板卡启动解释器固定为 `/usr/local/share/pynq-venv/bin/python`，不可用系统 `/usr/bin/python3`。服务启动仅导入PYNQ检查环境，不配置音频。重启前读取状态确认busy=false，并核对PID对应本目录click_panel.py；保留原会话令牌及计划。错误会显示在主区域，由A处理；录音成功后用户点击下方“2 开始本批”。
-
-启动服务必须用 `bash /home/xilinx/jupyter_notebooks/base/audio/audio_replay/start-panel.sh --plan <板卡计划摘要绝对路径>`，由A提供会话令牌环境变量。脚本加载板卡自带XRT和BOARD配置；只指定Python解释器仍会缺少设备注册。启动会检查设备可发现，不加载overlay。
+原来的“三格操作”、旧上传目录及按钮页说明已完整保存在 [整理前原文](../../docs/archive/pre-freeze-guide-2026-10-29.md)。它们用于理解历史记录，不作为今天的执行单。

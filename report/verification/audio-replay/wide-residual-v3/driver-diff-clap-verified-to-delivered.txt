@@ -1,0 +1,76 @@
+# replay_trial.py: the driver that was stopped by a hand clap -> the delivered driver
+#
+# Why this file exists: the input full-scale stop was observed on hardware with the driver from
+# commit a3f3ddc (a9fc35c9d5c77f397e57d70de256d419cc1547b724568d759b892fa831fc2000). The delivered driver is c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493. A reviewer must be able to see, line by line, that
+# the stop path itself did not change - only the identity block and the status payload did.
+# The stop has NOT been re-observed on the delivered driver; that run is still pending.
+
+# total changed lines: 34
+# changed lines that touch the stop logic: 1
+
+--- replay_trial@a3f3ddc
++++ replay_trial@delivered
+@@ -17,4 +17,5 @@
+ from residual_tools import load_candidate
+ from closed_tools import trial_parameters
++import replay_tools
+ from replay_tools import verify_replay
+ 
+@@ -42,4 +43,12 @@
+ EXPECTED_BIT_SHA256 = "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78"
+ EXPECTED_HWH_SHA256 = "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e"
++
++
++def _file_sha256(path):
++    """sha256 of a file, or None when it cannot be read. Never raises."""
++    try:
++        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++    except Exception:
++        return None
+ 
+ 
+@@ -134,4 +143,18 @@
+     if zero_coeff:
+         coefficients = np.zeros(len(coefficients), dtype=np.int64)
++    # Identity is resolved BEFORE anything can fail, so a capture-save failure still leaves a
++    # complete version record next to the trial (C check: save failure must keep the identity).
++    identity = dict(
++        package_version="audio-replay-v3",
++        driver_sha256=_file_sha256(__file__),
++        bit_sha256=_file_sha256(bit),
++        hwh_sha256=_file_sha256(bit.with_suffix(".hwh")),
++        model_sha256=_file_sha256(model_path),
++        # The checker is part of the identity: a capture verified by a different replay_tools is
++        # not the same evidence (C 2026-10-27, "complete version hashes").
++        replay_tools_sha256=_file_sha256(replay_tools.__file__),
++        coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
++        source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
++    )
+     fd, control, raw = None, None, None
+     cleanup_errors, salvage_errors = [], []
+@@ -384,8 +407,5 @@
+             source_end_frame_exclusive=int(source_pcm16.shape[0]),
+             source_schedule_verified=bool(source_loaded_ok),
+-            source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
+-            bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest(),
+-            model_sha256=hashlib.sha256(Path(model_path).read_bytes()).hexdigest(),
+-            coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
++            **identity,
+             logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
+             coefficient_status=int(coeff_status_word),
+@@ -423,4 +443,8 @@
+     status_payload = dict(
+         schema_version=1, driver_evidence_version="a-replay-evidence-v2",
++        **identity,
++        # The two v3 status facts a save failure must not swallow.
++        capture_status=int(status or 0),
++        input_full_scale_seen=bool(int(status or 0) >> INPUT_CLIP_BIT & 1),
+         capture=str(output_path), fixture_id=fixture_id,
+         recovery_ok=bool(recovery_ok), cleanup_errors=list(cleanup_errors),
+@@ -436,5 +460,5 @@
+         gain_saturations=int(counts[2]), mix_saturations=int(counts[3]),
+         logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
+-        coefficient_status=int(coeff_status_word), bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest())
++        coefficient_status=int(coeff_status_word))
+     try:
+         status_path.write_text(json.dumps(status_payload, indent=2, ensure_ascii=False),

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "topic": "fixed field configuration for the 2026-10-26 comparison round",
+  "recorded_by": "A",
+  "recorded_at": "2026-10-26",
+  "status": "partially verified - items marked unknown must be measured before the comparison round",
+  "board_identity": {
+    "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+    "hwh_sha256": "92b499a39d04de891632a89512bfff49f7482a332344128556b1506529d1b75b",
+    "max_run_frames": 3000000,
+    "contract": "v2",
+    "driver_live_run_sha256": "a3df27acd418cf486294b7774104adc211e62a7b5319ad8963ac4c79a2bcb441",
+    "driver_identity": "repo copy and board copy hash identical",
+    "driver_replay_trial_sha256": "212766325d6f0f65f75503638f8d350caf6f3397813893bf360f40f94847aa62",
+    "board_dir": "/home/xilinx/jupyter_notebooks/base/audio/audio_live"
+  },
+  "coefficients": {
+    "retired": {
+      "old_name": "model_room_side_512.json",
+      "sha256": "49c9c572780cbc7dae91ad76f9d3e364bd85e880256e99f84c3c542c3735a9b1",
+      "fixture_id": "room_v1_20261021",
+      "problem": [
+        "fixture_id declares the OLD fixture (0.5 m front-facing, sideways speaker)",
+        "not present in the repository, so its provenance cannot be audited",
+        "B measured its impulse-response peak at tap 128 while the new layout delay is 185 frames",
+        "on-board A/B showed it is worse than loading no model at all"
+      ],
+      "action": "renamed on the board to model_room_side_512.STALE-oldfixture.json so any test that references the old name fails loudly instead of silently using stale coefficients",
+      "history_kept": true
+    },
+    "zero_coefficient": "available through zero_coeff=True; measured stable to -2.5 dB with a silent source and clean at -6 dB with live speech",
+    "matching_candidate": "pending from B for fixture room_side_100cm_v1"
+  },
+  "acoustics": {
+    "speaker_to_microphone_cm": 100,
+    "speaker_orientation": "side-facing the microphone",
+    "reflecting_object": "metal plate 30 cm above the speaker, now covered with sound-absorbing cotton; the plate is considered part of the fixture and must not be moved",
+    "microphone_position": "on the desk",
+    "talker_to_microphone_cm": "unknown - verbally reported as 10-15 cm during the last tests, not measured",
+    "listener_position": "unknown for the current layout; the earlier 30 cm figure belonged to the old layout"
+  },
+  "electronics": {
+    "hp_volume": 40,
+    "sample_rate_hz": 48828.125,
+    "digital_gain_last_used_db": -6.0,
+    "microphone_preamp_gain": "unknown - MAX4466 potentiometer setting never recorded",
+    "codec_volume_setting": "hp_volume=40 via driver; the physical volume knob position is unknown"
+  },
+  "stop_and_evidence_path": {
+    "verified_in": "replay_trial.py lines 216-229 and 333-344",
+    "order": ["guard detected", "PL disarmed and codec muted", "counters read", "capture saved",
+              "exception raised"],
+    "conclusion": "sound is stopped before any file write, so evidence saving cannot delay protection",
+    "live_run_equivalent": "disarm_and_mute() records t_disarm_ok / t_mute_ok / t_cleanup_done"
+  },
+  "unknowns_to_close_before_the_comparison": [
+    "talker-to-microphone distance in cm",
+    "listener position in cm for the current layout",
+    "MAX4466 preamp gain setting",
+    "physical codec volume knob position"
+  ]
+}

@@ -1,6 +1,8 @@
 # 仓库定位与同步
 
-本地目录保持为 D:/OCadence_Project/Flushbonading_FPGA_Contest。远端名为 ShengDi_PYNQ_Feedback_Suppression；本地文件夹和远端不同名不影响使用。
+本地文件夹与远端仓库可以不同名。先用 `git worktree list`、`git branch --show-current` 和 `git rev-parse --show-toplevel` 确认所读版本；不要把主目录自动当成最新开发目录。
+
+队长这台电脑的 A 工作区是 `D:/OCadence_Project/Flushbonading_FPGA_Contest/_a_work/wt-a`；根目录是另一个 main 工作区。其他电脑按自己的实际克隆路径定位，跨设备交接使用分支、提交与仓库相对路径。下面根目录路径只作定位示例。
 
 ## Git Bash 定位
 
@@ -12,7 +14,7 @@ git remote -v
 git status
 ```
 
-根目录应为 D:/OCadence_Project/Flushbonading_FPGA_Contest 或对应的 /d/...。origin 应为 https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression.git。
+工作区根目录以 `git rev-parse` 输出为准，也可以是独立 worktree。origin 应指向 `cu616/ShengDi_PYNQ_Feedback_Suppression`，HTTPS 或已配置的 SSH 均可。不要为匹配本文示例擅自修改远端。
 
 也可在任意 Git Bash 目录执行：
 
@@ -34,4 +36,4 @@ git commit -m "Describe the change"
 git push -u origin HEAD
 ```
 
-队友在其他电脑克隆同一远端。tmp/ 不上传，正式实验数据放入 data/ 并写说明。不要将账户凭据放入仓库。本次建仓沿用已有 Git 提交身份，不修改全局配置。
+队友在其他电脑克隆同一远端。tmp/ 不上传；可交付证据放入 report/verification 并注明身份，原始录音保持既有授权范围，不能因整理目录自动上传。不要将账户凭据放入仓库。本次建仓沿用已有 Git 提交身份，不修改全局配置。

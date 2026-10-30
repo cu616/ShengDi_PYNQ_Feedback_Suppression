@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "topic": "measured stability boundary by gain sweep (silent source, v2, new layout)",
+  "recorded_by": "A",
+  "method": "silent source so the loop runs open; 2 s per point; judged by microphone level lift, dominant frequency and single-mode energy share",
+  "layout": "speaker 100 cm from the microphone, side-facing; small metal plate 30 cm above the speaker; microphone on the desk",
+  "points": [
+    {
+      "gain_db": -14.0,
+      "mic_dbfs": -38.8,
+      "lift_db": 0.0,
+      "dominant_hz": 459,
+      "mode_share": 0.1,
+      "state": "stable"
+    },
+    {
+      "gain_db": -12.0,
+      "mic_dbfs": -38.6,
+      "lift_db": 0.2,
+      "dominant_hz": 459,
+      "mode_share": 0.06,
+      "state": "stable"
+    },
+    {
+      "gain_db": -11.0,
+      "mic_dbfs": -38.4,
+      "lift_db": 0.4,
+      "dominant_hz": 459,
+      "mode_share": 0.04,
+      "state": "stable"
+    },
+    {
+      "gain_db": -10.0,
+      "mic_dbfs": -37.8,
+      "lift_db": 1.0,
+      "dominant_hz": 459,
+      "mode_share": 0.05,
+      "state": "stable"
+    },
+    {
+      "gain_db": -9.0,
+      "mic_dbfs": -38.5,
+      "lift_db": 0.3,
+      "dominant_hz": 918,
+      "mode_share": 0.05,
+      "state": "stable"
+    },
+    {
+      "gain_db": -8.0,
+      "mic_dbfs": -38.0,
+      "lift_db": 0.8,
+      "dominant_hz": 459,
+      "mode_share": 0.06,
+      "state": "stable"
+    },
+    {
+      "gain_db": -7.0,
+      "mic_dbfs": -38.4,
+      "lift_db": 0.4,
+      "dominant_hz": 459,
+      "mode_share": 0.05,
+      "state": "stable"
+    },
+    {
+      "gain_db": -6.0,
+      "mic_dbfs": -38.1,
+      "lift_db": 0.0,
+      "dominant_hz": 322,
+      "mode_share": 0.11,
+      "state": "stable"
+    },
+    {
+      "gain_db": -5.0,
+      "mic_dbfs": -27.2,
+      "lift_db": 10.9,
+      "dominant_hz": 325,
+      "mode_share": 0.93,
+      "state": "howling"
+    },
+    {
+      "gain_db": -4.0,
+      "mic_dbfs": -10.0,
+      "lift_db": 28.2,
+      "dominant_hz": 325,
+      "mode_share": 1.0,
+      "state": "howling"
+    },
+    {
+      "gain_db": -3.0,
+      "mic_dbfs": null,
+      "lift_db": null,
+      "dominant_hz": null,
+      "mode_share": null,
+      "state": "protection: runtime saturation guard stopped playback, packed=589824"
+    }
+  ],
+  "conclusion": {
+    "stable_up_to_db": -6.0,
+    "howls_from_db": -5.0,
+    "estimated_max_stable_gain_db": -5.5,
+    "limiting_mode_hz": 325,
+    "mode_is_single": "energy share 0.93-1.00 at 325 Hz, so a single mode limits the loop"
+  },
+  "comparison_with_b_model": {
+    "b_predicted_limiting_hz": 435,
+    "b_predicted_max_gain_db": 2.77,
+    "measured_limiting_hz": 325,
+    "measured_max_gain_db": -5.5,
+    "delta_db": -8.3,
+    "reason": "B's model was fitted on the old 0.5 m front-facing layout; the new layout moved the limiting mode to 325 Hz"
+  },
+  "implication": "the working point used in all packages so far (-14 dB) sits about 8 dB below the measured stable limit, which is consistent with the listener reporting no audible amplification; -6 dB is stable and is the highest point that can be tested safely",
+  "not_claimed": [
+    "no model",
+    "no cancellation target",
+    "no claim that -6 dB is audible"
+  ]
+}

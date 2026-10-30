@@ -16,6 +16,7 @@ from pynq import MMIO, Overlay
 from pynq.overlays.base import BaseOverlay
 from residual_tools import load_candidate
 from closed_tools import trial_parameters
+import replay_tools
 from replay_tools import verify_replay
 
 FRAMES = 16384
@@ -23,6 +24,9 @@ FRAMES = 16384
 # zero-padded up to this count (see load path); the evidence records both numbers so a
 # padded 256-tap model is never reported as a trained 512-tap model.
 HARDWARE_TAPS = 512
+# Wait between unmuting the codec and arming, so the unmute pop decays before the run starts
+# (observed 2026-10-28: a "du" from the speaker railed the ADC on the first frames).
+CODEC_SETTLE_SECONDS = 0.25
 
 
 def decode_counts(packed_word, gain_word, mix_word):
@@ -30,6 +34,68 @@ def decode_counts(packed_word, gain_word, mix_word):
     packed = int(packed_word) & 0xFFFFFFFF
     return [packed & 0xFFFF, (packed >> 16) & 0xFFFF,
             int(gain_word) & 0xFFFFFFFF, int(mix_word) & 0xFFFFFFFF]
+
+
+# capture_status bit that reports the independent input full-scale detector (audio-replay v3).
+INPUT_CLIP_BIT = 22
+
+# The bitstream this driver is written against (audio-replay v3). A driver and a bitstream from
+# different versions may both run, but their semantics differ (v2 stops on a pre-gain residual
+# overflow and has no bit22), so evidence from a mixed pair would mean nothing. Refuse BEFORE
+# arming: no overlay download, no sound.
+EXPECTED_BIT_SHA256 = "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78"
+EXPECTED_HWH_SHA256 = "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e"
+
+
+def _file_sha256(path):
+    """sha256 of a file, or None when it cannot be read. Never raises."""
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    except Exception:
+        return None
+
+
+def verify_paired_bitstream(bit_path):
+    """Refuse to run when the bit/hwh next to this driver is not the declared pair.
+
+    Pure enough to test without hardware: it only reads the two files.
+    """
+    bit_path = Path(bit_path)
+    hwh_path = bit_path.with_suffix(".hwh")
+    if not bit_path.is_file() or not hwh_path.is_file():
+        raise FileNotFoundError("matching bit/hwh required")
+    for path, expected, label in ((bit_path, EXPECTED_BIT_SHA256, "bitstream"),
+                                  (hwh_path, EXPECTED_HWH_SHA256, "hwh")):
+        got = hashlib.sha256(path.read_bytes()).hexdigest()
+        if got != expected:
+            raise RuntimeError(
+                "%s does not match this driver: expected %s, got %s. Driver and bitstream must be "
+                "released together (docs/contracts/audio-replay-v3.md); refusing to start."
+                % (label, expected, got))
+
+
+def runtime_stop(status, clip_word, gain_word, mix_word):
+    """Decide whether one poll of the run should stop the sound, and why.
+
+    Pure function so the semantics can be checked without hardware.
+
+    Two different things are kept apart on purpose (captain 2026-10-28):
+      * INPUT OVERLOAD IS A STOP CONDITION. capture_status bit22 is the only counter that can see
+        an overloaded microphone when the prediction is zero, because the residual then equals the
+        microphone and can never overflow. It stops the run and is reported as "input_clip".
+      * A PRE-GAIN RESIDUAL OVERFLOW IS NOT. The packed word is {residual[31:16],
+        prediction[15:0]}; the wide residual may exceed the old 24-bit rail while the post-gain
+        output is still representable, so its half of the word only keeps counting and is read and
+        reported after the run.
+    Prediction saturation, post-gain saturation and mix saturation keep their existing stop path.
+    """
+    if int(status or 0) >> INPUT_CLIP_BIT & 1:
+        return "input_clip"
+    if int(clip_word or 0) & 0xFFFF:      # prediction half only
+        return "guard"
+    if int(gain_word or 0) or int(mix_word or 0):
+        return "guard"
+    return None
 
 # 阅读主线：参数检查→静音/配置→限时闭环→静音读RAM→恢复→本地保存。
 # RATE来自自定义100MHz/2048分频，不是官方录音常见的48000 Hz。
@@ -68,8 +134,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
     if output_path.suffix != ".npz" or output_path.exists() or not output_path.parent.is_dir():
         raise ValueError("choose a NEW .npz path in an existing board directory")
     bit = Path(__file__).resolve().with_name("audio_replay.bit")
-    if not bit.is_file() or not bit.with_suffix(".hwh").is_file():
-        raise FileNotFoundError("matching bit/hwh required")
+    verify_paired_bitstream(bit)
     model, coefficients = load_candidate(model_path, fixture_id, hp_volume, RATE)
     logical_taps = int(len(coefficients))
     if len(coefficients) < HARDWARE_TAPS:
@@ -80,6 +145,20 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             [coefficients, np.zeros(HARDWARE_TAPS - len(coefficients), dtype=np.int64)])
     if zero_coeff:
         coefficients = np.zeros(len(coefficients), dtype=np.int64)
+    # Identity is resolved BEFORE anything can fail, so a capture-save failure still leaves a
+    # complete version record next to the trial (C check: save failure must keep the identity).
+    identity = dict(
+        package_version="audio-replay-v3",
+        driver_sha256=_file_sha256(__file__),
+        bit_sha256=_file_sha256(bit),
+        hwh_sha256=_file_sha256(bit.with_suffix(".hwh")),
+        model_sha256=_file_sha256(model_path),
+        # The checker is part of the identity: a capture verified by a different replay_tools is
+        # not the same evidence (C 2026-10-27, "complete version hashes").
+        replay_tools_sha256=_file_sha256(replay_tools.__file__),
+        coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
+        source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
+    )
     fd, control, raw = None, None, None
     cleanup_errors, salvage_errors = [], []
     armed, stop_reason, error, save_error = False, None, None, None
@@ -207,18 +286,29 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         hp = (hp_volume << 2) | 3
         for addr, value in ((0x401C, 0x21), (0x401E, 0x41), (0x4023, hp), (0x4024, hp)):
             write_reg(addr, [value])
+        # Codec unmute produces an audible pop: on 2026-10-28 the operator heard a "du" from the
+        # speaker and the microphone hit the ADC rail for a few milliseconds at the very first
+        # frames, which trips the input-full-scale stop before any program material arrives.
+        # Let the pop decay BEFORE the run starts, so the protection counters never latch on a
+        # startup transient. This moves no threshold and relaxes nothing: the arm point moves, the
+        # protection stays exactly as strict as before.
+        time.sleep(CODEC_SETTLE_SECONDS)
         start = time.monotonic()
         control.write(0, 1 | (int(bypass) << 1) | (gain_q12 << 16))
         armed = True
         deadline = start + budget / RATE + 2
         status = command.read(8)
-        # Stop on config/protocol fault. Saturation is counted, NEVER called ASG.
-        while not (status & (1 | (3 << 17))) and time.monotonic() < deadline:
-            if any((clips.read(0), clips.read(8), source_len.read(8))):
-                stop_reason = "guard"
+        # Stop on config/protocol fault, on input full scale, on prediction/post-gain/mix
+        # saturation. A pre-gain residual overflow alone never stops the run (see runtime_stop).
+        while time.monotonic() < deadline:
+            status = command.read(8)
+            if status & (1 | (3 << 17)):
+                break
+            reason = runtime_stop(status, int(clips.read(0)), clips.read(8), source_len.read(8))
+            if reason is not None:
+                stop_reason = reason
                 break
             time.sleep(0.002)
-            status = command.read(8)
         # Stop the sound first, then freeze the capture and read every counter AFTER the run.
         control.write(0, 0)
         mute_codec()
@@ -228,7 +318,11 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         clip_word, gain_word, mix_word = clips.read(0), clips.read(8), source_len.read(8)
         counts = decode_counts(clip_word, gain_word, mix_word)
         if stop_reason is None:
-            if status & (3 << 17):
+            # Re-check here as well: an input full-scale event in the last polling interval must
+            # not be lost just because the loop exited on the deadline or on `done`.
+            if int(status or 0) >> INPUT_CLIP_BIT & 1:
+                stop_reason = "input_clip"
+            elif status & (3 << 17):
                 stop_reason = "fault"
             elif not status & 1 or completed != budget:
                 stop_reason = "incomplete"
@@ -307,6 +401,12 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             hp_volume=hp_volume, sample_rate_hz=RATE, pll_readback=pll_readback,
             frames=count, completed_frames=int(completed or 0), first_frame=first,
             capture_status=status,
+            # capture_status bit22 is the independent input full-scale sticky flag added with the
+            # wide-residual change. It is the ONLY counter that can see an overloaded microphone
+            # when the prediction is zero (the residual then equals the microphone and can never
+            # overflow); the residual counter must not be used for that. A trial with this set is
+            # rejected for field evidence rather than being allowed a quiet reinterpretation.
+            input_full_scale_seen=bool(int(status or 0) >> 22 & 1),
             sound_seconds_nominal=budget / RATE, completion_poll_seconds=elapsed,
             prediction_saturations=counts[0], residual_saturations=counts[1],
             gain_saturations=counts[2], mix_saturations=counts[3],
@@ -316,10 +416,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             source_frames=int(len(source_pcm16)),
             source_end_frame_exclusive=int(source_pcm16.shape[0]),
             source_schedule_verified=bool(source_loaded_ok),
-            source_pcm16_sha256=hashlib.sha256(source_pcm16.tobytes()).hexdigest(),
-            bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest(),
-            model_sha256=hashlib.sha256(Path(model_path).read_bytes()).hexdigest(),
-            coefficients_sha256=hashlib.sha256(coefficients.astype("<i4").tobytes()).hexdigest(),
+            **identity,
             logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
             coefficient_status=int(coeff_status_word),
             zero_padded=bool(len(coefficients) > int(logical_taps)),
@@ -355,6 +452,10 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
     status_path = output_path.with_suffix(".status.json")
     status_payload = dict(
         schema_version=1, driver_evidence_version="a-replay-evidence-v2",
+        **identity,
+        # The two v3 status facts a save failure must not swallow.
+        capture_status=int(status or 0),
+        input_full_scale_seen=bool(int(status or 0) >> INPUT_CLIP_BIT & 1),
         capture=str(output_path), fixture_id=fixture_id,
         recovery_ok=bool(recovery_ok), cleanup_errors=list(cleanup_errors),
         salvage_errors=list(salvage_errors), save_error=save_error,
@@ -368,7 +469,7 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         prediction_saturations=int(counts[0]), residual_saturations=int(counts[1]),
         gain_saturations=int(counts[2]), mix_saturations=int(counts[3]),
         logical_taps=int(logical_taps), loaded_taps=int(len(coefficients)),
-        coefficient_status=int(coeff_status_word), bit_sha256=hashlib.sha256(bit.read_bytes()).hexdigest())
+        coefficient_status=int(coeff_status_word))
     try:
         status_path.write_text(json.dumps(status_payload, indent=2, ensure_ascii=False),
                                encoding="utf-8")
@@ -382,6 +483,10 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         raise RuntimeError('runtime saturation guard stopped playback; packed_prediction_residual=%d '
                            'gain=%d mix=%d; no further gain authorized'
                            % (int(clip_word), int(gain_word), int(mix_word)))
+    if stop_reason == "input_clip":
+        raise RuntimeError('input full scale (capture_status bit22) stopped playback; the microphone '
+                           'hit the ADC rail, so this trial carries no usable input evidence; '
+                           'reduce the level or move the source back and repeat')
     if error is not None:
         raise error
     if not recovery_ok:

@@ -10,6 +10,7 @@
 |---|---|---|---|---|
 | [audio-closed-v1.md](audio-closed-v1.md) | 闭环 overlay 的控制位、增益编码、帧关系、缓存读回 | C | A / B | 已实现并构建，未上板验收 |
 | [audio-replay-v1.md](audio-replay-v1.md) | 预录声源注入、实际混音反馈参考、限时播放及摘要 | A | A / B / C | 软件/仿真/构建完成，未上板 |
+| [audio-replay-v3.md](audio-replay-v3.md) | **现行**：宽残差过增益后再钳位、输入满幅（bit22）**即停声**、增益前残差只作诊断、位流/驱动配对校验 | A | A / B / C | **冻结主线**（队长 2026-10-28）；软件验证 16 项通过；上板复验与 C 增量验收未闭合 |
 | [audio-replay-sweep-v2.md](audio-replay-sweep-v2.md) | 已有数据选档、逐档成对试验与按钮操作 | A | A / B / C | 本地实现，未回归/上板 |
 | [feedback-fir-v1.md](feedback-fir-v1.md) | 定点抵消核：24 位 PCM / Q20 系数 / 58 位累加 / 771 拍 | B | C / A | 已验证（仿真 + 板上逐样本） |
 | [feedback-calibration-v1.md](feedback-calibration-v1.md) | 标定数据 NPZ 与模型 JSON 的字段、单位、拒绝条件 | B | A / C | 已验证（板卡实际执行） |
@@ -49,16 +50,17 @@
 
 没有"状态"行的契约，`scripts/check_docs.py` 会报错——因为无法判断它能不能被依赖。
 
-## 版本索引更新（2026-10-25）
+## 版本索引更新（2026-10-27）
 
 | 契约 | 现行版本 | 说明 |
 |---|---|---|
-| audio-replay | **v2** | 运行上限 488281 → 3000000 帧；v1 保留 |
-| audio-closed | **v2** | 同上 |
-| feedback-fir | v1 | 未变 |
+| audio-replay | **v3** | 宽残差过增益后再钳位 + `capture_status` bit22 输入满幅；v1/v2 保留 |
+| audio-closed | **v2** | 运行上限 488281 → 3000000 帧 |
+| feedback-fir | v1 | 未变（v3 只新增一路宽残差输出，24 位语义与 `residual_saturated` 未变） |
 | feedback-calibration | v1 | 未变 |
 | audio-replay-sweep | v2 | 未变 |
 
 v2 的差异只有运行上限，见 [audio-replay-v2](audio-replay-v2.md) 与 [audio-closed-v2](audio-closed-v2.md)。
+v3 的差异只有残差乘宽与 bit22，见 [audio-replay-v3](audio-replay-v3.md)。
 
 运行上限变更的批准记录见 [proposal-continuous-run](proposal-continuous-run.md)（已批准，结论并入 v2）。

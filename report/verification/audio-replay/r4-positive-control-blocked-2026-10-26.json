@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "topic": "c-new-layout-r4: positive control cannot pass at the 100 cm side-facing geometry",
+  "recorded_by": "A",
+  "package": {
+    "name": "c-new-layout-r4.zip",
+    "bytes": 338417,
+    "sha256": "b9ad6dabc5a8e6619b0859a8f1109471f57d4661273eeaa8eaa817487281852f",
+    "C_commit": "fa13877",
+    "binding": {
+      "fixture": "room_v1_20261026b",
+      "model": "01c9102a",
+      "q20": "6118e85d"
+    }
+  },
+  "runs": [
+    {
+      "run_id": "layout-8a701dc501fe",
+      "trials": 4,
+      "stop": "RuntimeError:positive_control_failed:gate_at_noise_floor,gate_tone_not_observed",
+      "mic_rms": [
+        -27.4,
+        -27.7,
+        -28.2,
+        -32.6
+      ]
+    },
+    {
+      "run_id": "layout-10339aa4ee7e",
+      "trials": 4,
+      "stop": "RuntimeError:positive_control_failed:gate_at_noise_floor,gate_tone_not_observed",
+      "mic_rms": [
+        -26.2,
+        -29.1,
+        -31.7,
+        -24.9
+      ]
+    }
+  ],
+  "what_passed": [
+    "field registration",
+    "binding and identity checks",
+    "0.30 s microphone pre-checks (peak well below -6 dBFS)",
+    "quiet-arm trials"
+  ],
+  "what_failed": "the packaged positive control: a 1.02 s gate tone played from the speaker at 100 cm side-facing does not produce a detectable tone at the microphone above the room noise",
+  "diagnosis": {
+    "not_a_hardware_fault": "the speaker plays; the microphone responds; pre-checks pass",
+    "likely_cause": "at 100 cm side-facing the gate tone reaches the microphone weak and diffuse, so the tonal-fraction and tonal-level criteria cannot be met",
+    "operator_hypothesis": "the operator independently suggested the speaker is too far for the tone to be loud enough",
+    "second_run_note": "the first run also had the phone playing during the gate because my harness auto-answered a START that required the operator to pause the source; the second run fixed that and still failed, so the source was not the cause"
+  },
+  "process_note": "two identical failures with the same stop reason: per the workflow I stop the branch instead of running a third time",
+  "owner": "C (measurement criterion). Options for C: raise the gate level, lengthen the gate, use a gate criterion relative to the local noise floor instead of an absolute tonal threshold, or accept a documented not-tested for the positive control at this distance",
+  "not_claimed": [
+    "no effect conclusion",
+    "no claim that the model works or does not work",
+    "packages r1/r2/r3 were not used"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "purpose": "B request: rebind the current geometry before any new coefficients",
+  "geometry": "speaker 100 cm side-facing, plate covered with cotton, talker absent at 5 cm position, listener in place, preamp and volume untouched",
+  "open_loop": "zero_coeff=True, gain -40 dB so feedback is negligible, direct playback",
+  "source": "white noise -6 dBFS nominal, 2.4 s per segment",
+  "sample_rate_hz": 48828.125,
+  "capture_frames": 16384,
+  "segments": [
+    {
+      "file": "bind4_00_1746832927253437612.npz",
+      "capture_id": "bind4-00",
+      "frames": 16384,
+      "mic_rms_dbfs": -31.51,
+      "ref_rms_dbfs": -19.59,
+      "stop_reason": "completed"
+    },
+    {
+      "file": "bind4_01_1746832962577236520.npz",
+      "capture_id": "bind4-01",
+      "frames": 16384,
+      "mic_rms_dbfs": -32.67,
+      "ref_rms_dbfs": -20.27,
+      "stop_reason": "completed"
+    },
+    {
+      "file": "bind4_02_1746832997608122031.npz",
+      "capture_id": "bind4-02",
+      "frames": 16384,
+      "mic_rms_dbfs": -32.58,
+      "ref_rms_dbfs": -19.52,
+      "stop_reason": "completed"
+    },
+    {
+      "file": "bind4_03_1746833033647207392.npz",
+      "capture_id": "bind4-03",
+      "frames": 16384,
+      "mic_rms_dbfs": -32.5,
+      "ref_rms_dbfs": -20.39,
+      "stop_reason": "completed"
+    },
+    {
+      "file": "bind4_04_1746833069163613450.npz",
+      "capture_id": "bind4-04",
+      "frames": 16384,
+      "mic_rms_dbfs": -28.73,
+      "ref_rms_dbfs": -19.14,
+      "stop_reason": "completed"
+    },
+    {
+      "file": "bind4_05_1746833105158088504.npz",
+      "capture_id": "bind4-05",
+      "frames": 16384,
+      "mic_rms_dbfs": -29.47,
+      "ref_rms_dbfs": -19.54,
+      "stop_reason": "completed"
+    }
+  ]
+}

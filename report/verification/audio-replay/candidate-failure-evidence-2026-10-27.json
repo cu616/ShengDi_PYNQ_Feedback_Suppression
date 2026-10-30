@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "topic": "candidate guard trip in the live-speech two-arm run: full evidence and the corrected reading (both arms had the microphone at full scale)",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "requested_by": "captain",
+  "pair": [
+    {
+      "role": "zero arm",
+      "file": "blind1_zero_1746867688283325310.npz",
+      "status_file": "blind1_zero_1746867688283325310.status.json",
+      "identity": {
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "hwh": "audio_replay.hwh 92b499a3",
+        "driver": "replay_trial 2127663",
+        "fixture_id": "room_v1_20261026b",
+        "loaded_taps": 512,
+        "logical_taps": 512,
+        "coefficient_status": 8202,
+        "coefficients_q20_max_abs": 0
+      },
+      "run": {
+        "stop_reason": "completed",
+        "armed": true,
+        "first_frame": 447483,
+        "completed_frames": 463867,
+        "frames_captured": 16384,
+        "source_end_frame_exclusive": 256,
+        "source_schedule_verified": true,
+        "recovery_ok": true,
+        "error": null
+      },
+      "counts": {
+        "prediction_saturations": 0,
+        "residual_saturations": 0,
+        "gain_saturations": 0,
+        "mix_saturations": 0
+      },
+      "captured_levels": {
+        "mic_rms_dbfs": -4.8,
+        "mic_peak_dbfs": 0.0,
+        "reference_rms_dbfs": -12.8,
+        "prediction_peak": 0,
+        "residual_peak": 8388608
+      },
+      "capture_contains_clipped_residual": {
+        "at_positive_rail": 2197,
+        "at_negative_rail": 1162,
+        "first_index": 9772,
+        "last_index": 16383,
+        "note": "the counter did NOT fire because with prediction = 0 the difference equals the microphone and never exceeds the 24-bit rail; the microphone itself is clipping"
+      }
+    },
+    {
+      "role": "candidate arm",
+      "file": "blind2_cand_1746867731709459239.npz",
+      "status_file": "blind2_cand_1746867731709459239.status.json",
+      "identity": {
+        "bit_sha256": "61bb71aabb824c57191edcea93d1333143cd959c16d43028585913c54a8f61fa",
+        "hwh": "audio_replay.hwh 92b499a3",
+        "driver": "replay_trial 2127663",
+        "fixture_id": "room_v1_20261026b",
+        "loaded_taps": 512,
+        "logical_taps": 512,
+        "coefficient_status": 8202,
+        "coefficients_q20_max_abs": 47879
+      },
+      "run": {
+        "stop_reason": "guard",
+        "armed": true,
+        "first_frame": 98334,
+        "completed_frames": 114718,
+        "frames_captured": 16384,
+        "source_end_frame_exclusive": 256,
+        "source_schedule_verified": true,
+        "recovery_ok": true,
+        "error": "runtime saturation guard stopped playback"
+      },
+      "counts": {
+        "prediction_saturations": 0,
+        "residual_saturations": 8,
+        "gain_saturations": 0,
+        "mix_saturations": 0
+      },
+      "captured_levels": {
+        "mic_rms_dbfs": -21.4,
+        "mic_peak_dbfs": -0.0,
+        "reference_rms_dbfs": -29.6,
+        "prediction_peak": 810578,
+        "residual_peak": 8388607
+      },
+      "capture_contains_clipped_residual": {
+        "at_positive_rail": 8,
+        "at_negative_rail": 0,
+        "first_index": 16353,
+        "last_index": 16360,
+        "note": "exactly 8 samples at the positive rail, matching residual_saturations = 8; the capture therefore covers the event"
+      }
+    }
+  ],
+  "does_the_capture_cover_the_first_overflow": {
+    "answer": "YES for the candidate arm",
+    "evidence": "the captured window holds exactly 8 samples at the positive 24-bit rail, at indices 16353..16360 of 16384, and the status counter reports 8; the guard fired inside the captured window",
+    "caveat": "the capture is the final ring of 16384 frames (0.336 s); any earlier overflow outside that window is not visible. The counter is sticky, so earlier events cannot be excluded from the capture alone."
+  },
+  "overflow_mechanism": {
+    "sample_sequence": {
+      "mic": [
+        0.9302,
+        0.9585,
+        0.9777,
+        0.9906,
+        0.9986
+      ],
+      "prediction_24bit": [
+        -284757,
+        -274214,
+        -257741,
+        -234740,
+        -205315
+      ],
+      "residual_24bit": [
+        8314620,
+        8388607,
+        8388607,
+        8388607,
+        8388607
+      ]
+    },
+    "explanation": "the microphone approaches positive full scale while the prediction is negative, so microphone minus prediction exceeds +1.0 and is clamped. The prediction peak was only 810578 (about -20 dBFS), so prediction saturation is 0 and the model output never exceeded its own range."
+  },
+  "CORRECTED_READING": {
+    "wrong_conclusion_today": "the zero arm is fine and the candidate is unusable",
+    "what_the_data_shows": "the ZERO arm ran with mic rms -4.8 dBFS and peak 0.0, i.e. the microphone was hard at full scale; that is acoustic regeneration, and it was invisible only because the residual counter cannot fire when the prediction is zero",
+    "therefore": "BOTH arms regenerated at this input level. The candidate's guard trip is a headroom artefact of the microphone being at the rail, not evidence that the candidate is worse. The live-speech two-arm comparison is INVALID for both arms.",
+    "what_survives": "the stationary-source comparison remains the only valid arm comparison (zero 0.2281 versus candidate 0.0476 band share, both arms completed with no saturation)"
+  },
+  "data_gaps": [
+    "the capture covers only the last 16384 frames; earlier overflow events in the candidate run are not visible",
+    "there is no counter for microphone ADC full scale in the status file, so the zero arm's regeneration is only visible by inspecting the captured microphone stream",
+    "no per-sample timeline of when the 8 overflows occurred relative to speech onsets",
+    "listener voice recording was not saved (by policy) so the exact speech cannot be replayed"
+  ],
+  "recommended_reading_for_B_and_C": "treat the live-speech two-arm run as invalid input rather than a candidate failure; the candidate failure claim is withdrawn"
+}

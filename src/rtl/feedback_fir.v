@@ -9,6 +9,10 @@ module feedback_fir #(parameter integer TAPS = 256)(
     output wire in_ready,
     output reg out_valid,
     output reg signed [23:0] predicted_pcm, residual_pcm,
+    // Wide residual: the unclamped 25-bit difference. The 24-bit residual_pcm above keeps its
+    // original meaning and its overflow flag for diagnostics; consumers that can represent the
+    // extra bit (the replay path multiplies before clamping) must use this one.
+    output reg signed [24:0] residual_wide_pcm,
     output reg prediction_saturated, residual_saturated,
     output reg protocol_error
 );
@@ -46,7 +50,7 @@ module feedback_fir #(parameter integer TAPS = 256)(
             reference_hold<=0; microphone_hold<=0; product<=0; accumulator<=0;
             rounded_hold<=0; prediction_hold<=0; prediction_clip_hold<=0;
             sample_operand<=0; coefficient_operand<=0;
-            out_valid<=0; predicted_pcm<=0; residual_pcm<=0;
+            out_valid<=0; predicted_pcm<=0; residual_pcm<=0; residual_wide_pcm<=0;
             prediction_saturated<=0; residual_saturated<=0; protocol_error<=0;
         end else begin
             out_valid<=0;
@@ -97,6 +101,9 @@ module feedback_fir #(parameter integer TAPS = 256)(
                 FINISH: begin
                     predicted_pcm<=prediction_hold;
                     residual_pcm<=bypass_hold ? microphone_hold : difference_limited;
+                    // Unclamped difference, 25-bit signed. In bypass the microphone itself is the
+                    // residual, so it is sign-extended into the same width.
+                    residual_wide_pcm<=bypass_hold ? {microphone_hold[23],microphone_hold} : difference;
                     prediction_saturated<=prediction_clip_hold;
                     residual_saturated<=!bypass_hold && difference_clip;
                     out_valid<=1;

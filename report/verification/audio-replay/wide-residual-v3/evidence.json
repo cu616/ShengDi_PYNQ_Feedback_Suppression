@@ -1,0 +1,713 @@
+{
+  "schema_version": 1,
+  "topic": "wide residual through the digital gain: simulation, synthesis, board bring-up, stationary arms",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "branch": "A",
+  "base_commit": "46edd41",
+  "captain_approval": "approved to implement; pre-gain residual overflow keeps counting but no longer stops on its own; post-gain output and mix saturation still protect; prediction, protocol error, timeout and manual stop unchanged",
+  "identity": {
+    "bit_sha256": "48e38f781f2ff64ca4fe66300b5aa3794e01835a77c26906150d4713c358fb78",
+    "hwh_sha256": "9411adb5565902ff7f8dbf03ae16cdb7f254b258dfe1568c3e315920ccd1ce4e",
+    "rtl_audio_pl_replay_sha256": "4d02b019ddfe1c175b4e8d929ac157b8f4276ffc94e6b1e5f5322620f5b31879",
+    "rtl_feedback_fir_sha256": "d57e2f53938ddff2034b6d783a4a46b6243018a3be5fdc9c342acf57ad0a8a3b",
+    "driver_replay_trial_sha256": "79c4d9f74f78eb8645e6f1e0b7feb2ecb1785987bf7e7136868023d43c9241c5",
+    "driver_replay_tools_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "board_package": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide",
+    "v2_rollback_package_untouched": "/home/xilinx/jupyter_notebooks/base/audio/audio_live (bit 61bb71aa..., hwh 92b499a3..., replay_trial 2127663...)",
+    "contract": "docs/contracts/audio-replay-v3.md",
+    "driver_replay_trial_sha256_previous": "6b397359b52b6c6d830f238ac5741845b5053cd0144ae9e01bc860735786cf7d",
+    "driver_stop_semantics_sha256": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+    "driver_stop_semantics_file": "board/audio_replay/test_runtime_stop.py",
+    "note_on_deployed_copy": "the board still carries the previous driver 6b397359 because the board is offline; the delivered candidate is 1b07586f and must be uploaded before any further hardware run. Bitstream and hwh did not change with this fix.",
+    "package_manifest": "board/audio_replay/v3/manifest.json",
+    "driver_verify_replay_sha256": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+    "coefficients_sha256_candidate_q20": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+    "coefficients_sha256_zero_arm_q20": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
+  },
+  "why_audio_pl_replay_could_not_be_elaborated": {
+    "symptom": "iverilog: src/rtl/audio_pl_replay.v:13 syntax error, 'Errors in port declarations'",
+    "root_cause_1": "Icarus rejects two initialised ports in ONE ANSI declaration (output reg [23:0] a=0, b=0). Bisected: one initialiser per declaration parses, two do not. Fixed by splitting the two affected declarations; Vivado accepts both spellings, so this is a parse-portability change only.",
+    "root_cause_2": "iis_deser/iis_ser are VHDL (src/vendor/pynq_v2_4/*.vhd) and cannot be compiled by Icarus at all.",
+    "fix": "sim/audio/iis_sim_models.v: line-by-line Verilog translations of both VHDL architectures (same states, bit-counter values, edge detectors, update order; non-blocking assignments reproduce VHDL signal semantics). Simulator-only; the Vivado file set still uses the VHDL.",
+    "model_validation": "the pre-existing sim/audio/tb_audio_replay.v, written against the vendor VHDL under xsim, passes unchanged with these models under Icarus (AUDIO_REPLAY_PASS), and the same testbench also passes under xsim against the real VHDL."
+  },
+  "verification_simulation": {
+    "iverilog": "Icarus Verilog 12.0, -g2012",
+    "tb_residual_wide": "RESIDUAL_WIDE_PASS checked=4",
+    "tb_feedback_fir": "FEEDBACK_FIR_PASS samples=2304 latency=771; extended to also check residual_wide against mic-pred for all 2304 samples",
+    "tb_replay_wide": "RESIDUAL_REPLAY_WIDE_PASS; three cases",
+    "cases": [
+      "A: h0=-1.5 Q20, mic 8,000,000 -> prediction -6,000,000 (prediction_saturated=0), clamped residual 0x7FFFFF, wide residual 14,000,000, gain 0.5 -> played 7,000,000. The old clamped path would have played 4,194,304.",
+      "B: the same shape at gain 1.0 -> wide 16,388,608 exceeds the rail, the POST-gain clamp acts: played 0x7FFFFF, gain_clip_count>0, capture_status[21]=1",
+      "C: zero coefficients and mic=0x7FFFFF -> residual equals the microphone, residual counters stay 0, capture_status[22]=1 and the input counter is non-zero: the input full-scale detector does not depend on the residual"
+    ],
+    "xsim_cross_check": "build/scripts/test_audio_replay_wide.tcl (real vendor VHDL) passes; build/scripts/test_audio_replay.tcl also passes",
+    "test_rot_fixed": "tb_audio_replay loaded 256 coefficients while the RTL default became 512 in 39d5ac3, so `fresh` never set and the test would have failed since then. It now loads 512. tb_feedback_fir instead pins .TAPS(256) because its golden vectors are 256 taps."
+  },
+  "verification_synthesis": {
+    "tool": "Vivado 2018.3, xc7z020clg400-1, build/scripts/create_audio_replay.tcl build",
+    "setup_wns_ns": 0.548,
+    "hold_whs_ns": 0.015,
+    "tns_ns": 0.0,
+    "ths_ns": 0.0,
+    "failing_endpoints": 0,
+    "total_endpoints": 18128,
+    "clock_mhz": 100.0,
+    "constraints": "All user specified timing constraints are met (the same four external I/O delay constraints as before are still missing; that gap is unchanged)",
+    "block_ram_tiles": "112/140 = 80.00%",
+    "dsp48": "3/220 = 1.36%",
+    "slice_luts": "3588/53200 = 6.74%",
+    "slice_registers": "5018/106400 = 4.72%",
+    "worst_path": "completed_count_reg[9] -> ... (counter path, not the multiplier)",
+    "reports": [
+      "wide-residual-v3/vivado-timing.txt",
+      "wide-residual-v3/vivado-utilization.txt",
+      "wide-residual-v3/vivado-drc.txt"
+    ],
+    "baseline_for_comparison": "v2 build: WNS +0.287, WHS +0.034, BRAM 80%",
+    "note": "hold slack 0.015 ns is positive but 19 ps tighter than the v2 build; it is met, not comfortable."
+  },
+  "verification_board": {
+    "bringup": {
+      "trial": "audio_wide/bringup_1746892939228991948.npz",
+      "config": "zero coefficients, zero source, gain -14 dB, 1.2 s, fixture room_v1_20261026b",
+      "result": "stop_reason=completed, completed_frames=58593, capture_status=0x00008001, bit22=0, all four saturations 0, coefficient_status=0x200A (loaded_taps=512), mic -38.2 dBFS, bit_exact=true under the v3 oracle",
+      "meaning": "the v3 bitstream + v3 driver load, configure and complete a bounded run on hardware"
+    },
+    "speaker_path_check": {
+      "trials": [
+        "audio_wide/spk_silent_1746893401806655548.npz",
+        "audio_wide/spk_tone_1746893434129704964.npz"
+      ],
+      "method": "1 kHz sine at 0.3 FS injected with the digital gain forced to 0, so no feedback is involved",
+      "result": "silent: mic -38.4 dBFS RMS, 1 kHz band 7.8 dB vs rest 0.6 dB; tone: mic -31.8 dBFS RMS, 1 kHz band 30.0 dB vs rest -0.1 dB",
+      "conclusion": "SPEAKER PATH LIVE: +6.5 dB microphone RMS and +30 dB in-band 1 kHz. The board->codec->speaker->air->microphone chain works."
+    },
+    "level_ladder_no_feedback": {
+      "trials": [
+        "audio_wide/lvl_20_1746893507677042812.npz",
+        "audio_wide/lvl_12_1746893542514280077.npz",
+        "audio_wide/lvl_6_1746893576177346463.npz"
+      ],
+      "method": "board white noise (seed 4242) at -20/-12/-6 dBFS peak, digital gain 0",
+      "mic_rms_dbfs": [
+        -38.6,
+        -37.1,
+        -35.1
+      ],
+      "mic_peak_dbfs": [
+        -22.7,
+        -24.6,
+        -21.2
+      ],
+      "conclusion": "broadband noise couples weakly into this fixture (peak-to-peak only +3.5 dB from -20 to -6 dBFS). A tone is concentrated and shows the path clearly; white noise at -20 dBFS sits below the room floor in any 60 Hz band, which is why the first stationary pair looked flat."
+    },
+    "stationary_two_arm_run_1_level_minus20dbfs": {
+      "trials": [
+        "audio_wide/wide_gate_1746893045642595463.npz",
+        "audio_wide/wide_zero_1746893075929342181.npz",
+        "audio_wide/wide_cand_1746893109544546531.npz"
+      ],
+      "gate": "mic peak -23.8 dBFS with zero output: PASS",
+      "zero_arm": "completed 107421 frames, mic -38.4 dBFS, peak -26.5, band share 0.0695, no protection trip",
+      "candidate_arm": "completed 107421 frames, mic -38.7 dBFS, peak -26.8, band share 0.0484, no protection trip",
+      "verdict": "NOT USABLE: both arms sit on the room floor, so the 1.6 dB share difference is not a cancellation measurement"
+    },
+    "stationary_two_arm_run_2_level_minus8dbfs": {
+      "trials": [
+        "audio_wide/wide_gate_1746893648082441944.npz",
+        "audio_wide/wide_zero_1746893678210907241.npz",
+        "audio_wide/wide_cand_1746893711548696477.npz"
+      ],
+      "gate": "mic -26.4 dBFS RMS, peak -13.8: PASS (input well below the -6 dBFS ceiling)",
+      "zero_arm": "completed 107421 frames, mic -27.3 dBFS, peak -13.3, band share 0.0103, bit_exact=true, no protection trip",
+      "candidate_arm": "completed 107421 frames, mic -35.1 dBFS, peak -21.5, band share 0.0304, bit_exact=true, no protection trip",
+      "observations": [
+        "the candidate arm is 7.8 dB quieter in total microphone level than the zero arm",
+        "the 300-360 Hz share is 4.7 dB HIGHER in the candidate arm while the absolute in-band level is about 3 dB lower (share is confounded by the total-level difference)",
+        "wide_residual_frames = 0 in every run this session: the pre-gain overflow was never re-created on hardware"
+      ],
+      "verdict": "no cancellation conclusion. The two arms differ, but the share metric is confounded by a 7.8 dB total-level difference and the room gate moved 11.8 dB between the two windows of this session (gate -38.2 dBFS in run 1, -26.4 dBFS in run 2), so single-window arm pairs are not comparable. Needs a supervised window with a stable baseline."
+    },
+    "steady_state_tone_three_point": {
+      "why": "replacing white noise with a pure tone at the measured |H| peak (322 Hz): a tone puts all its energy in one bin, so the microphone band level sits about 40 dB above the room floor instead of under it. Three points, same source level (0.15 FS), same gain -8 dB and hp volume 40, candidate model loaded in all three.",
+      "open": "digital gain forced to 0: microphone 322 Hz 45.44 dB, mic RMS -24.6 dBFS, peak -16.0",
+      "bypass": "loop closed, candidate coefficients loaded but not subtracted: 322 Hz 49.19 dB (+3.75 dB vs open)",
+      "cancel": "loop closed, subtraction active: 322 Hz 44.43 dB",
+      "cancellation_depth_db": 6.37,
+      "acoustic_result": "microphone at 322 Hz is 4.76 dB lower in cancel than in bypass, and 1.01 dB lower than with no loop at all: the canceller removes the loop's +3.75 dB boost and slightly more",
+      "all_arms": "bit_exact=true, wide_residual_frames=0, bit22=0, no gain/mix/prediction/residual saturation, no clipping, completed",
+      "limits": "one frequency, one level, small-signal (loop only +3.75 dB above the no-loop path). This is a cancellation depth at 322 Hz, NOT ASG and NOT the maximum achievable",
+      "meaning": "first steady-state measurement this session that clears the noise floor. Quote the three numbers separately: CD(322) = 6.37 dB (model fit), loop boost = 3.75 dB (audible-benefit scale), acoustic difference = 4.76 dB (= 3.75 + 1.01 overshoot, not the benefit). Single frequency, single level: not ASG. White-noise band shares gave +1.6 / -4.7 / -2.1 dB with a flipping sign and are unusable.",
+      "cancellation_depth_is": "CD(322), residual depth between the bypass and cancel arms: the quantity the cancel branch minimises. MODEL FIT, not a benefit. See reporting_split_v3_working_point.",
+      "loop_boost_db": 3.75,
+      "loop_boost_is": "bypass microphone 49.19 minus open microphone 45.44: what the closed loop adds in that band, and therefore the most a canceller can recover there. This is the audible-benefit scale.",
+      "acoustic_difference_db": 4.76,
+      "acoustic_difference_is": "bypass microphone minus cancel microphone = loop boost 3.75 + overshoot 1.01. Quoting 4.76 as a benefit overstates it; quote 3.75.",
+      "overshoot_db": 1.01
+    },
+    "stationary_noise_runs_summary": {
+      "share_differences_db": [
+        1.6,
+        -4.7,
+        -2.1
+      ],
+      "verdict": "unusable as an instrument at these levels: the sign flips run to run and the arm levels themselves follow the room floor",
+      "recommendation": "stop using broadband-noise band share for arm comparison in this fixture; use a tone at the |H| peak (done above) or a louder source that lifts the microphone at least 10 dB above the floor"
+    },
+    "human_speech_runs": {
+      "note": "three attempts, all with the candidate model file loaded and zero_coeff=True/False selecting the arm; injected source is silent (the person is the source); gain -8 dB, hp volume 40; capture keeps the last 16384 frames (0.336 s) while the counters cover the whole 6 s",
+      "attempt_1_12cm_zero_arm": {
+        "trial": "audio_wide/human_speech_zero_1746897440856886600.npz",
+        "result": "stop=completed, 292968 frames, mic -27.9 dBFS RMS, tail peak -12.2 dBFS, full-scale samples 0 in the tail, all four saturations 0, bit_exact=true",
+        "but": "capture_status bit22 = 1: the input hit the ADC rail somewhere inside the 6 s window while the last 0.336 s was quiet",
+        "verdict": "INADMISSIBLE by the agreed rule (input must not clip)"
+      },
+      "attempt_2_20cm_separate_arms": {
+        "zero": "audio_wide/human_speech_zero_1746897709081803394.npz: completed, mic -36.6, peak -23.1, bit22=0, no saturations, bit_exact -> admissible",
+        "candidate": "audio_wide/human_speech_cand_1746897790220651889.npz: completed, mic -27.8, peak -16.6, bit22=1, prediction_saturations=0, residual_saturations=7, gain/mix 0, bit_exact",
+        "candidate_verdict": "INADMISSIBLE acoustically (input clipped), but this is the field failure signature reproduced: psat=0 with rsat=7. Under v2 the driver stopped on the first residual saturation (2026-10-27 live speech: residual_saturations=8 and playback cut). Under v3 the run CONTINUED and finished all 292968 frames with no guard stop and no audible howl",
+        "listener": {
+          "howl": "no howl",
+          "loudness": "could not tell",
+          "intelligibility": "both arms unintelligible (person at 20 cm)"
+        }
+      },
+      "attempt_3_20cm_same_continuous_speech_pair": {
+        "why": "the two arms had to hear the same speech, so both 6 s windows were taken inside one continuous 20 s utterance",
+        "zero": "audio_wide/human_zero_pair_1746898126201309351.npz: completed, mic -21.6, peak -8.5, bit22=0, all saturations 0, bit_exact -> admissible",
+        "candidate": "audio_wide/human_cand_pair_1746898161064674862.npz: completed, mic -24.0, peak -10.2, bit22=0, all saturations 0, bit_exact -> admissible",
+        "difference": "candidate 2.4 dB lower microphone RMS; no protection trip in either arm; pre-gain overflow did not occur in this pair (rsat=0, wide_residual_frames=0)",
+        "listener_verbatim": {
+          "howl": "no howl",
+          "loudness": "I cannot tell - my hearing is not good enough; this does NOT mean they were the same",
+          "intelligibility": "it did not feel like either arm amplified the voice"
+        },
+        "verdict": "the pair is admissible but the working point does not give the listener an audible PA benefit at 20 cm and -8 dB. That is a working-point result, not a difference between the two arms, and it does not discriminate v2 from v3"
+      }
+    },
+    "v3_behaviour_evidence_on_hardware": {
+      "claim": "the approved change is observable on real hardware: a pre-gain residual overflow no longer interrupts the run",
+      "evidence": "attempt 2 candidate arm: residual_saturations=7, prediction_saturations=0, stop_reason=completed, 292968/292968 frames; the same signature stopped playback under v2 on 2026-10-27",
+      "limits": "that trial had bit22=1, so it is evidence about the guard, not about acoustic cancellation"
+    },
+    "human_speech_two_arm": {
+      "status": "NOT RUN",
+      "reason": "needs a person speaking at ~12 cm plus a confirmed stable speaker/microphone baseline"
+    },
+    "driver_82787262_on_hardware": {
+      "date": "2026-10-28 after power returned",
+      "package": "/home/xilinx/jupyter_notebooks/base/audio/audio_wide (replay_trial 82787262..., replay_tools 0d4e1933..., bit 48e38f78..., hwh 9411adb5...)",
+      "mixed_pair_refused": {
+        "how": "v2 bit/hwh copied next to the v3 driver in a scratch directory, then replay_trial called",
+        "result": "RuntimeError before the overlay was downloaded: \"bitstream does not match this driver: expected 48e38f78...\"; nothing armed, nothing played",
+        "covers": "C check item 5 on real hardware"
+      },
+      "silent_bringup_new_driver": {
+        "result": "stop_reason=completed, 58593 frames, capture_status=0x00008001, bit22=0, input_full_scale_seen=false, all four saturations 0, bit_exact=true",
+        "meaning": "the new driver still completes a normal run; the stop fix does not disturb the quiet path"
+      },
+      "input_full_scale_stop": {
+        "how": "hand claps 2-3 cm from the microphone during a 3 s listen-only run (digital gain 0, no output)",
+        "result": "stop_reason=\"input_clip\", capture_status=0x004019ee (bit22=1), input_full_scale_seen=true, 12-20 microphone samples at the rail, run stopped at 3319 frames of a 146484 budget (about 68 ms in), driver raised its explicit input_clip error",
+        "recovery": "status.json recovery_ok=true, cleanup_errors=[] -> mute, save and restore all ran",
+        "covers": "C check item 2 and the captain 2026-10-28 key protection, on real hardware"
+      },
+      "sixty_second_continuous": {
+        "note": "the phone playing through the air is the source; the board injects silence",
+        "attempt_at_baseline_volume_8_of_15": {
+          "result": "STOPPED after 31988 frames (~0.65 s): stop_reason=\"input_clip\", bit22=1, 6 microphone samples at the rail, mic RMS -21.6 dBFS",
+          "interpretation": "at 5 cm the historical volume of 8/15 drives the ADC to full scale today. The historical reproduction was made with a driver that had NO input detector, so its \"four saturation counts = 0\" never proved the input was clean. Whether that run also clipped is unknown; its recorded mic RMS was -28.6 dBFS, 7 dB below today, so the scenes are not identical either way."
+        },
+        "level_probe_at_volume_6_of_15": {
+          "result": "listen-only 3 s: mic RMS -25.0 dBFS, peak -11.6 dBFS, bit22=0, no rail samples -> usable",
+          "condition_change": "CHANGED CONDITION: volume 6/15 instead of the historical 8/15, distance still 5 cm. This is not an as-was reproduction of the baseline and must not be reported as one."
+        },
+        "run_1": "stop_reason=completed, 2929687/2929687 frames, capture_status=0x00008001, bit22=0, rsat/psat/gsat/msat 0, mic RMS -24.6 dBFS, peak -13.3 dBFS, no rail samples, bit_exact=true, wall 89.2 s",
+        "run_2": "stop_reason=completed, 2929687/2929687 frames, capture_status=0x00008001, bit22=0, all saturations 0, mic RMS -18.8 dBFS, peak -6.3 dBFS (close to the -6 dBFS rule), no rail samples, bit_exact=true, wall 89.5 s",
+        "listener_verbatim": [
+          "first run: asked to hear it again (\"can we do it once more\") - no judgement given",
+          "second run: \"可以听到，但没有明显放大\" (audible, but no obvious amplification)"
+        ],
+        "meaning": "continuity and protection are proven at 60 s; audible PA benefit is NOT demonstrated at this working point, which is the same conclusion as the 20 cm arms on 2026-10-27"
+      }
+    },
+    "hardware_verification_matrix": {
+      "why": "C re-verifies a hash, not a story: every hardware check must say which driver hash it ran on",
+      "rows": [
+        {
+          "check": "input full scale stops the run (hand claps 2-3 cm)",
+          "driver": "82787262b94b2b081d7da6da1d0429ea51f8bb2048a62e40682d3643a2a7f67c",
+          "result": "PASS: stop_reason=input_clip, capture_status=0x004019ee, stopped at 3319/146484 frames, recovery_ok"
+        },
+        {
+          "check": "60 s continuous, twice",
+          "driver": "82787262",
+          "result": "PASS both runs (2929687 frames, bit22=0)"
+        },
+        {
+          "check": "mixed pair refused before start",
+          "driver": "82787262",
+          "result": "PASS"
+        },
+        {
+          "check": "silent run completes",
+          "driver": "82787262",
+          "result": "PASS"
+        },
+        {
+          "check": "mixed pair refused before start",
+          "driver": "c2b2a86ad9eeae7be861e55fc1a048cdaf5f7ccdaece9ae111715a62e1fe6493",
+          "result": "PASS (re-run on the delivered driver)"
+        },
+        {
+          "check": "silent run completes + status.json carries the full identity",
+          "driver": "c2b2a86a",
+          "result": "PASS: completed, bit22=0, bit_exact, and status.json now contains capture_status, input_full_scale_seen, package_version and driver/bit/hwh/model hashes (C item 1)"
+        },
+        {
+          "check": "input full scale stops the run",
+          "driver": "c2b2a86a",
+          "result": "PASS: stop_reason=input_clip, capture_status=0x00406350, 12712/146484 frames, recovery_ok (re-run on the delivered driver)"
+        },
+        {
+          "check": "60 s continuous on the delivered driver",
+          "driver": "c2b2a86a",
+          "result": "PASS: 2929687/2929687 frames, bit22=0, all saturations 0, bit_exact (delivered driver)"
+        }
+      ],
+      "diff_evidence": "driver-diff-clap-verified-to-delivered.txt: 34 changed lines between the clap-verified driver and the delivered one; none of them is runtime_stop, the polling loop or the post-run re-check. The single line that mentions INPUT_CLIP_BIT is the status field.",
+      "conclusion": "the delivered driver c2b2a86a now has all four checks: mixed pair refused, silent run completes with full identity in status.json, input full scale stops the run, and 60 s completes."
+    },
+    "driver_c2b2a86a_full_verification": {
+      "date": "2026-10-28, after the operator returned to the microphone",
+      "why": "the delivered driver was only partly re-verified; these are the two checks that need a person",
+      "input_full_scale_stop": {
+        "how": "hand claps 2-3 cm from the microphone during a 3 s listen-only run (digital gain 0)",
+        "result": "stop_reason=\"input_clip\", capture_status=0x00406350 (bit22=1), input_full_scale_seen=true, microphone peak -0.0 dBFS, 15 samples at the rail, stopped at 12712 of 146484 frames",
+        "recovery": "recovery_ok=true, cleanup_errors=[]",
+        "verdict": "PASS on the delivered driver"
+      },
+      "sixty_second_continuous": {
+        "preconditions": "listen-only probe first: mic -32.2 dBFS, peak -19.7 dBFS, bit22=0, no rail samples",
+        "result": "stop_reason=completed, 2929687/2929687 frames, capture_status=0x00008001, bit22=0, rsat/psat/gsat/msat 0, mic RMS -31.4 dBFS, peak -14.3 dBFS, no rail samples, bit_exact=true, wall 89.0 s",
+        "verdict": "PASS on the delivered driver"
+      },
+      "failed_attempts_before_this": [
+        "60 s at phone volume 8/15, 5 cm: stopped after 31988 frames with input_clip (mic RMS -21.6 dBFS). The historical baseline was recorded with a driver that had no input detector, so its zero counters never proved a clean input; the working point was changed to 6/15 and marked as a changed condition.",
+        "first attempts right after the clap test still carried the clapping tail (mic RMS -18.2 dBFS, one sample at the rail) and stopped correctly; they were not source measurements at all."
+      ],
+      "listener_record": {
+        "configuration": "zero coefficients, PL -8 dB, Codec 40, phone 6/15 at 5 cm, speaker 100 cm side-facing",
+        "verbatim": "\"能听出放大\" (can hear the amplification)",
+        "meaning": "the amplification path and level are audible at this working point. It is NOT an anti-howling result: no cancellation was active (zero coefficients), so this says nothing about the candidate model.",
+        "earlier_negative_records": [
+          "2026-10-27, 20 cm human speech: \"感觉都没放大人声\" (no audible amplification)",
+          "2026-10-28, 60 s at 6/15 before this run: \"能听到、没明显放大\" (audible, not obviously louder)"
+        ]
+      }
+    },
+    "segment_A_tone_2026_10_28": {
+      "what": "322 Hz three-point in one round at the agreed working point (phone silent, gain -8 dB, Codec 40)",
+      "levels_db": {
+        "open_mic": 185.67,
+        "bypass_mic": 189.79,
+        "cancel_mic": 184.87,
+        "open_residual": 183.37,
+        "bypass_residual": 189.79,
+        "cancel_residual": 182.7
+      },
+      "cd_322_db": 7.08,
+      "loop_boost_db": 4.12,
+      "acoustic_difference_db": 4.92,
+      "overshoot_db": 0.8,
+      "verdict": "cancellation_holds by B rule (4.92 >= 4.12 - 1.5 and |0.80| <= 1.5)",
+      "arms": "all three completed, bit22=0, no rail samples, recovery_ok",
+      "drift_vs_2026_10_27": "CD 6.37 -> 7.08, boost 3.75 -> 4.12, difference 4.76 -> 4.92: same order, about 0.4 dB of run-to-run drift"
+    },
+    "segment_C_speech_2026_10_28": {
+      "what": "six speech takes, three per arm, same sentence and distance, 10 s each, gain -8 dB",
+      "result": "all six completed, bit22=0, no saturation, wide_residual_frames=0, recovery_ok",
+      "takes_with_speech": {
+        "zero": [
+          -24.2,
+          -23.2
+        ],
+        "candidate": [
+          -24.8,
+          -25.5
+        ]
+      },
+      "silent_takes": {
+        "zero_take_1": -38.0,
+        "candidate_take_2": -39.0
+      },
+      "reading": "the two silent takes are gaps in an 86 s continuous utterance and carry no level information; among the four usable takes the candidate runs about 1.5 dB lower, but the takes are not the same utterance segment, so this is not a paired level comparison",
+      "meaning": "at this level live speech does NOT clip the input (six takes, bit22=0 every time), and the candidate ran with no protection trip. No wide-residual overflow occurred, so the specific v3 fix was still not exercised by speech on this day."
+    },
+    "driver_79c4d9f7_full_verification": {
+      "mixed_pair_refused": "PASS",
+      "silent_bringup": "completed, 58593 frames, bit22=0, bit_exact, status.json carries the full identity",
+      "input_full_scale_stop": "PASS: clap -> stop_reason=input_clip, capture_status=0x00408000, 8 samples at the rail, stopped at 38877 of 146484 frames, recovery_ok, no cleanup errors",
+      "sixty_second_continuous": "PASS: 2929687/2929687 frames, capture_status=0x00008001, bit22=0, all four saturations 0, mic RMS -22.1 dBFS, peak -11.9 dBFS, no rail samples, bit_exact, wall 89.2 s",
+      "listener_record": "\"能听出放大\" (can hear the amplification), same working point as the earlier record"
+    },
+    "c_review_2026_10_28_fixes": {
+      "auditor": "C, message of 2026-10-28 (three remaining gaps)",
+      "gap_1_gate_after_protection": {
+        "what": "a gate that tripped a protection could still let the branch continue when its captured peak happened to be inside (-60, -6) dBFS",
+        "fix": "the gate is now accepted only if it satisfies the SAME predicate as a real arm (completed, bit22 clear, no rail sample, recovery_ok) AND the level rule; three scripts changed",
+        "files": [
+          "field_ac_segments_v3.sh",
+          "field_stationary_v3.sh",
+          "field_human_pair_v3.sh"
+        ]
+      },
+      "gap_2_tone_arm_protection": {
+        "what": "tone_arms_v3.sh aborted only when the NPZ was missing, so an arm that tripped protection but still wrote an NPZ was followed by the remaining two arms",
+        "fix": "tone_arms_v3.sh now treats stop_reason != completed / bit22 / recovery_ok false as a stop, and is marked SUPERSEDED by field_ac_segments_v3.sh (tone mode), which writes the same manifest and already aborted correctly"
+      },
+      "gap_3_analyzer": {
+        "what": "the analyzer still missed an actual change in the source ARRAY, a frame count that was wrong in the same way in all three arms, and a failing recovery sidecar; units and the difference names were not aligned",
+        "fix": [
+          "source: the ACTUAL source_pcm16 array is hashed and compared, and each arm is checked against its own claimed hash",
+          "frames: metadata frames must equal the actual array length, first_frame + frames must equal completed_frames, and the injected-source window must be identical across arms",
+          "sidecar: status.json must exist next to each capture and must say recovery_ok true, cleanup_errors empty, save_error null, stop_reason completed",
+          "units: all three signals are reported in dBFS re 24-bit full scale, with the unit stated in the returned dict",
+          "names: cd_322_db / loop_boost_db / acoustic_difference_db / overshoot_db, each with the meaning B fixed"
+        ],
+        "test": "board/audio_replay/test_tone_round_guard.py, 16 checks: the five original classes plus changed-source-array, shared-wrong-frames, failing-sidecar and cleanup-errors"
+      },
+      "one_round_after_fixes": "one fixed-configuration three-arm round with the real manifest, as C asked; no extra audible trials were spent on rejection samples"
+    },
+    "segment_A_tone_round_2_after_fixes": {
+      "round_id": 1746930178556850644,
+      "levels_dbfs_at_322": {
+        "open_mic": 47.77,
+        "bypass_mic": 52.01,
+        "cancel_mic": 46.56,
+        "open_residual": 45.23,
+        "bypass_residual": 52.01,
+        "cancel_residual": 43.58
+      },
+      "cd_322_db": 8.43,
+      "loop_boost_db": 4.24,
+      "acoustic_difference_db": 5.45,
+      "overshoot_db": 1.21,
+      "verdict": "cancellation_holds (5.45 >= 4.24 - 1.5 and |1.21| <= 1.5)",
+      "arms": "gate + three arms all completed, bit22=0, no rail, recovery_ok",
+      "repeatability": "previous round the same day: CD 7.08 / boost 4.12 / difference 4.92 / overshoot 0.80; the verdict repeats, the numbers move by about 1 dB"
+    },
+    "listener_two_arm_2026_10_28": {
+      "protocol": "one quiet gate, then the same sentence in two 6 s windows (zero-coefficient arm, then the candidate arm, about 4 s apart). The talker was told BEFORE the run what to judge: which window is louder, whether there is howling, whether speech is intelligible. The first attempt asked for the judgement only after the run and was discarded as an invalid procedure, not as a result.",
+      "measurements": {
+        "zero_mic_dbfs": -29.9,
+        "zero_peak_dbfs": -14.8,
+        "candidate_mic_dbfs": -35.5,
+        "candidate_peak_dbfs": -19.7,
+        "difference_db": -5.6
+      },
+      "all_runs": "gate and both arms completed, bit22=0, no saturation, no rail, recovery_ok",
+      "listener_verbatim": {
+        "loudness": "差不多/听不出 (cannot tell the two apart)",
+        "howling": "无啸叫 (no howling)",
+        "intelligibility": "都能听清 (both intelligible)"
+      },
+      "reading": "the microphone level drops 5.6 dB with cancellation active, but the person doing the speaking cannot hear that as a loudness difference. The likely reason is methodological: the talker is also the listener, so their own direct voice (bone conduction plus direct sound) dominates what they hear, and a change in the played level is masked. The historical sessions used a separate listener 20 cm from the speaker for exactly this reason.",
+      "what_it_does_not_say": "it does NOT say the cancellation is inaudible; it says this listener position cannot resolve it. A separate listener at the speaker, or a recorded A/B of the played signal, is needed to answer the audible-benefit question."
+    },
+    "unit_fix_2026_10_28": {
+      "auditor": "C (C=255214a)",
+      "error": "level_dbfs took the peak bin of the Hann-windowed spectrum without dividing by the window coherent gain, so every absolute level was inflated by 20*log10(N/4) (about 60 dB at N=4096). A 0.25 full-scale tone read +48.16 dBFS instead of -12.04 dBFS.",
+      "fix": "amplitude = 2*|rfft(x*win)| / sum(win); level = 20*log10(amplitude). Verified: a synthetic 0.25 full-scale tone now reads -12.04 dBFS (test_tone_round_guard.py, 17 checks).",
+      "effect_on_conclusions": "NONE on the three-point quantities: all three signals pass through the same window, so CD(322), loop boost, acoustic difference and overshoot are unchanged (8.43 / 4.24 / 5.45 / 1.21 dB). Only the absolute levels were wrong and are now in real dBFS.",
+      "recomputed_absolute_levels_dbfs": {
+        "open_mic": -24.48,
+        "bypass_mic": -20.24,
+        "cancel_mic": -25.69,
+        "open_residual": -27.01,
+        "bypass_residual": -20.24,
+        "cancel_residual": -28.67
+      }
+    },
+    "audible_benefit_claim_retracted_2026_10_28": {
+      "auditor": "C (C=255214a)",
+      "retracted_claim": "the played output was too quiet (-42..-47 dBFS) and the listener benefit is a measured negative",
+      "why_invalid": "the driver saves the LAST 16384 frames of the ring, i.e. 0.336 s. The alternating run was 2.4 s with a 2.0 s source, so the saved window starts at 2.064 s and ends at 2.400 s - entirely AFTER the source ended. The levels therefore describe the decay tail, not program material, and no loudness statement can be made from them.",
+      "what_survives": "the same-window arm difference (1.91 dB over the four arms, gate excluded; C independently got 1.905 dB) may be kept as a same-window comparison, but it is not a loudness measurement either.",
+      "what_was_also_wrong": "the earlier 1.38 dB summary included the gate run in the zero-arm mean; the four-arm mean is 1.91 dB.",
+      "correct_method_for_a_real_measurement": "the run duration must be no longer than the saved window (0.336 s) so that the capture falls inside the source, or the capture length must be made configurable. Neither was done here, and no new audible trial was spent.",
+      "consequence_for_the_freeze": "the audible-benefit question is OPEN again: it is neither a measured negative nor a measured positive. What stands is the 322 Hz three-point verdict (cancellation_holds) and every listener record as a record."
+    },
+    "listener_records_2026_10_27_28": {
+      "status": "kept as records, not used as evidence of the benefit",
+      "records": [
+        "2026-10-27 20 cm: no audible amplification",
+        "2026-10-28 60 s: audible, not obviously louder",
+        "2026-10-28 talker-as-listener pair: cannot tell the two arms apart",
+        "2026-10-28 loudness question: not answered (the two attempts were procedurally invalid: too long a gap, and a source-free capture window)"
+      ],
+      "why_not_used": "a listener judgement cannot be the instrument for a difference that the same-window numbers cannot separate, and the only quantitative attempt was measured on a source-free window."
+    },
+    "c_review_json_2026_10_28": {
+      "artifact": "report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json",
+      "sha256": "f380c9178a3d0381c6be13f054c4e01d1c907770a6d6f030395982c5d64581ba",
+      "produced_by": "C scripts/review_itemized_20261027.py 81297e8a..., run on the board against tone_round.json",
+      "round_id": 1746930178556850644,
+      "window": {
+        "first_frame": 91037,
+        "end_frame": 97656,
+        "scheduled_source_frames": 6619,
+        "includes_source_free_frames": false
+      },
+      "source_active_three_point": {
+        "cd_322_db": 8.4609,
+        "loop_boost_db": 3.7016,
+        "acoustic_difference_db": 4.9502,
+        "overshoot_db": 1.2486,
+        "played_bypass_minus_cancel_db": 4.618
+      },
+      "difference_from_my_full_window_numbers": "my analyzer used the whole 16384-frame capture (6619 source-active + 9765 source-free); restricting to the source-active frames moves the numbers by up to 0.54 dB (loop boost 4.24 -> 3.70). C values are the precise ones and are adopted.",
+      "verdict_under_B_rule": "cancellation_holds: 4.95 >= 3.70 - 1.5 and |1.25| <= 1.5",
+      "board_state": "PCM left on the board as instructed; only the JSON was copied"
+    }
+  },
+  "corrections": {
+    "retracted": "The first reading of run 1 was 'the speaker's sound is not reaching the microphone'. That is WRONG: the 1 kHz tone check shows the speaker path is live (+6.5 dB microphone RMS, +30 dB in-band). The correct explanation is that -20 dBFS broadband noise is buried under the room floor at this fixture, so the microphone level in both arms equals the floor.",
+    "how_it_was_found": "injecting a concentrated 1 kHz tone with the digital gain forced to 0 instead of comparing broadband noise RMS against a silent gate",
+    "still_unexplained": "the zero-output gate rose from -38.2 to -26.4 dBFS RMS between the two windows of this session. Nothing on the board side was changed except the source level of the preceding trials. Possible external amplifier gain/limiter state or room change; not resolved. Any field window must measure the gate before AND after the arms to expose such drift.",
+    "contract_gain_bound_erratum": "audio-replay-v3.md originally wrote g <= 1 next to control[31:16] <= 32768 (Q4.12), which is 8.0 not 1.0; B found it (67d28b2). The contract now states g <= 8 with the 41-bit argument (|w| <= 2^24 and g <= 8 give g*w <= 2^39 < 2^40-1), so the arithmetic conclusion is unchanged and only the stated range was wrong. The deployed bitstream is unaffected because the working gain was 1631. The RTL comment at audio_pl_replay.v:195 still carries the old \"gain is <= 1.0\" wording; it was deliberately NOT edited after the build so that the source that produced bitstream 48e38f78 stays identifiable, and the imprecision is registered here instead.",
+    "board_offline_2026_10_27": "after the field window the board stopped answering on 192.168.2.99:22, so the current-fixture |H| peak scan and the distance ladder below could not be run; no measurement is claimed for either.",
+    "bit22_stop_semantics": "earlier text in this file said bit22 was an evidence field that did not change the stop condition. That is no longer true and has been overwritten: the captain authorised making input full scale a stop condition, so \"input overload is visible\" and \"input overload stops the run\" are now two separate facts that must not be merged. The contract audio-replay-v3.md carries the table.",
+    "gain_unit_wording": "audio-replay-v3.md used \"round_Q12\" and \"Q4.12\" without defining them. The gain word is control[31:16], unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); the coefficients are 24-bit Q20. The contract now states this explicitly and uses round_shift12()."
+  },
+  "evidence_checker_fix": {
+    "file": "board/audio_replay/replay_tools.py",
+    "problem_1": "the expected output was rebuilt from the CAPTURED (clamped) residual, which is no longer what the hardware multiplies; under v3 that would report mismatches exactly where the wide path differs",
+    "problem_2": "the output comparison started at ring frame 2 even for a truncated ring, so the first TAPS frames, whose prediction history is unknowable, were counted as output mismatches. This made every nonzero-model arm look non-bit-exact (it predates v3)",
+    "fix": "expected output = clip(injection + gain(wide residual)) with one clamp after the gain, compared from skip+2 for a truncated ring; wide_residual_frames and output_checked_frames are reported",
+    "local_validation": "software check on a synthetic capture built from the same integer datapath: v3 oracle bit_exact with 597 wide-residual frames, while the old oracle reports 595 mismatches on the same valid capture",
+    "on_board_validation": "the downloaded candidate capture re-verifies as bit_exact=true (output_mismatches 0) with the fix and 512 with the old window; the -8 dBFS candidate arm is bit_exact=true on the board with the fixed oracle"
+  },
+  "honest_position": "simulation and synthesis are done with real numbers; the board loads v3, completes bounded runs, and the digital evidence is bit-exact; the speaker path is live; but no run this session produced a pre-gain overflow, no human speech arm has run, and the stationary pairs are confounded by level and baseline drift. No cancellation or gain result is claimed.",
+  "next_steps": [
+    "supervised window: gate -> stationary zero -> stationary candidate -> gate -> human zero -> human candidate, with the same physical state and the gate measured twice",
+    "reject any trial with capture_status bit22 set or microphone peak >= -6 dBFS",
+    "the human arms are the only ones that can re-create the pre-gain overflow (loud transient into the microphone), which is what v3 is for",
+    "then a keep-or-rollback recommendation for v3"
+  ],
+  "pending_measurements": [
+    "C re-verification of the unit fix and of the retraction",
+    "a valid played-level comparison: run length <= the 0.336 s saved window, so the capture lands inside the source, or a configurable capture length",
+    "segment B (g = -3 deliberate howl) - needs authorisation"
+  ],
+  "working_point_analysis": {
+    "asked_by": "B (67d28b2) rejected all three of A's options and proposed a distance ladder plus raising g",
+    "fixture_confirmed": true,
+    "fixture_confirmed_by": "the operator, 2026-10-27: the rig in use is the same physical fixture the model was fitted on (microphone to speaker 100 cm, side-facing, metal plate and cotton). fixture room_v1_20261026b stays valid for this geometry; no rebinding is needed.",
+    "peak_frequency_provenance": "+4.40 dB @ 321.9 Hz comes from the 2026-10-23 field recalibration on this same fixture, so the 322 Hz used for the tone three-point is a current-fixture number by record, not carried over from another rig. A fresh tone scan is still a good check but is not blocking.",
+    "coupling_table": {
+      "how": "IN-PHASE UPPER BOUND ONLY: 1/(1-g*|H|) assumes the loop adds in phase. The measured value at -8 dB is +3.75 dB, not +9.39. Do not use this table to predict loudness; B derived a phase of about 39.8 degrees at 322 Hz, and the real curve peaks near g = -6.7 dB at +3.87 dB, with -8 dB only 0.12 dB below that peak.",
+      "H_peak_db": 4.4,
+      "rows": [
+        {
+          "gain_db": -14.0,
+          "g": 0.19953,
+          "g_times_H": 0.3311,
+          "closed_loop_boost_db": 3.49,
+          "note": ""
+        },
+        {
+          "gain_db": -12.0,
+          "g": 0.25119,
+          "g_times_H": 0.4169,
+          "closed_loop_boost_db": 4.68,
+          "note": ""
+        },
+        {
+          "gain_db": -10.0,
+          "g": 0.31623,
+          "g_times_H": 0.5248,
+          "closed_loop_boost_db": 6.46,
+          "note": ""
+        },
+        {
+          "gain_db": -8.0,
+          "g": 0.39811,
+          "g_times_H": 0.6607,
+          "closed_loop_boost_db": 9.39,
+          "note": ""
+        },
+        {
+          "gain_db": -6.0,
+          "g": 0.50119,
+          "g_times_H": 0.8318,
+          "closed_loop_boost_db": 15.48,
+          "note": ""
+        },
+        {
+          "gain_db": -4.0,
+          "g": 0.63096,
+          "g_times_H": 1.0471,
+          "closed_loop_boost_db": null,
+          "note": "unstable: g*|H| >= 1"
+        }
+      ],
+      "bypass_critical_gain_db": -4.4
+    },
+    "consequences": [
+      "raising g cannot buy loudness on the zero arm: played/source = 1/|1-gH| runs -14 -> +2.21, -10 -> +3.29, -8 -> +3.75, -6.7 -> +3.87 (peak), -6 -> +3.83; -8 dB is 0.12 dB from the maximum",
+      "-4 dB is above the bypass critical gain (-4.40 dB), so it self-oscillates with no cancellation at all",
+      "what is left of the loudness gap is speaker efficiency, directivity and distance to the listener, which g cannot fix",
+      "whether the CANDIDATE can go louder is unknown: played/source = 1/|1-g(H-Hhat)| needs the phase of H-Hhat, and offline data only has per-point magnitudes (max 0.9247). Report only \"stability margin 5.08 dB higher than the zero arm (a bound difference, not a measured ASG)\"",
+      "clipping follows speech effort, not distance: both 12 cm and 20 cm produced bit22=1"
+    ],
+    "correction_to_B_option_2": {
+      "B_said": "lowering the Codec ADC gain by k equals lowering g, so it is wasted effort",
+      "why_that_is_incomplete": "it is a headroom move, not a gain move. Scaling the ADC by k and the coefficients by k, then the digital gain by 1/k, gives out = (g/k)(k*m - k*p) = g*(m - p): identical loop gain and identical playback level, but the microphone path no longer saturates. The coefficient scaling is exact (B says so himself), so no refit is needed. The point is to stop destroying input information at 12 cm, which no digital stage can undo.",
+      "cost": "identity has to be re-registered (scaled coefficients) and the ADC gain is a calibrated parameter"
+    },
+    "denominators": {
+      "mic_4_76_db": "cancel minus bypass measured on the MICROPHONE at 322 Hz (both arms, same g=1631, same source amplitude 0.15 FS)",
+      "residual_6_37_db": "cancel minus bypass measured on the RESIDUAL at 322 Hz, same arms; in bypass the hardware sets residual = microphone, so this is the played-quantity depth and is not comparable to 4.76 without saying which signal was measured",
+      "open_arm_role": "reference only, never a denominator"
+    },
+    "retracted": {
+      "claim": "g 每提 1 dB, 峰值处闭环约提 3 dB",
+      "why_wrong": "that number came from 1/(1-g*|H|), which assumes the loop adds in phase. The measured boost is 3.75 dB, i.e. |1-gH| = 0.6494 and a phase of about 39.8 degrees. The table below is an in-phase UPPER BOUND, not a prediction.",
+      "retracted_on": "2026-10-28, after B pointed it out (B 86061a7)"
+    },
+    "retracted_distance_claim": {
+      "claim": "lowering the gain to -6 dB would need roughly 24 cm to stop clipping",
+      "why_wrong": "clipping follows speech effort, not distance: 12 cm and 20 cm both produced bit22=1 in the 2026-10-27/28 records, with 20 cm clipping just as well. Moving back does not fix clipping.",
+      "retracted_on": "2026-10-28, after B pointed it out (B 86061a7)"
+    },
+    "decided_working_point": {
+      "configuration": "phone 6/15, 5 cm, PL -8 dB, Codec 40, no ADC change",
+      "why": "it is the only configuration that completed two 60 s runs, and the -8 dB operating point is 0.12 dB from the loudness peak of the zero arm, so there is nothing to gain by moving the gain",
+      "adc_gain_scaling": "kept as a TRIGGER, not a default: scaling ADC by k, coefficients by k and digital gain by 1/k leaves the loop and the output unchanged, so it buys headroom against clipping and zero loudness, at the cost of coefficient re-registration and a level re-calibration",
+      "trigger": "at the demo rehearsal, if bit22=0 and peak <= -6 dBFS keep this configuration; if bit22=1 the configuration MUST change, because the v3 driver stops immediately on input full scale and a mid-demo stop is worse than being too quiet",
+      "if_triggered": "pick k so the peak drops to <= -12 dBFS (6 dB margin), re-register coefficients x k, compensate digital gain x 1/k, and re-run the 322 Hz three-point before the freeze; played/source must match this round bit for bit, otherwise roll back"
+    },
+    "four_pitfalls_kept": [
+      "raising g raises the microphone too (mic = H*played + source), so bit22 must be re-measured at every level, not only at the start",
+      "the zero arm stops because of bit22, NOT because howling was detected: v3 has no howl detector. The record must say \"the zero arm was stopped by input full scale\"",
+      "the bypass arm microphone is 4.76 dB higher than the cancel arm at the same speech level, so bypass reaches the rail first. That is the cost of that arm, not a failure; record it separately",
+      "never manufacture a \"success\" by turning the whole system down"
+    ]
+  },
+  "captain_decision_2026_10_28": {
+    "decision": "v3 is the frozen mainline; v2 stays the successful baseline and the rollback",
+    "authorized_without_further_request": "fix replay_trial.py so capture_status bit22 stops the run",
+    "deliverables": "final bitstream, hwh, driver, check scripts and their hashes; recompute identity, 6b397359 is no longer the new driver",
+    "verification_scope_for_C": "incremental only, five named semantic changes; the v2 8/8 does not carry over",
+    "freeze": "2026-10-28 18:00 acceptance result and remaining defects; 22:00 code freeze",
+    "if_not_closed": "v3 stays an unaccepted candidate and the demo falls back to the v2 limited configuration"
+  },
+  "driver_fix_input_clip_stop": {
+    "authorized_by": "captain 2026-10-28",
+    "what_was_missing": "the run loop never looked at capture_status bit22, so an input full-scale event was recorded in the evidence but did not stop the sound",
+    "what_changed": [
+      "replay_trial.runtime_stop() is a pure function that decides one poll: bit22 -> \"input_clip\", prediction half of the packed word or post-gain or mix -> \"guard\", residual half alone -> keep running",
+      "the polling loop now reads capture_status fresh every iteration and stops through the existing disarm/mute/save/restore path with stop_reason=\"input_clip\"",
+      "the post-run block re-checks bit22 so an event in the last polling interval is not lost, and it takes precedence over \"completed\"",
+      "a stop_reason of \"input_clip\" raises at the end with an explicit message, like \"guard\" does"
+    ],
+    "what_did_not_change": [
+      "no RTL, no bitstream: the PL already exported bit22",
+      "pre-gain residual overflow alone still never stops the run",
+      "prediction, post-gain, mix, protocol/fault, timeout and manual stop keep their behaviour"
+    ],
+    "verification": {
+      "kind": "software verification, no hardware, no board",
+      "command": "python -X utf8 board/audio_replay/test_runtime_stop.py",
+      "result": "RUNTIME_STOP_TEST PASS (16 checks) + VERIFY_REPLAY_V3_TEST PASS (7 checks)",
+      "covers": [
+        "quiet run keeps running",
+        "bit22 alone -> input_clip",
+        "bit22 together with prediction/gain/mix still labelled input_clip",
+        "prediction half -> guard",
+        "residual half alone -> keep running (the v3 point)",
+        "residual half with many counts -> keep running",
+        "post-gain -> guard, mix -> guard",
+        "done bit alone keeps running",
+        "fault bit18 / config bit17 are left to the caller loop",
+        "decode_counts still splits residual high / prediction low"
+      ]
+    },
+    "not_verified": "SUPERSEDED 2026-10-28: the stop HAS now been observed on hardware. Hand claps 2-3 cm from the microphone during a listen-only run gave stop_reason=\"input_clip\", capture_status=0x004019ee (bit22=1), a stop at 3319 of 146484 frames, recovery_ok=true and no cleanup errors.",
+    "package_identity_guard": {
+      "why": "captain 2026-10-28 check item 5: mixing a bitstream and a driver must be refused before start",
+      "how": "replay_trial.verify_paired_bitstream() compares sha256 of the bit and hwh next to the driver against EXPECTED_BIT_SHA256 / EXPECTED_HWH_SHA256 and raises before any overlay download",
+      "tested": "matching pair accepted; v2 bit with v3 driver refused; v2 hwh with v3 bit refused; missing hwh rejected (no hardware needed)"
+    },
+    "verified_on_hardware_2026_10_28": true
+  },
+  "timing_statement": {
+    "wording": "constraints as applied are met; not a full timing sign-off",
+    "not_a_full_signing": true,
+    "gap": "four external I/O delay constraints are still missing (unchanged since v1); this is not a complete timing sign-off"
+  },
+  "c_review_2026_10_27": {
+    "passed_before": "original 8/8; v3 new 3/7; failure exits 1/3",
+    "fixes": [
+      "1 save failure keeps capture_status / input_full_scale_seen / v3 marker / full hashes",
+      "2 wide-residual count: legal -8388608 no longer counted; prefix events reported; no-output-frames is not a pass",
+      "3 gate precedes the arm, a failed gate or a protection stop ends the branch, operator confirmation is a token",
+      "4 tone analysis pairs one explicit round, checks identity/window/input validity, refuses otherwise",
+      "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); stale not-run summaries overwritten"
+    ],
+    "reverify_scope": "C re-checks only the items that failed plus what these changes touch"
+  },
+  "c_review_2026_10_28": {
+    "passed_before": "save-failure 3/3, arithmetic 7/7, orchestration 3/3, Q4.12 wording",
+    "failed_before": [
+      "actual capture prefix overflows reported as 0",
+      "orchestration continued after a protection / failed recovery / failed first tone arm",
+      "tone analysis still emitted a depth for five classes of bad input",
+      "manifest had the zero-arm coefficient hash in the candidate field",
+      "some stale summaries"
+    ],
+    "fixed": [
+      "1 save failure keeps capture_status / input_full_scale_seen / v3 marker / full hashes (incl. replay_tools)",
+      "2 wide residual is now computed from the RECORDED prediction column, so the prefix of a truncated ring is counted exactly instead of being reported as 0; the asymmetric rail test stays; on the real v2 capture the count is 8, equal to the hardware residual_saturations",
+      "3 scripts: gate before the arm, a failed gate / protection / failed recovery / stopped arm ends the branch, the tone round stops at the first failing arm, and the operator confirmation is a token the scripts consume but never create",
+      "4 tone analysis rejects five classes of bad input: missing identity, changed source or gain, conflicting actual length, input at the rail, and any arm that stopped",
+      "5 gain unit stated as unsigned 16-bit with 12 fractional bits (Q4.12, 0..8.0); candidate and zero-arm coefficient hashes recorded separately"
+    ],
+    "reverify_scope": "only the failed items and what these changes touch"
+  },
+  "reporting_split_v3_working_point": {
+    "source": "B 86061a7, adopted by A 2026-10-28; three quantities must never be quoted interchangeably",
+    "cd_322_db": {
+      "value": 6.37,
+      "what": "residual depth at 322 Hz: bypass residual vs cancel residual. It is what the cancel branch minimises and it measures model fit.",
+      "not": "not a benefit figure"
+    },
+    "loop_boost_db": {
+      "value": 3.75,
+      "what": "bypass microphone (49.19) minus open microphone (45.44): how much the closed loop raises that band, so it is also the most a canceller can recover there",
+      "is_the_audible_benefit_scale": true
+    },
+    "acoustic_difference_db": {
+      "value": 4.76,
+      "what": "bypass microphone (49.19) minus cancel microphone (44.43) = loop boost 3.75 + cancel overshoot 1.01",
+      "not": "not the benefit: quoting 4.76 as benefit overstates it by the 1.01 overshoot"
+    },
+    "overshoot_db": 1.01,
+    "phase_of_H_at_322_derived_by_B": {
+      "how": "|H| = 10^(4.40/20) = 1.6596, g = 0.3981, g|H| = 0.6607; measured boost 3.75 dB gives |1-gH| = 0.6494, cos(phase) = 0.768, phase = +-39.8 degrees",
+      "consequence": "g plus |H| in dB is an amplitude bound only; it cannot predict loudness. An in-phase assumption would have predicted 9.4 dB where 3.75 dB was measured, and the 5.7 dB gap is entirely phase."
+    }
+  },
+  "codec_unmute_pop_fix": {
+    "date": "2026-10-28, field",
+    "symptom": "the operator heard a \"du\" from the speaker; the microphone hit the ADC rail for a few milliseconds at the very first frames of a run, so the input-full-scale stop fired before any program material arrived. Three consecutive gate attempts stopped after 5 / 650 / 114 frames with 5-87 samples at the rail while the room was otherwise quiet.",
+    "root_cause": "the driver unmuted the codec and armed the run in the same instant, so the unmute pop landed inside the first captured frames.",
+    "fix": "CODEC_SETTLE_SECONDS = 0.25 between the codec unmute and the arm, so the pop decays BEFORE the counters start. No threshold moved and no protection was relaxed: the arm point moved, the protection is exactly as strict as before.",
+    "verification": "after the fix the same tone round and the same 60 s run completed with bit22=0 and no rail samples; the clap still stops the run with input_clip.",
+    "driver_before": "c2b2a86a...",
+    "driver_after": "79c4d9f7..."
+  }
+}

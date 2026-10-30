@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "topic": "plan for reproducing the one live amplification case noticed on 2026-10-26",
+  "recorded_by": "A",
+  "goal": "reproduce the configuration in which a listener twice reported clear, audible amplification, "
+          "and identify precisely which factor made it work",
+  "the_case": {
+    "when": "2026-10-26, before the microphone wire was reseated",
+    "settings": {"talker_to_mic_cm": 5, "digital_gain_db": -8.0, "coefficients": "zero "
+                 "(candidate model loaded with zero_coeff=True)", "speaker_to_mic_cm": 100,
+                 "speaker_orientation": "side-facing", "listener": "20 cm from the speaker",
+                 "hp_volume": 40, "preamp": "untouched", "speaker_volume": "maximum"},
+    "captures": {"mic_rms_dbfs": [-27.9, -24.3], "mode_share": [0.36, 0.42]},
+    "listener": ["fairly clear, can hear the amplification",
+                 "same as before, very clear, amplification works - a big step forward"]
+  },
+  "the_open_question": "after reseating the microphone, the same 5 cm / -8 dB setting reads mic -4.0 "
+                       "dBFS with peak 0.0, i.e. 24 dB hotter. The cause of that 24 dB gap is not "
+                       "established.",
+  "two_competing_explanations": {
+    "A_hypothesis_mic_drift": "a marginal microphone power connection reduced sensitivity during the "
+                              "successful runs",
+    "B_hypothesis_source_distance": "the talker/phone was actually much closer to the microphone in "
+                                    "the successful runs than the recorded 5 cm",
+    "current_evidence": "a repeatability test of the fixed board-played speaker->microphone path "
+                        "gave 4 couplings (-5.5, -2.5, -5.6, -4.5 dB), spread 3.1 dB, so microphone "
+                        "sensitivity is NOT drifting at the 20 dB scale. This does not support the "
+                        "A hypothesis and leaves the B hypothesis standing."
+  },
+  "tomorrow_protocol": [
+    "1. finish the repeatability test to 10 samples and record the exact spread",
+    "2. measure the microphone level at the talker distance that will be used, with the phone "
+    "playing 1101.m4a at 8/15 as the source, and record the peak; do not proceed if peak >= -6 dBFS",
+    "3. reproduce the successful case as closely as possible: talker 5 cm, -8 dB, zero coefficients, "
+    "listener 20 cm from the speaker; record mic rms, peak, mode share and the listener verdict",
+    "4. if it now clips or regenerates where it previously did not, that difference IS the finding: "
+    "record it before trying any other change",
+    "5. only after the reproduction attempt, vary ONE factor at a time (talker distance, then "
+    "digital gain) and record the same fields"
+  ],
+  "rules_kept": ["one change at a time", "stop on any saturation or guard event",
+                 "record cancelled and refused items, do not hand-filter failures",
+                 "the listener verdict is separate from the instrument numbers"],
+  "not_claimed": ["the successful case is not yet explained", "no effect conclusion stands until the "
+                  "case is reproduced with a known microphone state"]
+}

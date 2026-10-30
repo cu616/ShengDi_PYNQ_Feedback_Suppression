@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "topic": "board model is stale for the new layout: delay mismatch of 57 frames explains the gap",
+  "recorded_by": "A",
+  "source": "B analysis b4bc206 + e9e267b, report/verification/newlayout-325-2026-10-26/",
+  "corrections_to_my_claims": {
+    "retracted": "the earlier statement that B's model is 8.3 dB optimistic",
+    "reason": "I compared a new-layout measurement (-5.5 dB) with an old-layout model prediction (+2.77 dB); B's real-axis crossing for the new layout is -5.66 dB at 326.5 Hz, which agrees with my measurement to within 0.16 dB",
+    "also_retracted": "the explanation 'the limiting mode moved from 435 Hz to 325 Hz'",
+    "replacement": "310-450 Hz as a whole has negative CD with the on-board coefficients; 325 Hz is only the bin the phase selects, not the cause"
+  },
+  "root_cause": {
+    "on_board_coefficients": "93f7ab6e (model_room_side_512.json) - not present in models/ registry",
+    "impulse_response_peak_tap": 128,
+    "measured_path_delay_the_new_layout": 185,
+    "mismatch_frames": 57,
+    "explained_gap_db": 14.5,
+    "total_gap_db": 15.5,
+    "evidence": "pure shift scan: +40 frames CD +0.22, +58 frames +8.45, +60 frames +10.03"
+  },
+  "new_layout_refit_512": {
+    "cd_at_325_hz_db": 11.1,
+    "small_gain_bound_db": 4.95,
+    "real_axis_crossing_db": 12.88,
+    "cross_validation": [
+      10.02,
+      12.19
+    ],
+    "note": "a correct model would put the bound near +5 dB, so +6 dB digital gain is about 1 dB away"
+  },
+  "on_board_coefficients_are_worse_than_nothing": {
+    "with_coefficients_bound_db": -8.49,
+    "without_model_bound_db": -3.16,
+    "difference_db": 5.33
+  },
+  "taps": {
+    "512_to_680_fits": "+0.6 dB overall, +1.1 dB in 300-460 Hz",
+    "512_to_1024_does_not_fit": "+4.8 dB bound",
+    "usable_tail_memory_ms": 6.7,
+    "propagation_delay_inside_the_512_taps_ms": 3.79
+  },
+  "action": "ask B to produce a new-layout 512-tap coefficient set (Q20 + manifest) for a board re-scan; the acceptance criterion is not 'no howl' but 'how many dB above -5.5 dB still stable'",
+  "boundary": "all numbers are offline; no board retest; 460-3000 Hz coherence is 0.28-0.35 and is recorded as unknown, not interpolated"
+}

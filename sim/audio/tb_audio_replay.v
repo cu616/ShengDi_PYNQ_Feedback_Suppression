@@ -49,7 +49,9 @@ integer j;
 begin
     @(negedge clk);coefficient_cmd=coefficient_cmd^(1<<25);
     repeat(4) @(posedge clk);
-    for(j=0;j<256;j=j+1) begin
+    // The RTL default is 512 taps (production bitstream); the loader must fill exactly TAPS
+    // coefficients or `fresh` never sets, so this loop follows the default.
+    for(j=0;j<512;j=j+1) begin
         if(!coefficient_status[0]) $fatal(1,"coefficient not ready");
         @(negedge clk);
         coefficient_cmd=(coefficient_cmd & 32'h03000000) | (zero_coeff ? 0 : j==0 ? 24'h080000 : j==2 ? 24'h040000 : 0);
@@ -63,7 +65,7 @@ begin
         source_cmd=source_cmd^(1<<16);repeat(4) @(posedge clk);
     end
     #1;if(source_status!==32'h5208000c) $fatal(1,"source load status %h",source_status);
-    #1;if(!coefficient_status[3] || coefficient_status[19:4]!=256) $fatal(1,"load incomplete");
+    #1;if(!coefficient_status[3] || coefficient_status[19:4]!=512) $fatal(1,"load incomplete");
 end endtask
 integer run,i,j;
 reg signed [63:0] acc,expected,expected_res;

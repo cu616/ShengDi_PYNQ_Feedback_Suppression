@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "topic": "FIRST confirmed live-human voice amplification (not a phone playback)",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "significance": "every earlier 'amplification' result used the phone recording standing in for the human voice. This is the first time a person speaking into the microphone was heard as amplified by that same person.",
+  "setup": {
+    "source": "live human speech, no recording, phone paused",
+    "talker_to_mic_cm": 12,
+    "coefficients": "zero via zero_coeff=True",
+    "digital_gain_db": -8.0,
+    "hp_volume": 40,
+    "speaker": "100 cm from the microphone, side-facing, cotton over the plate",
+    "bit": "61bb71aa",
+    "hwh": "92b499a3",
+    "driver": "replay_trial 2127663"
+  },
+  "valid_run": {
+    "file": "live15_1746867401260601879.npz",
+    "mic_rms_dbfs": -23.6,
+    "mic_peak_dbfs": -2.2,
+    "full_scale_samples": 0,
+    "dominant_hz": 325,
+    "mode_share": 0.22,
+    "saturation": 0,
+    "stop": "completed",
+    "listener_answers": {
+      "heard_his_own_voice_amplified": "能",
+      "clarity": "一般清楚",
+      "versus_system_off": "更大",
+      "howling_or_distortion": "没有啸叫"
+    }
+  },
+  "earlier_run_at_5cm": {
+    "file": "live5_1746867233597783914.npz",
+    "mic_rms_dbfs": -7.0,
+    "mic_peak_dbfs": 0.0,
+    "full_scale_samples": 1081,
+    "listener_answers": {
+      "heard_amplified": "能",
+      "howling": "无"
+    },
+    "status": "INVALID as a measurement because the input clipped; the listening report is kept only as an informal observation, not as evidence"
+  },
+  "input_gate": {
+    "precheck_at_5cm_peak_dbfs": -7.37,
+    "precheck_at_12cm_peak_dbfs": -13.11,
+    "limit_dbfs": -6.0,
+    "note": "the 5 cm precheck passed but the actual speech was louder than the precheck, which is why the run clipped; at 12 cm there was ample margin"
+  },
+  "what_this_establishes": [
+    "a person speaking into this microphone at about 12 cm can hear their own voice amplified at -8 dB with zero coefficients, without howling",
+    "the amplification is not an artefact of the phone playback"
+  ],
+  "what_this_does_not_establish": [
+    "clarity was 'fairly clear', not 'clear'; no claim of high-quality amplification",
+    "no comparison against the candidate model on live speech",
+    "no sustained-use test on live speech",
+    "no measurement of how much louder it actually was"
+  ]
+}

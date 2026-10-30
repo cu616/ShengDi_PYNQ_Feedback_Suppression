@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "topic": "REPRODUCTION OF THE HISTORICAL WORKING POINT - 2026-10-27 field session",
+  "recorded_by": "A",
+  "verdict": "原配置复现成功 (original configuration reproduced successfully)",
+  "question": "can the 2026-10-26 'clear, audible amplification' working point be reproduced with a verified microphone and a recorded path?",
+  "configuration": {
+    "source": "phone recording 1101.m4a, volume 8 of 15, 5 cm from the microphone, held fixed",
+    "on_board_source": "silent (the loop carries only what the microphone hears)",
+    "coefficients": "zero via zero_coeff=True",
+    "digital_gain_db": -8.0,
+    "hp_volume": 40,
+    "speaker": "100 cm from the microphone, side-facing; metal plate covered with cotton",
+    "listener": "20 cm from the speaker, unchanged throughout",
+    "bit": "61bb71aa",
+    "hwh": "92b499a3",
+    "driver": "replay_trial 2127663 / live_run a3df27ac",
+    "model_file": "rewired_512_20261026.json (identity only; zero_coeff overrides the taps)"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "what": "does the speaker actually produce sound",
+      "method": "1 kHz tone from the board versus a silent capture, narrow band around 1 kHz",
+      "result": {
+        "silent_capture_1k_band_db": 5.8,
+        "tone_capture_1k_band_db": 21.7,
+        "delta_db": 15.9,
+        "verdict": "SPEAKER_WORKS"
+      }
+    },
+    {
+      "step": 2,
+      "what": "input condition vs the historical profile",
+      "method": "phone at 5 cm, volume 8/15, open loop, third-octave tilt",
+      "result": {
+        "mic_rms_dbfs": -28.6,
+        "peak_dbfs": -12.0,
+        "full_scale_samples": 0,
+        "low_band_tilt_db": 2.2,
+        "compare": "historical success runs were -27.9 / -24.3 dBFS with tilt +2.8 / +3.8 dB, so the input now matches the historical condition"
+      }
+    },
+    {
+      "step": 3,
+      "what": "two reproductions at -8 dB with a system-silent contrast between them",
+      "runs": [
+        {
+          "tag": "repro8",
+          "mic_rms_dbfs": -19.5,
+          "peak_dbfs": -4.8,
+          "mode_hz": 176,
+          "mode_share": 0.46,
+          "saturation": 0,
+          "listener": "能听出放大"
+        },
+        {
+          "tag": "silentref",
+          "gain_db": -40,
+          "mic_rms_dbfs": -20.3,
+          "peak_dbfs": -8.5,
+          "note": "system silent contrast"
+        },
+        {
+          "tag": "repro8b",
+          "mic_rms_dbfs": -22.4,
+          "peak_dbfs": -5.4,
+          "mode_hz": 459,
+          "mode_share": 0.21,
+          "saturation": 0,
+          "listener": "能听出放大；与系统静音相比显然是放大的那次更响；与第一次一致"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "what": "60 s continuous use at the same setting",
+      "runs": [
+        {
+          "tag": "first",
+          "valid": false,
+          "reason": "tail peak reached 0.0 dBFS because the operator handled the phone; full-scale transient, so the input was invalid and it was re-run"
+        },
+        {
+          "tag": "rerun",
+          "frames": 2929687,
+          "elapsed_s": 60.013,
+          "status": 32769,
+          "stop_reason": "completed",
+          "saturation_counts": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "timeline_points": 2952,
+          "max_poll_gap_s": 0.0281,
+          "tail_mic_dbfs": -30.4,
+          "tail_peak_dbfs": -14.2,
+          "listener": "全程能听出放大；无啸叫、无突然变响、无断音"
+        }
+      ]
+    }
+  ],
+  "listener_remarks_verbatim": [
+    "能听出放大，噪声有，有人声，至于音质，与音源声音很重合所以应该是较为清晰",
+    "（-6）同上，但感觉音量略大",
+    "显然是B（放大那次更大声）",
+    "感觉没什么区别（两次 -8 dB 一致）",
+    "60 s：1 能 2 没有"
+  ],
+  "not_assessed": [
+    "listening fatigue over 60 s: the operator did not understand the question, recorded as not assessed rather than inferred"
+  ],
+  "caveats": [
+    "the source is a phone recording, not a live talker; the live-human condition remains unverified and must be reported separately",
+    "the 60 s rerun tail was 9 dB quieter than the earlier run with no volume change, so the phone was probably playing a quieter passage; the listener still reported amplification throughout",
+    "the input is 5 cm at volume 8/15, which this session showed matches the historical profile"
+  ],
+  "what_this_does_not_establish": [
+    "no claim that a live human talking into the microphone is audibly amplified",
+    "no claim about the candidate model: this session used zero coefficients only",
+    "no ASG or absolute sound-pressure claim"
+  ]
+}

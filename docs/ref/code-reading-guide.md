@@ -1,21 +1,17 @@
 # 核心代码阅读顺序
 
-先分清两条通路：实时直通把麦克风送到音响；开环标定让音响播放已知信号，麦克风只负责记录。目前audio_residual已接入256抽头FIR，残差只记录，不回送DAC；闭环抑制待验证。
+先读 [STATE](../STATE.md) 确定版本，再按下面顺序理解主链路。旧的 probe → calibrate → residual 阅读顺序保存在 [历史原文](../archive/pre-freeze-guide-2026-10-29.md)，适合追溯基础 bring-up，不代表现行音频处理顺序。
 
-| 顺序 | 文件 | 建议先看什么 |
+| 顺序 | 文件 | 重点 |
 |---|---|---|
-| 1 | [audio_pl_probe.v](../../src/rtl/audio_pl_probe.v) | 顶层接线：receiver、path、transmitter三个实例 |
-| 2 | [audio_frame_path.v](../../src/rtl/audio_frame_path.v) | valid采样事件、使能上升沿、衰减、预算耗尽和静音 |
-| 3 | [audio_pl_calibrate.v](../../src/rtl/audio_pl_calibrate.v) | 独立激励如何生成，scheduled/captured为何分开，参考和ADC怎样成对入RAM |
-| 4 | [open_loop_capture.py](../../board/audio_calibrate/open_loop_capture.py) | Python如何配置Codec和PL、启动采集、读RAM、恢复及保存 |
-| 5 | [calibration.py](../../src/feedback/calibration.py) | history_matrix→fit_path→evaluate_path，再读quantize_coefficients与fixed_fir |
+| 1 | [上板版本索引](../../board/audio_replay/README.md) 与 [v3 manifest](../../board/audio_replay/v3/manifest.json) | 分清发布载荷、维护源码、旧位流和回退文件 |
+| 2 | [audio_pl_replay.v](../../src/rtl/audio_pl_replay.v) | ADC、FIR、数字增益、注入、实际播放参考、帧调度及捕获之间的关系 |
+| 3 | [feedback_fir.v](../../src/rtl/feedback_fir.v) | 预测历史、MAC、25位宽残差与24位诊断残差；增益前越界和输出饱和是不同量 |
+| 4 | [v3/replay_trial.py](../../board/audio_replay/v3/replay_trial.py) | 整对身份检查、Codec配置、arm、停止原因、先停声再保存及恢复 |
+| 5 | [v3/replay_tools.py](../../board/audio_replay/v3/replay_tools.py) | 位精确重放、截断历史排除、宽残差过增益和实际输出核对 |
+| 6 | [tone_round_guard.py](../../board/audio_replay/tone_round_guard.py) | 配对资格、实际源、帧域、恢复副车和幅度归一化；正式复算入口另见 STATE 的 C 段 |
+| 7 | [calibration.py](../../src/feedback/calibration.py) | 反馈通路拟合、系数量化与参考算法；必须绑定实际场景 |
 
-先读中文注释，再对照 [接口说明](../contracts/feedback-calibration-v1.md)。PS是板上ARM处理器，运行Python及寄存器配置；PL是FPGA逻辑，负责逐帧收发。I2C控制Codec，MMIO控制PL寄存器，两者地址不能混用。
+PS 是板上 ARM，负责配置、运行控制与记录；PL 逐帧处理。先区分“用于估计反馈的实际播放字”和“送 DAC 的输出”，再读延迟。24位 PCM 的满幅归一化与 Q20 系数单位不能混用。
 
-PCM为24位补码，除以2^23转为满幅浮点；系数有20位小数，除以2^20还原。模型的h[0]乘前一帧参考u[n-1]。定点软件参考返回的是预测反馈，尚不是已接入实时链路的麦克风残差。
-
-注释添加于2026-10-17，仅修改本地源码。两份Python的AST一致，三份RTL去掉注释和空白后文本一致，结果与前后SHA256见 [检查记录](../../report/verification/core-comment-check-2026-10-17.json)。本轮未重新综合、未上传或运行板卡。
-
-新增注释改变了文件SHA256。`board/audio_calibrate/manifest.json`仍保留10月16日构建/上传版本的原始校验值，不覆盖历史证据；其中脚本和RTL哈希不再等于本地注释版。板上Notebook仍校验旧脚本，运行不受此次本地改动影响。以后部署注释版时应明确更新版本及校验清单，不能直接把当前源码哈希说成原构建哈希。
-
-最新实现继续读src/rtl/feedback_fir.v、src/rtl/audio_pl_residual.v及board/audio_residual/residual_tools.py，接口见docs/contracts/frozen/audio-residual-v1.md。
+接口以 [audio-replay-v3](../contracts/audio-replay-v3.md) 与 [契约索引](../contracts/README.md) 为入口。想研究特定诊断时再读 `audio_probe`、`audio_capture`、`audio_calibrate` 或 `audio_residual`，不要求重新运行它们。

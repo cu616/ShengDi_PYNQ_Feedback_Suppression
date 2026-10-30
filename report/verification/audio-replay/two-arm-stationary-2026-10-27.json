@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "topic": "two-arm comparison at -8 dB with a stationary source: the candidate suppresses the 300-360 Hz band",
+  "recorded_by": "A",
+  "date": "2026-10-27",
+  "question": "at the reproduced working point (-8 dB, zero vs the rewired candidate), does the candidate reduce the resonant band that limits the usable gain?",
+  "why_a_stationary_source": "the first two attempts used the phone recording and failed as a measurement: the 300-360 Hz share of the microphone capture swung between 0.008 and 0.713 (about 30 dB) purely with the phone content, and the two arms came out in opposite order in consecutive sessions. A stationary equal source removes that confound.",
+  "setup": {
+    "source": "board-generated white noise, fixed seed 4242, 2.0 s, -20 dBFS, identical for both arms, closed loop",
+    "gain_db": -8.0,
+    "hp_volume": 40,
+    "fixture_id": "room_v1_20261026b",
+    "model": "rewired_512_20261026.json (Q20 6118e85d)",
+    "arms": "zero_coeff True then False, back to back",
+    "geometry": "phone still at 5 cm, speaker 100 cm side-facing, listener position unchanged"
+  },
+  "results": [
+    {
+      "arm": "zero",
+      "mic_rms_dbfs": -20.0,
+      "mic_peak_dbfs": -11.4,
+      "full_scale": 0,
+      "band_300_360_db": 37.6,
+      "band_share": 0.2281
+    },
+    {
+      "arm": "candidate",
+      "mic_rms_dbfs": -23.3,
+      "mic_peak_dbfs": -8.4,
+      "full_scale": 0,
+      "band_300_360_db": 29.7,
+      "band_share": 0.0476
+    }
+  ],
+  "delta": {
+    "band_db": 7.9,
+    "band_share_db": 6.8
+  },
+  "verdict_against_B_preregistration": {
+    "B_support_threshold": "candidate at -8 dB lowers the 328 Hz lift by at least 4 dB",
+    "B_offline_bound": "+5.08 dB (same FFT grid, not a field guarantee)",
+    "measured": "6.8 dB by share, 7.9 dB absolute",
+    "conclusion": "SUPPORTS the candidate at this operating point"
+  },
+  "withdrawn": [
+    "an earlier claim that the candidate lowered the band by 12.0 dB: that comparison used the phone source and was confounded by content, so it is withdrawn even though it happened to point the same way",
+    "the blind listening comparison run with the phone source: the listener preferred the zero arm, but both were described as weak and the instrumental measure there was invalid, so it is not used as evidence either way"
+  ],
+  "caveats": [
+    "the two arms differ by 3.3 dB in overall microphone level, which is itself part of the loop difference; the share-based figure (6.8 dB) is the more conservative one",
+    "this is one pair of runs, not a repeated design",
+    "stationary noise is not the operating stimulus; it isolates the feedback path only"
+  ],
+  "not_claimed": [
+    "no claim that the listener hears an improvement on real content",
+    "no claim of a 5-8 dB usable-gain increase",
+    "no claim about sustained use with the candidate"
+  ]
+}

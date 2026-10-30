@@ -1,5 +1,7 @@
 # Muted audio PL bring-up artifact
 
+> **Historical bring-up artifact, retained for targeted diagnosis.** This is not a required v3 startup step. Use the [package index](../README.md) and [project state](../../docs/STATE.md) before selecting a board program; all original results below remain historical records.
+
 Vivado 2018.3 generated `audio_bringup.bit` and matching `audio_bringup.hwh` from `build/scripts/create_audio_bringup.tcl`. The `.bit` and `.hwh` are kept together by basename. With user authorization, `muted_smoke.py` was run once on the PYNQ-Z2 on 2026-10-15. It reported mute readback, a frame count increase from 2202 to 14427 over 0.25 s, and `STOCK_BASE_RESTORED`. The board Notebook is `base/audio/audio_bringup_muted_smoke_2026-10-15.ipynb`; local screenshot is `report/verification/audio_bringup/muted_smoke_board.png`.
 
 The test loads the new overlay with control=0, checks GPIO and frame count, then restores stock `base.bit`. It does not make sound or prove audio quality. Codec configuration may affect whether the frame count advances. If `Overlay()` or subsequent calls fail, the `finally` block attempts to restore base; a power cycle and known good Notebook are the recovery path if that fails.

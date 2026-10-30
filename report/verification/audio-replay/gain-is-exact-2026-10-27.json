@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "topic": "the applied digital gain is exact, so the historical 'clear amplification' cannot be explained by a gain error",
+  "recorded_by": "A",
+  "method": "offline comparison of the captured reference (DAC output) against the captured microphone signal, over eight stored runs",
+  "measurement": [
+    {
+      "runs": "historical claimed-clear captures",
+      "gain_q12": 1631,
+      "requested_db": -8,
+      "measured_ref_minus_mic_db": -8.0,
+      "mic_rms_dbfs": [
+        -27.9,
+        -24.3
+      ]
+    },
+    {
+      "runs": "later runs at the same setting",
+      "gain_q12": 1631,
+      "measured_db": -8.0,
+      "mic_rms_dbfs": [
+        -4.0,
+        -37.1
+      ]
+    },
+    {
+      "runs": "today reproduction",
+      "gain_q12": 1631,
+      "measured_db": -8.0,
+      "mic_rms_dbfs": -17.7
+    },
+    {
+      "runs": "control points",
+      "gain_q12": [
+        2053,
+        4096
+      ],
+      "measured_db": [
+        -6.0,
+        0.0
+      ]
+    }
+  ],
+  "finding": {
+    "gain_path_is_exact": "in every run the DAC output sits exactly the requested number of dB below the microphone signal (measured -8.0, -6.0, 0.0)",
+    "physical_consequence": "at -8 dB the system is an ATTENUATOR: the speaker reproduces the microphone signal 8 dB quieter. It cannot make anything louder than the microphone signal.",
+    "therefore": "the listener's 2026-10-26 report of 'clear amplification' versus today's 'smaller' cannot come from the gain setting. The only remaining explanation is the acoustic geometry: how far the listener's ear is from the phone compared with how far it is from the speaker."
+  },
+  "ratio_that_decides_it": "amplified_path_at_listener = phone_to_mic_path x (-8 dB) x speaker_to_listener ; direct_path_at_listener = phone_to_listener. Amplification is heard only when the amplified path exceeds the direct one, which at -8 dB requires the listener to be much farther from the phone than from the speaker.",
+  "consequence_for_the_plan": "a reproduction must record the listener position relative to BOTH the phone and the speaker; changing only the talker distance cannot reproduce the old result",
+  "not_claimed": [
+    "no new listening judgement",
+    "does not say the historical report was wrong - only that its cause is geometry, not gain"
+  ]
+}
