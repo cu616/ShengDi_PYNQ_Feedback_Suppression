@@ -13,6 +13,7 @@
 | 需要队友配合、怎样人工转发 | [WORKFLOW 第 8 节](WORKFLOW.md#8-人工转发与批次交接) | 不维护 REQUESTS.md 或另一张待办表 |
 | 按我这条线开工 | [lines/a-field.md](lines/a-field.md) · [b](lines/b-algorithm.md) · [c](lines/c-measurement.md) | — |
 | 选择上板版本、找旧驱动或回退材料 | [board 索引](../board/README.md) → [replay 版本说明](../board/audio_replay/README.md) | 不整目录上传混有旧位流的源码目录 |
+| 准备提交材料、视频、HTML教程与三线集成 | [materials 入口](../materials/README.md) | 不把根目录旧 main 或临时压缩包当最终交付 |
 | 查某个接口 / 寄存器 / 系数格式 | [contracts/README.md](contracts/README.md) | frozen/ 下的诊断接口 |
 | 改代码前先懂结构 | [ref/workspace-architecture.md](ref/workspace-architecture.md)、[ref/code-reading-guide.md](ref/code-reading-guide.md) | — |
 | 查某次实验到底做过什么 | [log/experiments/](log/experiments/) | — |

@@ -1,0 +1,20 @@
+收件人：C。队长新一轮任务，2026-10-30；你负责提交候选集成、技术报告总编及可复用Skill，暂停继续扩建测评平台。
+
+先 git fetch origin，从A分支取得 materials/planning/submission-plan.md、video-plan.md，读最新STATE。此次核对输入 A=2c7b955、B=86061a7、C=330e135；规划提交在它们之后。用户在办理授权书/GitHub说明，不重复办。源码不是只交bit：本地AMD指南3.3.5要求源码、验证、资源与实现报告、上板结果、构建脚本、Skill和AI纠错记录。指南PDF第23–25页，决赛英文海报要求在第28页。
+
+先独立完成这些：
+1. 接收 A 已交的 report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json，核对既有源身份/窗口/有效口径，一次给出可用于视频和报告的数字与限制。不要让A重复运行相同脚本或重采。给资料引用表：结论→配置→证据→允许写法；普通扩声、固定频率抵消、零系数持续运行分开。
+2. 你是总报告唯一编辑者，准备 materials/work/c/technical-report.md 和排版源，按官方模板生成 final/shengdi-report.pdf。A/B分别给hardware.md和algorithm.md片段；缺片段时先用既有证据推进骨架。模板暂未取得就按指南完整章节写正文并标待套模板，不杜撰官方页数限制。保留优化前后对比、真实失败纠正、AI协作与复现说明；维持2018.3并说明版本，既有约束通过不写完整外部I/O时序签核。
+3. 把已有 skill/README.md 与检查脚本整理成最小可复用技能包：身份绑定/错误版本拒绝、黄金参考/窗口与幅度口径两项即可。每项给适用条件、命令、正常/失败例、已验证范围、失效边界及来源，不另造通用框架、不声称未验证的跨板通用性。
+
+代码集成按下面做：
+- main=479a570仍不是最新三线集成版。main+A/main+B只在STATE冲突；main+C还冲突.gitattributes、closed_tools.py、replay_trial.py、旧REQUESTS、STATE、512报告及README、audio_pl_replay.v。A+C另有replay_tools.py和replay README冲突。队长已经预演，不必用强推/全选ours或theirs“解决”。
+- A交 materials/work/a/integration.json，B交 materials/work/b/integration.json；你现在先按实际源码整理 materials/work/c/integration.json。以A已验证v3为运行底座，在独立候选目录组装B算法/模型和C现行工具，列每个文件的源提交、哈希、依赖与测试。目录候选不等于Git历史已合并。
+- 不能让C分支携带的旧驱动/RTL覆盖A；候选中不混用旧v2 helper、v3 driver或不同模型。遇到内容冲突，列具体片段、双方作用、建议和定向验证，一次给队长确认。只推进无冲突且本线有权处理的部分。
+- 最终main由队长合并，你只推C本线成果和交集成建议；不得改远端可见性、origin、历史或删除他人文件。不要让根目录未提交工作被git clean/reset覆盖。
+- 发布清理先做白名单导出：保留全部必要源码/依赖/构建/验证/模型；排除重复交接ZIP、缓存、worktree、私人录音、授权书和凭据。老版本仍在开发仓库保留，提交包选入与否给理由，不做破坏性仓库大搬家。保留第三方来源与许可，仓库开源决定由用户办理。
+- 解压到干净目录检查必要导入、路径、黄金参考和载荷10项哈希。新组合只跑相关测试，硬件未改不要求A重跑已过检查。形成真正RAR≤200MB；没有RAR工具就明确阻塞并交已检验目录，不能把ZIP改后缀假装RAR。
+
+目录：所有可编辑成果在本设备仓库materials；raw/private/staging/final默认不进Git，最终文件交队长电脑同名收件目录。A负责视频首剪，你审核测量字幕和最终格式，不抢改视频时间线。海报页面选交；进入决赛需AMD模板的一页英文PPT、A4彩打，放在必交材料之后。
+
+10/30给集成白名单/报告骨架与现有回包结论；10/31给候选目录、报告初稿和Skill；11/1干净目录检查与匿名/格式审核；11/2交报告、RAR、核验清单（内部时限）。不要等A拍摄完才开始。收工按规范更新本线STATE/日志、check_docs、显式文件提交推C，回包给提交号、实际文件、通过/未执行检查、需队长决定的一次性冲突列表。仍由人转发，禁止恢复REQUESTS作为派活渠道。
