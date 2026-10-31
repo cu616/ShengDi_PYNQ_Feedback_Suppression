@@ -174,7 +174,13 @@ for p in sorted(PKT.glob('recal_*.npz')):
 (PKT / 'manifest.json').write_text(json.dumps(
     {'schema_version': 1, 'fixture_id': FIXTURE, 'files': files}, ensure_ascii=False, indent=2),
     encoding='utf-8')
-print('[2] package  %s (%d files, gain_q12=0 open loop)' % (PKT.name, len(files)))
+_probe = np.load(str(sorted(PKT.glob('recal_*.npz'))[0]))
+_r = np.asarray(_probe['reference'], float)
+_m = np.asarray(_probe['microphone'], float)
+ref_rms_dbfs = float(20 * np.log10(max(np.sqrt(np.mean(_r ** 2)), 1e-12)))
+mic_rms_dbfs = float(20 * np.log10(max(np.sqrt(np.mean(_m ** 2)), 1e-12)))
+print('[2] package  %s (%d files, gain_q12=0 open loop)  ref=%.2f dBFS mic=%.2f dBFS  mic/ref=%+.2f dB'
+      % (PKT.name, len(files), ref_rms_dbfs, mic_rms_dbfs, mic_rms_dbfs - ref_rms_dbfs))
 
 # ---- [3] fit ---------------------------------------------------------------------------------
 cand = D / ('model_candidate_%s.json' % STAMP)
@@ -207,13 +213,18 @@ base_c = np.asarray(base_model.get('coefficients_q20') or base_model.get('coeffi
 new_c = np.asarray(new.get('coefficients_q20') or new.get('coefficients'), float) / float(1 << 20)
 ratio_peak = float(np.max(np.abs(new_c))) / max(float(np.max(np.abs(base_c))), 1e-12)
 ratio_l1 = float(np.sum(np.abs(new_c))) / max(float(np.sum(np.abs(base_c))), 1e-12)
-print('[4] scale    max|h| x%.1f  L1 x%.1f  (deployed max|h|=%.4f L1=%.2f)'
-      % (ratio_peak, ratio_l1, float(np.max(np.abs(base_c))), float(np.sum(np.abs(base_c)))))
-if ratio_peak > 10.0 or ratio_l1 > 10.0:
+l1_new = float(np.sum(np.abs(new_c)))
+print('[4] scale    max|h|(linear)=%.4f  L1=%.2f  (deployed %.4f / %.2f)'
+      % (float(np.max(np.abs(new_c))), l1_new, float(np.max(np.abs(base_c))),
+         float(np.sum(np.abs(base_c)))))
+# B's rule: reject, never rescale. Deployed L1 is 2.29 and the 10-26 new layout is 2.15, so 4.0 leaves
+# a factor of two of headroom without letting a pathological fit through.
+if l1_new > 4.0:
     rejected = cand.with_suffix('.rejected.json')
     cand.rename(rejected)
-    print('RECAL_FAIL scale: refit is %.0fx peak / %.0fx L1 the deployed model; refusing to install it. '
-          'The FIR prediction would overflow and the guard would stop the run.' % (ratio_peak, ratio_l1))
+    print('RECAL_FAIL scale: refit L1=%.2f exceeds the 4.0 rejection threshold (deployed %.2f); '
+          'refusing to install it. This is a rejection, not a rescale: scaling L1 down to 1 would '
+          'shrink the 322 Hz gain by 82x and fake a PASS.' % (l1_new, float(np.sum(np.abs(base_c)))))
     sys.exit(1)
 
 
@@ -253,7 +264,9 @@ else:
 # ---- [6] verdict ------------------------------------------------------------------------------
 receipt = PKT / 'recalibration_receipt.json'
 receipt.write_text(json.dumps({
-    'stamp': STAMP, 'excitation': 'multitone_1third_octave_200-8000_plus_322', 'fixture_id': FIXTURE, 'excitation_dbfs': level,
+    'stamp': STAMP, 'excitation': 'multitone_1third_octave_200-8000_plus_322', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
+    'ref_rms_dbfs': ref_rms_dbfs, 'mic_rms_dbfs': mic_rms_dbfs,
+    'mic_over_ref_db': mic_rms_dbfs - ref_rms_dbfs,
     'segments': len(files), 'candidate': cand.name, 'candidate_sha256': cand_sha,
     'fit_returncode': fit.returncode, 'taps': new.get('taps'), 'lag_first': new.get('lag_first'),
     'q20_sha256': (metrics.get('model_file') or {}).get('q20_sha256') or new.get('q20_sha256'),

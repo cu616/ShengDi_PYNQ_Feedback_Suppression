@@ -1,0 +1,35 @@
+{
+  "what": "the three numbers B asked for, measured directly from the captures, no fitter involved",
+  "run": "recal_pkt_20250511-110729, 6 open-loop segments, excitation commanded at -19.3 dBFS",
+  "numbers": {
+    "ref_rms_dbfs": -30.73,
+    "mic_rms_dbfs": -34.38,
+    "mic_over_ref_db": -3.64,
+    "H322_direct_db_mean": -22.26,
+    "H322_direct_spread_db": 5.05,
+    "per_segment_H322_db": [
+      -20.0,
+      -21.01,
+      -21.84,
+      -25.04,
+      -22.81,
+      -22.84
+    ],
+    "first_frame_all_segments": 7
+  },
+  "comparison": {
+    "fitted_model_H322_db": -2.8,
+    "deployed_model_H322_db": 1.24,
+    "fitted_max_abs_h_linear": 1.3297,
+    "deployed_max_abs_h_linear": 0.0457,
+    "fitted_L1_linear": 187.96,
+    "deployed_L1_linear": 2.29,
+    "L1_over_max": {
+      "fitted": 141.4,
+      "deployed": 50.1
+    }
+  },
+  "verdict_on_B_tree": "NEITHER branch holds. |H322| is -22.26 dB, not +4..+10 dB and not +45 dB, and mic/ref is -3.64 dB, i.e. the microphone is QUIETER than the played signal. So the data does not carry a 29 dB larger mic/ref, and the fit does not claim +45 dB at 322 Hz either (it claims -2.80 dB, which is 19.5 dB too high).",
+  "defect_i_found_in_my_own_excitation": "my multitone generator normalises by PEAK, so a signal with a crest factor of about 11 dB ends up with an RMS 11.4 dB below the level I ask for: -19.3 dBFS peak = -30.7 dBFS RMS. B's calibration batch level is a reference RMS, so my excitation was effectively 11 dB too weak, which is exactly the kind of weak per-bin SNR that produces a flat, oversized fit (L1/max 141 against 50).",
+  "consequence": "the fit is ill-conditioned rather than mis-scaled: it overestimates |H(322)| by 19.5 dB and spreads energy over too many taps. Fix the excitation normalisation first (RMS, not peak), then refit; do not add any scaling step."
+}
