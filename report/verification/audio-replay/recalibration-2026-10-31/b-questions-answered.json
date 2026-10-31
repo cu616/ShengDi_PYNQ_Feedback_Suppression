@@ -1,0 +1,61 @@
+{
+  "asked_by": "B, 2026-10-31: report (a) gain_q12 per arm, (b) open-loop |H| and coherence at 322 Hz",
+  "a_gain_q12": {
+    "open": 0,
+    "bypass": 1631,
+    "cancel": 1631,
+    "note": "1631/4096 = -8.00 dB exactly. The open arm is direct_only, so its gain is forced to 0 by the driver; that is expected, not a label error. B's alternative explanation (a gain label of ~1838) does NOT hold."
+  },
+  "b_open_loop_H_at_322": {
+    "per_segment": [
+      {
+        "seg": 0,
+        "H_db": -7.2,
+        "phase_deg": 105.08,
+        "coherence": 0.289
+      },
+      {
+        "seg": 1,
+        "H_db": -2.95,
+        "phase_deg": 37.57,
+        "coherence": 0.18
+      },
+      {
+        "seg": 2,
+        "H_db": 2.06,
+        "phase_deg": 11.92,
+        "coherence": 0.592
+      },
+      {
+        "seg": 3,
+        "H_db": 2.23,
+        "phase_deg": -12.13,
+        "coherence": 0.041
+      },
+      {
+        "seg": 4,
+        "H_db": -6.25,
+        "phase_deg": -19.72,
+        "coherence": 0.307
+      },
+      {
+        "seg": 5,
+        "H_db": -0.96,
+        "phase_deg": 64.54,
+        "coherence": 0.329
+      }
+    ],
+    "mean_H_db": -2.18,
+    "spread_H_db": 9.43,
+    "mean_phase_deg": 31.21,
+    "spread_phase_deg": 124.79,
+    "mean_coherence": 0.29
+  },
+  "reading": [
+    "The gain label is right (1631 = -8 dB), so B's first branch does not apply.",
+    "The open-loop data at 322 Hz is incoherent: coherence 0.29 mean (0.04 to 0.59 per segment), magnitude spread 9.4 dB, phase spread 125 degrees. Six segments that should describe the same H do not.",
+    "That is the real reason the three numbers cannot be reconciled: the refit had no usable information at 322 Hz to fit, so its prediction is arbitrary there, and the three-point then measured a loop whose canceller is arbitrary.",
+    "The likely cause is the excitation level: the calibration batch used -19.3 dBFS (mic about -29.2) and this run used -8 dBFS, 11 dB hotter, which is inside the amplifier/speaker non-linear region. That also explains the multitone run producing coefficients 48x too large.",
+    "B's other point is correct and free to fix: running 21973 frames and capturing only the last 16384 wasted 5589 source frames. Running exactly 16384 frames with the source just below it keeps all 16384 frames source-active."
+  ]
+}

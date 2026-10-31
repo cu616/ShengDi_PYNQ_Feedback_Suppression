@@ -48,7 +48,9 @@ PKT = D / ('recal_pkt_' + STAMP)
 PKT.mkdir(parents=True, exist_ok=False)
 BASE_MODEL = D / 'rewired_512_20261026.json'
 
-cfg = {'level_db': -8.0, 'segments': 6, 'seconds': 0.45, 'gain_db': 0.0}
+# Defaults follow B's calibration batch: source -19.3 dBFS (mic about -29.2), and a run of
+# exactly one capture window so all 16384 frames stay source-active.
+cfg = {'level_db': -19.3, 'segments': 6, 'seconds': 16384.0 / 48828.125, 'gain_db': 0.0}
 cf = Path('/home/xilinx/recal.txt')
 if cf.is_file():
     for line in cf.read_text().splitlines():
@@ -90,7 +92,8 @@ def capture(idx, level_db):
     # The driver requires frame_limit >= source_length + 2, so the excitation must be SHORTER than
     # the run. The capture keeps the last 16384 frames, which therefore start inside the source and
     # may end after it; the fitter trims that tail itself via source_frames_in_window.
-    src = excitation(level_db, int(round(cfg['seconds'] * RATE)) - 3000)
+    # source must stay strictly below the run length (driver rule frame_limit >= source + 2)
+    src = excitation(level_db, int(round(cfg['seconds'] * RATE)) - 2)
     out = PKT / ('raw_%02d.npz' % idx)
     out.unlink(missing_ok=True)
     out.with_suffix('.status.json').unlink(missing_ok=True)
@@ -184,6 +187,13 @@ if fit.returncode != 0 or not cand.is_file():
     print('RECAL_FAIL fit: %s' % (lines[-3:] if lines else 'no output'))
     sys.exit(1)
 new = json.loads(cand.read_text(encoding='utf-8'))
+metrics = {}
+mt = PKT / 'fit' / 'metrics.json'
+if mt.is_file():
+    try:
+        metrics = json.loads(mt.read_text(encoding='utf-8'))
+    except Exception:
+        metrics = {}
 cand_sha = hashlib.sha256(cand.read_bytes()).hexdigest()
 print('             taps=%s lag_first=%s q20_sha=%s'
       % (new.get('taps'), new.get('lag_first'), str(new.get('q20_sha256'))[:12]))
@@ -228,7 +238,10 @@ receipt.write_text(json.dumps({
     'stamp': STAMP, 'excitation': 'multitone_1third_octave_200-8000_plus_322', 'fixture_id': FIXTURE, 'excitation_dbfs': level,
     'segments': len(files), 'candidate': cand.name, 'candidate_sha256': cand_sha,
     'fit_returncode': fit.returncode, 'taps': new.get('taps'), 'lag_first': new.get('lag_first'),
-    'q20_sha256': new.get('q20_sha256'), 'arms': arms, 'three_point': tp,
+    'q20_sha256': (metrics.get('model_file') or {}).get('q20_sha256') or new.get('q20_sha256'),
+    'fractional_spread': (metrics.get('alignment') or {}).get('fractional_spread'),
+    'integer_lags': (metrics.get('alignment') or {}).get('integer_lags'),
+    'arms': arms, 'three_point': tp,
     'verdict': 'PASS' if holds else 'FAIL',
 }, ensure_ascii=False, indent=2), encoding='utf-8')
 
