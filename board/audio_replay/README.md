@@ -8,7 +8,8 @@
 该目录保存 bit/hwh、配套驱动与检查器；模型另按 manifest 的 `model` 身份取得，**v3 目录本身不包含全部场景数据和现场入口**。
 
 A 记录的板卡部署目录为 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide/`。
-不要将 `board/audio_replay/` 整目录上传：顶层 `audio_replay.bit/.hwh`、顶层 `manifest.json` 是历史版本，顶层维护脚本又已更新，混装会造成版本错误。
+不要将 `board/audio_replay/` 整目录上传：**`archive/` 里的 `audio_replay.bit/.hwh` 与 `manifest.json` 是历史版本**，
+顶层维护脚本又已更新，混装会造成版本错误。
 
 ## 文件分类
 
@@ -18,7 +19,7 @@ A 记录的板卡部署目录为 `/home/xilinx/jupyter_notebooks/base/audio/audi
 | 顶层 `replay_trial.py`、`replay_tools.py`、`tone_round_guard.py` 及相应测试 | 维护源码 | 对应发布时按 v3 哈希核验；不与顶层旧 bit/hwh 组合运行 |
 | [v2/](v2/) | 历史回退材料 | 只有 bit/hwh 和实现报告；配套驱动需取已记录版本，不能借用 v3 驱动 |
 | [rollback-v1/](rollback-v1/) | v1 回退快照 | 保留原 manifest 和文件，按快照恢复；恢复前核对其他导入依赖，不能当 v3 启动步骤 |
-| 顶层 `audio_replay.bit/.hwh`、`manifest.json` | 早期构建原件 | 保留审计；顶层历史 manifest 不描述后来更新的维护源码，不修改旧哈希凑通过 |
+| [archive/](archive/) 内的 `audio_replay.bit/.hwh`、`manifest.json` | 早期构建原件（已移入归档） | 保留审计；归档里的旧 manifest 不描述后来更新的维护源码，不修改旧哈希凑通过 |
 | `click_panel.py`、`click-panel.html`、`start-panel.sh`、`replay_trial.ipynb`、`replay_session.py`、`sweep_plan.py`、`sweep_session.py` | 历史交互 / 扫档入口 | 早期盒内实验使用，未经现行整包集成不得直接作为演示入口 |
 | `live_pa.py`、`live_pa.ipynb`、`live_run.py`、`run_rc4_human*.sh`、`run_human_r1.sh` | 历史使用 / 验收入口 | 保留流程与故障复现价值；旧时长、路径和模型不能当成新配置 |
 | [field_ac_segments_v3.sh](field_ac_segments_v3.sh) | v3 已有分段现场入口 | 读取板上 `ac_mode.txt` 的 tone/speech，使用真实现场确认令牌；实际参数和版本先核对 STATE，不自动运行 |

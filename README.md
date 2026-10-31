@@ -26,15 +26,31 @@ ShengDi_PYNQ_Feedback_Suppression 是基于 PYNQ-Z2 的声反馈抑制项目：
 src/         RTL、Python 算法源码及厂商依赖
 sim/         仿真与软件测试
 build/       Vivado 工程重建脚本
-board/       上板 overlay、驱动与现场操作单
+board/       上板 overlay、驱动与现场操作单（board/audio_replay/ 内按"当前/已作废/archive/"分层）
 docs/        文档：现状、契约、时间线、参考（唯一入口 docs/INDEX.md）
+materials/   参赛材料：教程、报告片段、视频与提交清单（materials/README.md）
+models/      候选与基线模型 + registry（身份以 manifest 哈希为准）
+tools/       交付冻结与交付核查脚本（tools/delivery-freeze.json）
 skill/       可复用的开发与排查经验
 report/      证据：验证报告与 AI 协作原始记录
 references/  厂商手册、原理图与赛事资料
-scripts/     仓库辅助脚本（含文档守门 scripts/check_docs.py）
+scripts/     仓库辅助脚本（含文档守门与综合软件测试）
 data/        后续测试数据（当前为空，原始录音不入库）
 tmp/         本地临时文件，不纳入 Git
 ```
+
+### 交付件在哪（按提交要求对号）
+
+| 提交项 | 位置 |
+|---|---|
+| 视频 | `materials/final/shengdi-demo.mp4`（脚本与字幕：`materials/work/a/script.md`） |
+| 技术报告 | `materials/work/c/technical-report.md`（硬件片段 `materials/work/a/hardware.md`、算法片段 `materials/work/b/algorithm.md`） |
+| 源码包 | 本仓库（构建入口 `build/scripts/create_audio_replay.tcl`） |
+| 可复现/验证入口 | `python -X utf8 scripts/software_sweep.py`（12 项）、`python -m unittest discover -s sim/feedback` |
+| 离线教程 | `materials/learning/index.html`（双击打开，无需联网） |
+| 技能包 | `skill/audio-evidence/SKILL.md` |
+| 板卡部署载荷 | `board/audio_replay/v3/`（先核 `v3/manifest.json`，不混装 `archive/` 里的旧件） |
+
 
 `docs/` 内部分层（按变化速度，不按日期）：
 
