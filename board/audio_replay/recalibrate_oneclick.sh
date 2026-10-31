@@ -50,7 +50,8 @@ BASE_MODEL = D / 'rewired_512_20261026.json'
 
 # Defaults follow B's calibration batch: source -19.3 dBFS (mic about -29.2), and a run of
 # exactly one capture window so all 16384 frames stay source-active.
-cfg = {'level_db': -19.3, 'segments': 6, 'seconds': 0.3357, 'gain_db': 0.0}
+cfg = {'level_db': -19.3, 'segments': 6, 'seconds': 0.3357, 'gain_db': 0.0,
+       'max_floor_dbfs': -55.0}
 cf = Path('/home/xilinx/recal.txt')
 if cf.is_file():
     for line in cf.read_text().splitlines():
@@ -106,6 +107,35 @@ def capture(idx, level_db):
         return None
     return json.loads(str(np.load(str(out))['metadata_json']))
 
+
+# ---- [0] room noise floor: measured, never assumed ---------------------------------------------
+# A silent capture with the source muted. The excitation has to beat this floor by a wide margin or
+# the least-squares fit is being fed mostly noise, which shows up as a flat oversized impulse
+# response rather than as an error. Measured on 2026-10-31: floor -38.0 dBFS against a mic level of
+# -32.4 dBFS, i.e. only 5.6 dB of excitation-to-noise, and the fit blew up exactly as that predicts.
+# Nobody has to be quiet on cue: this runs before any excitation and simply refuses to continue.
+_floor_path = D / 'noise_floor_probe.npz'
+_floor_path.unlink(missing_ok=True)
+try:
+    replay_trial(str(_floor_path), FIXTURE, str(BASE_MODEL), np.zeros(16000, dtype=np.int16),
+                 bypass=False, zero_coeff=True, gain_db=0.0, seconds=0.40, hp_volume=40,
+                 speaker_confirmed=True, local_capture_confirmed=True, direct_only=True)
+    _mic = np.asarray(np.load(str(_floor_path))['microphone'], float)
+    noise_floor_dbfs = float(20 * np.log10(max(np.sqrt(np.mean(_mic ** 2)), 1e-12)))
+except Exception as _exc:
+    noise_floor_dbfs = None
+    print('[0] noise    could not measure the floor: %r' % (_exc,))
+
+if noise_floor_dbfs is not None:
+    print('[0] noise    room floor %.2f dBFS (need <= %.1f for a usable open-loop fit)'
+          % (noise_floor_dbfs, cfg['max_floor_dbfs']))
+    if noise_floor_dbfs > cfg['max_floor_dbfs']:
+        print('RECAL_FAIL noise: the room floor is %.1f dBFS, above the %.1f dBFS limit. The excitation '
+              'would be only about %.1f dB above it, and the fit would produce a flat oversized model. '
+              'Silence the room (AC, fans, people) and rerun. Nothing was captured or fitted.'
+              % (noise_floor_dbfs, cfg['max_floor_dbfs'],
+                 (level + 13.0) - noise_floor_dbfs))
+        sys.exit(1)
 
 # ---- [1] capture, automatic level retry instead of a gate ------------------------------------
 level = cfg['level_db']
@@ -264,6 +294,7 @@ receipt = PKT / 'recalibration_receipt.json'
 receipt.write_text(json.dumps({
     'stamp': STAMP, 'excitation': 'white_noise_rms_normalised', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
     'ref_rms_dbfs': ref_rms_dbfs, 'mic_rms_dbfs': mic_rms_dbfs,
+    'room_floor_dbfs': noise_floor_dbfs,
     'mic_over_ref_db': mic_rms_dbfs - ref_rms_dbfs,
     'segments': len(files), 'candidate': cand.name, 'candidate_sha256': cand_sha,
     'fit_returncode': fit.returncode, 'taps': new.get('taps'), 'lag_first': new.get('lag_first'),
