@@ -19,6 +19,7 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
 **最后动作**（2026-10-31）：主线集成已推 main（见 docs/log 顶部）；同日按用户要求重建了带**物理算法开关**的位流：RTL 新增 sw_bypass（SW0/M20，两级同步后与 control[1] 或）、capture_status[23] 记录开关状态，算法/定点/增益/调度与 v3 完全相同；新包 oard/audio_replay/v3-sw/（bit 30438cef…、hwh 4de00140…），时序 WNS +0.954 / WHS +0.023，仿真三项通过、包内 40 项软件测试通过。**该位流尚未上板**。
 **当前卡点**：main 已可交付；仍待现场的是真人素材与首剪（板卡当前不可达，`demo_take_v3.sh` 未在板上执行）；可听收益未定；B 段（g=−3）需授权。
 **本条补充**：全量测试里有一项仅因沙箱拒绝 `os.replace` 重命名而失败，不设限重跑为 379/379——这是环境限制，不是代码缺陷，测试与断言未改动。
+使用入口见 [使用说明](../docs/USAGE.md)（部署、物理开关、演示入口、看结果、故障处理）。
 
 - 发布载荷以 [v3/manifest.json](../board/audio_replay/v3/manifest.json) 的整组哈希为准，维护源码与历史顶层包不要整目录混传。板卡部署位置及回退位置见“板卡占用”。
 - 最新驱动已记录混搭拒绝、静默自检、输入满幅停声恢复与连续运行四项硬件检查，见 [工程证据](../report/verification/audio-replay/wide-residual-v3/evidence.json) 的 `driver_79c4d9f7_full_verification`。无改动不重跑。

@@ -9,6 +9,7 @@
 | 我要… | 读这个 | 不要读 |
 |---|---|---|
 | 知道现在是什么状态、什么已验证 | [STATE.md](STATE.md) | progress.md（那是历史） |
+| **把系统跑起来**（上板、演示、开关、看结果） | [USAGE.md](USAGE.md) | 各线历史日志 |
 | 知道 A/B/C 谁负责什么、边界在哪 | [lines/README.md](lines/README.md) | 旧 prompt 文件 |
 | 需要队友配合、怎样人工转发 | [WORKFLOW 第 8 节](WORKFLOW.md#8-人工转发与批次交接) | 不维护 REQUESTS.md 或另一张待办表 |
 | 按我这条线开工 | [lines/a-field.md](lines/a-field.md) · [b](lines/b-algorithm.md) · [c](lines/c-measurement.md) | — |

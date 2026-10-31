@@ -1,8 +1,30 @@
 # 声堤：实时声反馈啸叫抑制系统
 
+> **只想让它跑起来** → [使用说明 docs/USAGE.md](docs/USAGE.md)（三分钟上手 + 四个现场入口）
+> **只想看交付件** → [materials/](materials/README.md) + [board/audio_replay/v3-sw/](board/audio_replay/v3-sw/)
+> **想知道现在到哪一步** → [docs/STATE.md](docs/STATE.md)（唯一权威）
+
 ShengDi_PYNQ_Feedback_Suppression 是基于 PYNQ-Z2 的声反馈抑制项目：
 在 PL 侧用定点 FIR 抵消扬声器回到麦克风的反馈，目标是在真实硬件上提高稳定扩声音量，
 并测量延迟、音质与 FPGA 资源开销。首版面向桌面扩声，助听场景留作后续探索。
+
+## 三十秒内容地图
+
+| 分类 | 目录 | 里面是什么 |
+|---|---|---|
+| **交付件** | `materials/` | 视频脚本、报告片段、离线教程、提交清单 |
+| | `board/audio_replay/v3-sw/`、`v3/` | 上板载荷（位流+驱动+manifest，**二选一，不可混装**） |
+| | `skill/` | 可复用的排查与证据核验技能 |
+| **工程** | `src/`、`sim/` | RTL、算法源码、仿真与软件测试 |
+| | `build/` | Vivado 重建脚本与约束 |
+| | `board/` | 板端驱动、现场脚本、历史 overlay（分类见 [board/README.md](board/README.md)） |
+| | `models/`、`scripts/`、`tools/` | 模型与 registry、辅助脚本、交付核查 |
+| **过程与证据** | `docs/` | 现状、契约、时间线、参考（入口 [docs/INDEX.md](docs/INDEX.md)） |
+| | `report/` | 实测证据与 AI 协作原始记录（只追加，不改写） |
+| | `references/` | 厂商手册与赛事资料 |
+
+历史 overlay 的位流（8 个目录约 34 MB）**保留在原位是有意的**：它们被 56 篇证据与日志按路径引用，
+搬动等于改写历史记录。当前要用的只有 `v3/` 与 `v3-sw/`。
 
 ## 现在是什么状态
 
