@@ -80,8 +80,11 @@ def excitation(level_db, n):
     rms = float(np.sqrt(np.mean(x ** 2))) or 1.0
     x = x / rms * (10 ** (level_db / 20.0))
     peak = float(np.max(np.abs(x)))
-    if peak > 0.5:                          # keep 6 dB of headroom, never let the source clip
-        x *= 0.5 / peak
+    # 0.8 FS peak leaves ~2 dB of headroom while letting the RMS actually reach the target level.
+    # At 0.5 FS the white noise only reached about -18 dBFS RMS, which put the excitation-to-noise
+    # ratio right on the 6 dB gate and made PASS/FAIL a coin toss.
+    if peak > 0.8:
+        x *= 0.8 / peak
         print('EXCITATION_CLIPPED target %.1f dBFS RMS -> peak %.1f dBFS, scaled down'
               % (level_db, 20 * np.log10(peak)))
     return np.rint(x * 32767.0).astype(np.int16)
