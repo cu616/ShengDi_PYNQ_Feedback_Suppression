@@ -160,6 +160,38 @@ echo "operator here" > /home/xilinx/OPERATOR_READY
 
 ---
 
+## 6.5 一键重标定（换了摆位之后）
+
+**这一节回答的问题是**：麦克风与音响的距离/角度一变，旧的模型就失配了，怎么办？
+
+**重标定全程不需要人出声**，所以不存在"先安静、再开口"的配合问题：
+
+```bash
+# 板上需要一份拟合器源码：scripts/fit_newlayout_candidate.py 及其同目录依赖
+./prep_recalibrate.sh        # 写确认令牌与参数（level_db / segments / seconds / gain_db）
+./recalibrate_oneclick.sh    # 一条命令跑完，最后一行给 PASS 或 FAIL
+```
+
+六个阶段，每个阶段打一行，日志读起来像清单：
+
+| 阶段 | 做什么 | 失败了会怎样 |
+|---|---|---|
+| `[1] capture` | 6 段开环激励（旁路+零系数、数字增益 0） | 若削顶，**自动把激励降 6 dB 重试**，最多 3 次，不用人管 |
+| `[2] package` | 生成拟合器要的 manifest（逐文件 sha256、`gain_q12=0`） | 缺文件直接失败，不会拿错的包去拟合 |
+| `[3] fit` | 调用拟合器产出候选模型 | 拟合失败 → `RECAL_FAIL`，旧模型不动 |
+| `[4] install` | 先存成候选，**不切换** | — |
+| `[5] verify` | 用**候选模型**跑 322 Hz 三点，按 B 的规则判 | 任一臂停声或判据不过 → FAIL |
+| `[6] verdict` | PASS 才落成 `model_recalibrated.json`；FAIL 改名 `.rejected.json` 并保留 | 失败不会留下半装状态 |
+
+判据（与测量入口一致）：**声学差 ≥ 环路提升 − 1.5 dB，且过冲在 ±1.5 dB 内**。
+
+收据在 `recal_pkt_<时间戳>/recalibration_receipt.json`，含激励电平、六段文件哈希、候选模型哈希、
+三臂的 `stop`/`capture_status`、三个量与最终判定。
+
+**注意两点**：
+1. 重标定**只换模型**，不换位流、不改算法结构；换过模型之后要重新记录模型哈希（`identity` 会变）；
+2. 重标定能补偿的是**同一种布局内的声学变化**（距离/角度/房间），不能补偿"换到完全不同的房间"——那种情况需要重新采集并重新评估可用频段。
+
 ## 7. 不接板卡能验证什么
 
 ```bash

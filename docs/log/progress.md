@@ -1,3 +1,17 @@
+## 2026-10-31 一键重标定入口　A　六阶段编排完成（零人工出声、无门禁、失败不留半装态），待上板跑通
+
+- 需求：换摆位后能"一条命令重建模型"，且流程顺滑——不能因为门禁让人不知道该何时出声。
+- **设计前提**：重标定是**机器自测**流程，激励由板子自己播放，**全程不需要人说话**，所以门禁与
+  "听口令开口"这套配合在重标定里根本不存在；削顶不再靠门禁挡，而是**自动降 6 dB 重试**（最多 3 次）。
+- 新增 `board/audio_replay/recalibrate_oneclick.sh`：`[1]capture → [2]package → [3]fit → [4]install →
+  [5]verify → [6]verdict`，每阶段一行日志；`[5]` 用**候选模型**跑 322 Hz 三点并按 B 的判据判定；
+  `[6]` PASS 才落成 `model_recalibrated.json`，FAIL 改名 `.rejected.json` 并保留，旧模型不动。
+- 配套 `prep_recalibrate.sh`（写令牌与参数）与 `docs/USAGE.md` 第 6.5 节。
+- 依赖：板上需有拟合器源码（`scripts/fit_newlayout_candidate.py` + 同目录 `answer_new_layout_325`、
+  `diagnose_peak_margin`、`reproduce_b_screening`、`feedback.calibration`）；未就位时脚本会直接失败而不是猜。
+- **未上板**：编排已静态检查（Python 体可编译），六阶段端到端尚未真实跑过一次；下一步是一次约 5 分钟的
+  板上验证（6 段激励 + 拟合 + 三点）。
+
 ## 2026-10-31 v3-sw 上板验证　A　SW0/SW1 物理开关在实机成立，四项硬件检查全过
 
 - 位流重建后**已上板**：bit `2113a454…`、hwh `6d2a0198…`，时序 WNS +0.954 / WHS +0.023。
