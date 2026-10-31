@@ -22,7 +22,7 @@
 `timescale 1ns/1ps
 module tb_replay_wide;
 reg clk=0; always #5 clk=~clk;
-    reg sw_bypass=0;   // physical switch: 0 keeps the old behaviour
+    reg sw_bypass=0, sw_bypass_alt=0;   // physical switch: 0 keeps the old behaviour
 reg resetn=0, sdata_i=0;
 reg [31:0] control=0, capture_cmd=0, coefficient_cmd=0, frame_limit=8;
 reg [31:0] source_cmd=0, source_length=4;

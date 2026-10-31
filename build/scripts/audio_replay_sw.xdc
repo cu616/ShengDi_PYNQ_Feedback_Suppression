@@ -11,6 +11,8 @@ set_property -dict {PACKAGE_PIN M18 IOSTANDARD LVCMOS33} [get_ports {codec_addr[
 # External audio timing constraints remain to be derived from codec specification.
 # Do not waive unconstrained I/O warnings or claim timing sign-off from WNS alone.
 
-# PYNQ-Z2 SW0 (M20): physical algorithm switch, high = forced bypass (cancellation off).
-# Boards ship this pin with a pull-up; PULLUP true keeps the switch reading 1 when open.
-set_property -dict {PACKAGE_PIN M20 IOSTANDARD LVCMOS33 PULLUP true} [get_ports sw_bypass]
+# PYNQ-Z2 SW0 (M20) and SW1 (M19): physical algorithm switches; either one high forces bypass.
+# No internal pull is set: the board has its own switch resistors and the vendor base.xdc
+# leaves the pull alone, so PULLUP true can pin the input high and the switch appears dead.
+set_property -dict {PACKAGE_PIN M20 IOSTANDARD LVCMOS33} [get_ports sw_bypass]
+set_property -dict {PACKAGE_PIN M19 IOSTANDARD LVCMOS33} [get_ports sw_bypass_alt]

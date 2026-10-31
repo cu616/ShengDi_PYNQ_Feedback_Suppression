@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sat Oct 31 19:06:03 2026" VIVADOVERSION="2018.3">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sat Oct 31 19:32:35 2026" VIVADOVERSION="2018.3">
 
   <SYSTEMINFO ARCH="zynq" BOARD="tul.com.tw:pynq-z2:part0:1.0" DEVICE="7z020" NAME="system" PACKAGE="clg400" SPEEDGRADE="-1"/>
 
@@ -162,6 +162,11 @@
     <PORT DIR="I" NAME="sw_bypass" SIGIS="undef" SIGNAME="External_Ports_sw_bypass">
       <CONNECTIONS>
         <CONNECTION INSTANCE="audio_path" PORT="sw_bypass"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="I" NAME="sw_bypass_alt" SIGIS="undef" SIGNAME="External_Ports_sw_bypass_alt">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="audio_path" PORT="sw_bypass_alt"/>
       </CONNECTIONS>
     </PORT>
     <PORT CLKFREQUENCY="10000000" DIR="O" NAME="audio_clk_10MHz" SIGIS="clk" SIGNAME="audio_mclk_clk_out1">
@@ -2412,6 +2417,11 @@
         <PORT DIR="I" NAME="sw_bypass" SIGIS="undef" SIGNAME="External_Ports_sw_bypass">
           <CONNECTIONS>
             <CONNECTION INSTANCE="External_Ports" PORT="sw_bypass"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="sw_bypass_alt" SIGIS="undef" SIGNAME="External_Ports_sw_bypass_alt">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="sw_bypass_alt"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>

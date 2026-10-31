@@ -43,8 +43,8 @@ INPUT_CLIP_BIT = 22
 # different versions may both run, but their semantics differ (v2 stops on a pre-gain residual
 # overflow and has no bit22), so evidence from a mixed pair would mean nothing. Refuse BEFORE
 # arming: no overlay download, no sound.
-EXPECTED_BIT_SHA256 = "30438cefc6e48cb18d1bacc9df3b1c3e23525a609cd9949a8488ffb850c59b63"
-EXPECTED_HWH_SHA256 = "4de0014073a4d255fa754f09109317bcfc5b2a1f00c1ebd7e7717c2ea5093131"
+EXPECTED_BIT_SHA256 = "2113a4549adbc3a2250312e8d4b5508f7acec8df413a8f0c56802d72aa607e43"
+EXPECTED_HWH_SHA256 = "6d2a01982848e266d5474a88891257e6690ebd825a32e5543afd80c75e0c055f"
 
 
 def _file_sha256(path):

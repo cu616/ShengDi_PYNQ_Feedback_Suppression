@@ -55,7 +55,7 @@ foreach {name width out_pin in_pin} {
     connect_bd_net [get_bd_pins $name/gpio_io_o] [get_bd_pins audio_path/$out_pin]
     connect_bd_net [get_bd_pins audio_path/$in_pin] [get_bd_pins $name/gpio2_io_i]
 }
-foreach p {sdata_i sdata_o bclk lrclk sw_bypass} {
+foreach p {sdata_i sdata_o bclk lrclk sw_bypass sw_bypass_alt} {
     make_bd_pins_external [get_bd_pins audio_path/$p]
     set_property name $p [get_bd_ports ${p}_0]
 }

@@ -471,6 +471,32 @@
       "difference_from_my_full_window_numbers": "my analyzer used the whole 16384-frame capture (6619 source-active + 9765 source-free); restricting to the source-active frames moves the numbers by up to 0.54 dB (loop boost 4.24 -> 3.70). C values are the precise ones and are adopted.",
       "verdict_under_B_rule": "cancellation_holds: 4.95 >= 3.70 - 1.5 and |1.25| <= 1.5",
       "board_state": "PCM left on the board as instructed; only the JSON was copied"
+    },
+    "v3_sw_physical_switch_2026_10_31": {
+      "why": "the demo needs a physical control for the algorithm; this is a new bitstream, so it carries its own identity and its own hardware verification",
+      "payload": {
+        "bit": "2113a4549adbc3a2250312e8d4b5508f7acec8df413a8f0c56802d72aa607e43",
+        "hwh": "6d2a01982848e266d5474a88891257e6690ebd825a32e5543afd80c75e0c055f"
+      },
+      "rtl_delta": "input sw_bypass (M20) and sw_bypass_alt (M19), two-flop synchronisers each, bypass_effective = control[1] | SW0 | SW1; capture_status[25]=SW0 raw, [24]=SW0, [23]=SW1",
+      "built_with": "Vivado 2018.3, build/scripts/create_audio_replay_sw.tcl, audio_replay_sw.xdc",
+      "timing": {
+        "WNS_ns": 0.954,
+        "WHS_ns": 0.023,
+        "endpoints": 18131,
+        "note": "all applied constraints met; the four external I/O delay constraints are still missing, so this is not a full board-level timing sign-off"
+      },
+      "hardware_checks": {
+        "package_identity": "10/10 hashes match",
+        "mixed_pair": "refused before any overlay download",
+        "silent_bringup_SW0_up": "completed, bit22=0, bit_exact, capture_status=0x03008001 (bit25=1, bit24=1)",
+        "silent_bringup_SW0_down": "completed, bit22=0, bit_exact, capture_status=0x00008001 (bit25=0, bit24=0)",
+        "sixty_second": "2929687/2929687 frames, bit22=0, all four counters 0, bit_exact",
+        "input_full_scale_stop": "clap -> stop_reason=input_clip, bit22=1, recovery_ok, cleanup_errors=[]",
+        "live_switch_read": "40 s register poll showed clean transitions 0->1->0->1->0->1->0 at the operator's 5 s cadence, raw and synchronised bits in lockstep"
+      },
+      "defect_found_and_fixed": "the first constraint set PULLUP true on SW0, which held the input high and made the switch look dead; the vendor base.xdc applies no internal pull. A second defect in my own check script reused a fixed capture name, so a failed run could be read as fresh evidence; both the capture and its sidecar are now deleted before each run.",
+      "not_claimed": "the audible benefit is still undetermined; this verifies the control path, not a performance improvement"
     }
   },
   "corrections": {

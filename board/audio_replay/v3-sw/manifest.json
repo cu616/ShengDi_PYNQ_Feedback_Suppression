@@ -9,17 +9,24 @@
     "board_part": "tul.com.tw:pynq-z2:part0:1.0"
   },
   "switch": {
-    "pin": "M20",
-    "name": "SW0",
-    "polarity": "up = 1 = forced bypass (cancellation off)",
-    "effective_bypass": "control[1] | sw_synchronised",
-    "status_bit": 23,
-    "not_in_fault_path": true
+    "pins": {
+      "SW0": "M20",
+      "SW1": "M19"
+    },
+    "polarity": "switch high = forced bypass (cancellation off)",
+    "effective_bypass": "control[1] | SW0_synchronised | SW1_synchronised",
+    "status_bits": {
+      "25": "SW0 raw pin (diagnostic)",
+      "24": "SW0 synchronised",
+      "23": "SW1 synchronised"
+    },
+    "not_in_fault_path": true,
+    "constraint_note": "no internal pull is applied; PULLUP true pinned the input high and made the switch appear dead (found and fixed on hardware)"
   },
   "hashes": {
-    "audio_replay.bit": "30438cefc6e48cb18d1bacc9df3b1c3e23525a609cd9949a8488ffb850c59b63",
-    "audio_replay.hwh": "4de0014073a4d255fa754f09109317bcfc5b2a1f00c1ebd7e7717c2ea5093131",
-    "replay_trial.py": "aecb487fb8fa7e159328569c5d26f2d1db4fb2089ab29965cdd8e87357ea7a46",
+    "audio_replay.bit": "2113a4549adbc3a2250312e8d4b5508f7acec8df413a8f0c56802d72aa607e43",
+    "audio_replay.hwh": "6d2a01982848e266d5474a88891257e6690ebd825a32e5543afd80c75e0c055f",
+    "replay_trial.py": "1c01299bbf42079e0638a55f0697125e47b6bdc6d63850cdfe03977ab945536e",
     "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
     "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
     "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
