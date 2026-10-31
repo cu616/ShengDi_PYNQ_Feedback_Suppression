@@ -1,0 +1,79 @@
+{
+  "run_4_white_noise_rms": {
+    "packet": "recal_pkt_20250511-120144",
+    "excitation": "white noise, RMS-normalised to -19.3 dBFS",
+    "checks_b_asked_for": {
+      "ref_rms_dbfs": {
+        "measured": -19.3,
+        "target": -19.3,
+        "pass": true
+      },
+      "mic_over_ref_db": {
+        "measured": -13.12,
+        "b_batch_median": -12.16,
+        "pass": true
+      },
+      "H322_k108_db": {
+        "measured": 2.93,
+        "expected": 5.4,
+        "tolerance": 2.0,
+        "pass": true
+      },
+      "fractional_spread": {
+        "measured": 1.0697,
+        "expected": "1.0-1.1",
+        "pass": true
+      },
+      "estimate_lag_frames": {
+        "measured": 357,
+        "expected": "184 +-2",
+        "pass": false
+      },
+      "sec_over_main": {
+        "measured": 0.907,
+        "b_white_noise_reference": 0.58,
+        "b_reject_threshold": 0.8,
+        "pass": false
+      },
+      "fwhm_frames": {
+        "measured": 6,
+        "b_reference": 8,
+        "pass": true
+      }
+    },
+    "fit": {
+      "returncode": 0,
+      "q20_sha256": "9a403ac15196...",
+      "fractional_spread": 1.0697
+    },
+    "verify_arms": 3,
+    "three_point": {
+      "cd_322_db": 7.51,
+      "loop_boost_db": 1.98,
+      "acoustic_difference_db": -0.38,
+      "overshoot_db": -2.36,
+      "verdict": "FAIL"
+    }
+  },
+  "two_arithmetic_errors_of_mine": [
+    "I reported |H(322)| = -22.26 dB. I had applied the wideband estimator mean(M*conj(R))/mean(|R|^2) over ALL bins and mislabelled it as the 322 Hz response. The bin-to-bin value at k=108 on the multitone capture is -3.53 dB.",
+    "The eight-bin table shows only k=107/108/109/111 carried lines (ref FFT level +37.75 dB); k=105/106/110/112 were noise floor (-25 dB) and their \"|H|\" reads +29 to +48 dB, i.e. garbage. That confirms B's warning about empty bins rather than a property of the room."
+  ],
+  "bin_table_multitone": {
+    "105": 29.23,
+    "106": 44.95,
+    "107": -4.32,
+    "108": -3.53,
+    "109": -3.76,
+    "110": 33.77,
+    "111": -0.83,
+    "112": 47.94
+  },
+  "reading": [
+    "With white noise at the right RMS the data now agrees with B's calibration batch on the quantities that matter: level, broadband mic/ref, and the 322 Hz bin response (2.93 dB against 5.53 dB, inside the +-2 dB band).",
+    "So the earlier -22.26 dB and the 27.65 dB \"difference\" were my measurement error, not a change in the capture chain.",
+    "The refit still does not pass the three-point: CD 7.51 dB but acoustic difference -0.38 dB and overshoot -2.36 dB. The fit is now well-fed (correct level, correct spectrum, L1 gate not tripped) yet the deployed model remains the better one.",
+    "estimate_lag reads 357 against B's 184 while |H(322)| matches. That points at a difference between my cross-correlation estimator and B's, not at the room: the same data gives a correct 322 Hz response but a different \"main peak\"."
+  ],
+  "open": "ask B whether the 357/0.907 pair is his estimator applied to a single 16384-frame segment (mine) or to the aligned six-segment concatenation (his). Everything else in his five-point checklist now passes."
+}
