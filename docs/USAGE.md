@@ -188,7 +188,7 @@ echo "operator here" > /home/xilinx/OPERATOR_READY
 **首次上板结果（2026-10-31）**：流程 6 阶段全部跑通、判定生效、失败自动回退（旧模型未被破坏），
 但**这次重拟合本身没有通过判据**：CD(322)=8.26 dB 说明残差被压下去了，可声学差 −0.22 dB、
 过冲 −2.19 dB → FAIL。同一轮测到环路提升只有 1.98 dB（C 那次是 3.70 dB），说明两次的声学布置不同。
-证据见 [recalibration-2026-10-31](../../report/verification/audio-replay/recalibration-2026-10-31/README.md)。
+证据见 [recalibration-2026-10-31](../report/verification/audio-replay/recalibration-2026-10-31/README.md)。
 所以：**"一键重标定"作为流程已验证；作为"换了摆位就能自动成功"还不行**，需要先弄清激励是否够、对齐是否一致。
 
 收据在 `recal_pkt_<时间戳>/recalibration_receipt.json`，含激励电平、六段文件哈希、候选模型哈希、
