@@ -17,6 +17,7 @@ A 记录的板卡部署目录为 `/home/xilinx/jupyter_notebooks/base/audio/audi
 |---|---|---|
 | [v3/](v3/) | 工程基线载荷 | 使用自己的 manifest；精确身份和验证状态见 STATE |
 | 顶层 `replay_trial.py`、`replay_tools.py`、`tone_round_guard.py` 及相应测试 | 维护源码 | 对应发布时按 v3 哈希核验；不与顶层旧 bit/hwh 组合运行 |
+| [v3-sw/](v3-sw/) | **带物理算法开关的新构建（未上板）** | v3 + SW0(M20) 强制旁路，capture_status[23] 记录开关；有自己的 manifest 与驱动，**不能与 v3 载荷/驱动混用**；上板前需重跑四项检查 |
 | [v2/](v2/) | 历史回退材料 | 只有 bit/hwh 和实现报告；配套驱动需取已记录版本，不能借用 v3 驱动 |
 | [rollback-v1/](rollback-v1/) | v1 回退快照 | 保留原 manifest 和文件，按快照恢复；恢复前核对其他导入依赖，不能当 v3 启动步骤 |
 | [archive/](archive/) 内的 `audio_replay.bit/.hwh`、`manifest.json` | 早期构建原件（已移入归档） | 保留审计；归档里的旧 manifest 不描述后来更新的维护源码，不修改旧哈希凑通过 |

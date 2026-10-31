@@ -17,7 +17,12 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
     output wire [31:0] capture_status, coefficient_status,
     output reg [31:0] completed_count=0,
     output reg [31:0] gain_clip_count=0,
-    output wire [31:0] saturation_counts
+    output wire [31:0] saturation_counts,
+    // Physical algorithm switch (PYNQ-Z2 SW0, pin M20). High = forced bypass, i.e. cancellation
+    // OFF. It is OR-ed with control[1] after a two-flop synchroniser, so either the PS or the
+    // switch can bypass. Bypass is deliberately not in the fault conditions, so the switch can be
+    // flipped during a run.
+    input wire sw_bypass
 );
     reg [10:0] divider=0;
     // Preloaded PCM16. No PS streaming or filesystem activity during playback.
@@ -87,6 +92,11 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
     wire signed [40:0] residual_wide_ext={{16{residual_wide[24]}},residual_wide};
     wire signed [40:0] gain_ext={24'd0,1'b0,gain_latched};
     wire [23:0] rx_left, rx_right;
+    // Switch path: two-flop synchroniser, then OR with the software bypass bit. sw_latched is what
+    // the datapath actually uses; sw_s1 is also reported in capture_status[23] so a capture records
+    // whether the switch was up, without the driver having to know about it.
+    reg sw_s0=0, sw_s1=0;
+    wire bypass_effective = control[1] | sw_s1;
     // Input full scale is counted on its own. It is NOT inferred from the residual: with zero
     // coefficients the residual equals the microphone and can never overflow, so a residual
     // counter cannot see an overloaded input.
@@ -98,13 +108,13 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
     assign lrclk=divider[10];
     assign active=frame_active && run_ok && resetn;
     assign sdata_o=(run_ok && resetn) ? serial_out : 1'b0;
-    assign capture_status={9'd0,input_clip_seen,(gain_clip_count!=0),residual_clip_seen,prediction_clip_seen,fault|fir_error,
+    assign capture_status={8'd0,sw_s1,input_clip_seen,(gain_clip_count!=0),residual_clip_seen,prediction_clip_seen,fault|fir_error,
                            (arm && !config_ok),captured,done};
     assign coefficient_status={12'd0,loaded_count,fresh,fir_error,fir_ready,coeff_ready};
     feedback_fir #(.TAPS(TAPS)) fir(.clk(clk),.resetn(resetn),
         .coeff_begin(begin_event && !arm),.coeff_valid(data_event && !arm && !begin_event),
         .coeff_data(coefficient_cmd[23:0]),.coeff_ready(coeff_ready),
-        .in_valid(sample_valid),.bypass(control[1]),.reference_pcm(tx_word),.microphone_pcm(rx_left),
+        .in_valid(sample_valid),.bypass(bypass_effective),.reference_pcm(tx_word),.microphone_pcm(rx_left),
         .in_ready(fir_ready),.out_valid(fir_valid),.predicted_pcm(prediction),.residual_pcm(residual),
         .residual_wide_pcm(residual_wide),
         .prediction_saturated(psat),.residual_saturated(rsat),.protocol_error(fir_error));
@@ -121,9 +131,10 @@ module audio_pl_replay #(parameter integer CAPTURE_FRAMES=16384, TAPS=512, MAX_R
             completed_count<=0;gain_clip_count<=0;prediction_clips<=0;residual_clips<=0;input_clips<=0;done<=0;fault<=0;session<=0;captured<=0;scheduled<=0;
             tx_word<=0;reference_hold<=0;microphone_hold<=0;read_word<=0;page_d<=0;
             capture_left<=0;capture_right<=0;command_d<=0;fresh<=0;loaded_count<=0;
-            prediction_clip_seen<=0;residual_clip_seen<=0;input_clip_seen<=0;
+            prediction_clip_seen<=0;residual_clip_seen<=0;input_clip_seen<=0;sw_s0<=0;sw_s1<=0;
         end else begin
             divider<=divider+1'b1;adc_sync<={adc_sync[0],sdata_i};arm_d<=arm;
+            sw_s0<=sw_bypass;sw_s1<=sw_s0;
             command_d<=coefficient_cmd[25:24];
             source_cmd_d<=source_cmd[17:16];
             if (!arm && source_begin) begin

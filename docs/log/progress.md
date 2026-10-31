@@ -1,3 +1,22 @@
+## 2026-10-31 物理算法开关　A　新增 SW0 强制旁路并重建位流（v3-sw），仿真与软件测试通过，未上板
+
+- 需求：演示时用**物理拨码**开关控制算法。设计核查：PL 的 .bypass(control[1]) 每帧直取寄存器，
+  且 fault 条件只覆盖改增益/帧数、写源、写系数——**旁路不在其中**，因此运行中切换是设计允许的。
+- 引脚取自 Vivado 板级文件 oard_files/pynq-z2/A.0/part0_pins.xml：**SW0 = M20**，LVCMOS33，带 PULLUP，
+  不猜引脚。
+- 改动：RTL 新增 input sw_bypass、两级同步器、ypass_effective = control[1] | sw_s1、
+  capture_status[23] 记录开关状态；新约束 uild/scripts/audio_replay_sw.xdc；
+  新构建 uild/scripts/create_audio_replay_sw.tcl（独立目录 udio_replay_sw，**原构建与 XDC 未动**）。
+  算法、定点、增益、调度与 v3 完全一致。
+- 自洽检查：三项 iverilog 仿真通过（宽残差、FIR、完整 replay）；Vivado 2018.3 重建成功
+  （WNS **+0.954** / WHS **+0.023**，TNS/THS 0，18131 端点，BRAM 80 %、DSP 3、LUT **3589**（+1））；
+  sw_bypass 在实现后 IO 报告中确认落在 **M20**。
+- 新包 oard/audio_replay/v3-sw/：bit 30438cef…、hwh 4de00140…，驱动重钉两处身份常量；
+  包内 40 项软件测试通过；与 v3 载荷/驱动**互斥**（混搭会被拒）。
+- **未上板**：板卡当前不可达，四项硬件检查仍是 v3 的结论；v3-sw 上板前必须用本包驱动重跑一次。
+- 过程中自己造成并已修正的两处：tb 里把 lways #5 clk=~clk; 吞进注释导致仿真超时；
+  同步器清零被误加到会话开始分支。
+
 ## 2026-10-31 集成收口　A　cherry-pick C 修复后全量 379/379、文档 0/0、载荷 10/10，main 可推送
 
 - 合入 C 的 `2e7c205`（历史交付验收作用域 + 模型注册测试约束）：`test_delivery` 7/7、`test_tail_summary` 13/13，测试总数仍是 379。

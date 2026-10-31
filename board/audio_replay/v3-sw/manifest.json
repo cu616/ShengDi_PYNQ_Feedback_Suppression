@@ -1,0 +1,31 @@
+{
+  "package": "audio-replay-v3-sw",
+  "note": "v3 payload plus one physical control input: PYNQ-Z2 SW0 (pin M20) forces bypass, OR-ed with control[1] after a two-flop synchroniser. capture_status[23] reports the switch state. Algorithm, fixed-point format, gain path and scheduling are unchanged from v3; only this new input and the new status bit differ.",
+  "built_with": {
+    "tool": "Vivado 2018.3",
+    "script": "build/scripts/create_audio_replay_sw.tcl",
+    "constraints": "build/scripts/audio_replay_sw.xdc",
+    "part": "xc7z020clg400-1",
+    "board_part": "tul.com.tw:pynq-z2:part0:1.0"
+  },
+  "switch": {
+    "pin": "M20",
+    "name": "SW0",
+    "polarity": "up = 1 = forced bypass (cancellation off)",
+    "effective_bypass": "control[1] | sw_synchronised",
+    "status_bit": 23,
+    "not_in_fault_path": true
+  },
+  "hashes": {
+    "audio_replay.bit": "30438cefc6e48cb18d1bacc9df3b1c3e23525a609cd9949a8488ffb850c59b63",
+    "audio_replay.hwh": "4de0014073a4d255fa754f09109317bcfc5b2a1f00c1ebd7e7717c2ea5093131",
+    "replay_trial.py": "aecb487fb8fa7e159328569c5d26f2d1db4fb2089ab29965cdd8e87357ea7a46",
+    "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+    "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+    "test_runtime_stop.py": "c4ac1bfd5a9321fc33e5fdf440886ac14d86ec5c0451a183e9a9edab720d150c",
+    "test_verify_replay_v3.py": "7265fa6c464a529cbbac60c95ef82bc8ee54628b540116d602fb7eb575d88e1d",
+    "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+    "test_tone_round_guard.py": "b32f348605edf8a14bb4a1299c74a0c174a147c1db764321a199e1e46a583ec6"
+  }
+}
