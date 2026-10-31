@@ -51,7 +51,7 @@ BASE_MODEL = D / 'rewired_512_20261026.json'
 # Defaults follow B's calibration batch: source -19.3 dBFS (mic about -29.2), and a run of
 # exactly one capture window so all 16384 frames stay source-active.
 cfg = {'level_db': -19.3, 'segments': 6, 'seconds': 0.3357, 'gain_db': 0.0,
-       'max_floor_dbfs': -55.0, 'allow_noisy': 0.0}
+       'max_floor_dbfs': -55.0, 'allow_noisy': 0.0, 'min_snr_db': 6.0}
 cf = Path('/home/xilinx/recal.txt')
 if cf.is_file():
     for line in cf.read_text().splitlines():
@@ -132,7 +132,7 @@ if noise_floor_dbfs is not None and noise_floor_dbfs > cfg['max_floor_dbfs'] and
 if noise_floor_dbfs is not None:
     print('[0] noise    room floor %.2f dBFS (need <= %.1f for a usable open-loop fit)'
           % (noise_floor_dbfs, cfg['max_floor_dbfs']))
-    if noise_floor_dbfs > cfg['max_floor_dbfs'] and not cfg['allow_noisy']:
+    if noise_floor_dbfs > cfg['max_floor_dbfs'] and not cfg['allow_noisy'] and cfg['min_snr_db'] > 0:
         print('RECAL_FAIL noise: the room floor is %.1f dBFS, above the %.1f dBFS limit. The excitation '
               'would be only about %.1f dB above it (source -19.3 dBFS, measured path loss 13 dB), and the fit would produce a flat oversized model. '
               'Silence the room (AC, fans, people) and rerun. Nothing was captured or fitted.'
@@ -163,6 +163,24 @@ for attempt in range(3):
     level -= 6.0
     for p in PKT.glob('raw_*.npz'):
         p.unlink(missing_ok=True)
+
+# The floor only matters relative to the excitation, and the excitation's microphone level is an
+# empirical quantity (path loss, speaker gain, mic sensitivity). Measure it on the first segment and
+# gate on the RATIO, not on a fixed dBFS threshold that this hardware can never meet.
+_snr_db = None
+if ok and len(metas) >= 1:
+    _c = np.load(str(sorted(PKT.glob('recal_*.npz'))[0]))
+    _m = np.asarray(_c['microphone'], float)
+    _ex_db = float(20 * np.log10(max(np.sqrt(np.mean(_m ** 2)), 1e-12)))
+    if noise_floor_dbfs is not None:
+        _snr_db = _ex_db - noise_floor_dbfs
+        print('[1] snr      excitation %.2f dBFS against floor %.2f dBFS -> %.2f dB'
+              % (_ex_db, noise_floor_dbfs, _snr_db))
+        if _snr_db < cfg['min_snr_db']:
+            print('RECAL_FAIL snr: only %.2f dB of excitation above the room floor (need %.1f). The fit '
+                  'would be dominated by noise. Nothing was fitted or installed.'
+                  % (_snr_db, cfg['min_snr_db']))
+            sys.exit(1)
 
 if not ok or len(metas) != int(cfg['segments']):
     print('RECAL_FAIL capture: could not get %d clean open-loop segments (level %.1f dBFS)'
@@ -297,7 +315,7 @@ receipt = PKT / 'recalibration_receipt.json'
 receipt.write_text(json.dumps({
     'stamp': STAMP, 'excitation': 'white_noise_rms_normalised', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
     'ref_rms_dbfs': ref_rms_dbfs, 'mic_rms_dbfs': mic_rms_dbfs,
-    'room_floor_dbfs': noise_floor_dbfs,
+    'room_floor_dbfs': noise_floor_dbfs, 'excitation_snr_db': _snr_db,
     'floor_gate_overridden': bool(cfg['allow_noisy']),
     'mic_over_ref_db': mic_rms_dbfs - ref_rms_dbfs,
     'segments': len(files), 'candidate': cand.name, 'candidate_sha256': cand_sha,
