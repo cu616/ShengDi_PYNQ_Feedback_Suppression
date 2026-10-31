@@ -38,7 +38,7 @@ Flushbonading_FPGA_Contest/
 ├─ skill/                     可复用协作与排查经验
 ├─ tmp/                       本地临时分析、副本和测试数据；Git忽略
 ├─ .Xil/                      Vivado本机工作缓存；Git忽略
-└─ NA/                        现有ps7_summary.html，归属待核对，非源码入口
+└─ （原 NA/ 已删除）        ps7_summary.html 是 Vivado 生成物，无源码作用
 ```
 
 `.git/`保存版本历史。本次同步包含源码、上板包和文档；原始板上数据与候选模型仍不在仓库，实物指标不能仅靠克隆复现。不要依据文件夹存在就认定功能完成，也不要直接清空不认识的目录。
@@ -183,7 +183,7 @@ flowchart LR
 
 `report/verification/`保存工具输出、分析摘要和校验记录；`report/ai-records/`记录采用的方案、纠错与证据边界，摘要不冒充原始聊天。入口为 [evidence-index.md](../../report/evidence-index.md)。
 
-`references/hardware/`保存板卡手册/原理图，`references/competition/`保存AMD赛事指南。`skill/`是经验文档。`data/README.md`是归档约定，不证明真实录音已经备份。`__pycache__/`是Python缓存。`NA/ps7_summary.html`属于现有PS7摘要文件，来源未进一步确认，本次不移动删除。
+`references/hardware/`保存板卡手册/原理图，`references/competition/`保存AMD赛事指南。`skill/`是经验文档。`data/README.md`是归档约定，不证明真实录音已经备份。`__pycache__/`是Python缓存。原 `NA/ps7_summary.html` 是 Vivado 生成的 PS7 摘要，无源码作用；因目录名不符合“路径纯英文小写”的提交要求已删除，需要时可由 Vivado 重新生成。
 
 ## 6. 接手时优先检查的耦合点
 
