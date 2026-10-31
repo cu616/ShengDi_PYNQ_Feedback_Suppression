@@ -76,6 +76,14 @@ def excitation(level_db, n):
     """
     rng = np.random.default_rng(4242)
     x = rng.standard_normal(n)
+    # Band-limit to 200-2000 Hz, where the feedback loop lives. This keeps the broadband character
+    # that makes the cross-correlation peak unambiguous (unlike a multitone, which B showed jumps to
+    # a pseudo peak), while concentrating the energy so the excitation clears the input floor without
+    # clipping the ADC.
+    X = np.fft.rfft(x)
+    f = np.fft.rfftfreq(n, 1.0 / RATE)
+    X[(f < 200.0) | (f > 2000.0)] = 0.0
+    x = np.fft.irfft(X, n)
     x -= np.mean(x)
     rms = float(np.sqrt(np.mean(x ** 2))) or 1.0
     x = x / rms * (10 ** (level_db / 20.0))
@@ -316,7 +324,7 @@ else:
 # ---- [6] verdict ------------------------------------------------------------------------------
 receipt = PKT / 'recalibration_receipt.json'
 receipt.write_text(json.dumps({
-    'stamp': STAMP, 'excitation': 'white_noise_rms_normalised', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
+    'stamp': STAMP, 'excitation': 'band_limited_noise_200_2000_rms_normalised', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
     'ref_rms_dbfs': ref_rms_dbfs, 'mic_rms_dbfs': mic_rms_dbfs,
     'room_floor_dbfs': noise_floor_dbfs, 'excitation_snr_db': _snr_db,
     'floor_gate_overridden': bool(cfg['allow_noisy']),
