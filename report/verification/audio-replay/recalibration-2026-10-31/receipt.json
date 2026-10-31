@@ -1,0 +1,60 @@
+{
+  "stamp": "20250511-103038",
+  "fixture_id": "room_v1_20261026b",
+  "excitation_dbfs": -8.0,
+  "segments": 6,
+  "candidate": "model_candidate_20250511-103038.json",
+  "candidate_sha256": "741da19c63fc46635cbd572adadfc3f605ed8bdde3a3071e45bb2be4a3103c01",
+  "fit_returncode": 0,
+  "taps": 512,
+  "lag_first": 1,
+  "q20_sha256": null,
+  "arms": [
+    {
+      "tag": "open",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "bypass",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "cancel",
+      "stop": "completed",
+      "capture_status": 32769
+    }
+  ],
+  "three_point": {
+    "levels_dbfs": {
+      "open": {
+        "mic": -28.877364664790885,
+        "pred": -31.795894674823405,
+        "residual": -39.7539392890619
+      },
+      "bypass": {
+        "mic": -26.901735515641715,
+        "pred": -29.378511020674352,
+        "residual": -26.901735515641715
+      },
+      "cancel": {
+        "mic": -26.68298884864128,
+        "pred": -30.78714676812425,
+        "residual": -35.166011070471576
+      }
+    },
+    "units": "dBFS re 24-bit full scale, all three signals",
+    "cd_322_db": 8.264275554829862,
+    "loop_boost_db": 1.9756291491491709,
+    "acoustic_difference_db": -0.21874666700043477,
+    "overshoot_db": -2.1943758161496056,
+    "names": {
+      "cd_322_db": "residual depth (model fit, NOT benefit)",
+      "loop_boost_db": "audible-benefit scale = what the loop adds and a canceller can at most recover",
+      "acoustic_difference_db": "loop_boost + overshoot, NOT benefit",
+      "overshoot_db": "cancel goes below the no-loop path by this much"
+    }
+  },
+  "verdict": "FAIL"
+}

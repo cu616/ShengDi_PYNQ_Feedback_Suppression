@@ -48,7 +48,7 @@ PKT = D / ('recal_pkt_' + STAMP)
 PKT.mkdir(parents=True, exist_ok=False)
 BASE_MODEL = D / 'rewired_512_20261026.json'
 
-cfg = {'level_db': -8.0, 'segments': 6, 'seconds': 0.40, 'gain_db': 0.0}
+cfg = {'level_db': -8.0, 'segments': 6, 'seconds': 0.45, 'gain_db': 0.0}
 cf = Path('/home/xilinx/recal.txt')
 if cf.is_file():
     for line in cf.read_text().splitlines():
@@ -67,8 +67,11 @@ def excitation(level_db, n):
 
 
 def capture(idx, level_db):
-    src = excitation(level_db, int(round(cfg['seconds'] * RATE)) + 4096)
-    out = PKT / ('recal_%02d.npz' % idx)
+    # The driver requires frame_limit >= source_length + 2, so the excitation must be SHORTER than
+    # the run. The capture keeps the last 16384 frames, which therefore start inside the source and
+    # may end after it; the fitter trims that tail itself via source_frames_in_window.
+    src = excitation(level_db, int(round(cfg['seconds'] * RATE)) - 3000)
+    out = PKT / ('raw_%02d.npz' % idx)
     out.unlink(missing_ok=True)
     out.with_suffix('.status.json').unlink(missing_ok=True)
     try:
@@ -103,7 +106,7 @@ for attempt in range(3):
     if ok:
         break
     level -= 6.0
-    for p in PKT.glob('recal_*.npz'):
+    for p in PKT.glob('raw_*.npz'):
         p.unlink(missing_ok=True)
 
 if not ok or len(metas) != int(cfg['segments']):
@@ -112,6 +115,21 @@ if not ok or len(metas) != int(cfg['segments']):
     sys.exit(1)
 print('[1] capture  %d/%d completed, bit22=0, excitation %.1f dBFS'
       % (len(metas), int(cfg['segments']), level))
+
+# The fitter reads B's calibration packet format, not our driver's capture format: it needs
+# sample_rate_hz and coefficients_q20 in the npz as well. Convert rather than patch the fitter.
+for raw in sorted(PKT.glob('raw_*.npz')):
+    cap = np.load(str(raw))
+    meta_json = str(cap['metadata_json'])
+    np.savez_compressed(PKT / raw.name.replace('raw_', 'recal_'),
+                        reference=np.asarray(cap['reference'], dtype=np.float64),
+                        microphone=np.asarray(cap['microphone'], dtype=np.float64),
+                        source_pcm16=np.asarray(cap['source_pcm16'], dtype=np.int16),
+                        sample_rate_hz=np.float64(RATE),
+                        coefficients_q20=np.zeros(512, dtype=np.int64),
+                        metadata_json=meta_json)
+    raw.unlink()
+print('CONVERT      %d segments rewritten in the packet format' % len(files_ready := list(PKT.glob('recal_*.npz'))))
 
 # ---- [2] package manifest --------------------------------------------------------------------
 files = {}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "fixture_id": "room_v1_20261026b",
+  "files": {
+    "recal_00.npz": {
+      "sha256": "cd91cdf745904e9f3906a41f949431390c7a3f0dedde2b331bf112928a6b3c83",
+      "first_frame": 3147,
+      "frames": 16384,
+      "completed_frames": 19531,
+      "fixture_id": "room_v1_20261026b",
+      "gain_q12": 0,
+      "bypass": false,
+      "pll_readback": "000000002803",
+      "fs": 48828.125
+    },
+    "recal_01.npz": {
+      "sha256": "85f20553769b1bd24b13b123dc88f5568c0f7a9df6fd4f9129187055415d97dd",
+      "first_frame": 3147,
+      "frames": 16384,
+      "completed_frames": 19531,
+      "fixture_id": "room_v1_20261026b",
+      "gain_q12": 0,
+      "bypass": false,
+      "pll_readback": "000000002803",
+      "fs": 48828.125
+    },
+    "recal_02.npz": {
+      "sha256": "3bcec1aa97bc76a99ea7bea2205120f01a23db9248ac13f8f204df50d6c919bb",
+      "first_frame": 3147,
+      "frames": 16384,
+      "completed_frames": 19531,
+      "fixture_id": "room_v1_20261026b",
+      "gain_q12": 0,
+      "bypass": false,
+      "pll_readback": "000000002803",
+      "fs": 48828.125
+    },
+    "recal_03.npz": {
+      "sha256": "2a4b6680d5116e723288807d2de0b601c1e640431a44f525558b0b2251c086ee",
+      "first_frame": 3147,
+      "frames": 16384,
+      "completed_frames": 19531,
+      "fixture_id": "room_v1_20261026b",
+      "gain_q12": 0,
+      "bypass": false,
+      "pll_readback": "000000002803",
+      "fs": 48828.125
+    },
+    "recal_04.npz": {
+      "sha256": "8fb9a2ba204d8b1269ca2d6665189dcb13e26dc9fa89fd3775d2fb09fd2b9a8f",
+      "first_frame": 3147,
+      "frames": 16384,
+      "completed_frames": 19531,
+      "fixture_id": "room_v1_20261026b",
+      "gain_q12": 0,
+      "bypass": false,
+      "pll_readback": "000000002803",
+      "fs": 48828.125
+    },
+    "recal_05.npz": {
+      "sha256": "074ac6cd173f50b8c133ecdf4ee1c3ac4c6eccdf6fc0d3a63884d681b122a758",
+      "first_frame": 3147,
+      "frames": 16384,
+      "completed_frames": 19531,
+      "fixture_id": "room_v1_20261026b",
+      "gain_q12": 0,
+      "bypass": false,
+      "pll_readback": "000000002803",
+      "fs": 48828.125
+    }
+  }
+}
