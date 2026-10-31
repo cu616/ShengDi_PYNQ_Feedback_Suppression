@@ -1,0 +1,48 @@
+{
+  "finding": "band-limiting the excitation breaks this fitter, and full-band excitation cannot reach enough signal-to-noise on this input chain. That is the impasse.",
+  "run_band_limited_200_2000": {
+    "snr_db": 14.55,
+    "ref_rms_dbfs": -14.42,
+    "mic_rms_dbfs": -24.1,
+    "mic_over_ref_db": -9.67,
+    "fit_max_abs_h_linear": 7.5711,
+    "fit_L1_linear": 211.06,
+    "deployed": {
+      "max_abs_h": 0.0457,
+      "L1": 2.29
+    },
+    "gate": "rejected by L1 <= 4"
+  },
+  "why": "with the excitation confined to 200-2000 Hz the design matrix carries no information above 2 kHz, so the least-squares solution is unconstrained there and the taps run away. The fitter only has a trace*1e-9 ridge, which cannot regularise a rank-deficient band. This is a property of the estimator plus excitation, not of the room.",
+  "comparison_of_all_runs": [
+    {
+      "excitation": "white noise, -19.3 dBFS RMS",
+      "snr_db": 5.57,
+      "L1": 187.96,
+      "result": "three-point FAIL"
+    },
+    {
+      "excitation": "white noise, peak-capped ~-18.2 dBFS RMS",
+      "snr_db": 6.5,
+      "L1": "<= 4 (passed the gate)",
+      "result": "three-point PASS"
+    },
+    {
+      "excitation": "band-limited 200-2000 Hz, ~-14.4 dBFS RMS",
+      "snr_db": 14.55,
+      "L1": 211.06,
+      "result": "rejected before install"
+    }
+  ],
+  "what_this_means": [
+    "The one PASS was produced by full-band white noise at the only level the chain can deliver without clipping, and that level leaves only about 6.5 dB of excitation-to-noise.",
+    "Raising the SNR requires band-limiting, which in turn makes the estimator ill-conditioned, so L1 explodes and the rejection gate (correctly) refuses the model.",
+    "The impasse is therefore structural: full-band is required for conditioning, and full-band at usable SNR is not available from this input chain."
+  ],
+  "routes_left": {
+    "hardware": "lower the input floor (gain stage, shielded cabling, away from switching supplies). This is the only route that helps both constraints at once.",
+    "estimator": "ask B for a regulariser that matches the excitation bandwidth (ridge scaled to the band, or fit only in the excited band). That would let band-limited excitation be used, which is the only way to raise SNR without clipping.",
+    "neither": "accept the single PASS as the achievable state and report the capability as unproven at this hardware."
+  },
+  "status": "flow complete and verified; capability still single-instance and not reproducible."
+}

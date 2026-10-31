@@ -76,14 +76,10 @@ def excitation(level_db, n):
     """
     rng = np.random.default_rng(4242)
     x = rng.standard_normal(n)
-    # Band-limit to 200-2000 Hz, where the feedback loop lives. This keeps the broadband character
-    # that makes the cross-correlation peak unambiguous (unlike a multitone, which B showed jumps to
-    # a pseudo peak), while concentrating the energy so the excitation clears the input floor without
-    # clipping the ADC.
-    X = np.fft.rfft(x)
-    f = np.fft.rfftfreq(n, 1.0 / RATE)
-    X[(f < 200.0) | (f > 2000.0)] = 0.0
-    x = np.fft.irfft(X, n)
+    # FULL-BAND white noise, per B's protocol. Band-limiting to 200-2000 Hz was tried and is
+    # incompatible with this fitter: the design matrix then carries no information above 2 kHz, the
+    # least-squares solution is unconstrained there, and L1 exploded to 211 (max tap 7.57, next to the
+    # Q20 limit of 8) even with 14.5 dB of excitation-to-noise. Do not band-limit here.
     x -= np.mean(x)
     rms = float(np.sqrt(np.mean(x ** 2))) or 1.0
     x = x / rms * (10 ** (level_db / 20.0))
@@ -180,7 +176,7 @@ for attempt in range(3):
 # gate on the RATIO, not on a fixed dBFS threshold that this hardware can never meet.
 _snr_db = None
 if ok and len(metas) >= 1:
-    _c = np.load(str(sorted(PKT.glob('recal_*.npz'))[0]))
+    _c = np.load(str(sorted(PKT.glob('raw_*.npz'))[0]))   # still raw_* names at this stage
     _m = np.asarray(_c['microphone'], float)
     _ex_db = float(20 * np.log10(max(np.sqrt(np.mean(_m ** 2)), 1e-12)))
     if noise_floor_dbfs is not None:
@@ -324,7 +320,7 @@ else:
 # ---- [6] verdict ------------------------------------------------------------------------------
 receipt = PKT / 'recalibration_receipt.json'
 receipt.write_text(json.dumps({
-    'stamp': STAMP, 'excitation': 'band_limited_noise_200_2000_rms_normalised', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
+    'stamp': STAMP, 'excitation': 'full_band_white_noise_rms_normalised', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
     'ref_rms_dbfs': ref_rms_dbfs, 'mic_rms_dbfs': mic_rms_dbfs,
     'room_floor_dbfs': noise_floor_dbfs, 'excitation_snr_db': _snr_db,
     'floor_gate_overridden': bool(cfg['allow_noisy']),
