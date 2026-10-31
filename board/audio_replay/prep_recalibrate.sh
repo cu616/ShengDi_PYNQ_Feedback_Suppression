@@ -5,9 +5,9 @@
 echo "operator on site: one-click recalibration (machine-only, no speech)" \
   > /home/xilinx/OPERATOR_READY
 {
-  echo "level_db=-8"
+  echo "level_db=-19.3"
   echo "segments=6"
-  echo "seconds=0.40"
+  echo "seconds=0.3357"
   echo "gain_db=0.0"
 } > /home/xilinx/recal.txt
 cat /home/xilinx/OPERATOR_READY /home/xilinx/recal.txt

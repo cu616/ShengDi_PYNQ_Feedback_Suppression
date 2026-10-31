@@ -50,7 +50,7 @@ BASE_MODEL = D / 'rewired_512_20261026.json'
 
 # Defaults follow B's calibration batch: source -19.3 dBFS (mic about -29.2), and a run of
 # exactly one capture window so all 16384 frames stay source-active.
-cfg = {'level_db': -19.3, 'segments': 6, 'seconds': 16384.0 / 48828.125, 'gain_db': 0.0}
+cfg = {'level_db': -19.3, 'segments': 6, 'seconds': 0.3357, 'gain_db': 0.0}
 cf = Path('/home/xilinx/recal.txt')
 if cf.is_file():
     for line in cf.read_text().splitlines():
@@ -93,7 +93,8 @@ def capture(idx, level_db):
     # the run. The capture keeps the last 16384 frames, which therefore start inside the source and
     # may end after it; the fitter trims that tail itself via source_frames_in_window.
     # source must stay strictly below the run length (driver rule frame_limit >= source + 2)
-    src = excitation(level_db, int(round(cfg['seconds'] * RATE)) - 2)
+    # trial_parameters truncates, so keep 5 frames of margin below the frame budget
+    src = excitation(level_db, int(cfg['seconds'] * RATE) - 5)
     out = PKT / ('raw_%02d.npz' % idx)
     out.unlink(missing_ok=True)
     out.with_suffix('.status.json').unlink(missing_ok=True)
@@ -198,6 +199,23 @@ cand_sha = hashlib.sha256(cand.read_bytes()).hexdigest()
 print('             taps=%s lag_first=%s q20_sha=%s'
       % (new.get('taps'), new.get('lag_first'), str(new.get('q20_sha256'))[:12]))
 print('[4] install  %s sha256=%s (previous model untouched)' % (cand.name, cand_sha[:12]))
+# Pre-install magnitude gate. A refit that is tens of times larger than the deployed model
+# overflows the FIR prediction and gets stopped by the hardware guard, which wastes the verify arms
+# and tells nobody why. Compare against the deployed model before anything is switched.
+base_model = json.loads(BASE_MODEL.read_text(encoding='utf-8'))
+base_c = np.asarray(base_model.get('coefficients_q20') or base_model.get('coefficients'), float) / float(1 << 20)
+new_c = np.asarray(new.get('coefficients_q20') or new.get('coefficients'), float) / float(1 << 20)
+ratio_peak = float(np.max(np.abs(new_c))) / max(float(np.max(np.abs(base_c))), 1e-12)
+ratio_l1 = float(np.sum(np.abs(new_c))) / max(float(np.sum(np.abs(base_c))), 1e-12)
+print('[4] scale    max|h| x%.1f  L1 x%.1f  (deployed max|h|=%.4f L1=%.2f)'
+      % (ratio_peak, ratio_l1, float(np.max(np.abs(base_c))), float(np.sum(np.abs(base_c)))))
+if ratio_peak > 10.0 or ratio_l1 > 10.0:
+    rejected = cand.with_suffix('.rejected.json')
+    cand.rename(rejected)
+    print('RECAL_FAIL scale: refit is %.0fx peak / %.0fx L1 the deployed model; refusing to install it. '
+          'The FIR prediction would overflow and the guard would stop the run.' % (ratio_peak, ratio_l1))
+    sys.exit(1)
+
 
 # ---- [5] verify: 322 Hz three-point with the candidate model ---------------------------------
 import tone_round_guard as guard  # noqa: E402  (kept next to the driver)

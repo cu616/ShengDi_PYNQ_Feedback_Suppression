@@ -1,0 +1,43 @@
+{
+  "run_3_with_b_parameters": {
+    "excitation": {
+      "level_dbfs": -19.3,
+      "segments": 6,
+      "seconds": 0.3357,
+      "note": "B's calibration level; run length sized to one capture window so all 16384 frames stay source-active (2 frames of source margin because trial_parameters truncates)"
+    },
+    "capture": "6/6 completed, bit22=0 at -19.3 dBFS",
+    "fit": {
+      "returncode": 0,
+      "taps": 512,
+      "lag_first": 1,
+      "q20_sha256": "50a936de24463f4f924ded3d6a804853d831759ac6bb0b14cd0e8918f6e4498a",
+      "fractional_spread": 1.4624,
+      "integer_lags": [
+        296,
+        296,
+        295,
+        295,
+        296,
+        296
+      ],
+      "reading": "alignment is consistent to +-1 frame and the fractional spread is the same order as the calibration batch, so the fit sees a coherent path this time"
+    },
+    "verify": "all three arms failed: runtime saturation guard at frame 223 (packed_prediction_residual=196617)",
+    "coefficients_vs_deployed": {
+      "refit_max_abs_h": 1.3297,
+      "deployed_max_abs_h": 0.0459,
+      "refit_L1": 187.96,
+      "deployed_L1": 2.288,
+      "ratio_max": 29.0,
+      "ratio_L1": 82.2
+    }
+  },
+  "conclusion": [
+    "Level was not the problem: at B's own -19.3 dBFS the fit produces the same kind of result, with a coherent alignment.",
+    "The refit is consistently 29x too large in peak tap and 82x too large in L1, while its alignment matches the deployed model. Shape plausibly right, SCALE wrong.",
+    "That is not something the excitation or the alignment can explain, and it is not a phase 问题: the hardware guard trips on arithmetic (prediction overflow), not on instability.",
+    "The open question for B is therefore narrow and concrete: is there a normalisation step between fit_newlayout_candidate.py's coefficients_q20 and the deployed model (e.g. scaling to a target L1 or peak), and which one should this flow apply?"
+  ],
+  "flow_change_needed": "a pre-install magnitude gate: reject when max|h| or L1 exceeds about 10x the deployed model, before any verify arm is spent. Two runs were wasted on oversized models that the guard then refused."
+}
