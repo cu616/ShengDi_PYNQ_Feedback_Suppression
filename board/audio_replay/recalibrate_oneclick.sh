@@ -61,31 +61,29 @@ if cf.is_file():
 
 
 def excitation(level_db, n):
-    """Bin-aligned multitone: energy where the fit and the acceptance test need it.
+    """White noise normalised to RMS, not peak.
 
-    White noise was measured at 0.37 coherence on the 322 Hz bin (the frequency the three-point
-    judges), because its power is spread over thousands of bins. The multitone keeps the same total
-    level but puts all of it into ~1/3-octave lines that sit exactly on FFT bins of the 16384-frame
-    capture window, plus an explicit line at 322 Hz.
+    Two mistakes are folded into this one function, both found by measurement:
+      * the multitone had a crest factor of about 11.4 dB, so normalising it by PEAK put the actual RMS
+        11.4 dB below the level asked for (ref_rms -30.73 against a -19.3 target);
+      * the multitone's discrete lines are not comparable to the white-noise batch B's fitter was built
+        on, which made |H(322)| and the cross-correlation delay look different for reasons that have
+        nothing to do with the room.
+
+    B confirmed the calibration batch level is an RMS (-19.3 dBFS, six segments -18.88 to -20.12), so
+    normalise by RMS and only scale down if the peak would clip.
     """
-    bin_hz = RATE / 16384.0
-    bins = set()
-    f = 200.0
-    while f <= 8000.0:
-        bins.add(int(round(f / bin_hz)))
-        f *= 2.0 ** (1.0 / 3.0)
-    for edge in (320.0, 322.0, 325.0, 330.0):
-        bins.add(int(round(edge / bin_hz)))
-    t = np.arange(n) / RATE
     rng = np.random.default_rng(4242)
-    x = np.zeros(n, dtype=np.float64)
-    for k in sorted(bins):
-        freq = k * bin_hz
-        if freq >= RATE / 2:
-            continue
-        x += np.sin(2 * np.pi * freq * t + rng.uniform(0, 2 * np.pi))
-    x = x / max(np.max(np.abs(x)), 1e-9) * (10 ** (level_db / 20.0)) * 32767.0
-    return np.rint(x).astype(np.int16)
+    x = rng.standard_normal(n)
+    x -= np.mean(x)
+    rms = float(np.sqrt(np.mean(x ** 2))) or 1.0
+    x = x / rms * (10 ** (level_db / 20.0))
+    peak = float(np.max(np.abs(x)))
+    if peak > 0.5:                          # keep 6 dB of headroom, never let the source clip
+        x *= 0.5 / peak
+        print('EXCITATION_CLIPPED target %.1f dBFS RMS -> peak %.1f dBFS, scaled down'
+              % (level_db, 20 * np.log10(peak)))
+    return np.rint(x * 32767.0).astype(np.int16)
 
 
 def capture(idx, level_db):
@@ -264,7 +262,7 @@ else:
 # ---- [6] verdict ------------------------------------------------------------------------------
 receipt = PKT / 'recalibration_receipt.json'
 receipt.write_text(json.dumps({
-    'stamp': STAMP, 'excitation': 'multitone_1third_octave_200-8000_plus_322', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
+    'stamp': STAMP, 'excitation': 'white_noise_rms_normalised', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
     'ref_rms_dbfs': ref_rms_dbfs, 'mic_rms_dbfs': mic_rms_dbfs,
     'mic_over_ref_db': mic_rms_dbfs - ref_rms_dbfs,
     'segments': len(files), 'candidate': cand.name, 'candidate_sha256': cand_sha,

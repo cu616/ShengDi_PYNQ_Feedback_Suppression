@@ -1,0 +1,26 @@
+{
+  "B_checks": {
+    "check_1_excitation": "MULTITONE, not white noise. I mislabelled it as white noise in my previous message; the receipt field says multitone and the ref spectrum confirms it: discrete lines at 199.7, 253.3, 324.8, 399.4, 634.8, 798.7, 1007.3, 1269.6, 1600.4, 2014.6, 2539.2, 4032.3, 5078.3, 6398.6 Hz (1/3-octave grid). The grid puts lines at k=107/108/109/111, i.e. 318.8 / 321.87 / 324.8 / 330.7 Hz.",
+    "check_2_ref_at_322": "+62.85 dB above the +-20 bin neighbourhood. This number is NOT comparable to the +4.60 dB B measured on white noise: a line excitation has empty bins in between, so the neighbourhood median is the noise floor and the ratio is necessarily tens of dB. The check cannot discriminate here.",
+    "check_3_mic_at_322": "+18.80 dB above the 300-460 Hz band median. The microphone is NOT notched at 322 Hz; it is a local peak. So the \"322 Hz is a deep valley\" hypothesis does not survive the measurement.",
+    "link_identity": {
+      "pll_readback": "000000002803",
+      "same_as_B_batch": true,
+      "hp_volume": 40,
+      "gain_q12": 0,
+      "zero_coeff": true,
+      "bypass": false,
+      "reading": "the capture chain is the same one B used; this run is not a different mic or input path as far as the readback can tell"
+    }
+  },
+  "what_this_means": [
+    "The 27.65 dB |H(322)| difference is not explained by a link change (pll_readback identical) and not by a microphone notch (mic is +18.8 dB there).",
+    "It is most likely an artifact of comparing a 40-line excitation against a white-noise batch: the per-bin power at 322 Hz differs by ~60 dB between the two, so any mild non-linearity in the speaker changes the ratio, and the \"delay\" estimated from random-phase lines is a different estimator from the one used on noise.",
+    "The 112-frame lag difference is therefore also suspect: it was measured on a random-phase multitone, not on noise. B's experiment A showed delay alone cannot inflate L1, but it did not show that a line-excited cross-correlation peak equals a noise-excited one."
+  ],
+  "decision": "go back to white noise, the excitation B's protocol was built for, and normalise it to RMS -19.3 dBFS (target ref_rms = -19.3, as B confirmed). Do not tune anything else in the same step.",
+  "my_errors_to_own": [
+    "I called the run white noise when it was the multitone (the patch was still active).",
+    "I compared mic/ref across two different excitation shapes (-3.64 vs -12.16 dB) as if the number were comparable. It is not."
+  ]
+}
