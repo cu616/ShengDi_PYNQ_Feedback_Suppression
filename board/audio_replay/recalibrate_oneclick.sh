@@ -51,7 +51,7 @@ BASE_MODEL = D / 'rewired_512_20261026.json'
 # Defaults follow B's calibration batch: source -19.3 dBFS (mic about -29.2), and a run of
 # exactly one capture window so all 16384 frames stay source-active.
 cfg = {'level_db': -19.3, 'segments': 6, 'seconds': 0.3357, 'gain_db': 0.0,
-       'max_floor_dbfs': -55.0}
+       'max_floor_dbfs': -55.0, 'allow_noisy': 0.0}
 cf = Path('/home/xilinx/recal.txt')
 if cf.is_file():
     for line in cf.read_text().splitlines():
@@ -126,10 +126,13 @@ except Exception as _exc:
     noise_floor_dbfs = None
     print('[0] noise    could not measure the floor: %r' % (_exc,))
 
+if noise_floor_dbfs is not None and noise_floor_dbfs > cfg['max_floor_dbfs'] and cfg['allow_noisy']:
+    print('[0] noise    FLOOR GATE OVERRIDDEN (allow_noisy=1): %.2f dBFS > %.1f dBFS. This is a deliberate high-excitation diagnostic; the override is recorded in the receipt.'
+          % (noise_floor_dbfs, cfg['max_floor_dbfs']))
 if noise_floor_dbfs is not None:
     print('[0] noise    room floor %.2f dBFS (need <= %.1f for a usable open-loop fit)'
           % (noise_floor_dbfs, cfg['max_floor_dbfs']))
-    if noise_floor_dbfs > cfg['max_floor_dbfs']:
+    if noise_floor_dbfs > cfg['max_floor_dbfs'] and not cfg['allow_noisy']:
         print('RECAL_FAIL noise: the room floor is %.1f dBFS, above the %.1f dBFS limit. The excitation '
               'would be only about %.1f dB above it (source -19.3 dBFS, measured path loss 13 dB), and the fit would produce a flat oversized model. '
               'Silence the room (AC, fans, people) and rerun. Nothing was captured or fitted.'
@@ -295,6 +298,7 @@ receipt.write_text(json.dumps({
     'stamp': STAMP, 'excitation': 'white_noise_rms_normalised', 'fixture_id': FIXTURE, 'excitation_dbfs_commanded': level,
     'ref_rms_dbfs': ref_rms_dbfs, 'mic_rms_dbfs': mic_rms_dbfs,
     'room_floor_dbfs': noise_floor_dbfs,
+    'floor_gate_overridden': bool(cfg['allow_noisy']),
     'mic_over_ref_db': mic_rms_dbfs - ref_rms_dbfs,
     'segments': len(files), 'candidate': cand.name, 'candidate_sha256': cand_sha,
     'fit_returncode': fit.returncode, 'taps': new.get('taps'), 'lag_first': new.get('lag_first'),
