@@ -1,0 +1,53 @@
+{
+  "question": "what is the -38 dBFS floor, and can the recalibration run in this room at all",
+  "measurements": {
+    "open_microphone": {
+      "rms_dbfs": -38.05,
+      "peak_dbfs": -23.77
+    },
+    "hand_covered_microphone": {
+      "rms_dbfs": -36.29,
+      "peak_dbfs": -23.25
+    },
+    "excitation_at_microphone": {
+      "rms_dbfs": -32.42,
+      "source_rms_dbfs": -19.3
+    },
+    "snr_db": 5.57
+  },
+  "spectrum_of_the_floor": {
+    "dc_dbfs": -66.9,
+    "energy_share_by_band": {
+      "0-20 Hz": 0.173,
+      "20-60 Hz": 0.274,
+      "60-120 Hz": 0.037,
+      "120-300 Hz": 0.069,
+      "300-1000 Hz": 0.199,
+      "1000-5000 Hz": 0.234,
+      "5000-20000 Hz": 0.014
+    },
+    "strongest_bins_below_2k": [
+      5.96,
+      8.94,
+      11.92,
+      17.88,
+      32.78,
+      35.76,
+      44.7,
+      50.66
+    ],
+    "strongest_bin_level_dbfs": "-51 to -55 per bin"
+  },
+  "reading": [
+    "Covering the microphone did not lower the floor (-38.05 -> -36.29, slightly higher), so this is not room noise. Touching the microphone adds contact noise, which can mask an acoustic drop, so the test is suggestive rather than conclusive.",
+    "There is no DC offset (-66.9 dBFS) and no single mains line: the strongest bins below 2 kHz are spread from 6 Hz to 51 Hz at -51 to -55 dBFS each, and 43% of the energy sits between 300 and 5000 Hz. So it is broadband, not hum.",
+    "A broadband floor that the hand does not reduce points at the input chain (preamp/codec) or at structure-borne coupling, not at the room.",
+    "With the source at -19.3 dBFS RMS the microphone only reaches -32.42 dBFS, i.e. 5.6 dB above the floor. To reach 20 dB of excitation-to-noise the source would have to run near -5 dBFS RMS, which is 21 dB louder than B's calibration level and well into the region B flagged as non-linear."
+  ],
+  "options": {
+    "A": "raise the excitation to about -5 dBFS RMS - direct, but B must accept the non-linearity",
+    "B": "get the input floor down (different input gain stage, shielded/balanced cabling, away from switching supplies) - keeps B's level, needs a hardware change",
+    "C": "accept the floor and document that the open-loop refit cannot be done in this setup - honest but leaves one-click recalibration unproven"
+  },
+  "not_claimed": "the floor source is not yet positively identified; the hand-cover test is not clean because contact noise was added."
+}
