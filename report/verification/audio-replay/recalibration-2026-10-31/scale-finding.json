@@ -39,5 +39,26 @@
     "That is not something the excitation or the alignment can explain, and it is not a phase 问题: the hardware guard trips on arithmetic (prediction overflow), not on instability.",
     "The open question for B is therefore narrow and concrete: is there a normalisation step between fit_newlayout_candidate.py's coefficients_q20 and the deployed model (e.g. scaling to a target L1 or peak), and which one should this flow apply?"
   ],
-  "flow_change_needed": "a pre-install magnitude gate: reject when max|h| or L1 exceeds about 10x the deployed model, before any verify arm is spent. Two runs were wasted on oversized models that the guard then refused."
+  "flow_change_needed": "a pre-install magnitude gate: reject when max|h| or L1 exceeds about 10x the deployed model, before any verify arm is spent. Two runs were wasted on oversized models that the guard then refused.",
+  "normalisation_question_answered_locally": {
+    "checked": "src/feedback/calibration.py::quantize_coefficients, the only quantiser the fitter uses",
+    "finding": "it multiplies by 2^20, rounds half away from zero, and raises when |rounded| > 2^23 (i.e. |h| >= 8). It performs NO normalisation and NO clipping.",
+    "consequence": "there is no missing post-step between the fitter output and a deployable model. A refit whose max|h| is 29x and L1 82x the deployed model means the ESTIMATE itself is that much larger, not that a scale factor is missing.",
+    "so_the_question_for_b": "where does the magnitude of h come from in fit_newlayout_candidate.py? Same physical path, same fixture, but the fitted impulse response carries 82x the L1 energy of the deployed model. Candidates: the design-matrix scaling, the ridge term being effectively inert at this data scale, or the reference/microphone units fed to the solver.",
+    "supporting_numbers": {
+      "deployed": {
+        "max_abs_h": 0.0459,
+        "L1": 2.288
+      },
+      "refit_at_-19.3_dbfs": {
+        "max_abs_h": 1.3297,
+        "L1": 187.96
+      },
+      "refit_multitone_at_-8_dbfs": {
+        "max_abs_h": 2.217,
+        "L1": 178.275
+      },
+      "note": "two different excitations at two different levels land in the same place, while the alignment is coherent (integer_lags 296/296/295/295/296/296, fractional spread 1.46). A missing scale factor would be identical for both; a physical difference would not reproduce this closely across two excitations."
+    }
+  }
 }
