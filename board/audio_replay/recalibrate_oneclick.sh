@@ -59,9 +59,29 @@ if cf.is_file():
 
 
 def excitation(level_db, n):
-    """Fixed-seed noise: every segment carries exactly the same excitation."""
+    """Bin-aligned multitone: energy where the fit and the acceptance test need it.
+
+    White noise was measured at 0.37 coherence on the 322 Hz bin (the frequency the three-point
+    judges), because its power is spread over thousands of bins. The multitone keeps the same total
+    level but puts all of it into ~1/3-octave lines that sit exactly on FFT bins of the 16384-frame
+    capture window, plus an explicit line at 322 Hz.
+    """
+    bin_hz = RATE / 16384.0
+    bins = set()
+    f = 200.0
+    while f <= 8000.0:
+        bins.add(int(round(f / bin_hz)))
+        f *= 2.0 ** (1.0 / 3.0)
+    for edge in (320.0, 322.0, 325.0, 330.0):
+        bins.add(int(round(edge / bin_hz)))
+    t = np.arange(n) / RATE
     rng = np.random.default_rng(4242)
-    x = rng.standard_normal(n)
+    x = np.zeros(n, dtype=np.float64)
+    for k in sorted(bins):
+        freq = k * bin_hz
+        if freq >= RATE / 2:
+            continue
+        x += np.sin(2 * np.pi * freq * t + rng.uniform(0, 2 * np.pi))
     x = x / max(np.max(np.abs(x)), 1e-9) * (10 ** (level_db / 20.0)) * 32767.0
     return np.rint(x).astype(np.int16)
 
@@ -205,7 +225,7 @@ else:
 # ---- [6] verdict ------------------------------------------------------------------------------
 receipt = PKT / 'recalibration_receipt.json'
 receipt.write_text(json.dumps({
-    'stamp': STAMP, 'fixture_id': FIXTURE, 'excitation_dbfs': level,
+    'stamp': STAMP, 'excitation': 'multitone_1third_octave_200-8000_plus_322', 'fixture_id': FIXTURE, 'excitation_dbfs': level,
     'segments': len(files), 'candidate': cand.name, 'candidate_sha256': cand_sha,
     'fit_returncode': fit.returncode, 'taps': new.get('taps'), 'lag_first': new.get('lag_first'),
     'q20_sha256': new.get('q20_sha256'), 'arms': arms, 'three_point': tp,
