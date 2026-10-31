@@ -49,5 +49,24 @@
     "B": "get the input floor down (different input gain stage, shielded/balanced cabling, away from switching supplies) - keeps B's level, needs a hardware change",
     "C": "accept the floor and document that the open-loop refit cannot be done in this setup - honest but leaves one-click recalibration unproven"
   },
-  "not_claimed": "the floor source is not yet positively identified; the hand-cover test is not clean because contact noise was added."
+  "not_claimed": "the floor source is not yet positively identified; the hand-cover test is not clean because contact noise was added.",
+  "hand_covered_repeat_three": {
+    "rms_dbfs": [
+      -34.0,
+      -35.63,
+      -32.18
+    ],
+    "peak_dbfs": [
+      -15.8,
+      -21.8,
+      -17.49
+    ],
+    "mid_band_share": [
+      0.38,
+      0.47,
+      0.47
+    ]
+  },
+  "hand_covered_conclusion": "covering the microphone RAISES the level (uncovered -38.05, covered -34.00 / -35.63 / -32.18), because contact and handling noise exceed whatever acoustic noise it blocks. The hand test therefore cannot isolate the floor, but it does rule out a room-acoustic-dominated floor: blocking the port would have dropped that by far more than it rose.",
+  "status": "the floor is in the input chain (preamp/codec/cabling) or structure-borne; at B level the excitation reaches only 5.6 dB above it."
 }
