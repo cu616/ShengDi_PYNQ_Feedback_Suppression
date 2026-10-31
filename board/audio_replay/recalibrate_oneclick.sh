@@ -131,10 +131,10 @@ if noise_floor_dbfs is not None:
           % (noise_floor_dbfs, cfg['max_floor_dbfs']))
     if noise_floor_dbfs > cfg['max_floor_dbfs']:
         print('RECAL_FAIL noise: the room floor is %.1f dBFS, above the %.1f dBFS limit. The excitation '
-              'would be only about %.1f dB above it, and the fit would produce a flat oversized model. '
+              'would be only about %.1f dB above it (source -19.3 dBFS, measured path loss 13 dB), and the fit would produce a flat oversized model. '
               'Silence the room (AC, fans, people) and rerun. Nothing was captured or fitted.'
               % (noise_floor_dbfs, cfg['max_floor_dbfs'],
-                 (level + 13.0) - noise_floor_dbfs))
+                 (cfg['level_db'] - 13.0) - noise_floor_dbfs))
         sys.exit(1)
 
 # ---- [1] capture, automatic level retry instead of a gate ------------------------------------
