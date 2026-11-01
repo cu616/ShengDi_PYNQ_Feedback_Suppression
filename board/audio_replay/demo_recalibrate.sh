@@ -26,7 +26,7 @@ echo "DEMO_CUE   recalibration accepted - the board now runs the freshly fitted 
 
 echo "DEMO_PHASE 2  speech, canceller ON. Operator: stand 20 cm from the microphone and talk normally."
 echo "DEMO_CUE   say_now - keep talking for 20 seconds"
-/usr/local/share/pynq-venv/bin/python - bypass <<'PY'
+/usr/local/share/pynq-venv/bin/python - cancel <<'PY'
 import json
 import sys
 from pathlib import Path
