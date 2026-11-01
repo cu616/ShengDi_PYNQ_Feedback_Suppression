@@ -69,7 +69,7 @@ if missing:
 if not FITTER.is_file():
     fail('preflight', 10, 'fitter missing at %s' % FITTER)
 try:
-    from replay_trial import replay_trial
+    from replay_trial_repair import replay_trial   # 0 dB AUX + relaxed PLL check
 except Exception as exc:
     fail('preflight', 10, 'driver import failed: %r' % (exc,))
 print('RECAL_STAGE 0 ok  driver+package+fitter present')

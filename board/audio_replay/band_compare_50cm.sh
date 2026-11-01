@@ -22,7 +22,7 @@ from pathlib import Path
 
 import numpy as np
 
-from replay_trial import replay_trial
+from replay_trial_repair import replay_trial   # 0 dB AUX + relaxed PLL check
 
 D = Path(sys.argv[1])
 FIXTURE = 'room_v1_20261026b'
