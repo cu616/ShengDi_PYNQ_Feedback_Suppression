@@ -1,0 +1,50 @@
+{
+  "positions": {
+    "P1_100cm": [
+      {
+        "snr": 10.03,
+        "L1": 2.3,
+        "CD": 11.65,
+        "loop": 1.76,
+        "acoustic": 1.07,
+        "overshoot": -0.69,
+        "verdict": "PASS"
+      },
+      {
+        "snr": 10.34,
+        "L1": 2.26,
+        "CD": 9.98,
+        "loop": 2.39,
+        "acoustic": 1.46,
+        "overshoot": -0.93,
+        "verdict": "PASS"
+      }
+    ],
+    "P2_115cm": [
+      {
+        "snr": 10.75,
+        "L1": 2.45,
+        "CD": 14.49,
+        "loop": 2.41,
+        "acoustic": 2.52,
+        "overshoot": 0.12,
+        "verdict": "PASS"
+      },
+      {
+        "snr": 10.96,
+        "L1": 2.4,
+        "CD": 13.38,
+        "loop": 1.95,
+        "acoustic": 1.57,
+        "overshoot": -0.37,
+        "verdict": "PASS"
+      }
+    ]
+  },
+  "summary": "4 runs, 4 PASS, across two pre-specified positions (100 cm and 115 cm). L1 stayed 2.26-2.45 against the deployed model 2.29, i.e. a well-conditioned fit every time. Acoustic difference 1.07 to 2.52 dB, overshoot -0.93 to +0.12 dB, all inside the acceptance rule.",
+  "limits": [
+    "115 cm is the longest distance the room allows, so the change between positions is only +15 cm; this shows repeatability within 15 cm, not at arbitrary distances.",
+    "one short 16384-frame window per arm is evidence of the 322 Hz loop, not proof of audible benefit.",
+    "no statement is made about moving during use or about distances beyond 115 cm."
+  ]
+}

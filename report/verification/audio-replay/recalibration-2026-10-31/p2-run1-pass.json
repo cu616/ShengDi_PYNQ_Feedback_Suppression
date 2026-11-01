@@ -1,0 +1,75 @@
+{
+  "stamp": "20250511-132514",
+  "excitation": "full_band_white_noise_rms_normalised",
+  "fixture_id": "room_v1_20261026b",
+  "excitation_dbfs_commanded": -5.0,
+  "ref_rms_dbfs": -14.073992597724715,
+  "mic_rms_dbfs": -27.810946598596157,
+  "room_floor_dbfs": -38.557309520728104,
+  "excitation_snr_db": 10.746362922131947,
+  "mic_over_ref_db": -13.736954000871442,
+  "segments": 6,
+  "candidate": "model_candidate_20250511-132514.json",
+  "candidate_sha256": "751d3602b170fb5001659fc7f44887496d782ada9ed7eed388bb972c4a29b4dd",
+  "fit_returncode": 0,
+  "taps": 512,
+  "lag_first": 1,
+  "q20_sha256": "5b837fb235cfd142f2de581fc6b93df8c92eb02670729181409d897c2c9b1142",
+  "fractional_spread": 0.0635654583811629,
+  "integer_lags": [
+    228,
+    228,
+    228,
+    228,
+    228,
+    228
+  ],
+  "arms": [
+    {
+      "tag": "open",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "bypass",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "cancel",
+      "stop": "completed",
+      "capture_status": 32769
+    }
+  ],
+  "three_point": {
+    "levels_dbfs": {
+      "open": {
+        "mic": -27.906643230213994,
+        "pred": -29.27444253460234,
+        "residual": -39.40648857144871
+      },
+      "bypass": {
+        "mic": -25.49914823094994,
+        "pred": -26.472309518221373,
+        "residual": -25.49914823094994
+      },
+      "cancel": {
+        "mic": -28.022405801814323,
+        "pred": -29.179933600525267,
+        "residual": -39.98500203154305
+      }
+    },
+    "units": "dBFS re 24-bit full scale, all three signals",
+    "cd_322_db": 14.485853800593105,
+    "loop_boost_db": 2.4074949992640526,
+    "acoustic_difference_db": 2.5232575708643807,
+    "overshoot_db": 0.1157625716003281,
+    "names": {
+      "cd_322_db": "residual depth (model fit, NOT benefit)",
+      "loop_boost_db": "audible-benefit scale = what the loop adds and a canceller can at most recover",
+      "acoustic_difference_db": "loop_boost + overshoot, NOT benefit",
+      "overshoot_db": "cancel goes below the no-loop path by this much"
+    }
+  },
+  "verdict": "PASS"
+}
