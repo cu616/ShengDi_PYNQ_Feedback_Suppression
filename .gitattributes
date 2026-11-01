@@ -17,6 +17,11 @@
 # 副作用：合并后两条同日条目的先后顺序不保证，所以每条都必须自带日期。
 docs/log/progress.md merge=union
 
+# C resident product shell/unit files must also work after a Windows checkout.
+board/audio_replay/recal_entry.sh text eol=lf
+board/audio_replay/product-install.sh text eol=lf
+board/audio_replay/shengdi-product.service text eol=lf
+
 board/audio_replay/README.md -text
 board/audio_replay/*.ipynb -text
 board/audio_replay/*.json -text
