@@ -388,7 +388,7 @@ for attempt in range(VOICE_ATTEMPTS):
     cue.unlink(missing_ok=True)
     try:
         replay_trial(str(cue), FIXTURE, str(BASE_MODEL), cue_notes(), bypass=True, zero_coeff=False,
-                     gain_db=0.0, seconds=1.8, hp_volume=HP_VOLUME, speaker_confirmed=True,
+                     gain_db=0.0, seconds=2.6, hp_volume=HP_VOLUME, speaker_confirmed=True,
                      local_capture_confirmed=True, direct_only=True)
     except Exception as exc:
         print('RECAL_CUE_WARN %r' % (exc,))

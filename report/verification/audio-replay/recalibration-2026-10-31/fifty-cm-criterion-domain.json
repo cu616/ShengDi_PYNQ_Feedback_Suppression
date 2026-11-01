@@ -1,0 +1,60 @@
+{
+  "finding": "the 322 Hz acceptance criterion has no domain at 50 cm: closing the loop LOWERS the level at that frequency, so \"what the loop adds\" is negative and the rule cannot show anything",
+  "runs_at_50cm": [
+    {
+      "run": "run_20250511-155253",
+      "note": "levelling loop aborted on a clipped step (code defect, fixed)"
+    },
+    {
+      "run": "run_20250511-161850",
+      "tone": {
+        "fs": 0.3765,
+        "mic_peak_dbfs": -13.31
+      },
+      "three_point": {
+        "cd": 0.49,
+        "loop_boost": -2.38,
+        "acoustic": -4.59,
+        "overshoot": -2.22
+      },
+      "verdict": "measurement insufficient"
+    },
+    {
+      "run": "run_20250511-172202",
+      "tone": {
+        "fs": 0.2689,
+        "mic_peak_dbfs": -12.08
+      },
+      "floor_dbfs": -39.03,
+      "snr_db": 8.93,
+      "three_point": {
+        "cd": 3.01,
+        "loop_boost": -1.84,
+        "acoustic": -1.76,
+        "overshoot": 0.08
+      },
+      "verdict": "measurement insufficient"
+    }
+  ],
+  "arm_levels_last_run": {
+    "open_rms_dbfs": -20.25,
+    "bypass_rms_dbfs": -21.92,
+    "cancel_rms_dbfs": -20.19,
+    "prediction_saturations": 0,
+    "residual_saturations": 0,
+    "gain_saturations": 0,
+    "mix_saturations": 0
+  },
+  "mechanism": [
+    "No saturation on any arm, so the lower bypass level is not clamping or limiting.",
+    "Closing the loop reduces the 322 Hz level by 1.67 dB, i.e. g*H is close to anti-phase there: at this frequency the loop acts as negative feedback.",
+    "The cancel arm restores the level to about the open value (-20.19 against -20.25), which is what a working canceller does to a loop - it removes the loop effect, not a benefit.",
+    "The acceptance rule presumes the loop ADDS level at the test frequency (\"what the loop adds and a canceller can at most recover\"). At 50 cm that premise is false, so a PASS or FAIL there carries no meaning about cancellation."
+  ],
+  "not_claimed": "this does NOT show that cancellation fails at 50 cm. The operator reports good broadband amplification at 50-60 cm; a single-frequency anti-phase point does not contradict that.",
+  "options": {
+    "A": "choose test frequencies where g*H is in phase at each distance (scan the band, pick where the loop boost is positive) - changes the acceptance frequency, needs captain/B approval",
+    "B": "define a broadband A/B criterion with strictly identical speech content and geometry - bigger change, needs a new protocol",
+    "C": "keep the verified 115 cm result for this round and state 50 cm as unverifiable with the current criterion"
+  }
+}

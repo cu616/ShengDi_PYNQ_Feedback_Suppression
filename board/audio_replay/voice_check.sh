@@ -55,16 +55,35 @@ def cue():
     return np.concatenate(parts)
 
 
-floor_p = OUT / 'floor.npz'
-try:
-    replay_trial(str(floor_p), FIXTURE, str(active), np.zeros(16000, np.int16), bypass=False,
-                 zero_coeff=True, gain_db=0.0, seconds=0.40, hp_volume=HP_VOLUME,
-                 speaker_confirmed=True, local_capture_confirmed=True, direct_only=True)
-    floor_db = rms_db(np.load(str(floor_p))['microphone'])
-except Exception as exc:
-    print('VOICE_FAIL floor could not be measured: %r' % (exc,))
+# The floor must be measured while the operator is still silent, because it is the reference the voice
+# level is compared against. If someone is already talking the "floor" becomes the speaker's own voice
+# and nothing can be detected. So: ask for silence, measure, and only cue once it is quiet.
+FLOOR_QUIET_DBFS = -33.0
+FLOOR_TRIES = 5
+floor_db = None
+for i in range(FLOOR_TRIES):
+    print('VOICE_WAIT  stay silent for a moment - measuring the room floor (%d/%d)'
+          % (i + 1, FLOOR_TRIES))
+    floor_p = OUT / ('floor_%d.npz' % i)
+    try:
+        replay_trial(str(floor_p), FIXTURE, str(active), np.zeros(16000, np.int16), bypass=False,
+                     zero_coeff=True, gain_db=0.0, seconds=0.40, hp_volume=HP_VOLUME,
+                     speaker_confirmed=True, local_capture_confirmed=True, direct_only=True)
+        floor_db = rms_db(np.load(str(floor_p))['microphone'])
+    except Exception as exc:
+        print('VOICE_FLOOR_ERR %r' % (exc,))
+        time.sleep(1.0)
+        continue
+    print('VOICE_FLOOR_TRY %d %.2f dBFS (need below %.1f)' % (i + 1, floor_db, FLOOR_QUIET_DBFS))
+    if floor_db <= FLOOR_QUIET_DBFS:
+        break
+    time.sleep(1.0)
+if floor_db is None or floor_db > FLOOR_QUIET_DBFS:
+    print('VOICE_FAIL  the room is too loud to measure a floor (best %.2f dBFS, need %.1f). '
+          'Someone talking, a fan, or the loop ringing. Nothing recorded.'
+          % (floor_db if floor_db is not None else float('nan'), FLOOR_QUIET_DBFS))
     sys.exit(1)
-print('VOICE_FLOOR %.2f dBFS' % floor_db)
+print('VOICE_FLOOR_OK %.2f dBFS - now the cue will sound' % floor_db)
 
 results = []
 ok = False
@@ -72,7 +91,7 @@ for attempt in range(ATTEMPTS):
     p = OUT / ('cue_%d.npz' % attempt)
     try:
         replay_trial(str(p), FIXTURE, str(active), cue(), bypass=True, zero_coeff=False,
-                     gain_db=0.0, seconds=1.8, hp_volume=HP_VOLUME, speaker_confirmed=True,
+                     gain_db=0.0, seconds=2.6, hp_volume=HP_VOLUME, speaker_confirmed=True,
                      local_capture_confirmed=True, direct_only=True)
     except Exception as exc:
         print('VOICE_CUE_WARN %r' % (exc,))
