@@ -24,9 +24,11 @@ python scripts/assemble_experiment.py --product --output materials/staging/tmp/r
 
 A清单还提供allowed_gain_q12；B策略的phase_gain_q12明确开环采集/验证和运行各阶段允许值。开环0增益与就绪运行增益不能混写，所有阶段值必须在A允许集合内；运行时不接受阶段列表放宽后的漂移。
 
+B判定库按[数值消费接口](../contracts/recal-policy-consumer-v1.md)调用；C已提供Consumer，包装器把其返回字段与原有evaluate任务身份/模型字段合并。使用B默认三点必需语义，缺项不能安装；本轮estimate_lag须绑定训练捕获。库与阈值由B维护，C消费器只处理状态、来源及有界重试。封装目录仍须含真正的捕获解析/拟合包装器与受审策略，不能把纯判定库当成完整算法适配。
+
 不带两个适配目录时生成明确的software_simulation_only包，两端均使用模拟实现，不拼接部分真实硬件和模拟算法；日常入口和安装器会拒绝以真实模式启动。真实适配齐备后deployment_ready表示文件已绑定，仍须现场验收，不等于已经证明声学效果。
 
-电脑产物为`materials/staging/tmp/recal-product-v1.zip`，本轮交付副本为`materials/final/shengdi-recal-product-v1.zip`，均不自动进Git。A在电脑核ZIP的SHA后，拷到**板卡**`/home/xilinx/shengdi-install/`，解压到`/home/xilinx/shengdi-install/recal-product-v1/`。首次安装前由A停止旧演示服务/Notebook；不让两套程序同时控制板卡。
+电脑产物为`materials/staging/tmp/recal-product-v1.zip`，本轮含B判定消费器的副本为`materials/final/shengdi-recal-product-v1-policy.zip`；早期`shengdi-recal-product-v1.zip`保留原SHA的历史软件包。ZIP均不自动进Git。A在电脑核本次ZIP的SHA后，拷到**板卡**`/home/xilinx/shengdi-install/`，解压到`/home/xilinx/shengdi-install/recal-product-v1/`。首次安装前由A停止旧演示服务/Notebook；不让两套程序同时控制板卡。
 
 **首次安装只由A在板卡执行一次：**
 
@@ -47,7 +49,8 @@ sudo bash /home/xilinx/shengdi-install/recal-product-v1/product-install.sh
 | 结果 | 提示及普通用户下一步 |
 |---|---|
 | valid_pass | 绿常亮，按START |
-| data_insufficient | 红2闪，无法评价；保持安静后按CAL |
+| data_insufficient | 黄2闪，数据不足、无法评价；保持安静后按CAL |
+| measurement_inapplicable | 黄7闪，本次条件无法评价，已静音；按CAL重标定，仍相同联系维护 |
 | model_rejected | 红3闪，模型未通过；保持静音，按CAL重试 |
 | input_overload | 红4闪，先停止讲话，按CAL重新检查，不提高音量 |
 | hardware_error | 红5闪；允许时按CAL重试，仍失败联系维护；无法确认停声时锁定启动 |
@@ -58,7 +61,7 @@ sudo bash /home/xilinx/shengdi-install/recal-product-v1/product-install.sh
 
 ## 一次现场窗口与唯一回包
 
-A在同一窗口依次做布局1、布局2：移动→CAL→讲话→安静→绿灯→START→拨码抵消/旁路→STOP。再保留一次取消或已有保护记录；不专门制造危险输入。每次scene_id独立，成功/失败都留档。听众原话由A记录为qualitative，不拿它替代数值判据。当前灯/键及B策略未到，现场完成项仍未执行。
+A在同一窗口依次做布局1、布局2：移动→CAL→讲话→安静→绿灯→START→拨码抵消/旁路→STOP。再保留一次取消或已有保护记录；不专门制造危险输入。每次scene_id独立，成功/失败都留档。听众原话由A记录为qualitative，不拿它替代数值判据。现场完成以本包冻结的真实适配和A验收回执为准。
 
 结束后由A在板卡只导出一个回包，不让普通用户操作日志：
 

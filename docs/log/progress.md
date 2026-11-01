@@ -1,5 +1,9 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-01 C 承接B判定库与三项确认
+
+接口变更：新增recal-policy-consumer-v1扩展，B契约按edfa698原样引入。C显式要求三点及采集/拟合齐全，绑定本轮estimate_lag与训练原件；四类cause分别停声/无法评价/拒收，原回执留存，有限激励重试只匹配预封装下一档。B的0 dB SNR与30%门控阈值未改。相关66项软件检查通过，B七文件原字节一致；8份已存B输出只做字段映射，D3为构造样例，未声称新实测或原PCM重算。另只读确认A=31882e0已提供灯键实测，未再沿用旧缺I/O结论。实体适配/拟合包装与统一现场验收仍待交付，未操板。[消费接口](../contracts/recal-policy-consumer-v1.md)、[检查回执](../../report/verification/recal-product-v1/b-policy-integration.json)、[操作说明](../ref/recal-product.md)。
+
 ## 2026-11-01 C 交常驻重标定产品软件v1
 
 核对main=f378262缺实体I/O及即时停止能力后，先交最小接口和A/B/C文件边界，使用模拟硬件与固定算法返回独立开发。实现唯一recal_entry、显式状态机、可终止B子进程、配置身份绑定、独立验证后原子模型安装、真实单次结束与多布局单回包；复用assembler与Q20检查，不改A/B实现。21项软件用例、Bash语法、独立解压模拟到ready及启动拒绝/回包核验通过；首次文件句柄/路径失败、阶段增益与坏提示窗纠错保留。真实适配/灯键/服务安装及两布局现场未执行，安装包不标实物就绪。[接口](../contracts/recal-product-v1.md)、[操作](../ref/recal-product.md)、[机器回执](../../report/verification/recal-product-v1/package-check.json)、[任务与纠错](../../report/ai-records/recal-product-v1.md)。

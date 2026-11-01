@@ -14,6 +14,7 @@ import sys
 import threading
 import time
 import uuid
+from recal_policy_consumer import consume_reply
 
 CONTRACT = 'recal-product-v1'
 IDENTITY = ('aux_db','aux_raw_left','aux_raw_right','hp_volume','gain_q12','sample_rate_hz',
@@ -32,6 +33,7 @@ PROMPTS = {
     'running': ('green','steady','扩声运行中，STOP停止'),
     'ended': ('green','slow','本次扩声已结束，按START重新开始'),
     'cancelled': ('white','slow/1','已取消并静音，按CAL重新标定'),
+    'inconclusive': ('yellow','error/2','无法评价并已静音，按CAL重新标定'),
     'failed': ('red','error','未通过并已静音，按CAL重新标定'),
     'protected': ('red','fast','保护停声，排除过载后按CAL重新标定'),
 }
@@ -143,6 +145,7 @@ class Product:
         self.input_records=[]
         self.capture_history=[]
         self.hardware_receipts=[]
+        self.algorithm_receipts=[];self.cause=None
         self.job_deadline=None
         self.gain_scope='runtime'
         self.store.invalidate(self.scene,'boot_requires_calibration')
@@ -196,6 +199,7 @@ class Product:
             bundle=self.bundle,run=self.run_result,listening=self.listening,events=self.events,
             candidate=self.candidate,capture_history=self.capture_history,
             hardware_receipts=self.hardware_receipts,
+            algorithm_receipts=self.algorithm_receipts,cause=self.cause,
             waveform_policy='PCM stays on board; file paths and original hashes retained',hardware_error_latched=self.fatal)
         write_json(self.root/'status.json',status)
         if self.run_dir: write_json(self.run_dir/'result.json',status)
@@ -203,10 +207,11 @@ class Product:
     def _state(self, state):
         self.state=state;self.events.append(dict(state=state,effective_mode=self.mode,time_monotonic=self.clock()))
         color,pattern,text=PROMPTS[state]
-        if state in ('failed','protected'):
+        if state in ('failed','protected','inconclusive'):
             pattern={'data_insufficient':'error/2','model_rejected':'error/3','input_overload':'error/4',
-                     'hardware_error':'error/5','protected':'error/6'}.get(self.outcome,'error/5')
+                     'hardware_error':'error/5','protected':'error/6','measurement_inapplicable':'error/7'}.get(self.outcome,'error/5')
             text={'data_insufficient':'无法评价：保持安静后按CAL重试',
+                  'measurement_inapplicable':'本次条件无法评价：已静音，按CAL重标定；仍相同请联系维护',
                   'model_rejected':'本次模型未通过：保持静音，按CAL重试',
                   'input_overload':'输入过载：先停止讲话，按CAL重新检查，勿提高音量',
                   'hardware_error':'设备异常：保持静音，按CAL重试，仍失败联系维护',
@@ -223,7 +228,8 @@ class Product:
         except Exception: self.fatal=True
         self.outcome=exc.outcome if isinstance(exc,Failure) else 'hardware_error'
         self.reason=str(exc);self.store.invalidate(self.scene,self.outcome)
-        self.state='protected' if self.outcome in ('input_overload','protected') else 'failed'
+        self.state=('protected' if self.outcome in ('input_overload','protected') else
+                    'inconclusive' if self.outcome in ('data_insufficient','measurement_inapplicable') else 'failed')
         try: self._state(self.state)
         except Exception: self.checkpoint()
 
@@ -246,7 +252,7 @@ class Product:
             if kind in ('stop','cancel'): self.stop();return
             if self.fatal: return
             if kind=='recalibrate':
-                self.stop(record=self.state not in ('uncalibrated','ready','ended','failed','protected','cancelled'))
+                self.stop(record=self.state not in ('uncalibrated','ready','ended','failed','protected','cancelled','inconclusive'))
                 self.scene=uuid.uuid4().hex;self.identity=None
                 self.store.invalidate(self.scene,'scene_changed')
                 self.gain_scope='prepare'
@@ -256,6 +262,7 @@ class Product:
                 self.input_records=[]
                 self.capture_history=[];self.events=[];self.listening=[]
                 self.hardware_receipts=[]
+                self.algorithm_receipts=[];self.cause=None
                 self.attempt=0;self.cue_end=0;self.outcome=None;self.reason='';self.run_result=None
                 self.cancel=threading.Event();self._state('preparing');self._hw('prepare',phase='input')
             elif kind=='start' and self.state in ('ready','ended') and self.bundle:
@@ -373,7 +380,12 @@ class Product:
             self.reason='单次运行已真实结束，未拼段重启';self._state('ended')
 
     def _algorithm_done(self, req, reply):
-        self._envelope(req,reply);decision=reply.get('decision')
+        self._envelope(req,reply)
+        self.algorithm_receipts.append(dict(request=req,reply=reply));self.checkpoint()
+        following=self.cfg['attempts'][self.attempt+1] if self.attempt+1<len(self.cfg['attempts']) else {}
+        decision,self.cause,reason=consume_reply(reply,req['phase'],
+            next_excitation=following.get('training',{}).get('excitation'),attempt=self.attempt)
+        if self.cause=='HARDWARE_ERROR': self.fatal=True
         if not reply.get('reason'): raise Failure('model_rejected','数值判断缺少依据')
         if decision=='retry':
             if self.attempt+1>=len(self.cfg['attempts']): raise Failure('data_insufficient','已达到预定重试上限')
@@ -384,7 +396,8 @@ class Product:
                 self._state('quiet');self.quiet_deadline=self.clock()+self.cfg['quiet_seconds']
             return
         if decision!='valid_pass':
-            raise Failure(decision if decision in ('data_insufficient','model_rejected') else 'model_rejected',reply['reason'])
+            raise Failure(decision if decision in ('data_insufficient','model_rejected','measurement_inapplicable',
+                'hardware_error','input_overload') else 'data_insufficient',reason)
         if req['phase']=='input':
             self.quiet_deadline=self.clock()+self.cfg['quiet_seconds']
         elif req['phase']=='fit':
@@ -407,7 +420,7 @@ class Product:
             events=poll.get('events',[])
             if any(e['kind'] in ('stop','cancel') for e in events): self.event('stop');return
             if self.fatal: return
-            if self.state in ('failed','protected','cancelled'):
+            if self.state in ('failed','protected','cancelled','inconclusive'):
                 for event in events: self.event(event['kind'])
                 return
             if self.pending and self.clock()>self.job_deadline: raise Failure('hardware_error','阶段超时，已停止')

@@ -89,3 +89,27 @@ A 只需在一个完整现场窗口测试两种布局和拨码对照；你根据
 - 真实Linux安装、灯键映射、A/B适配和两布局现场验收未执行。回包审计只宣称身份/作用域核对；真实数值重算必须使用同包非人声原件及封装B接口，不把模拟/无保护当实际收益。
 
 接口与操作说明见[产品v1](../../docs/contracts/recal-product-v1.md)、[操作单](../../docs/ref/recal-product.md)。机器证据：[软件验证](../verification/recal-product-v1/software-tests.json)、[安装包检查](../verification/recal-product-v1/package-check.json)、[实际模拟接口样例](../verification/recal-product-v1/interface-samples.json)。
+
+## 2026-11-01 B交接原文
+
+```text
+B → C（接口已就位，契约在 docs/contracts/recalibration-policy-v1.md）
+五个函数，from feedback.recal_policy import ...：
+check_capture → plan_excitation → select_probe_frequencies → check_fit → check_three_point，最后 decide() 汇总。
+三条要你确认的事：
+
+decide() 默认 require_three_point=True：只有采集合格 + 模型可部署、没有三点数据时，返回 INCONCLUSIVE/DATA_INSUFFICIENT，不会返回可安装。如果你的状态机想自己控这一步，显式传 False。
+四类 cause 分开：HARDWARE_ERROR / MEASUREMENT_INAPPLICABLE / MODEL_UNQUALIFIED / DATA_INSUFFICIENT，处置不同，不要都当“失败”处理。
+check_fit 的 expected_peak_tap 必须传本轮 estimate_lag 的结果，不是上一个模型的峰位——换摆位时两者差几十帧是正常的。
+
+两个阈值我按已发生事实改过，理由写在模块顶部注释里：MIN_EXCITATION_SNR_DB 从 6.0 降到 0.0（主判据改为门控率 ≥30%，否则部署模型自己的训练集会被拒），峰位基准改为本轮实测延迟。
+最小输入输出样例在契约 §3，report/verification/recalibration-policy-2026-11-01/cases.json 里有 8 例真实数据的完整返回，可以拿去对字段。
+```
+
+### C处理与范围
+
+先fetch/pull C，固定B=edfa698；七份B源/测试/契约/历史回执原字节接入，另增C消费器，不改B阈值。确认三点强制、本轮延迟和四类cause；额外阻止decide在只给three_point时产生的部分READY进入安装。已存八例仅映射字段，原表D3明确为构造样例，不能把八例全部写成实测重算。66项定向软件测试通过，含真实库、C边界及模拟整机；首次本轮66项已通过，增加包内B依赖和独立导入检查后再次验证受影响组合通过。两次均未使用现场音频或控制板卡。
+
+读取main=31882e0：新版位流已有BTN0/LED/SW和采集实测，hw_api代码新增灯键方法，文件顶部旧说明尚未同步；不据旧说明宣称硬件仍无I/O。create_product及整机适配清单未交，B纯判定库也不能代替实际拟合包装；软件包仍明确只供模拟检查。
+
+检查回执见[B策略消费](../verification/recal-product-v1/b-policy-integration.json)。契约扩展单独提交，人工转发交接，不操作REQUESTS、不推main、不改A驱动/RTL。

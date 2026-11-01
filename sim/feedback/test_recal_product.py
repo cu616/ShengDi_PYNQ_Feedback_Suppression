@@ -2,6 +2,7 @@
 import copy
 import importlib.util
 import json
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -90,7 +91,7 @@ class ProductTests(unittest.TestCase):
             with self.subTest(phase=phase):
                 cfg=sample_config();cfg['attempts'][0][phase+'_decision']=outcome
                 app,hw,_=self.app(cfg);app.event('recalibrate')
-                self.until(app,lambda:app.state=='failed')
+                self.until(app,lambda:app.state in ('failed','inconclusive'))
                 self.assertEqual(app.outcome,outcome);self.assertNotIn('install',hw.calls)
                 self.assertFalse(self.pointer(app)['eligible'])
 
@@ -125,17 +126,17 @@ class ProductTests(unittest.TestCase):
         for fault in ('input_window_bad','shared_validation'):
             with self.subTest(fault=fault):
                 app,hw,_=self.app();setattr(hw,fault,True);app.event('recalibrate')
-                self.until(app,lambda:app.state=='failed')
+                self.until(app,lambda:app.state=='inconclusive')
                 self.assertEqual(app.outcome,'data_insufficient');self.assertNotIn('install',hw.calls)
 
     def test_no_protection_is_insufficient_without_B_effect_evidence(self):
         cfg=sample_config();cfg['attempts'][0]['no_effect_evidence']=True
-        app,hw,_=self.app(cfg);app.event('recalibrate');self.until(app,lambda:app.state=='failed')
+        app,hw,_=self.app(cfg);app.event('recalibrate');self.until(app,lambda:app.state=='inconclusive')
         self.assertEqual(app.outcome,'data_insufficient');self.assertNotIn('install',hw.calls)
 
     def test_retry_is_bounded_by_supplied_policy(self):
         cfg=sample_config();cfg['attempts']=[dict(training={},validation={},fit_decision='retry') for _ in range(2)]
-        app,hw,_=self.app(cfg);app.event('recalibrate');self.until(app,lambda:app.state=='failed')
+        app,hw,_=self.app(cfg);app.event('recalibrate');self.until(app,lambda:app.state=='inconclusive')
         self.assertEqual(hw.calls.count('training'),2);self.assertEqual(app.attempt,1)
         self.assertNotIn('install',hw.calls);self.assertEqual(app.outcome,'data_insufficient')
 
@@ -200,8 +201,46 @@ class ProductTests(unittest.TestCase):
             if req['op']=='run': result['elapsed_seconds']=.001
             return result
         hw.perform=short;app.cfg['run_seconds']=.25;app.event('start')
-        self.until(app,lambda:app.state=='failed')
+        self.until(app,lambda:app.state=='inconclusive')
         self.assertEqual(app.outcome,'data_insufficient');self.assertEqual(hw.calls.count('run'),1)
+
+    def test_B_causes_stop_before_install_and_keep_original_receipts(self):
+        for cause,outcome,state in (
+            ('HARDWARE_ERROR','hardware_error','failed'),
+            ('MEASUREMENT_INAPPLICABLE','measurement_inapplicable','inconclusive'),
+            ('MODEL_UNQUALIFIED','model_rejected','failed'),
+            ('DATA_INSUFFICIENT','data_insufficient','inconclusive')):
+            with self.subTest(cause=cause):
+                calc=FixedCalculator();original=calc.evaluate
+                def judged(req,cancel):
+                    out=original(req,cancel)
+                    if req['phase']=='validate': out.update(decision='valid_pass',cause=cause,reason='B原判据')
+                    return out
+                calc.evaluate=judged
+                app,hw,_=self.app(calculator=calc);app.event('recalibrate')
+                self.until(app,lambda:app.state==state)
+                self.assertEqual((app.outcome,app.cause),(outcome,cause))
+                self.assertNotIn('install',hw.calls);self.assertEqual(hw.mode,'muted')
+                self.assertFalse(self.pointer(app)['eligible'])
+                stored=json.loads((app.run_dir/'result.json').read_text(encoding='utf-8'))
+                self.assertEqual(stored['algorithm_receipts'][-1]['reply']['cause'],cause)
+                self.assertEqual(stored['cause'],cause)
+                if cause=='HARDWARE_ERROR':
+                    count=len(hw.calls);app.event('recalibrate');self.assertEqual(len(hw.calls),count)
+
+    def test_partial_B_ready_decision_cannot_enable_candidate(self):
+        calc=FixedCalculator();original=calc.evaluate
+        def partial(req,cancel):
+            out=original(req,cancel)
+            if req['phase']=='validate':
+                out.update(policy_contract='recal-policy-consumer-v1',policy_result=dict(
+                    decision=dict(status='READY_TO_INSTALL'),steps=dict(capture=dict(status='NOT_RUN'),
+                    fit=dict(status='NOT_RUN'),three_point=dict(status='PASS'))))
+            return out
+        calc.evaluate=partial
+        app,hw,_=self.app(calculator=calc);app.event('recalibrate')
+        self.until(app,lambda:app.state=='inconclusive')
+        self.assertEqual(app.outcome,'data_insufficient');self.assertNotIn('install',hw.calls)
 
     def test_calculation_phase_cancellation_rejects_late_results(self):
         for phase in ('input','fit','validate'):
@@ -249,6 +288,12 @@ class ProductPackagingTests(unittest.TestCase):
             self.assertEqual(result['status'],'software_simulation_only')
             manifest=verify_package(out);self.assertFalse(manifest['deployment_ready'])
             self.assertNotIn('replay_trial.py',manifest['hashes'])
+            self.assertEqual((out/'feedback/recal_policy.py').read_bytes(),(ROOT/'src/feedback/recal_policy.py').read_bytes())
+            loaded=subprocess.run([sys.executable,'-X','utf8','-c',
+                "from recal_policy_consumer import Consumer; c=Consumer(); print(c.final(None,None,None)['decision'])"],
+                cwd=out,capture_output=True,text=True,check=True)
+            self.assertEqual(loaded.stdout.strip(),'data_insufficient')
+            for name in ('POLICY.md','POLICY-CONSUMER.md'): self.assertIn(name,manifest['hashes'])
             target=out/'recal_product.py';target.write_bytes(target.read_bytes()+b'\n# bad\n')
             with self.assertRaisesRegex(ValueError,'identity mismatch'): verify_package(out)
 

@@ -4,7 +4,7 @@
 > **改契约必须先通知消费方**，并在 [log/progress.md](../log/progress.md) 留一条"接口变更"。
 > 契约只增不删：旧版本冻结，不覆盖。
 
-## 现行契约（要遵守的只有这四份）
+## 现行契约
 
 | 契约 | 覆盖什么 | 生产方 | 消费方 | 状态 |
 |---|---|---|---|---|
@@ -16,7 +16,7 @@
 | [feedback-calibration-v1.md](feedback-calibration-v1.md) | 标定数据 NPZ 与模型 JSON 的字段、单位、拒绝条件 | B | A / C | 已验证（板卡实际执行） |
 | [path-analysis-v1.md](path-analysis-v1.md) | 逐频点分析与稳定增益估算的输入输出 JSON | B | A / C | 已实现，待真实数据 |
 
-四份之间的关系：
+原始音频链路契约之间的关系：
 
 ```
 标定（calibration）→ 系数（fir）→ 闭环播放（closed）

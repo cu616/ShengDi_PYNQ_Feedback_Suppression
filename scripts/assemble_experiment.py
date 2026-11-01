@@ -18,8 +18,12 @@ def assemble_product(out, hardware=None, algorithm=None):
     import importlib.util
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
     origin=ROOT/'board/audio_replay'
-    names=['recal_entry.sh','recal_product.py','residual_tools.py','product-install.sh','shengdi-product.service']
+    names=['recal_entry.sh','recal_product.py','recal_policy_consumer.py','residual_tools.py','product-install.sh','shengdi-product.service']
     for name in names: shutil.copyfile(origin/name,out/name)
+    # B's numeric library is copied byte-for-byte; the C bridge adds no thresholds.
+    (out/'feedback').mkdir()
+    for name in ('__init__.py','recal_policy.py','excitation.py'):
+        shutil.copyfile(ROOT/'src/feedback'/name,out/'feedback'/name)
     adapters={};missing=[]
     for kind,folder in [('hardware',hardware),('algorithm',algorithm)]:
         if folder is None:
@@ -57,14 +61,22 @@ def assemble_product(out, hardware=None, algorithm=None):
             raise ValueError('B phase gain policy exceeds A approved gains')
     (out/'product-config.json').write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     (out/'OPERATIONS.md').write_text((ROOT/'docs/ref/recal-product.md').read_text(encoding='utf-8').replace(
-        '../contracts/recal-product-v1.md','INTERFACE.md'),encoding='utf-8')
+        '../contracts/recal-product-v1.md','INTERFACE.md').replace(
+        '../contracts/recal-policy-consumer-v1.md','POLICY-CONSUMER.md'),encoding='utf-8')
     (out/'INTERFACE.md').write_text((ROOT/'docs/contracts/recal-product-v1.md').read_text(encoding='utf-8').replace(
+        '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'POLICY.md').write_bytes((ROOT/'docs/contracts/recalibration-policy-v1.md').read_bytes())
+    (out/'POLICY-CONSUMER.md').write_text((ROOT/'docs/contracts/recal-policy-consumer-v1.md').read_text(encoding='utf-8').replace(
+        'recal-product-v1.md','INTERFACE.md').replace('recalibration-policy-v1.md','POLICY.md').replace(
         '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation,
         missing=missing,adapters=adapters,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay/recal_product.py','board/audio_replay/recal_mock.py','board/audio_replay/recal_entry.sh',
-            'scripts/assemble_experiment.py','docs/ref/recal-product.md','docs/contracts/recal-product-v1.md'],cwd=ROOT).strip()),
+            'board/audio_replay/recal_policy_consumer.py',
+            'src/feedback/recal_policy.py','src/feedback/excitation.py',
+            'scripts/assemble_experiment.py','docs/ref/recal-product.md','docs/contracts/recal-product-v1.md',
+            'docs/contracts/recalibration-policy-v1.md','docs/contracts/recal-policy-consumer-v1.md'],cwd=ROOT).strip()),
         hashes={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()})
     (out/'product-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:

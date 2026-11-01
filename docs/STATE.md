@@ -40,13 +40,13 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-01按队长新任务交recal-product-v1：C拥有唯一recal_entry.sh、常驻状态机、原子模型事务与打包/回包入口。软件21项定向用例通过，Bash语法通过；独立解压用真实B子进程的模拟流程到ready，缺适配拒绝真实启动、导出与只读审计通过。最终软件包源2a7e3c9，安装ZIP23884字节，SHA及完整回执见下。
-**当前卡点**：尚不能宣称陌生队友的实体流程完成。已核对main=f378262的hw_api缺按钮/LED、非侵入poll和即时abort，且未提供create_product；B evaluate与受审策略未交。当前安装包明确software_simulation_only，真实启动/安装检查拒绝开启音频；A/B按v1适配后由A统一一次现场窗口验证两布局/拨码。
+**最后动作**：2026-11-01接入B edfa698判定交付：7份文件与B原字节一致；C新增独立消费层，三点验收显式require_three_point=True且另查三步齐全，本轮estimate_lag绑定scene及训练原件，重试与封装下一档逐项核对。相关软件66项通过（B策略31、C消费12、产品23）；原8份B输出完成字段映射，其中D3为构造样例，未冒称历史原件重算。证据及新版包身份见下。
+**当前卡点**：尚不能宣称陌生队友实体流程完成。main=31882e0已有v3-io按键/LED/拨码及采集实测记录，hw_api也新增灯键方法；未提供本产品create_product工厂及v1适配清单。B判定库已到，产品evaluate的真实捕获解析/拟合包装器与受审整机策略仍需适配。软件包维持software_simulation_only，真实启动/安装检查拒绝开启音频；适配齐备后由A在同一窗口验证两布局/拨码。
 
-- [最小接口与文件边界](contracts/recal-product-v1.md)、[首次安装/日常实体操作/单一回包](ref/recal-product.md)、[软件21项](../report/verification/recal-product-v1/software-tests.json)、[包身份与解压检查](../report/verification/recal-product-v1/package-check.json)、[结构化样例](../report/verification/recal-product-v1/interface-samples.json)、[原始任务及纠错](../report/ai-records/recal-product-v1.md)。
+- [最小接口与文件边界](contracts/recal-product-v1.md)、[B判定消费](contracts/recal-policy-consumer-v1.md)、[首次安装/日常实体操作/单一回包](ref/recal-product.md)、[本轮66项与原样引入](../report/verification/recal-product-v1/b-policy-integration.json)、[原包21项与历史身份](../report/verification/recal-product-v1/package-check.json)、[结构化样例](../report/verification/recal-product-v1/interface-samples.json)、[原始任务及纠错](../report/ai-records/recal-product-v1.md)。
 - 候选须独立验证并核安装实际模型/Q20身份后才原子生效；移动后重标定首先禁用旧模型，失败仅保留归档。开环与运行增益按A允许集合/B阶段策略分别绑定；AUX实际字节、Codec、采样率、位流/驱动/helper全程核对。无保护不自动通过。
-- STOP不等待计算；每个硬件/计算阶段取消、过载、拒收、数据不足、安装失败、混搭、提示窗、独立验证、实际模式与有限重试均有模拟证据。单次真实结束不拼段；返回区分有效/不足/拒收/过载/异常/取消，听感另存。
-- 安装ZIP位于materials/final，仅本地保存不进Git；systemd/真实灯键/真实B数值及现场两布局尚未执行，C未操板、未改A/B实现。原报告/Skill与历史r1验收保留原范围，不作为本产品已上板证据。技术硬件现状读最新main/A STATE，不能用本C分支旧硬件副本覆盖main。
+- STOP不等待计算；每个硬件/计算阶段取消、过载、拒收、数据不足、安装失败、混搭、提示窗、独立验证、实际模式与有限重试均有模拟证据。数据不足和测量不适用均为inconclusive并静音，四类B cause保留在原始算法回执；数值硬件异常锁定等待维护。单次结束不拼段；听感另存。
+- 安装ZIP位于materials/final，仅本地保存不进Git；新版shengdi-recal-product-v1-policy.zip含B库/C消费层，原shengdi-recal-product-v1.zip保留历史身份。systemd/本产品灯键映射/本产品真实数值全流程及两布局现场尚未执行，C未操板、未改B判据或A实现。原报告/Skill与历史r1验收保留原范围，不作为本产品已上板证据。技术硬件现状读最新main/A STATE，不能用C旧硬件副本覆盖main。
 
 ## 已验证 / 未验证（只在这里写一次）
 
