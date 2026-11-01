@@ -1,0 +1,72 @@
+{
+  "what": "50 cm key-band comparison, three arms sharing one frozen broadband stimulus, judged with a model fitted from 50 cm data (not the 115 cm model)",
+  "candidate": "model_50cm_20250511-172202.json, taps 512, max|h| 0.0918, L1 3.440 (deployed 2.288)",
+  "run": "band50_20250511-175608",
+  "conditions": {
+    "position": "P4_50cm",
+    "gain_db": -8.0,
+    "hp_volume": 40,
+    "stimulus_fs_frozen": 0.3765,
+    "mic_peak_dbfs": -20.84,
+    "source": "full-band white noise, RMS-normalised, identical samples for all arms",
+    "arms": "open = feedback path disconnected but the source still plays; bypass = loop closed without canceller; cancel = loop closed with the candidate",
+    "saturations": "all arms 0/0/0/0",
+    "window": "same 16384-frame window for all arms"
+  },
+  "where_the_loop_boosts_and_what_cancelling_does": [
+    {
+      "fc_hz": 400,
+      "loop_boost_db": 4.67,
+      "cancel_effect_db": -3.62
+    },
+    {
+      "fc_hz": 250,
+      "loop_boost_db": 2.04,
+      "cancel_effect_db": -4.26
+    },
+    {
+      "fc_hz": 200,
+      "loop_boost_db": 3.94,
+      "cancel_effect_db": -3.36
+    },
+    {
+      "fc_hz": 800,
+      "loop_boost_db": 1.34,
+      "cancel_effect_db": -1.45
+    },
+    {
+      "fc_hz": 3150,
+      "loop_boost_db": 1.23,
+      "cancel_effect_db": -1.15
+    }
+  ],
+  "where_it_gets_worse": [
+    {
+      "fc_hz": 125,
+      "loop_boost_db": -1.6,
+      "cancel_effect_db": 2.23
+    },
+    {
+      "fc_hz": 500,
+      "loop_boost_db": -1.37,
+      "cancel_effect_db": 1.4
+    },
+    {
+      "fc_hz": 630,
+      "loop_boost_db": -1.53,
+      "cancel_effect_db": 0.76
+    }
+  ],
+  "the_decisive_comparison": "The same 400 Hz band, same 50 cm geometry: with the 115 cm model the canceller made it +3.22 dB WORSE; with the 50 cm model it is 3.62 dB better. A 6.8 dB swing from fitting at the right geometry.",
+  "reading": [
+    "In every band where the loop actually adds level (200, 250, 400, 800, 3150 Hz) the fitted canceller reduces the closed-loop level, by 1.2 to 4.3 dB.",
+    "In the three bands where the loop does not boost (125, 500, 630 Hz) it makes things up to 2.2 dB worse; that is reported, not hidden.",
+    "This is the first result that shows a 50 cm working point with a measurable, explainable benefit, and it explains why the earlier 322 Hz test said nothing: that single frequency is not where the loop boosts at this distance."
+  ],
+  "limits": [
+    "one run, one 16384-frame window per arm",
+    "no speech-level A/B yet",
+    "the levelling stopped at -20.84 dBFS mic peak (adjustment cap), below the -12 dBFS target",
+    "nothing here is a claim about distances other than 50 cm"
+  ]
+}
