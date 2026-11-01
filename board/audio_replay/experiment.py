@@ -1,5 +1,7 @@
 """C fixed experiment entry. All device actions stay in A's replay_trial.
 
+Historical evidence workflow only. The resident consumer entry is recal_entry.sh.
+
 Import has no side effects. A completed integration manifest is mandatory before
 even importing PYNQ. Results are checkpointed and zipped on every exit path.
 """

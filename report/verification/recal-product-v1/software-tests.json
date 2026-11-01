@@ -1,0 +1,36 @@
+{
+  "contract": "recal-product-v1",
+  "software_only": true,
+  "hardware_operations": 0,
+  "git_base": "5cbde109a415786d8a92087b67dc1f6abe52640f",
+  "tested_worktree_dirty": true,
+  "source_sha256": {
+    "board/audio_replay/recal_product.py": "ecc85cb08bef898f679aa544fc20fcb677505b50b8388b3c48a4d9102d925df6",
+    "board/audio_replay/recal_mock.py": "b16fed5ad83d900b94f05c77086bc319583b2c7d83df9e4af8288fb9e7344be3",
+    "board/audio_replay/recal_entry.sh": "e320fcc49417f6cfe5eaa86bdc691f5180b3b8f7fab821ef8485b49cf10b0130",
+    "board/audio_replay/product-install.sh": "91ac691137da9664de42bc3ca4a4bd6a5de9e991fb2c069bb240538cc4f444d6",
+    "board/audio_replay/shengdi-product.service": "1c0685f98c2fa1d2b261dda2ca62c12fb4a85a1c540f03d2b1a78a00ec9f83ed",
+    "scripts/assemble_experiment.py": "45e35cbe449c0d7721f1685770b29f65254a6e64f8128e13659c526454f0206b",
+    "sim/feedback/test_recal_product.py": "faef5be01854e3d843dd1aad84d5a6eb769da532c56e0b2263ad7959f47faf48"
+  },
+  "command": "python -X utf8 -m unittest discover -s sim/feedback -p test_recal_product.py -v",
+  "exit_code": 0,
+  "output": "test_software_package_is_not_mislabelled_as_field_ready_and_tamper_fails (test_recal_product.ProductPackagingTests.test_software_package_is_not_mislabelled_as_field_ready_and_tamper_fails) ... ok\ntest_calculation_phase_cancellation_rejects_late_results (test_recal_product.ProductTests.test_calculation_phase_cancellation_rejects_late_results) ... ok\ntest_cancellation_in_every_hardware_phase_cannot_promote_late_result (test_recal_product.ProductTests.test_cancellation_in_every_hardware_phase_cannot_promote_late_result) ... ok\ntest_complete_state_sequence_atomic_model_and_no_automatic_run (test_recal_product.ProductTests.test_complete_state_sequence_atomic_model_and_no_automatic_run) ... ok\ntest_cue_tail_and_independent_validation_windows_enforced (test_recal_product.ProductTests.test_cue_tail_and_independent_validation_windows_enforced) ... ok\ntest_direct_capture_gain_is_bound_per_phase_and_runtime_gain_cannot_drift (test_recal_product.ProductTests.test_direct_capture_gain_is_bound_per_phase_and_runtime_gain_cannot_drift) ... ok\ntest_hardware_exception_and_abort_failure_never_resume (test_recal_product.ProductTests.test_hardware_exception_and_abort_failure_never_resume) ... ok\ntest_identity_mixture_missing_capability_and_configuration_drift (test_recal_product.ProductTests.test_identity_mixture_missing_capability_and_configuration_drift) ... ok\ntest_input_overload_is_not_a_model_pass (test_recal_product.ProductTests.test_input_overload_is_not_a_model_pass) ... ok\ntest_install_mismatch_or_atomic_pointer_failure_leaves_no_active_model (test_recal_product.ProductTests.test_install_mismatch_or_atomic_pointer_failure_leaves_no_active_model) ... ok\ntest_insufficient_data_and_model_rejection_never_install (test_recal_product.ProductTests.test_insufficient_data_and_model_rejection_never_install) ... ok\ntest_natural_end_does_not_stitch_or_restart_and_mode_is_actual (test_recal_product.ProductTests.test_natural_end_does_not_stitch_or_restart_and_mode_is_actual) ... ok\ntest_no_protection_is_insufficient_without_B_effect_evidence (test_recal_product.ProductTests.test_no_protection_is_insufficient_without_B_effect_evidence) ... ok\ntest_one_return_preserves_multiple_layouts_and_omits_private_input (test_recal_product.ProductTests.test_one_return_preserves_multiple_layouts_and_omits_private_input) ... ok\ntest_real_B_subprocess_is_cancelled_without_blocking_stop (test_recal_product.ProductTests.test_real_B_subprocess_is_cancelled_without_blocking_stop) ... ok\ntest_recalibration_invalidates_old_scene_even_if_new_calibration_fails (test_recal_product.ProductTests.test_recalibration_invalidates_old_scene_even_if_new_calibration_fails) ... ok\ntest_retry_is_bounded_by_supplied_policy (test_recal_product.ProductTests.test_retry_is_bounded_by_supplied_policy) ... ok\ntest_short_run_cannot_be_reported_as_full_duration (test_recal_product.ProductTests.test_short_run_cannot_be_reported_as_full_duration) ... ok\ntest_stop_event_wins_over_start_in_same_poll (test_recal_product.ProductTests.test_stop_event_wins_over_start_in_same_poll) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 8.797s\n\nOK\n",
+  "initial_failure": {
+    "tests_run": 14,
+    "failures": 7,
+    "errors": 1,
+    "reason": "Windows read-only descriptor fsync rejected and test import omitted scripts path; corrected to writable file fsync and explicit test import path"
+  },
+  "unexecuted": [
+    "physical buttons/LED and Linux service installation",
+    "A real adapter/B numerical validation",
+    "two-layout board acceptance",
+    "unrelated legacy full suite"
+  ],
+  "shell_syntax": {
+    "recal_entry": 0,
+    "product_install": 0,
+    "scope": "bash -n only; not Linux installation"
+  }
+}

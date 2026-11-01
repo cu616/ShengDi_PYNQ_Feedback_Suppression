@@ -1,5 +1,7 @@
 """One new-layout decision, using the existing A runners and C measurements.
 
+Historical evidence workflow only. The resident consumer entry is recal_entry.sh.
+
 No board imports until required candidate/site identities have been bound.
 Independent arms remain separate; gains are frozen and capped, with no MSG interpolation.
 """

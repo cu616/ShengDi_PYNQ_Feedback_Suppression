@@ -12,6 +12,64 @@ import subprocess
 import sys
 import zipfile
 
+
+def assemble_product(out, hardware=None, algorithm=None):
+    """C product white-list; never copies a stale C driver or executes hardware."""
+    import importlib.util
+    out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
+    origin=ROOT/'board/audio_replay'
+    names=['recal_entry.sh','recal_product.py','residual_tools.py','product-install.sh','shengdi-product.service']
+    for name in names: shutil.copyfile(origin/name,out/name)
+    adapters={};missing=[]
+    for kind,folder in [('hardware',hardware),('algorithm',algorithm)]:
+        if folder is None:
+            missing.append(kind+': v1 adapter and approved policy not delivered');continue
+        folder=Path(folder).resolve()
+        meta=json.loads((folder/'product-adapter.json').read_text(encoding='utf-8'))
+        if meta.get('contract')!='recal-product-v1' or meta.get('kind')!=kind or meta.get('field_approved') is not True:
+            raise ValueError('adapter contract/approval missing: '+kind)
+        for name,digest in meta['hashes'].items():
+            relative=Path(name)
+            if relative.is_absolute() or '..' in relative.parts: raise ValueError('unsafe adapter path')
+            source=(folder/relative).resolve()
+            if folder not in source.parents or hashlib.sha256(source.read_bytes()).hexdigest()!=digest:
+                raise ValueError('adapter identity mismatch: '+name)
+            target=out/relative
+            if target.exists() and target.read_bytes()!=source.read_bytes(): raise ValueError('adapter owner collision: '+name)
+            target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
+        adapters[kind]=meta
+    simulation=bool(missing)
+    if simulation:
+        # No partial real/mock mixture is runnable. The demo always uses two mocks.
+        shutil.copyfile(origin/'recal_mock.py',out/'recal_mock.py')
+        spec=importlib.util.spec_from_file_location('product_fixture_config',origin/'recal_mock.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);config=module.sample_config()
+    else:
+        required=['hw_api.py','recal_algorithm.py','product-policy.json','physical-controls.json']
+        if any(not (out/name).is_file() for name in required): raise ValueError('incomplete real adapter package')
+        config=json.loads((out/'product-policy.json').read_text(encoding='utf-8'))
+        config.update(simulation=False,hardware_module='hw_api',algorithm_module='recal_algorithm',
+                      expected_identity=adapters['hardware']['expected_identity'])
+        allowed=adapters['hardware'].get('allowed_gain_q12',[])
+        gains=[g for values in config.get('phase_gain_q12',{}).values() for g in values]
+        gains.append(config['expected_identity']['gain_q12'])
+        if not allowed or any(type(g) is not int or g not in allowed for g in gains):
+            raise ValueError('B phase gain policy exceeds A approved gains')
+    (out/'product-config.json').write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    shutil.copyfile(ROOT/'docs/ref/recal-product.md',out/'OPERATIONS.md')
+    shutil.copyfile(ROOT/'docs/contracts/recal-product-v1.md',out/'INTERFACE.md')
+    manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation,
+        missing=missing,adapters=adapters,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
+        source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
+            'board/audio_replay/recal_product.py','board/audio_replay/recal_mock.py','board/audio_replay/recal_entry.sh',
+            'scripts/assemble_experiment.py','docs/ref/recal-product.md','docs/contracts/recal-product-v1.md'],cwd=ROOT).strip()),
+        hashes={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()})
+    (out/'product-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:
+        for path in sorted(out.rglob('*')):
+            if path.is_file(): z.write(path,path.relative_to(out))
+    return dict(status='software_simulation_only' if simulation else 'adapters_bound_pending_field_acceptance',missing=missing)
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'board/audio_replay'))
 from experiment import PLAN
@@ -567,10 +625,15 @@ if __name__=='__main__':
     p.add_argument('--baseline-first',action='store_true')
     p.add_argument('--candidate-commit')
     p.add_argument('--repair-binding',type=Path)
+    p.add_argument('--product',action='store_true')
+    p.add_argument('--product-hardware',type=Path)
+    p.add_argument('--product-algorithm',type=Path)
     p.add_argument('--r4-b-handoff',action='store_true')
     p.add_argument('--model',type=Path)
     a=p.parse_args()
-    if a.layout_prepared:
+    if a.product:
+        m=assemble_product(a.output,a.product_hardware,a.product_algorithm)
+    elif a.layout_prepared:
         m=assemble_layout(a.output,a.candidate_commit,a.repair_binding,a.baseline_first)
     elif a.r4_b_handoff:
         m=assemble_r4_b_handoff(a.output)
