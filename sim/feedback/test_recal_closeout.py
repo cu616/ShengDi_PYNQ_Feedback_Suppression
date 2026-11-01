@@ -59,6 +59,20 @@ class CloseoutTests(unittest.TestCase):
         hw.mode='bypass';app.tick();self.assertEqual(hw.prompts[-1]['mode'],'bypass')
         self.assertFalse(app.indicator_deferred)
 
+    def test_run_initialization_zero_gain_is_allowed_only_while_muted(self):
+        cfg=sample_config();cfg['phase_gain_q12']={'run':[0,1631]};cfg['run_seconds']=.5
+        app,hw,_=self.app(cfg);app.event('recalibrate');self.until(app,lambda:app.state=='ready')
+        original=hw.perform;release=threading.Event();self.addCleanup(release.set)
+        def preparing(req,cancel):
+            if req['op']=='run':
+                hw.identity['gain_q12']=0;release.wait(2);hw.identity['gain_q12']=1631
+            return original(req,cancel)
+        hw.perform=preparing;app.event('start');self.until(app,lambda:hw.identity['gain_q12']==0)
+        self.assertEqual(app.state,'running');self.assertEqual(app.gain_scope,'run')
+        release.set();self.until(app,lambda:hw.mode=='cancel');app.tick()
+        hw.identity['gain_q12']=0;app.tick()
+        self.assertEqual(app.outcome,'hardware_error');self.assertFalse(self.pointer(app)['eligible'])
+
     def test_embedded_marker_uses_original_source_coordinates_without_editing_pcm(self):
         run=self.folder/'window';run.mkdir();path=run/'capture.npz'
         np.savez(path,reference=np.zeros(16384),microphone=np.zeros(16384),source_pcm16=np.zeros(122068,dtype=np.int16),

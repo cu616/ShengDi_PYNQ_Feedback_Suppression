@@ -93,6 +93,8 @@ A原版22c88bb仍有确定执行错误，已保存纯Python方法调用/替换�
 2. install用numpy.load读取JSON模型，解析会失败。仅作诊断修通解析后，direct_only加载结束的gain_q12为0，未恢复请求1631，loaded_count为None。应正确解析JSON，并按实际装载核验填系数身份/数量、恢复运行增益后再读identity。
 3. cancel_event预先置位时，V2 training仍调用driver。需要透传到plan/input/install/run及每次驱动的before_start检查，禁止取消后重新arm；C的收尾等待不能替代这一条。
 
+4. run.elapsed_seconds仍为包住初始化的墙钟时间。该run代码与A既有12a5491实物回执一致：请求30秒返回35.755秒；需由实际音频完成帧数给时长，并另列wall_seconds。
+
 本轮只给A以上必要修正，不再附泛化清单，不向B重复派活。修复后重组同一入口，才安排两布局/拨码/取消的一次完整现场窗口。
 
 ### 包与入口

@@ -15,7 +15,7 @@ def frozen_policy(algorithm):
         validation_kind='heldout_prediction',input_mode='prepared',cue=True,
         compute_timeout_seconds=30,io_timeout_seconds=30,quiet_seconds=2,run_seconds=30,
         indicator_encoding='led4',phase_gain_q12={k:[0,1631] for k in (
-            'prepare','cue','input','training','validation')})
+            'prepare','cue','input','training','validation','run')})
 
 
 def capture_plans(attempts):

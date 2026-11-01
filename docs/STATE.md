@@ -40,10 +40,10 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-01固定A 22c88bb/B 0b09ef6重组检查。B原字节SHA489064…、版本recal-algorithm-2026-11-01.1已接入，修正正负移位与0/1验证段已验证；仅跑受影响C/B检查71项通过。C补硬件收尾互斥、可撤销CAL排队、单档levels封装、独立落盘目录、原NPZ窗口字段接入、嵌入cue路径和明确受控现场参数；B不再新增修改请求。
-**当前卡点**：A原版方法离线调用复现3项必要修正：V2私有__meta不可见导致training/input报错；install用numpy.load读JSON，诊断修通后运行gain未恢复且loaded_count为空；预取消Event已置位仍调用driver。C未操板，未把隔离诊断补丁写入A候选；重组包仅审阅，维护和现场启动均关闭。只向A汇总这3项，不习惯性给A/B追加清单。
+**最后动作**：2026-11-01固定A 22c88bb/B 0b09ef6重组检查。B原字节SHA489064…、版本recal-algorithm-2026-11-01.1已接入，修正正负移位与0/1验证段已验证；仅跑受影响C/B检查72项通过。C补硬件收尾互斥、可撤销CAL排队、单档levels封装、独立落盘目录、原NPZ窗口字段接入、嵌入cue路径和明确受控现场参数；B不再新增修改请求。
+**当前卡点**：A原版方法离线调用复现4项必要修正：V2私有__meta不可见导致training/input报错；install用numpy.load读JSON，诊断修通后运行gain未恢复且loaded_count为空；预取消Event已置位仍调用driver；run时长仍混入初始化墙钟。C未操板，未把隔离诊断补丁写入A候选；重组包仅审阅，维护和现场启动均关闭。只向A汇总这4项，不习惯性给A/B追加清单。
 
-- [A运行时复现](../report/verification/recal-product-v1/a22-runtime-audit.json)、[71项受影响检查](../report/verification/recal-product-v1/closeout-software.json)、[固定载荷](../report/verification/recal-product-v1/closeout-assets.json)、[同一原件复算](../report/verification/recal-product-v1/closeout-data-review.json)、[本轮操作边界](ref/recal-product.md#本轮收口a-22c88bb--b-0b09ef6)、[接口](contracts/recal-runtime-v3.md)、[任务与纠错](../report/ai-records/recal-product-v1.md)。
+- [A运行时复现](../report/verification/recal-product-v1/a22-runtime-audit.json)、[72项受影响检查](../report/verification/recal-product-v1/closeout-software.json)、[固定载荷](../report/verification/recal-product-v1/closeout-assets.json)、[同一原件复算](../report/verification/recal-product-v1/closeout-data-review.json)、[本轮操作边界](ref/recal-product.md#本轮收口a-22c88bb--b-0b09ef6)、[接口](contracts/recal-runtime-v3.md)、[任务与纠错](../report/ai-records/recal-product-v1.md)。
 - 19秒驱动返回可由C收尾状态吸收：立即静音，旧调用未返回不启动新任务；CAL可排队、STOP可撤销，旧代次结果不启用候选。A仍须在取消/arm边界守住旧任务不能重新开声。
 - 同一八原件由新B复算：16382有效源帧保持原值；全6训练采集资格拒收、原验证同源而不独立；去首段5段仅诊断fit通过（L1约1.788、峰位/本轮延迟130）。不把该对照当模型验收，不新增字段格式重采要求。
 - 本轮本地shengdi-closeout-22c88bb-0b09ef6-review.zip只审阅，不自动入Git；原A描述和实际源SHA保留，未混入任何诊断别名/解析补丁。默认常驻、维护和现场参数均按本包门槛拒绝；A修正后复用同一检查再开放完整现场窗口。

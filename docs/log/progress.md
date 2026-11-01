@@ -2,7 +2,7 @@
 
 ## 2026-11-01 C 收口A22/B.1重组与必要阻塞复现
 
-按用户“仅真实需要改动才留言”收束，接B 0b09ef6原字节与A22描述；71项受影响检查通过，B正负移位/少段验证修正确认，同一原件结论保持采集资格/独立性拒收。C吸收旧调用晚返回、隔离文件与嵌入提示窗格式，未让硬件端隐式重扫档。A原版training/input私有名错误、install JSON解析及后续gain/count问题、预取消仍调用driver经隔离叶子I/O复现；诊断补丁未入候选。只给A必要3项，不追加B任务；现场/维护入口保持关闭，未操板。[A复现](../../report/verification/recal-product-v1/a22-runtime-audit.json)、[71项](../../report/verification/recal-product-v1/closeout-software.json)、[同一数据](../../report/verification/recal-product-v1/closeout-data-review.json)、[收口说明](../ref/recal-product.md#本轮收口a-22c88bb--b-0b09ef6)。
+按用户“仅真实需要改动才留言”收束，接B 0b09ef6原字节与A22描述；72项受影响检查通过，B正负移位/少段验证修正确认，同一原件结论保持采集资格/独立性拒收。C吸收旧调用晚返回、隔离文件与嵌入提示窗格式，未让硬件端隐式重扫档。A原版training/input私有名错误、install JSON解析及后续gain/count问题、预取消仍调用driver经隔离叶子I/O复现；run墙钟/音频口径由源码及A既有30秒回执核实；诊断补丁未入候选。只给A必要4项，不追加B任务；现场/维护入口保持关闭，未操板。[A复现](../../report/verification/recal-product-v1/a22-runtime-audit.json)、[72项](../../report/verification/recal-product-v1/closeout-software.json)、[同一数据](../../report/verification/recal-product-v1/closeout-data-review.json)、[收口说明](../ref/recal-product.md#本轮收口a-22c88bb--b-0b09ef6)。
 
 
 ## 2026-11-01 C 接A a3f516f与B冻结身份并复核现有原件

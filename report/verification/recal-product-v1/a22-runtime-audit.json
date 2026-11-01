@@ -58,11 +58,20 @@
   "required_A_fixes": [
     "ProductHardwareV2 private __meta resolves to missing _ProductHardwareV2__meta",
     "install uses numpy.load on JSON; after parsing also restore requested run gain and return actual loaded_taps count",
-    "propagate cancel_event through plan/install and driver before_start; old calls must not re-arm after stop"
+    "propagate cancel_event through plan/install and driver before_start; old calls must not re-arm after stop",
+    "run elapsed_seconds still measures wall time around initialization; return verified audio frames/rate and separate wall_seconds"
   ],
   "C_absorbs": [
     "late driver return via drain gate; no concurrent replacement hardware request",
     "missing window fields derived from immutable NPZ metadata",
     "one sealed level per attempt; no implicit adapter rescan"
-  ]
+  ],
+  "run_clock_audit": {
+    "current_run_body_matches_prior_A_receipt": true,
+    "prior_A_receipt_commit": "12a5491",
+    "requested_audio_seconds": 30.0,
+    "returned_elapsed_seconds": 35.755,
+    "current_code": "started=time.monotonic() before _capture; elapsed=time.monotonic()-started afterward; includes initialization",
+    "scope": "AST/source equality plus previously recorded A on-board receipt; C did not run a board trial"
+  }
 }

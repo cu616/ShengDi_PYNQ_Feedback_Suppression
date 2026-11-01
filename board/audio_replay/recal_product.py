@@ -540,6 +540,8 @@ class Product:
             if self.pending and self.clock()>self.job_deadline: raise Failure('hardware_error','阶段超时，已停止')
             if poll.get('protected'):
                 raise Failure('input_overload' if poll.get('input_clip') else 'protected','硬件保护停声')
+            if self.state=='running':
+                self.gain_scope='run' if poll.get('effective_mode')=='muted' else 'runtime'
             self._identity(poll['identity'])
             mode=poll.get('effective_mode')
             if mode not in ('muted','cancel','bypass'): raise Failure('hardware_error','实际模式未知')
