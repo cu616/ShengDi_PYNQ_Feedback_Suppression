@@ -19,3 +19,27 @@ report/verification/recal-product-v1/package-check.json
 report/verification/recal-product-v1/software-tests.json
 scripts/assemble_experiment.py
 sim/feedback/test_recal_product.py
+
+# B-policy consumer: cef636b..175e469 plus final package receipt
+board/audio_replay/recal_policy_consumer.py
+board/audio_replay/recal_product.py
+docs/STATE.md
+docs/contracts/README.md
+docs/contracts/recal-policy-consumer-v1.md
+docs/contracts/recalibration-policy-v1.md
+docs/lines/c-measurement.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/b-policy-integration.json
+report/verification/recalibration-policy-2026-11-01/README.md
+report/verification/recalibration-policy-2026-11-01/cases.json
+scripts/assemble_experiment.py
+scripts/recal_offline_cases.py
+sim/feedback/test_recal_policy.py
+sim/feedback/test_recal_policy_consumer.py
+sim/feedback/test_recal_product.py
+src/feedback/excitation.py
+src/feedback/recal_policy.py
+report/verification/recal-product-v1/policy-package-check.json
+report/verification/recal-product-v1/changed-files.txt

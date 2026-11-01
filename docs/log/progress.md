@@ -2,7 +2,7 @@
 
 ## 2026-11-01 C 承接B判定库与三项确认
 
-接口变更：新增recal-policy-consumer-v1扩展，B契约按edfa698原样引入。C显式要求三点及采集/拟合齐全，绑定本轮estimate_lag与训练原件；四类cause分别停声/无法评价/拒收，原回执留存，有限激励重试只匹配预封装下一档。B的0 dB SNR与30%门控阈值未改。相关67项软件检查通过，B七文件原字节一致；8份已存B输出只做字段映射，D3为构造样例，未声称新实测或原PCM重算。另只读确认A=31882e0已提供灯键实测，未再沿用旧缺I/O结论。实体适配/拟合包装与统一现场验收仍待交付，未操板。[消费接口](../contracts/recal-policy-consumer-v1.md)、[检查回执](../../report/verification/recal-product-v1/b-policy-integration.json)、[操作说明](../ref/recal-product.md)。
+接口变更：新增recal-policy-consumer-v1扩展，B契约按edfa698原样引入。C显式要求三点及采集/拟合齐全，绑定本轮estimate_lag与训练原件；四类cause分别停声/无法评价/拒收，原回执留存，有限激励重试只匹配预封装下一档。B的0 dB SNR与30%门控阈值未改。相关67项软件检查通过，B七文件原字节一致；8份已存B输出只做字段映射，D3为构造样例，未声称新实测或原PCM重算。175e469干净源码冻结新版本地ZIP，独立解压入口/回包/B库导入通过，实体模式仍拒绝。另只读确认A=31882e0已提供灯键实测，未再沿用旧缺I/O结论。实体适配/拟合包装与统一现场验收仍待交付，未操板。[消费接口](../contracts/recal-policy-consumer-v1.md)、[检查回执](../../report/verification/recal-product-v1/b-policy-integration.json)、[包身份](../../report/verification/recal-product-v1/policy-package-check.json)、[操作说明](../ref/recal-product.md)。
 
 ## 2026-11-01 C 交常驻重标定产品软件v1
 
