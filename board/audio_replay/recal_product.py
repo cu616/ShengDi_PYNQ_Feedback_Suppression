@@ -69,12 +69,14 @@ class ModelStore:
     def invalidate(self, scene, reason):
         write_json(self.pointer,dict(eligible=False,scene_id=scene,reason=reason))
 
-    def stage(self, path, expected, scene, identity, validation):
+    def stage(self, path, expected, scene, identity, validation, simulation=False):
         from residual_tools import load_candidate
         import numpy as np
         if sha(path)!=expected: raise Failure('model_rejected','候选文件身份不一致')
         try: model,q=load_candidate(path,scene,identity['hp_volume'],identity['sample_rate_hz'])
         except (ValueError,KeyError): raise Failure('model_rejected','候选模型格式或Q20不兼容')
+        if model.get('simulation') is True and not simulation:
+            raise Failure('model_rejected','模拟模型不得安装到实体产品')
         if model['taps']!=512: raise Failure('model_rejected','模型抽头数不兼容')
         qsha=hashlib.sha256(np.asarray(q,dtype='<i4').tobytes()).hexdigest()
         folder=self.root/'archive'/(scene+'-'+expected)
@@ -388,7 +390,8 @@ class Product:
             ids=[r['capture_id'] for r in self.validation]
             if reply.get('qualifies_cancellation') is not True or reply.get('model_sha256')!=self.candidate['sha256'] or reply.get('validation_ids')!=ids or not reply.get('evidence'):
                 raise Failure('data_insufficient','独立效果判断/验证身份不足，未启用候选')
-            self.bundle=self.store.stage(self.candidate['path'],self.candidate['sha256'],self.scene,self.cfg['expected_identity'],reply)
+            self.bundle=self.store.stage(self.candidate['path'],self.candidate['sha256'],self.scene,self.cfg['expected_identity'],reply,
+                                         simulation=self.cfg.get('simulation',False))
             self._state('installing');self._hw('install',**{k:self.bundle[k] for k in ('model_path','model_sha256','coefficients_sha256')})
 
     def tick(self):

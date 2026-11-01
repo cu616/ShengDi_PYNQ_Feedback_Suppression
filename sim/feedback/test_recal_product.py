@@ -161,6 +161,13 @@ class ProductTests(unittest.TestCase):
         app,hw,_=self.app();self.ready(app);hw.events=[dict(kind='start'),dict(kind='stop')]
         app.tick();self.assertNotIn('run',hw.calls)
 
+    def test_simulation_model_cannot_be_installed_in_physical_mode(self):
+        cfg=sample_config();cfg['simulation']=False
+        app,hw,_=self.app(cfg);app.event('recalibrate')
+        self.until(app,lambda:app.state=='failed')
+        self.assertEqual(app.outcome,'model_rejected');self.assertNotIn('install',hw.calls)
+        self.assertFalse(self.pointer(app)['eligible'])
+
     def test_invalid_cue_timeline_stops_instead_of_replaying_cues(self):
         app,hw,_=self.app();original=hw.perform
         def invalid(req,cancel):
