@@ -1,0 +1,25 @@
+{
+  "position": "P4_50cm",
+  "verdict": "FAIL",
+  "stage": "verify",
+  "rc": 15,
+  "measurements": {
+    "floor_dbfs_median": -38.98,
+    "floor_samples": [
+      -39.27,
+      -38.98,
+      -19.76
+    ],
+    "snr_db": 8.94,
+    "L1": 3.635,
+    "L1_deployed": 2.288,
+    "max_h": 0.0874
+  },
+  "failure": "the open arm (direct_only, no output) tripped input full scale: at 50 cm the 322 Hz acceptance tone at 0.15 FS reaches the microphone above the ADC rail, so the trial carries no usable input evidence",
+  "reading": [
+    "The refit itself succeeded and L1 rose to 3.64 (against 2.29 deployed), which is what a 7 dB stronger coupling should look like.",
+    "The entry refused, correctly: the acceptance stimulus saturates the input at this distance before any canceller question is asked.",
+    "So 50 cm is outside the usable range for this configuration as specified (source -19.3 dBFS RMS, gain -8 dB, Codec 40, 322 Hz tone at 0.15 FS). This is a headroom limit, not a model failure."
+  ],
+  "not_done": "I did not lower the tone level to force a pass; that would change the acceptance stimulus and needs the captain/B to agree."
+}
