@@ -100,12 +100,17 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') and config.get('compute_timeout_seconds',0)<15:
             raise ValueError('fit timeout must be at least 15 seconds')
     (out/'product-config.json').write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    (out/'OPERATIONS.md').write_text((ROOT/'docs/ref/recal-product.md').read_text(encoding='utf-8').replace(
+    operations=(ROOT/'docs/ref/recal-product.md').read_text(encoding='utf-8').replace(
         '../contracts/recal-product-v1.md','INTERFACE.md').replace(
         '../contracts/recal-policy-consumer-v1.md','POLICY-CONSUMER.md').replace(
         '../contracts/recal-runtime-v2.md','RUNTIME.md').replace(
         '../contracts/recal-runtime-v3.md','FROZEN-RUNTIME.md').replace(
-        '../contracts/recal-runtime-v4.md','INSTALL-RUNTIME.md'),encoding='utf-8')
+        '../contracts/recal-runtime-v4.md','INSTALL-RUNTIME.md').replace(
+        '../contracts/recalibration-algorithm-v1.md','ALGORITHM.md')
+    # Historical evidence belongs to the source repository, outside this install whitelist.
+    import re
+    operations=re.sub(r'\[([^\]]+)\]\(\.\./\.\./report/[^)]+\)',r'\1（见源码仓库report目录）',operations)
+    (out/'OPERATIONS.md').write_text(operations,encoding='utf-8')
     (out/'INTERFACE.md').write_text((ROOT/'docs/contracts/recal-product-v1.md').read_text(encoding='utf-8').replace(
         '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     (out/'POLICY.md').write_bytes((ROOT/'docs/contracts/recalibration-policy-v1.md').read_bytes())
