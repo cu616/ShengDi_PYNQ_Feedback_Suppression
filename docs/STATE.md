@@ -40,13 +40,13 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-01接收A c49662d/B 0bdf7fa，B六文件原字节一致。C交整机扩展v2、真实B包装与三档源计划、30秒fit时限、讲话健康/训练激励资格分离、原子cue_input事件路径、BTN/LED适配、armed延后写、run含准备开销的超时预算及显式预测口径。95项相关软件检查通过，含真实B子进程+模拟六训练两验证全流程；首次临时目录权限和模拟停止竞态等纠错保留在回执。
-**当前卡点**：正式实体启用仍阻塞。A根hw_api=f617如实prepared_capture=false，但v3-io包内仍2f253声明true，原包8/8哈希自洽而未同步能力修正。离线调用确认训练6段计划被忽略为1段默认采集，install模型文件SHA与Q20 SHA混填；原子讲话窗、真实源/路径/阶段增益、armed指示防护、运行模型/时长回读及并发取消仍待A适配。B混合本轮延迟会负长度对齐报错，最少两段验证常量未被原validate检查；C已加缺段拒收，未改B算法。已有现场原件保留，不因格式要求重跑；一次完整现场窗口仍由A安排。
+**最后动作**：2026-11-01固定A a3f516f/B 2ccf746交冻结接入v3：直接B identity/evaluate，ATTEMPTS原样、fit30秒、讲话同档有界重说、算法身份写包及每轮回执；C同一入口提供A三秒维护检查。105项相关软件检查通过，包含C main→原版A factory完整方法链，叶子MMIO/Codec/driver均离线替换。A根/发布hw_api均3549，原manifest实际8项全部吻合；安装双哈希修正已接入。
+**当前卡点**：C入口真实板卡调用未执行，普通常驻流程仍因prepared_capture=false阻塞；先prepare再input仍会再次下载。install登记next_capture未获实际装载回读时不提交有效current。A需在factory落实固定预热/讲话窗口及运行身份/时长回读；B对16382帧适用域和首段采集资格裁决仍需明确。未以板卡重构建或格式重采代替现有原件复核。
 
-- [整机扩展及A/B输入输出](contracts/recal-runtime-v2.md)、[首次安装/实体按钮/一次性交接](ref/recal-product.md#c给ab的一次性交接)、[95项软件验证](../report/verification/recal-product-v1/runtime-integration.json)、[审阅包身份与解压检查](../report/verification/recal-product-v1/runtime-package-check.json)、[A/B原样交付审计](../report/verification/recal-product-v1/a-b-delivery-audit.json)、[B算法口径](contracts/recalibration-algorithm-v1.md)、[任务与纠错](../report/ai-records/recal-product-v1.md)。
-- C同意A实施cue+input单次驱动调用：下载/握手在三连音之前，尾声后input_ready才提示讲话，同scene/源帧域；旧prepared_capture=false不能仅翻标志。B input改用于训练激励，不再要求人声相干；讲话仅健康检查。三档固定-22/-19.3/-16.5，6/2段，所有实际源逐seed验证可达与独立。单次结束不拼段，STOP不等待计算。
-- 新profile只把300–460Hz独立段预测抑制当数值验收，保留not_asg/meaning及B原回复，不冒称三臂实测、MSG/ASG或听感；旧三点Consumer仍保持缺三点不可启用。模型/config在实际安装身份匹配后才原子提交；移动后失败不恢复旧模型。
-- 本轮本地shengdi-recal-runtime-v2-review.zip为真实A/B组合审阅包，deployment_ready=false，真实启动和安装检查拒绝；A源码/驱动/位流不回写C旧副本，B算法不改，C未操板。旧v1与v1-policy软件包保留原身份，不作为现场已完成证据。包、原片、授权书及大文件均不自动进Git。
+- [冻结接入及维护命令](contracts/recal-runtime-v3.md)、[A/B可执行操作单](ref/recal-product.md#c给ab的一次性交接)、[105项软件检查](../report/verification/recal-product-v1/frozen-integration.json)、[固定资产身份](../report/verification/recal-product-v1/frozen-assets.json)、[现有8段独立复核](../report/verification/recal-product-v1/frozen-data-review.json)、[任务与纠错](../report/ai-records/recal-product-v1.md)。
+- 八段源有效帧均16382；当前B算法全6训练以采集资格拒绝，且原训练/验证源SHA重复而不独立。仅作回顾诊断的“去首段5训练”fit通过（L1约1.788，峰位/本轮延迟130一致）；没有将其当模型验收或自动删段。先取A已存4243验证原件，不因格式重跑。
+- 本轮本地shengdi-recal-frozen-a3f516f-2ccf746.zip固定A/B原字节，允许A显式当前模型+完整SHA的维护检查；默认正式启动/安装仍拒绝。旧v1/v2包保留历史身份。C未操板、未改A实现或B冻结算法，没有默认安装旧场景模型。
+- 另只读收到A main=12a5491真人主路30秒completed及“有放大/清晰/无啸叫”听感回执，记录为A现场证据；C正式入口未上板，当前候选不静默混入该后续源码。105项软件结果、B预测验证、A主观回报及ASG口径分别保存。
 
 ## 已验证 / 未验证（只在这里写一次）
 

@@ -133,3 +133,18 @@ check_fit 的 expected_peak_tap 必须传本轮 estimate_lag 的结果，不是�
 - B在target-lag<0时np.zeros(shift)报负维度，以相差1帧的本轮延迟复现；C不修改B数值逻辑。原validate未检查两段最小值，C按B契约在消费边界拒收单段。
 - 首次82项有14错误：B测试写系统临时目录权限不足，改TEMP/TMP/tempfile.tempdir到仓库tmp，B原测试不改。C新增10项初跑两失败：mock run在启动sleep后可迟到arm、缺ready测试在其他线程读走事件后才清空；修正mock取消检查与夹具发送开关。最终95项通过，含B原15项、策略/消费者及产品相关检查；不重跑无关旧大套。
 - 正式启用仍有A/B外部缺项；交deployment_ready=false的真实组合审阅件，入口检查在导入A硬件前拒绝。只推C，人工转发交接，未使用REQUESTS等待。
+
+
+## 2026-11-01 A a3f516f / B 2ccf746交接
+
+用户要求按A a3f516f接create_product到C唯一入口，A仅提供硬件对象，报告prepared_capture=false、每次重下载约1秒、有效源16382帧及首段11dB偏高；请求create_product/capabilities/prepare/training1/install/run3/abort链路与事件/安装字段确认。用户转发B冻结recal-algorithm-2026-11-01，要求identity版本/文件SHA入包及每轮、evaluate直接接请求、ATTEMPTS原样、fit>=15秒；预测资格不等整机/ASG/听感。
+
+C先fetch取得A/B指定对象和后续main=12a5491；pull C首次TLS EOF、重试成功。指定A/B按固定对象处理，不把后续保护/预热修正静默混入。B契约原样更新单独规则提交；C未改B冻结字节、未操板。
+
+从C main调用原A factory，只有MMIO/PYNQ、Codec和driver叶子替换，实际执行方法链并保存断言；105项相关检查通过。字段事件名与install双哈希已兼容。维护通过同一recal_entry --adapter-check，A显式给当前模型路径和完整SHA；不默认装仓库旧模型，混SHA在硬件创建之前拒绝。最终finally abort，下一捕获生效不提前提交eligible模型。
+
+B直接evaluate已支持讲话，C正式profile撤掉自己的讲话阈值；同档有限重说、fit才升档，包/每轮/worker绑定B identity和EXIT_REASONS。canonical ATTEMPTS未改，另给每操作flat captures传输计划及4242/4243种子；原件可从白名单run_dir_root按SHA复制接入scene，原件和metadata不改。
+
+复核A原manifest实际8项并全吻合，根与发布API均3549；没有按消息“9项”编造第9项。对已有bwindow八原件，首次假设metadata带source SHA导致KeyError，随后明确从原PCM计算来源SHA并保留metadata缺项，不让格式问题迫使重采。全部有效源窗16382；B全6训练因采集资格拒收，原训练/验证源SHA共享。去首段5段仅回顾诊断fit通过（L1约1.788、峰位/本轮延迟130），不自动删除首段或当验收。B帧数适用域裁决及A固定预热仍待明确。
+
+只读取得A后续真人30秒completed/“有放大、清晰、无啸叫”回执，归为A现场和主观记录；回执自身注明C正式入口尚未调用、尾窗仅16384帧。没有将其写作C上板/ASG。当前prepared_capture=false依然阻塞默认产品流程；先prepare后input仍重新下载，未将“明确等待”当作原子窗已实现。

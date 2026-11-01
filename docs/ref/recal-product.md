@@ -1,6 +1,6 @@
 # 一键重标定产品操作单
 
-维护C；基础消息见[recal-product-v1](../contracts/recal-product-v1.md)，当前A/B对接见[整机扩展v2](../contracts/recal-runtime-v2.md)。正式唯一入口是板卡安装目录的`recal_entry.sh`。原批次脚本只用于历史证据复算，不再作为日常入口。
+维护C；基础消息见[recal-product-v1](../contracts/recal-product-v1.md)，当前A/B对接见[冻结接入v3](../contracts/recal-runtime-v3.md)。正式唯一入口是板卡安装目录的`recal_entry.sh`。原批次脚本只用于历史证据复算，不再作为日常入口。
 
 ## 本轮硬件前提
 
@@ -12,7 +12,7 @@
 
 v3-io映射：BTN0长按至少1秒为CAL，短按忽略；BTN1按当前运行状态开始/停止；BTN2确认安静；BTN3取消并静音。四位LED：0000待标定，0001准备/计算，0010讲话（三连音及尾声结束后），0100保持安静，1000就绪/运行，1111未通过/无法评价/保护。1111时保持静音，按CAL重新检查；重复出现或显示设备不能启动时联系维护，不提高音量。运行单次结束由实际音频停止和状态回执区分；实际模式的独立实体指示仍须由A落实，不能用软件日志代替。
 
-待标定：白慢闪/1闪，按CAL；讲话：青闪/2闪，三连音结束后自然讲话；安静：蓝闪/3闪，保持安静，可能播放测试声；计算/验证：黄/4闪，STOP始终可用；就绪：绿常亮，按START；失败/保护：红加错误闪数/文字，停止声音，按CAL重做；运行结束：绿慢闪，明确“本次扩声已结束”，再按START才新运行。颜色不可用时必须贴闪数图例；模式另用灯或文字，不从开关请求猜实际生效。
+本包按四位LED图例操作，不依赖RGB颜色。准备完成和提示尾声结束后才轮到用户讲话；0001期间继续等待。1111时停止讲话并保持静音，按CAL重新检查，重复无变化则联系维护。模式指示须来自实际生效状态。
 
 ## 安装与日常操作
 
@@ -26,9 +26,11 @@ python scripts/assemble_experiment.py --product --output materials/staging/tmp/r
 
 A清单还提供allowed_gain_q12；B策略的phase_gain_q12明确开环采集/验证和运行各阶段允许值。开环0增益与就绪运行增益不能混写，所有阶段值必须在A允许集合内；运行时不接受阶段列表放宽后的漂移。
 
-B判定库按[数值消费接口](../contracts/recal-policy-consumer-v1.md)调用；C已提供Consumer，包装器把其返回字段与原有evaluate任务身份/模型字段合并。使用B默认三点必需语义，缺项不能安装；本轮estimate_lag须绑定训练捕获。库与阈值由B维护，C消费器只处理状态、来源及有界重试。封装目录仍须含真正的捕获解析/拟合包装器与受审策略，不能把纯判定库当成完整算法适配。
+B冻结产品直接调用recal_algorithm.identity/evaluate，runtime_profile=b-frozen-v1；config.attempts深拷贝B ATTEMPTS，fit时限30秒。讲话input由B判，训练后直接fit、独立验证后validate；C不另立讲话阈值。包和每轮回执绑定version/file_sha256完整identity。旧三点Consumer及v2包装为历史/模拟用途。
 
-runtime_profile=b-heldout-v1使用B的真实evaluate，经C recal_runtime包装。讲话仅查完整性/满幅，不向人声要求激励相干；训练后才做B input资格检查。fit时限30秒，三档-22/-19.3/-16.5，六训练两验证。候选通过表示独立段300–460Hz预测抑制合格；状态和回执明确heldout_prediction/not_asg，不表示三点闭环实测、MSG/ASG或听感。旧三点Consumer不改口径。
+三档和6/2段B策略不改；另用capture_plans转换A接受的flat captures/level_dbfs/seed字段，训练4242、验证4243，数值请求保留原plan。A原件落在run_dir_root时，C仅从白名单根按SHA复制接入本scene，保留原件路径、PCM和metadata；不因格式重采。
+
+候选通过仅表示独立段300–460Hz预测抑制合格，heldout_prediction/not_asg/meaning原样保留。讲话重说有界且保持同档；fit retry才前进一档；validate不重试。安装applies_at=next_capture先记待生效，尚无实际装载回读时不提交eligible current。
 
 不带两个适配目录时生成明确的software_simulation_only包，两端均使用模拟实现，不拼接部分真实硬件和模拟算法；日常入口和安装器会拒绝以真实模式启动。真实适配齐备后deployment_ready表示文件已绑定，仍须现场验收，不等于已经证明声学效果。
 
@@ -81,12 +83,30 @@ bash /opt/shengdi/current/recal_entry.sh --state-dir /home/xilinx/.local/state/s
 
 ## C给A/B的一次性交接
 
-A：同意你实施cue+input单次调用方案，改动限硬件适配及驱动调用；按整机扩展v2给匹配请求/scene的input_ready事件，同域排除三连音和尾声。当前prepared_capture=false不能正式启用；不能仅修改capability。events名称兼容，C已过滤短按BTN0并按自身状态解释BTN1；LED已翻译为四位，armed时C延后写，A仍须做寄存器侧竞态防护。
+A a3f516f的事件名recalibrate/start/stop/cancel/confirm_quiet/mode与C一致；短按BTN0和BTN1切换已兼容。install请求model_path/run_gain_q12，回复model_sha256/coefficients_sha256/applies_at也已接入，无须改名。API根/发布副本3549及双哈希已更新，旧f617/2f253及混填问题不再列为本轮缺项。
 
-A需一并补齐：按request.plan.training/validation执行6/2段及真实白噪源（当前默认单段、固定16000个零）；路径使用request.run_dir；允许开环实际gain_q12=0且mute不清除运行配置；install真正完成系数安装并分别返回文件SHA和实际Q20 SHA（不能仅解析JSON）；running poll实际模型/Q20回读、音频帧时长与初始化墙钟分开；并发取消后旧driver不得重新arm。独立实际模式灯/指示及hp_volume实际读回来源也需补充。B模型fixture_id绑定scene，A运行不得继续钉旧fixture；初次零系数采集若依赖启动模型文件，应显式列入白名单，不依赖板上未声明的旧模型。根目录f617与v3-io包内2f253分歧应在A刷新manifest时统一；C审阅包明确选f617，不覆盖A仓库文件。
+prepared_capture=false仍阻塞普通正式流程：prepare之后的input仍会重下位流，不能据prepare=true提前宣称讲话窗已备好。维护链路可先用同一入口独立跑。固定预热选择由A在create_product内实现并单独记录，不把看到异常后的首段删除冒充预热；B ATTEMPTS仍为6训练/2验证。B对16382帧的适用域裁决保留原件，不补零、不直接要求40分钟重构建。
 
-打包字段：product-adapter.json中的contract/kind/source_commit/hashes、expected_identity十项、allowed_gain_q12、allowed_calibration_gain_q12、capabilities实测回执、blockers及physical-controls.json。每段capture_id含scene/attempt/phase/index；原NPZ/source SHA和本地源坐标保留；C按同一原件离线适配，格式问题不要求重跑有效数据。
+### A一次性维护操作（板卡）
 
-B：三档和30秒fit预算已接入，原evaluate及阈值未改；retry仅input/fit且前进下一档，validate不重试。请修复fit/validate中target-lag为负时np.zeros(shift)报错（C已用相差1帧的当前延迟复现）。MIN_VALIDATION_CAPTURES=2在原validate未被实际检查，C消费层已按你的契约补缺段拒收，建议B也补生产检查。独立预测口径完整保留，不写成ASG/听感。seed4242/16384帧实算可达上限为-14.070dBFS，-16.5实际峰值约0.605；C保留你的三档，并对所有封装seed逐个验证可达，不使用约-17的估算作为执行参数。
+电脑包为materials/final/shengdi-recal-frozen-a3f516f-2ccf746.zip，ZIP不进Git。A将其解压到板卡/home/xilinx/shengdi-install/recal-frozen-a3f516f/。先结束A已有采集/演示，下面只由A执行；默认常驻安装仍会因能力缺项拒绝。
 
-本轮电脑审阅件为materials/final/shengdi-recal-runtime-v2-review.zip，源和哈希读对应机器回执；只能解压审阅/离线软件验证，真实启动和安装检查必须失败。修正完成后C用同一打包器重组正式现场包，入口仍为recal_entry.sh。
+显式绑定A当前已核对模型，不默认安装仓库旧模型：
+
+```bash
+current_model=/home/xilinx/jupyter_notebooks/base/audio/audio_io/model_recalibrated.json
+current_model_sha=$(sha256sum "$current_model" | cut -d ' ' -f 1)
+bash /home/xilinx/shengdi-install/recal-frozen-a3f516f/recal_entry.sh --adapter-check --model "$current_model" --model-sha256 "$current_model_sha" --state-dir /home/xilinx/.local/state/shengdi/maintenance-a3f516f
+```
+
+此命令执行create_product→mute/capabilities→prepare→training一段（开环）→install→run三秒→finally abort。会播放训练激励并做三秒运行，无需人声；不是普通用户重标定验收，不写eligible current。回传单个/home/xilinx/.local/state/shengdi/maintenance-a3f516f/adapter-check.json即可，包含逐步请求/回复、实际模型和B算法身份、结束/静音情况及不兼容项。源模型文件保持原位。
+
+### B现有数据裁决
+
+C用a3f516f已有bwindow八段原件及2ccf746原算法复核：有效源窗均16382；全6训练因采集资格拒绝；原训练与原验证源SHA重复，因此不能当独立验证。固定“排首段”仅作回顾诊断时，其余5段fit通过，L1约1.788、峰位与本轮延迟130一致；没有把这个对照当验收或自动筛数据。
+
+请B基于同一原件确认16382是否适用、首段资格与固定预热方案；先使用A已保存的4243独立验证原件（至少两段）补复核，不为字段格式重采。若确需算法变更，用新版本/新identity交接，保持本冻结文件字节不变。C继续使用30秒预算与B原策略；算法的预测资格不写成ASG或听感。
+
+### 当前证据边界
+
+C已从入口执行原版A工厂，但PYNQ/MMIO/Codec/driver叶子被离线替换；真实上板检查留给A。另读main=12a5491的真人主路30秒回执，收录A的completed及“有放大/清晰/无啸叫”主观报告；那不是C入口已上板。此次候选固定a3f516f，不静默混入后续A保护/预热更正。

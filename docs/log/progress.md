@@ -1,5 +1,10 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-01 C 接A a3f516f与B冻结身份并复核现有原件
+
+接口变更：交冻结接入v3，直接调用B 2ccf746 identity/evaluate，ATTEMPTS原样及30秒预算，包/每轮/计算回包绑定版本SHA。同一入口加A维护检查与显式当前模型SHA；原版A factory经C main调用、底层叶子I/O替换验证，105项相关软件通过。固定A根/发布3549及8项manifest；接双哈希/applies_at，次捕获生效未获回读不提交current。只读复算已有八段16382帧，全训练拒收/验证同源；去首段5段仅诊断fit通过，不升格验收。普通流程保留prepared_capture阻塞，C未操板。另归档A后续真人30秒回执的来源与听感范围，不混源码。[接口](../contracts/recal-runtime-v3.md)、[105项](../../report/verification/recal-product-v1/frozen-integration.json)、[现有数据](../../report/verification/recal-product-v1/frozen-data-review.json)、[A/B操作](../ref/recal-product.md#c给ab的一次性交接)。
+
+
 ## 2026-11-01 C 对接A整机适配与B真实evaluate
 
 接口变更：C交整机扩展v2，允许A实施原子cue_input，以匹配的ready事件约束讲话提示；保留prepared_capture缺项阻塞。接入B 0bdf7fa原字节，自带30秒时限和三档6/2段源计划；区分讲话健康与激励资格，保存独立预测口径，补两验证段拒收。95项软件检查通过，真实B子进程配模拟采集到ready；A原包8/8但hw_api根/包分裂、六段计划变单段、安装hash混填经离线调用确认，B负延迟对齐已复现。90a96ac干净源码冻结27项载荷审阅包，独立解压/身份核对/B worker通过，真实和混合模拟启动均退出2。不改A/B实现、不操板、不要求重跑有效原件。[接口](../contracts/recal-runtime-v2.md)、[95项](../../report/verification/recal-product-v1/runtime-integration.json)、[包核验](../../report/verification/recal-product-v1/runtime-package-check.json)、[交付审计](../../report/verification/recal-product-v1/a-b-delivery-audit.json)、[一次性交接](../ref/recal-product.md#c给ab的一次性交接)。

@@ -15,6 +15,7 @@ import threading
 import time
 import uuid
 from recal_policy_consumer import consume_reply
+from recal_link import ingest, adapter_check
 
 CONTRACT = 'recal-product-v1'
 IDENTITY = ('aux_db','aux_raw_left','aux_raw_right','hp_volume','gain_q12','sample_rate_hz',
@@ -147,8 +148,9 @@ class Product:
         self.hardware_receipts=[]
         self.algorithm_receipts=[];self.cause=None
         self.job_deadline=None
-        self.gain_scope='prepare' if config.get('runtime_profile')=='b-heldout-v1' else 'runtime'
+        self.gain_scope='prepare' if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') else 'runtime'
         self.caps={};self.input_ready=None;self.indicator_deferred=False
+        self.speech_retries=0
         self.store.invalidate(self.scene,'boot_requires_calibration')
         try:
             self._muted(initial_mute)
@@ -160,8 +162,13 @@ class Product:
                       else caps.get('prepared_capture') is True)
             if caps.get('contract')!=CONTRACT or not all(caps.get(k) is True for k in required) or not prepared:
                 raise Failure('hardware_error','实体按键/提示/停止接口尚不可用')
-            if config.get('runtime_profile')=='b-heldout-v1' and float(config.get('compute_timeout_seconds',0))<15:
+            if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') and float(config.get('compute_timeout_seconds',0))<15:
                 raise Failure('data_insufficient','真实拟合计算时限不得低于15秒')
+            if config.get('algorithm_identity'):
+                actual=importlib.import_module(config['algorithm_module']).identity()
+                expected=config['algorithm_identity']
+                if any(actual.get(k)!=expected.get(k) for k in ('version','file_sha256')):
+                    raise Failure('hardware_error','数值算法版本/文件身份混搭')
             from residual_tools import load_candidate  # Resolve dependencies before asking for speech.
             if not callable(getattr(importlib.import_module(config['algorithm_module']),'evaluate',None)):
                 raise Failure('hardware_error','数值接口尚不可用')
@@ -207,6 +214,9 @@ class Product:
             hardware_receipts=self.hardware_receipts,
             algorithm_receipts=self.algorithm_receipts,cause=self.cause,
             validation_kind=self.cfg.get('validation_kind'),input_ready=self.input_ready,
+            algorithm_identity=self.cfg.get('algorithm_identity'),speech_retries=self.speech_retries,
+            numeric_exit_reason=self.cfg.get('algorithm_identity',{}).get('strategy',{}).get('exit_reasons',{}).get(
+                self.algorithm_receipts[-1]['reply'].get('decision') if self.algorithm_receipts else None),
             indicator_deferred=self.indicator_deferred,
             waveform_policy='PCM stays on board; file paths and original hashes retained',hardware_error_latched=self.fatal)
         write_json(self.root/'status.json',status)
@@ -279,6 +289,7 @@ class Product:
                 self.hardware_receipts=[]
                 self.algorithm_receipts=[];self.cause=None
                 self.input_ready=None
+                self.speech_retries=0
                 self.attempt=0;self.cue_end=0;self.outcome=None;self.reason='';self.run_result=None
                 self.cancel=threading.Event();self._state('preparing');self._hw('prepare',phase='input')
             elif kind=='start' and self.state in ('ready','ended') and self.bundle:
@@ -311,13 +322,19 @@ class Product:
             plan=self.cfg['attempts'][self.attempt],**extra)
 
     def _hw(self, op, **extra):
-        self.gain_scope=op;self._submit('hw',self._request(op=op,**extra),self.hw.perform)
+        self.gain_scope=op;request=self._request(op=op,**extra)
+        if op in ('training','validation') and self.cfg.get('capture_plans'):
+            request['plan']=json.loads(json.dumps(self.cfg['capture_plans'][self.attempt][op]))
+            for index,item in enumerate(request['plan']['captures']):
+                item['capture_id']='%s-%s-%s-%s'%(self.scene,self.attempt,op,index)
+        self._submit('hw',request,self.hw.perform)
     def _alg(self, phase):
         request=self._request(phase=phase,training=self.training,validation=self.validation,
             input=self.training if phase=='input' and self.cfg.get('runtime_profile')=='b-heldout-v1' else self.input_records,
             model_path=self.candidate['path'] if self.candidate else None,
             model_sha256=self.candidate['sha256'] if self.candidate else None,
             compute_timeout_seconds=self.cfg.get('compute_timeout_seconds',120),attempts_total=len(self.cfg['attempts']))
+        if self.cfg.get('algorithm_identity'): request['algorithm_identity']=self.cfg['algorithm_identity']
         self._submit('algorithm',request,self.calculator.evaluate)
 
     def _envelope(self, req, reply):
@@ -349,6 +366,7 @@ class Product:
         if reply.get('status')=='protected': raise Failure('protected','硬件保护停声')
         if reply.get('ok') is not True or reply.get('status')!='completed':
             raise Failure('hardware_error',reply.get('reason','硬件操作未完成'))
+        reply=ingest(req,reply,self.cfg.get('capture_import_root'))
         op=req['op']
         if op=='prepare':
             phase=req['phase']
@@ -379,6 +397,8 @@ class Product:
             self._state('fitting');self._alg('input' if self.cfg.get('runtime_profile')=='b-heldout-v1' else 'fit')
         elif op=='validation':
             self.validation=self._captures(reply)
+            if self.cfg.get('runtime_profile')=='b-frozen-v1' and len(self.validation)<self.cfg['algorithm_identity']['thresholds']['min_validation_captures']:
+                raise Failure('data_insufficient','独立验证段数少于冻结B策略要求')
             self.capture_history.append(dict(stage=op,attempt=self.attempt,captures=self.validation))
             for field in ('capture_id','source_sha256'):
                 if {r[field] for r in self.training}&{r[field] for r in self.validation}:
@@ -387,6 +407,8 @@ class Product:
         elif op=='install':
             for key in ('model_sha256','coefficients_sha256'):
                 if reply.get(key)!=self.bundle[key]: raise Failure('model_rejected','安装实际身份不一致')
+            if reply.get('applies_at')=='next_capture':
+                raise Failure('data_insufficient','安装仅登记为下次采集生效，尚无实际装载回读')
             self._muted(self.hw.mute());self.gain_scope='runtime';self._identity(self.hw.poll()['identity'])
             self.store.commit(self.bundle)
             self.outcome='valid_pass';self.reason='独立验证与安装通过';self._state('ready')
@@ -404,13 +426,21 @@ class Product:
     def _algorithm_done(self, req, reply):
         self._envelope(req,reply)
         self.algorithm_receipts.append(dict(request=req,reply=reply));self.checkpoint()
+        if self.cfg.get('algorithm_identity') and any(reply.get('algorithm_identity',{}).get(k)!=
+            self.cfg['algorithm_identity'].get(k) for k in ('version','file_sha256')):
+            raise Failure('hardware_error','计算回包的算法版本/文件身份混搭')
         following=self.cfg['attempts'][self.attempt+1] if self.attempt+1<len(self.cfg['attempts']) else {}
         decision,self.cause,reason=consume_reply(reply,req['phase'],
             next_excitation=following.get('training',{}).get('excitation'),attempt=self.attempt)
         if self.cause=='HARDWARE_ERROR': self.fatal=True
         if not reply.get('reason'): raise Failure('model_rejected','数值判断缺少依据')
         if decision=='retry':
-            if self.cfg.get('runtime_profile')=='b-heldout-v1' and req['phase'] not in ('input','fit'):
+            if self.cfg.get('runtime_profile')=='b-frozen-v1' and req['phase']=='input':
+                if self.speech_retries>=len(self.cfg['attempts'])-1:
+                    raise Failure('data_insufficient','讲话检查已达到有限重说次数')
+                self.speech_retries+=1;self.cue_end=0;self.input_ready=None
+                self._state('preparing');self._hw('prepare',phase='input');return
+            if self.cfg.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') and req['phase'] not in ('input','fit'):
                 raise Failure('data_insufficient','此阶段不允许重试')
             if self.attempt+1>=len(self.cfg['attempts']): raise Failure('data_insufficient','已达到预定重试上限')
             self.attempt+=1;self.training=[];self.validation=[];self.candidate=None
@@ -435,10 +465,11 @@ class Product:
             self._state('validating');self._hw('prepare',phase='validation')
         else:
             ids=[r['capture_id'] for r in self.validation]
-            if self.cfg.get('runtime_profile')=='b-heldout-v1':
+            if self.cfg.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1'):
                 evidence=reply.get('evidence',{})
                 if (evidence.get('not_asg') is not True or evidence.get('policy')!='recalibration-algorithm-v1'
-                        or not evidence.get('meaning') or reply.get('validation_kind')!='heldout_prediction'):
+                        or not evidence.get('meaning') or
+                        (self.cfg.get('runtime_profile')=='b-heldout-v1' and reply.get('validation_kind')!='heldout_prediction')):
                     raise Failure('data_insufficient','独立预测验收口径缺失，未启用候选')
             if reply.get('qualifies_cancellation') is not True or reply.get('model_sha256')!=self.candidate['sha256'] or reply.get('validation_ids')!=ids or not reply.get('evidence'):
                 raise Failure('data_insufficient','独立效果判断/验证身份不足，未启用候选')
@@ -507,6 +538,8 @@ class Product:
 def verify_package(base):
     base=Path(base).resolve();manifest=json.loads((base/'product-manifest.json').read_text(encoding='utf-8'))
     if manifest.get('contract')!=CONTRACT: raise ValueError('unsupported product contract')
+    if manifest.get('algorithm_identity') and manifest['algorithm_identity'].get('file_sha256')!=manifest['hashes'].get('recal_algorithm.py'):
+        raise ValueError('algorithm manifest identity mismatch')
     for name,digest in manifest['hashes'].items():
         if sha(contained(base/name,base))!=digest: raise ValueError('package identity mismatch: '+name)
     return manifest
@@ -593,10 +626,19 @@ def main():
     if len(sys.argv)>1 and sys.argv[1]=='--algorithm-worker':
         module,src,dst,folder=sys.argv[2:6]
         sys.path.insert(0,folder)
-        write_json(dst,importlib.import_module(module).evaluate(json.loads(Path(src).read_text(encoding='utf-8'))));return 0
+        algorithm=importlib.import_module(module);request=json.loads(Path(src).read_text(encoding='utf-8'))
+        expected=request.get('algorithm_identity');actual=algorithm.identity() if expected else None
+        if expected and any(actual.get(k)!=expected.get(k) for k in ('version','file_sha256')):
+            reply=dict(**{k:request[k] for k in ('contract','request_id','scene_id')},
+                decision='hardware_error',cause='HARDWARE_ERROR',reason='算法版本/文件身份混搭，未计算')
+        else: reply=algorithm.evaluate(request)
+        if actual: reply['algorithm_identity']=actual
+        write_json(dst,reply);return 0
     p=argparse.ArgumentParser();p.add_argument('--base',type=Path,default=Path(__file__).resolve().parent)
     p.add_argument('--state-dir',type=Path);p.add_argument('--check',action='store_true');p.add_argument('--simulate',action='store_true');p.add_argument('--once',action='store_true')
     p.add_argument('--export',type=Path);p.add_argument('--review-return',type=Path)
+    p.add_argument('--adapter-check',action='store_true');p.add_argument('--model',type=Path)
+    p.add_argument('--model-sha256')
     args=p.parse_args();manifest=verify_package(args.base)
     sys.path.insert(0,str(args.base.resolve()))
     package_sha=sha(args.base/'product-manifest.json')
@@ -607,13 +649,40 @@ def main():
         result=review_return(args.review_return,package_sha);print(json.dumps(result,ensure_ascii=False));return 0 if result['identity_ok'] else 2
     if args.check:
         print(json.dumps(dict(identity_ok=True,deployment_ready=manifest['deployment_ready'],missing=manifest['missing'])));return 0 if manifest['deployment_ready'] else 2
+    if args.adapter_check:
+        if not manifest.get('adapter_check_allowed') or manifest['simulation']:
+            raise ValueError('maintenance adapter check not enabled for this package')
+        provenance='frozen_package_model'
+        if args.model and args.model_sha256:
+            model=args.model.resolve()
+            if len(args.model_sha256)!=64 or sha(model)!=args.model_sha256:
+                raise ValueError('current maintenance model hash mismatch; no hardware created')
+            provenance='operator_supplied_current_model'
+        else:
+            if not args.model and not manifest.get('diagnostic_model'):
+                raise ValueError('supply A current model with --model and --model-sha256')
+            model=contained(args.model or args.base/manifest['diagnostic_model'],args.base)
+            if sha(model)!=manifest['hashes'].get(model.relative_to(args.base.resolve()).as_posix()):
+                raise ValueError('maintenance model not in frozen whitelist')
+        config=json.loads((args.base/'product-config.json').read_text(encoding='utf-8'))
+        state=(args.state_dir or args.base/'maintenance-state').resolve()
+        config.update(package_dir=str(args.base.resolve()),model_path=str(model),run_dir_root=str(state/'hardware'),
+                      maintenance_model_provenance=provenance)
+        hw=importlib.import_module(config['hardware_module']).create_product(config)
+        cancel=threading.Event()
+        def cancel_check(*_): cancel.set();hw.abort()
+        for sig in (signal.SIGINT,signal.SIGTERM): signal.signal(sig,cancel_check)
+        with instance_lock(state): result=adapter_check(hw,config,state,model,write_json,cancel)
+        print(json.dumps(dict(success=result['success'],receipt=str(state/'adapter-check.json'),
+            compatibility_issues=result['compatibility_issues']),ensure_ascii=False));return 0 if result['success'] else 2
     if not args.simulate and not manifest['deployment_ready']: raise ValueError('physical adapters not ready: '+','.join(manifest['missing']))
     if manifest['simulation']!=args.simulate: raise ValueError('simulation/physical package mismatch')
     config=json.loads((args.base/'product-config.json').read_text(encoding='utf-8'))
     config['package_manifest_sha256']=package_sha
     config['package_dir']=str(args.base.resolve())
-    module=importlib.import_module(config['hardware_module']);hw=module.create_product(config)
     state=args.state_dir or args.base/'state'
+    config['run_dir_root']=str((state/'hardware').resolve());config['capture_import_root']=config['run_dir_root']
+    module=importlib.import_module(config['hardware_module']);hw=module.create_product(config)
     with instance_lock(state):
         app=Product(hw,config,state)
         shutdown=threading.Event()

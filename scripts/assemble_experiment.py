@@ -18,7 +18,7 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
     import importlib.util
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
     origin=ROOT/'board/audio_replay'
-    names=['recal_entry.sh','recal_product.py','recal_policy_consumer.py','recal_runtime.py','product-install.sh','shengdi-product.service']
+    names=['recal_entry.sh','recal_product.py','recal_policy_consumer.py','recal_runtime.py','recal_link.py','product-install.sh','shengdi-product.service']
     for name in names: shutil.copyfile(origin/name,out/name)
     # B's numeric library is copied byte-for-byte; the C bridge adds no thresholds.
     (out/'feedback').mkdir()
@@ -54,13 +54,20 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         if adapters['algorithm'].get('algorithm_contract')=='recalibration-algorithm-v1':
             sys.path.insert(0,str(ROOT/'src'))
             from recal_runtime import product_policy
-            (out/'product-policy.json').write_text(json.dumps(product_policy(),indent=2),encoding='utf-8')
+            spec=importlib.util.spec_from_file_location('frozen_package_algorithm',out/'recal_algorithm.py')
+            algorithm=importlib.util.module_from_spec(spec);spec.loader.exec_module(algorithm)
+            if callable(getattr(algorithm,'identity',None)):
+                from recal_link import frozen_policy,capture_plans
+                policy=frozen_policy(algorithm);policy['capture_plans']=capture_plans(policy['attempts'])
+            else: policy=product_policy()
+            (out/'product-policy.json').write_text(json.dumps(policy,indent=2),encoding='utf-8')
         required=['hw_api.py','recal_algorithm.py','product-policy.json','physical-controls.json']
         if any(not (out/name).is_file() for name in required): raise ValueError('incomplete real adapter package')
         config=json.loads((out/'product-policy.json').read_text(encoding='utf-8'))
         config.update(simulation=False,hardware_module='hw_api',
                       expected_identity=adapters['hardware']['expected_identity'])
         config.setdefault('algorithm_module','recal_algorithm')
+        config.update(adapters['hardware'].get('config',{}))
         allowed=adapters['hardware'].get('allowed_gain_q12',[])
         gains=[g for values in config.get('phase_gain_q12',{}).values() for g in values]
         calibration=adapters['hardware'].get('allowed_calibration_gain_q12',[])
@@ -77,13 +84,14 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
             if meta.get('field_approved') is not True: missing.append(kind+': integration not approved')
         if missing and not review:
             raise ValueError('product adapter blockers: '+','.join(missing))
-        if config.get('runtime_profile')=='b-heldout-v1' and config.get('compute_timeout_seconds',0)<15:
+        if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') and config.get('compute_timeout_seconds',0)<15:
             raise ValueError('fit timeout must be at least 15 seconds')
     (out/'product-config.json').write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     (out/'OPERATIONS.md').write_text((ROOT/'docs/ref/recal-product.md').read_text(encoding='utf-8').replace(
         '../contracts/recal-product-v1.md','INTERFACE.md').replace(
         '../contracts/recal-policy-consumer-v1.md','POLICY-CONSUMER.md').replace(
-        '../contracts/recal-runtime-v2.md','RUNTIME.md'),encoding='utf-8')
+        '../contracts/recal-runtime-v2.md','RUNTIME.md').replace(
+        '../contracts/recal-runtime-v3.md','FROZEN-RUNTIME.md'),encoding='utf-8')
     (out/'INTERFACE.md').write_text((ROOT/'docs/contracts/recal-product-v1.md').read_text(encoding='utf-8').replace(
         '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     (out/'POLICY.md').write_bytes((ROOT/'docs/contracts/recalibration-policy-v1.md').read_bytes())
@@ -93,16 +101,22 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
     (out/'RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v2.md').read_text(encoding='utf-8').replace(
         '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     (out/'ALGORITHM.md').write_bytes((ROOT/'docs/contracts/recalibration-algorithm-v1.md').read_bytes())
+    (out/'FROZEN-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v3.md').read_text(encoding='utf-8').replace(
+        '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation and not review and not missing,
         missing=missing,adapters=adapters,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
+        algorithm_identity=config.get('algorithm_identity'),
+        adapter_check_allowed=bool(adapters.get('hardware',{}).get('adapter_check_allowed')),
+        diagnostic_model=adapters.get('hardware',{}).get('diagnostic_model'),
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay/recal_product.py','board/audio_replay/recal_mock.py','board/audio_replay/recal_entry.sh',
             'board/audio_replay/recal_policy_consumer.py',
             'board/audio_replay/recal_runtime.py','board/audio_replay/recal_algorithm.py',
+            'board/audio_replay/recal_link.py',
             'src/feedback/recal_policy.py','src/feedback/excitation.py',
             'scripts/assemble_experiment.py','docs/ref/recal-product.md','docs/contracts/recal-product-v1.md',
             'docs/contracts/recalibration-policy-v1.md','docs/contracts/recal-policy-consumer-v1.md',
-            'docs/contracts/recal-runtime-v2.md','docs/contracts/recalibration-algorithm-v1.md'],cwd=ROOT).strip()),
+            'docs/contracts/recal-runtime-v2.md','docs/contracts/recal-runtime-v3.md','docs/contracts/recalibration-algorithm-v1.md'],cwd=ROOT).strip()),
         hashes={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()})
     (out/'product-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:

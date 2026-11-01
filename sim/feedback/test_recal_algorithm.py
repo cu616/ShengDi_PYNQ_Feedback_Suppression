@@ -99,14 +99,46 @@ class InputTest(unittest.TestCase):
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:
             u = white(level_db=-19.3)
-            mic = white(level_db=-40.0, seed=55)          # 与参考无关 -> 激励没进来
-            e = write_capture(tmp, "dead", u, mic)
+            mic = white(level_db=-70.0, seed=55)          # 用户没说话：麦克风端几乎没有信号
+            e = write_capture(tmp, "quiet", u, mic)
             base = {"contract": "recal-product-v1", "request_id": "r", "scene_id": "s",
                     "run_dir": tmp, "phase": "input", "input": [e]}
             first = ra.evaluate(dict(base, attempt=0, attempts_total=2))
             last = ra.evaluate(dict(base, attempt=1, attempts_total=2))
             self.assertEqual(first["decision"], "retry")
             self.assertEqual(last["decision"], "data_insufficient")
+
+    def test_speech_does_not_require_coherence_with_playback(self):
+        """讲话阶段播放参考通常为零：不能要求人声与它相干，否则系统性误拒。
+
+        这是 2026-11-01 队长指出的阶段用途混淆。讲话只判采样有效、输入响应、过载；
+        机器激励阶段才判参考资格与辨识资格。
+        """
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            u = np.zeros(FRAMES)                          # 播放参考全零
+            vox = white(level_db=-28.0, seed=9)           # 用户讲话
+            e = write_capture(tmp, "speech", u, vox)
+            got = ra.evaluate({"contract": "recal-product-v1", "request_id": "r",
+                               "scene_id": "s", "run_dir": tmp, "attempt": 0,
+                               "attempts_total": 1, "phase": "input", "input": [e]})
+            self.assertEqual(got["decision"], "valid_pass", got.get("reason"))
+            m = next(iter(got["evidence"]["metrics"].values()))
+            self.assertIs(m["reference_ignored"], True)
+
+    def test_same_zero_reference_capture_rejected_for_excitation(self):
+        """同一份"参考全零"的数据在机器激励阶段必须拒——两种用途门槛不同，不能共用。"""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            u = np.zeros(FRAMES)
+            e = write_capture(tmp, "speech", u, white(level_db=-28.0, seed=9))
+            cap = ra.load_capture(e)
+            ok_speech, _, _, _ = ra._check_capture(cap, mode="speech")
+            ok_exc, status_exc, _, _ = ra._check_capture(cap, mode="excitation")
+            self.assertTrue(ok_speech)
+            self.assertFalse(ok_exc)
+            self.assertIn(status_exc, ("REJECT_COHERENCE", "REJECT_EXCITATION",
+                                       "REJECT_REFERENCE"))
 
     def test_missing_capture_file(self):
         got = ra.evaluate({"contract": "recal-product-v1", "request_id": "r", "scene_id": "s",
@@ -268,12 +300,29 @@ class ParityWithPolicyTest(unittest.TestCase):
             for name, ref, mic in cases:
                 entry = write_capture(tmp, name, ref, mic)
                 cap = ra.load_capture(entry)
-                ok_b, status_b, _, _ = ra._check_capture(cap, source_expected=False)
+                ok_b, status_b, _, _ = ra._check_capture(cap, mode="excitation")
                 got_p = rp.check_capture(ref, mic, FS)
                 self.assertEqual(status_b.replace("REJECT_", "").lower() in
                                  got_p["status"].replace("REJECT_", "").lower() or
                                  (status_b == "OK") == (got_p["status"] == "OK"),
                                  True, "%s: board=%s policy=%s" % (name, status_b, got_p["status"]))
+
+
+class IdentityTest(unittest.TestCase):
+    """冻结用的版本身份：改版本、依赖或策略顺序都必须同时改这条。"""
+
+    def test_identity_is_frozen(self):
+        i = ra.identity()
+        self.assertEqual(i["version"], "recal-algorithm-2026-11-01")
+        self.assertEqual(i["dependencies"], ["numpy"])
+        self.assertEqual(i["taps"], 512)
+        self.assertEqual(i["lag_first"], 1)
+        self.assertEqual(len(i["file_sha256"]), 64)
+        self.assertTrue(i["not_asg"])
+        self.assertEqual([a["training"]["rms_dbfs"] for a in i["strategy"]["attempts"]],
+                         [-22.0, -19.3, -16.5])
+        self.assertEqual(i["strategy"]["exit_reasons"]["model_rejected"], "MODEL_UNQUALIFIED")
+        self.assertNotIn("asg", json.dumps(i["strategy"]).lower())
 
 
 if __name__ == "__main__":

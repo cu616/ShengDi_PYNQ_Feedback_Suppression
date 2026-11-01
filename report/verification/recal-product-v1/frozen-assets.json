@@ -1,0 +1,21 @@
+{
+  "a_source": "a3f516f",
+  "b_source": "2ccf746",
+  "a_original_manifest_items": 8,
+  "a_manifest_all_match": true,
+  "a_root_and_bundle_hw_api_match": true,
+  "a_hashes": {
+    "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+    "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+    "hw_api.py": "3549aca23d4badb5b1f0884825c3189d0a6cc5d0062d7eafa85d6ea51144d57d",
+    "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "replay_trial_repair.py": "22851d322e7c527a8903d367139924b2d780f98814f3ab1af3bd1f07bbf6efbb",
+    "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+    "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4"
+  },
+  "b_file_sha256": "282ee58136b8bccc523e9be60083717f58d628a78525db85f27742477111a1ed",
+  "scope": "exact-byte source assembly; original A manifest has eight hashed payloads, not the nine stated in message; no board operation",
+  "model_policy": "A supplies its current model path and complete SHA explicitly at maintenance invocation; no old default model packed",
+  "board_operations": 0
+}
