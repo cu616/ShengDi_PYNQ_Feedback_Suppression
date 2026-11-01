@@ -14,6 +14,10 @@ import uuid
 import numpy as np
 from pynq import MMIO, Overlay
 from pynq.overlays.base import BaseOverlay
+
+# Overlay reuse for the product path: prepare() downloads the bitstream once, then the capture
+# stages reuse it. A stale cache from a different bitstream is never used.
+_OVERLAY_CACHE = {"overlay": None, "bit": None}
 from residual_tools import load_candidate
 from closed_tools import trial_parameters
 import replay_tools
@@ -104,7 +108,9 @@ RATE = 48828.125
 
 def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False, zero_coeff=False,
                  gain_db=-36.0, seconds=0.5, hp_volume=40,
-                 speaker_confirmed=False, local_capture_confirmed=False, before_start=None, direct_only=False):
+                 speaker_confirmed=False, local_capture_confirmed=False, before_start=None, direct_only=False,
+                 reuse_overlay=False,
+                 restore_stock=True):
     """One MANUALLY triggered closed-loop trial. No automated gain sweep.
 
     No headphones. Fixed speaker fixture; operator can cut power immediately.
@@ -256,7 +262,13 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         fd = os.open("/dev/i2c-1", os.O_RDWR)
         fcntl.ioctl(fd, 0x0703, 0x3B)
         mute_codec()
-        overlay = Overlay(str(bit), download=True)
+        global _OVERLAY_CACHE
+        cached = _OVERLAY_CACHE.get("overlay")
+        if reuse_overlay and cached is not None and _OVERLAY_CACHE.get("bit") == str(bit):
+            overlay = cached
+        else:
+            overlay = Overlay(str(bit), download=True)
+            _OVERLAY_CACHE["overlay"], _OVERLAY_CACHE["bit"] = overlay, str(bit)
         # Read addresses from this overlay's matching HWH, not old GPIO handles.
         control = MMIO(overlay.ip_dict["audio_control"]["phys_addr"], 0x1000)
         samples = MMIO(overlay.ip_dict["audio_samples"]["phys_addr"], 0x1000)
@@ -396,24 +408,33 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
             cleanup_step("Codec mute", mute_codec)
             cleanup_step("I2C close", lambda: os.close(fd))
             fd = None
-        cleanup_step("stock overlay", lambda: BaseOverlay("base.bit"))
-        try:
-            fd = os.open("/dev/i2c-1", os.O_RDWR)
-            fcntl.ioctl(fd, 0x0703, 0x3B)
-            restored = set_pll("0271023c2101")
-            mute_codec()
-            if restored.hex() != "0271023c2103":
-                raise RuntimeError("unexpected stock PLL readback")
-            print("STOCK_PLL_READBACK", restored.hex())
-        except Exception as exc:
-            cleanup_errors.append("stock PLL/mute: " + str(exc))
-        finally:
+        if not restore_stock:
+            # prepared-capture mode: keep our bitstream and codec configuration resident
+            if control is not None:
+                cleanup_step("PL mute", lambda: control.write(0, 0))
             if fd is not None:
-                cleanup_step("restoration I2C close", lambda: os.close(fd))
-        if cleanup_errors:
-            print("RESTORE_ERRORS", cleanup_errors)
+                cleanup_step("Codec mute", mute_codec)
+                cleanup_step("I2C close", lambda: os.close(fd))
+                fd = None
         else:
-            print("STOCK_BASE_RESTORED_AND_CODEC_MUTED")
+            cleanup_step("stock overlay", lambda: BaseOverlay("base.bit"))
+            try:
+                fd = os.open("/dev/i2c-1", os.O_RDWR)
+                fcntl.ioctl(fd, 0x0703, 0x3B)
+                restored = set_pll("0271023c2101")
+                mute_codec()
+                if restored.hex() != "0271023c2103":
+                    raise RuntimeError("unexpected stock PLL readback")
+                print("STOCK_PLL_READBACK", restored.hex())
+            except Exception as exc:
+                cleanup_errors.append("stock PLL/mute: " + str(exc))
+            finally:
+                if fd is not None:
+                    cleanup_step("restoration I2C close", lambda: os.close(fd))
+            if cleanup_errors:
+                print("RESTORE_ERRORS", cleanup_errors)
+            else:
+                print("STOCK_BASE_RESTORED_AND_CODEC_MUTED")
 
     # ---- one evidence path, used by every outcome (C: a-replay-evidence-v2) ----
     recovery_ok = not cleanup_errors
