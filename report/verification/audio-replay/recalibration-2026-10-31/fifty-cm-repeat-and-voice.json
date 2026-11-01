@@ -1,0 +1,57 @@
+{
+  "what": "50 cm: repeat of the band comparison, then a live-voice check with the 50 cm model",
+  "band_repeat": {
+    "run1": {
+      "400Hz": {
+        "loop_boost": 4.67,
+        "cancel_effect": -3.62
+      },
+      "250Hz": {
+        "loop_boost": 2.04,
+        "cancel_effect": -4.26
+      },
+      "200Hz": {
+        "loop_boost": 3.94,
+        "cancel_effect": -3.36
+      },
+      "800Hz": {
+        "loop_boost": 1.34,
+        "cancel_effect": -1.45
+      }
+    },
+    "run2": {
+      "400Hz": {
+        "loop_boost": 2.42,
+        "cancel_effect": -3.01
+      },
+      "250Hz": {
+        "loop_boost": -3.58,
+        "cancel_effect": 0.6
+      },
+      "200Hz": {
+        "loop_boost": -1.15,
+        "cancel_effect": 1.4
+      },
+      "800Hz": {
+        "loop_boost": 0.01,
+        "cancel_effect": 0.17
+      }
+    },
+    "verdict": "Only the 400 Hz band reproduces in direction and magnitude (canceller lowers the closed-loop level by 3.0-3.6 dB in two independent runs). The other bands flip sign between runs, so nothing is claimed for them."
+  },
+  "voice_check_50cm": {
+    "floor_dbfs": -38.94,
+    "result": "the voice capture tripped input full scale (capture_status bit22) immediately",
+    "reading": "At 50 cm with the working gain of -8 dB the microphone reaches the ADC rail during live speech, so the input has no headroom at this distance and gain. This is an operating-point limit, not a canceller failure."
+  },
+  "what_this_means": [
+    "A 50 cm improvement is demonstrable in the 400 Hz band with a geometry-matched model, in two runs.",
+    "A 50 cm LIVE working point at -8 dB is not usable: live speech saturates the input.",
+    "Lowering the gain would very likely make 50 cm usable, but the captain forbade changing the working gain in this round, so it was not tried."
+  ],
+  "not_claimed": [
+    "no audible-benefit claim",
+    "no claim at gains other than -8 dB",
+    "no claim outside 50 cm"
+  ]
+}

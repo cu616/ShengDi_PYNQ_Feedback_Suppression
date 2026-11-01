@@ -34,7 +34,8 @@ STAMP = time.strftime('%Y%m%d-%H%M%S')
 OUT = D / ('voice_check_' + STAMP)
 OUT.mkdir(parents=True, exist_ok=False)
 
-active = D / 'model_recalibrated.json'
+_sel = Path('/home/xilinx/voice_model.txt')
+active = Path(_sel.read_text().strip()) if _sel.is_file() else (D / 'model_recalibrated.json')
 if not active.is_file():
     print('VOICE_FAIL no recalibrated model; run recal_entry.sh first')
     sys.exit(1)
