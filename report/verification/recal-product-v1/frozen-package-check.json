@@ -1,0 +1,273 @@
+{
+  "contract": "recal-product-v1",
+  "a_commit": "a3f516f",
+  "b_commit": "2ccf746",
+  "source_commit": "1505a175c8fbc59341587e31045015508d881638",
+  "source_tree_clean": true,
+  "package": "materials\\final\\shengdi-recal-frozen-a3f516f-2ccf746.zip",
+  "package_bytes": 376210,
+  "package_sha256": "c662e609e1907cd8a8c819bfbe47d2a54c25803c56f39509f4977f3a9176c2c4",
+  "manifest_sha256": "644cec0592fea61209a27ca20e609f85a83ea1c3de2fdc01d344cd15f5e8737c",
+  "payload_count": 30,
+  "all_payloads_match": true,
+  "document_link_errors": [],
+  "algorithm_identity": {
+    "contract": "recal-product-v1",
+    "version": "recal-algorithm-2026-11-01",
+    "file_sha256": "282ee58136b8bccc523e9be60083717f58d628a78525db85f27742477111a1ed",
+    "dependencies": [
+      "numpy"
+    ],
+    "python": ">=3.8",
+    "taps": 512,
+    "lag_first": 1,
+    "strategy": {
+      "attempts": [
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -19.3,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -19.3,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -16.5,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -16.5,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        }
+      ],
+      "max_attempts": 3,
+      "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+      "exit_reasons": {
+        "valid_pass": "PASS",
+        "retry": "RETRY_NEXT_LEVEL",
+        "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+        "model_rejected": "MODEL_UNQUALIFIED"
+      }
+    },
+    "thresholds": {
+      "min_valid_frames": 4096,
+      "near_full_scale": 0.999,
+      "min_excitation_snr_db": 0.0,
+      "min_gated_coherence": 0.3,
+      "coherence_floor": 0.8,
+      "sparse_line_db": 20.0,
+      "band_hz": [
+        150.0,
+        10000.0
+      ],
+      "speech_min_rms_dbfs": -55.0,
+      "speech_min_peak": 0.003,
+      "l1_max": 4.0,
+      "l1_over_max_range": [
+        25.0,
+        80.0
+      ],
+      "peak_tap_tolerance": 4,
+      "validate_band_hz": [
+        300.0,
+        460.0
+      ],
+      "validate_band_reduction_min_db": 0.5,
+      "validate_full_reduction_min_db": 0.0,
+      "min_validation_captures": 2
+    },
+    "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+    "not_asg": true
+  },
+  "attempts_equal_B": true,
+  "fit_timeout_seconds": 30,
+  "A_B_exact": true,
+  "independent_extraction": true,
+  "commands": [
+    {
+      "name": "default check blocked",
+      "exit_code": 2,
+      "output": "{\"identity_ok\": true, \"deployment_ready\": false, \"missing\": [\"hardware: input capture is not prepared before speech prompt\", \"hardware: prepared_capture false; prepare does not prevent later input reload\", \"hardware: 16382 effective source frames awaiting B domain confirmation; originals kept\", \"hardware: fixed predeclared codec warm-up not part of a3f516f factory\", \"hardware: install applies_at next_capture; no activation readback before current-model commit\", \"hardware: running poll model binding and separated audio-duration evidence pending\", \"hardware: armed indicator write guard and independent actual-mode indication pending\", \"hardware: integration not approved\"]}\n"
+    },
+    {
+      "name": "default resident blocked",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED physical adapters not ready: hardware: input capture is not prepared before speech prompt,hardware: prepared_capture false; prepare does not prevent later input reload,hardware: 16382 effective source frames awaiting B domain confirmation; originals kept,hardware: fixed predeclared codec warm-up not part of a3f516f factory,hardware: install applies_at next_capture; no activation readback before current-model commit,hardware: running poll model binding and separated audio-duration evidence pending,hardware: armed indicator write guard and independent actual-mode indication pending,hardware: integration not approved\n"
+    },
+    {
+      "name": "real adapter cannot be treated as simulation",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED simulation/physical package mismatch\n"
+    },
+    {
+      "name": "maintenance needs explicit current model",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED supply A current model with --model and --model-sha256\n"
+    }
+  ],
+  "standalone_worker_reply": {
+    "contract": "recal-product-v1",
+    "request_id": "standalone",
+    "scene_id": "software",
+    "decision": "data_insufficient",
+    "reason": "请求里没有 input 捕获，无法判讲话输入",
+    "algorithm_identity": {
+      "contract": "recal-product-v1",
+      "version": "recal-algorithm-2026-11-01",
+      "file_sha256": "282ee58136b8bccc523e9be60083717f58d628a78525db85f27742477111a1ed",
+      "dependencies": [
+        "numpy"
+      ],
+      "python": ">=3.8",
+      "taps": 512,
+      "lag_first": 1,
+      "strategy": {
+        "attempts": [
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          }
+        ],
+        "max_attempts": 3,
+        "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+        "exit_reasons": {
+          "valid_pass": "PASS",
+          "retry": "RETRY_NEXT_LEVEL",
+          "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+          "model_rejected": "MODEL_UNQUALIFIED"
+        }
+      },
+      "thresholds": {
+        "min_valid_frames": 4096,
+        "near_full_scale": 0.999,
+        "min_excitation_snr_db": 0.0,
+        "min_gated_coherence": 0.3,
+        "coherence_floor": 0.8,
+        "sparse_line_db": 20.0,
+        "band_hz": [
+          150.0,
+          10000.0
+        ],
+        "speech_min_rms_dbfs": -55.0,
+        "speech_min_peak": 0.003,
+        "l1_max": 4.0,
+        "l1_over_max_range": [
+          25.0,
+          80.0
+        ],
+        "peak_tap_tolerance": 4,
+        "validate_band_hz": [
+          300.0,
+          460.0
+        ],
+        "validate_band_reduction_min_db": 0.5,
+        "validate_full_reduction_min_db": 0.0,
+        "min_validation_captures": 2
+      },
+      "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+      "not_asg": true
+    }
+  },
+  "adapter_check_allowed": true,
+  "deployment_ready": false,
+  "blockers": [
+    "hardware: input capture is not prepared before speech prompt",
+    "hardware: prepared_capture false; prepare does not prevent later input reload",
+    "hardware: 16382 effective source frames awaiting B domain confirmation; originals kept",
+    "hardware: fixed predeclared codec warm-up not part of a3f516f factory",
+    "hardware: install applies_at next_capture; no activation readback before current-model commit",
+    "hardware: running poll model binding and separated audio-duration evidence pending",
+    "hardware: armed indicator write guard and independent actual-mode indication pending",
+    "hardware: integration not approved"
+  ],
+  "board_operations": 0,
+  "scope": "exact source packaging and offline processes; actual A factory through C main is covered by frozen-integration.json with leaf I/O replaced; real board maintenance left to A"
+}

@@ -66,3 +66,25 @@ sim/feedback/test_recal_algorithm.py
 sim/feedback/test_recal_runtime.py
 report/verification/recal-product-v1/runtime-package-check.json
 report/verification/recal-product-v1/changed-files.txt
+
+# A a3f516f / B frozen 2ccf746: 7f9e282..1505a17 plus final receipt
+board/audio_replay/recal_algorithm.py
+board/audio_replay/recal_link.py
+board/audio_replay/recal_product.py
+docs/STATE.md
+docs/contracts/README.md
+docs/contracts/recal-runtime-v3.md
+docs/contracts/recalibration-algorithm-v1.md
+docs/lines/c-measurement.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/frozen-assets.json
+report/verification/recal-product-v1/frozen-data-review.json
+report/verification/recal-product-v1/frozen-integration.json
+report/verification/recalibration-algorithm-2026-11-01/cases.json
+scripts/assemble_experiment.py
+sim/feedback/test_recal_algorithm.py
+sim/feedback/test_recal_frozen.py
+report/verification/recal-product-v1/frozen-package-check.json
+report/verification/recal-product-v1/changed-files.txt
