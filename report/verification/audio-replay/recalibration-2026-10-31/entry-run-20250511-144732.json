@@ -1,0 +1,74 @@
+{
+  "run_id": "20250511-144732",
+  "position": "P2_115cm",
+  "verdict": "PASS",
+  "config": {
+    "level_db_commanded": -19.3,
+    "actual_ref_rms_dbfs": -19.30329807100292,
+    "actual_ref_peak_dbfs": -7.1677246915418955,
+    "peak_cap": 0.8,
+    "gain_db": -8.0,
+    "hp_volume": 40,
+    "segments": 6,
+    "seg_seconds": 0.3357,
+    "min_snr_db": 6.0,
+    "l1_max": 4.0
+  },
+  "floor_dbfs": -39.50071873007496,
+  "snr_db": 7.341311674335998,
+  "ref_rms_dbfs": -19.30329807100292,
+  "mic_rms_dbfs": -32.15940705573896,
+  "candidate_coeff_sha256": "8c3010ec620cf2db1935b1dbed12323f1c595138872b250d563c951036124f2e",
+  "active_coeff_sha256": "8c3010ec620cf2db1935b1dbed12323f1c595138872b250d563c951036124f2e",
+  "smoke_used_coeff_sha256": "8c3010ec620cf2db1935b1dbed12323f1c595138872b250d563c951036124f2e",
+  "previous_model_backup": "model_prev_20250511-144732.json",
+  "L1": 2.48612117767334,
+  "L1_deployed": 2.2875843048095703,
+  "three_point": {
+    "levels_dbfs": {
+      "open": {
+        "mic": -27.901894419062142,
+        "pred": -29.3588173732427,
+        "residual": -36.091720094584645
+      },
+      "bypass": {
+        "mic": -25.789765951836216,
+        "pred": -26.966384974009742,
+        "residual": -25.789765951836216
+      },
+      "cancel": {
+        "mic": -28.15376947680022,
+        "pred": -29.34784359048288,
+        "residual": -38.59634572112611
+      }
+    },
+    "units": "dBFS re 24-bit full scale, all three signals",
+    "cd_322_db": 12.806579769289897,
+    "loop_boost_db": 2.1121284672259257,
+    "acoustic_difference_db": 2.364003524964005,
+    "overshoot_db": 0.2518750577380793,
+    "names": {
+      "cd_322_db": "residual depth (model fit, NOT benefit)",
+      "loop_boost_db": "audible-benefit scale = what the loop adds and a canceller can at most recover",
+      "acoustic_difference_db": "loop_boost + overshoot, NOT benefit",
+      "overshoot_db": "cancel goes below the no-loop path by this much"
+    }
+  },
+  "arms": [
+    {
+      "tag": "open",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "bypass",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "cancel",
+      "stop": "completed",
+      "capture_status": 32769
+    }
+  ]
+}

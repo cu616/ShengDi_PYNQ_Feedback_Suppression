@@ -30,21 +30,21 @@ GAIN_DB_DEFAULT=-8.0
 HP_VOLUME_DEFAULT=40
 POSITION_DEFAULT=P1_100cm
 SEGMENTS_DEFAULT=6
-SECONDS_DEFAULT=0.3357
+SEG_SECONDS_DEFAULT=0.3357
 MIN_SNR_DB_DEFAULT=6.0
 L1_MAX_DEFAULT=4.0
 
 echo "RECAL_CONFIG_SOURCE $CONFIG_FILE $([ -f $CONFIG_FILE ] && echo present || echo absent-using-defaults)"
 LEVEL_DB=$LEVEL_DB_DEFAULT; PEAK_CAP=$PEAK_CAP_DEFAULT; GAIN_DB=$GAIN_DB_DEFAULT
 HP_VOLUME=$HP_VOLUME_DEFAULT; POSITION=$POSITION_DEFAULT
-SEGMENTS=$SEGMENTS_DEFAULT; SECONDS=$SECONDS_DEFAULT
+SEGMENTS=$SEGMENTS_DEFAULT; SEG_SECONDS=$SEG_SECONDS_DEFAULT
 MIN_SNR_DB=$MIN_SNR_DB_DEFAULT; L1_MAX=$L1_MAX_DEFAULT
 if [ -f $CONFIG_FILE ]; then
   # shellcheck disable=SC1090
   . $CONFIG_FILE
 fi
 echo "RECAL_CONFIG level_db=$LEVEL_DB peak_cap=$PEAK_CAP gain_db=$GAIN_DB hp_volume=$HP_VOLUME"
-echo "RECAL_CONFIG position=$POSITION segments=$SEGMENTS seconds=$SECONDS"
+echo "RECAL_CONFIG position=$POSITION segments=$SEGMENTS seconds=$SEG_SECONDS"
 echo "RECAL_CONFIG min_snr_db=$MIN_SNR_DB l1_max=$L1_MAX"
 
 RUN_ID=$(date +%Y%m%d-%H%M%S)
@@ -53,7 +53,7 @@ echo "RECAL_STAGE 0 preflight (checking package, driver, fitter)"
 
 cd $D || { echo "RECAL_FAIL preflight: package directory missing"; exit 10; }
 /usr/local/share/pynq-venv/bin/python - "$D" "$REPO" "$RUN_ID" "$LEVEL_DB" "$PEAK_CAP" \
-    "$GAIN_DB" "$HP_VOLUME" "$POSITION" "$SEGMENTS" "$SECONDS" "$MIN_SNR_DB" "$L1_MAX" <<'PY'
+    "$GAIN_DB" "$HP_VOLUME" "$POSITION" "$SEGMENTS" "$SEG_SECONDS" "$MIN_SNR_DB" "$L1_MAX" <<'PY'
 import hashlib
 import json
 import subprocess
@@ -72,7 +72,7 @@ GAIN_DB = float(sys.argv[6])
 HP_VOLUME = int(float(sys.argv[7]))
 POSITION = sys.argv[8]
 SEGMENTS = int(float(sys.argv[9]))
-SECONDS = float(sys.argv[10])
+SEG_SECONDS = float(sys.argv[10])
 MIN_SNR_DB = float(sys.argv[11])
 L1_MAX = float(sys.argv[12])
 
@@ -80,6 +80,10 @@ FIXTURE = 'room_v1_20261026b'
 RATE = 48828.125
 RUN_DIR = D / ('run_' + RUN_ID)
 RUN_DIR.mkdir(parents=True, exist_ok=False)
+# the fitter treats every *.npz in the packet directory as a calibration segment, so
+# floor and check captures live in subdirectories
+(RUN_DIR / 'prep').mkdir(exist_ok=True)
+(RUN_DIR / 'checks').mkdir(exist_ok=True)
 ACTIVE = D / 'model_recalibrated.json'
 BASE_MODEL = D / 'rewired_512_20261026.json'
 FITTER = REPO / 'scripts' / 'fit_newlayout_candidate.py'
@@ -115,17 +119,25 @@ def coeff_sha(model_path):
 
 
 # ---- [1] floor ---------------------------------------------------------------------------------
-print('RECAL_STAGE 1 floor (silent capture; a failed measurement is a refusal)')
-floor_path = RUN_DIR / 'floor.npz'
-try:
-    replay_trial(str(floor_path), FIXTURE, str(BASE_MODEL), np.zeros(16000, dtype=np.int16),
-                 bypass=False, zero_coeff=True, gain_db=0.0, seconds=0.40, hp_volume=HP_VOLUME,
-                 speaker_confirmed=True, local_capture_confirmed=True, direct_only=True)
-    mic = np.asarray(np.load(str(floor_path))['microphone'], float)
-    floor_db = float(20 * np.log10(max(np.sqrt(np.mean(mic ** 2)), 1e-12)))
-except Exception as exc:
-    fail('floor', 11, 'floor could not be measured (%r); not treated as acceptable' % (exc,))
-print('RECAL_STAGE 1 ok  floor=%.2f dBFS (informational)' % floor_db)
+print('RECAL_STAGE 1 floor (3 silent captures, median - a transient must not decide the run)')
+floor_samples = []
+for _i in range(3):
+    fp = RUN_DIR / 'prep' / ('floor_%d.npz' % _i)
+    fp.unlink(missing_ok=True)
+    try:
+        replay_trial(str(fp), FIXTURE, str(BASE_MODEL), np.zeros(16000, dtype=np.int16),
+                     bypass=False, zero_coeff=True, gain_db=0.0, seconds=0.40, hp_volume=HP_VOLUME,
+                     speaker_confirmed=True, local_capture_confirmed=True, direct_only=True)
+        _m = np.asarray(np.load(str(fp))['microphone'], float)
+        floor_samples.append(float(20 * np.log10(max(np.sqrt(np.mean(_m ** 2)), 1e-12))))
+    except Exception as exc:
+        print('RECAL_FLOOR_ERR %d %r' % (_i, exc))
+if len(floor_samples) < 2:
+    fail('floor', 11, 'floor could not be measured (%d/%d samples); not treated as acceptable'
+         % (len(floor_samples), 3))
+floor_db = float(np.median(floor_samples))
+print('RECAL_STAGE 1 ok  floor=%.2f dBFS median of %s (informational)'
+      % (floor_db, ['%.2f' % v for v in floor_samples]))
 
 
 def excitation(n, level_db):
@@ -148,12 +160,12 @@ for attempt in range(3):
     metas, ok = [], True
     print('RECAL_ATTEMPT level=%.1f n=%d' % (level, attempt + 1))
     for idx in range(SEGMENTS):
-        src = excitation(int(SECONDS * RATE) - 5, level)
+        src = excitation(int(SEG_SECONDS * RATE) - 5, level)
         out = RUN_DIR / ('cap_%02d.npz' % idx)
         out.unlink(missing_ok=True)
         try:
             replay_trial(str(out), FIXTURE, str(BASE_MODEL), src, bypass=False, zero_coeff=True,
-                         gain_db=0.0, seconds=SECONDS, hp_volume=HP_VOLUME,
+                         gain_db=0.0, seconds=SEG_SECONDS, hp_volume=HP_VOLUME,
                          speaker_confirmed=True, local_capture_confirmed=True, direct_only=True)
         except Exception as exc:
             print('RECAL_CAPTURE_ERR %02d %r' % (idx, exc)[:140])
@@ -244,7 +256,7 @@ n = int(2.0 * RATE)
 tone = np.rint(0.15 * np.sin(2 * np.pi * 322.0 * np.arange(n) / RATE) * 32767).astype(np.int16)
 rows, arms = {}, []
 for tag, bypass, direct in (('open', False, True), ('bypass', True, False), ('cancel', False, False)):
-    out = RUN_DIR / ('verify_%s.npz' % tag)
+    out = RUN_DIR / 'checks' / ('verify_%s.npz' % tag)
     try:
         replay_trial(str(out), FIXTURE, str(cand), tone, bypass=bypass, zero_coeff=False,
                      gain_db=GAIN_DB, seconds=2.2, hp_volume=HP_VOLUME, speaker_confirmed=True,
@@ -285,7 +297,7 @@ print('RECAL_STAGE 6 ok  active=%s coeff_sha=%s prev=%s'
 
 # ---- [7] smoke: prove the follow-up run uses THIS model ----------------------------------------
 print('RECAL_STAGE 7 smoke (short audio run with the installed model)')
-smoke = RUN_DIR / 'smoke.npz'
+smoke = RUN_DIR / 'checks' / 'smoke.npz'
 try:
     replay_trial(str(smoke), FIXTURE, str(ACTIVE), np.zeros(16000, dtype=np.int16), bypass=False,
                  zero_coeff=False, gain_db=GAIN_DB, seconds=2.0, hp_volume=HP_VOLUME,
@@ -305,7 +317,7 @@ receipt = {
     'run_id': RUN_ID, 'position': POSITION, 'verdict': 'PASS',
     'config': {'level_db_commanded': LEVEL_DB, 'actual_ref_rms_dbfs': ref_db,
                'actual_ref_peak_dbfs': pk, 'peak_cap': PEAK_CAP, 'gain_db': GAIN_DB,
-               'hp_volume': HP_VOLUME, 'segments': SEGMENTS, 'min_snr_db': MIN_SNR_DB,
+               'hp_volume': HP_VOLUME, 'segments': SEGMENTS, 'seg_seconds': SEG_SECONDS, 'min_snr_db': MIN_SNR_DB,
                'l1_max': L1_MAX},
     'floor_dbfs': floor_db, 'snr_db': snr_db, 'ref_rms_dbfs': ref_db, 'mic_rms_dbfs': mic_db,
     'candidate_coeff_sha256': cand_sha, 'active_coeff_sha256': active_sha,

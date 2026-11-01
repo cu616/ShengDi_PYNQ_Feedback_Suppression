@@ -1,0 +1,62 @@
+{
+  "entry": "board/audio_replay/recal_entry.sh",
+  "position": "P2_115cm (fixture at 115 cm)",
+  "runs": [
+    {
+      "run_id": "20250511-144732",
+      "position": "P2_115cm",
+      "verdict": "PASS",
+      "snr_db": 7.34,
+      "L1": 2.486,
+      "acoustic_db": 2.36,
+      "overshoot_db": 0.25,
+      "candidate_sha": "8c3010ec620cf2db",
+      "active_sha": "8c3010ec620cf2db",
+      "smoke_used_sha": "8c3010ec620cf2db",
+      "previous_backup": "model_prev_20250511-144732.json",
+      "config": {
+        "level_db_commanded": -19.3,
+        "actual_ref_rms_dbfs": -19.30329807100292,
+        "actual_ref_peak_dbfs": -7.1677246915418955,
+        "peak_cap": 0.8,
+        "gain_db": -8.0,
+        "hp_volume": 40,
+        "segments": 6,
+        "seg_seconds": 0.3357,
+        "min_snr_db": 6.0,
+        "l1_max": 4.0
+      }
+    },
+    {
+      "run_id": "20250511-145727",
+      "position": "P2_115cm",
+      "verdict": "PASS",
+      "snr_db": 6.89,
+      "L1": 2.429,
+      "acoustic_db": 2.38,
+      "overshoot_db": -1.34,
+      "candidate_sha": "e47a2a8e7cc900e8",
+      "active_sha": "e47a2a8e7cc900e8",
+      "smoke_used_sha": "e47a2a8e7cc900e8",
+      "previous_backup": "model_prev_20250511-145727.json",
+      "config": {
+        "level_db_commanded": -19.3,
+        "actual_ref_rms_dbfs": -19.30329807100292,
+        "actual_ref_peak_dbfs": -7.1677246915418955,
+        "peak_cap": 0.8,
+        "gain_db": -8.0,
+        "hp_volume": 40,
+        "segments": 6,
+        "seg_seconds": 0.3357,
+        "min_snr_db": 6.0,
+        "l1_max": 4.0
+      }
+    }
+  ],
+  "reading": [
+    "Both runs passed the three-point rule and both were fitted from scratch: the coefficient hashes differ between the two runs (8c3010ec vs e47a2a8e), so nothing from the earlier attempt was reused.",
+    "In each run the smoke capture reported the same coefficients_sha256 as the installed model, which is the evidence that the audio path actually ran the model this run produced.",
+    "The previous model is kept as model_prev_<run_id>.json; a failed stage never restores it and plays on as if the run had succeeded.",
+    "Two flow defects were found and fixed during this window: SECONDS collided with the bash special variable (config value was truncated to 0), and the fitter treated floor.npz as a calibration segment (non-packet captures now live in prep/ and checks/)."
+  ]
+}
