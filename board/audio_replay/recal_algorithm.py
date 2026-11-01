@@ -256,6 +256,35 @@ def _band_ratio(signal, residual, fs, lo, hi):
     return float(10.0 * np.log10(np.sum(bp(signal) ** 2) / (np.sum(bp(residual) ** 2) + 1e-30)))
 
 
+def _align_pairs(caps, n):
+    """把多段 mic 对齐到同一时间原点，返回 (pairs, lags, target, shifts)。
+
+    shift = target − lag **可正可负**，两种方向含义不同：
+      shift > 0  这一段到达得早，mic 前补 shift 个零（往后推）
+      shift < 0  这一段到达得晚，mic 丢掉前 |shift| 帧、尾部补零（往前拉）
+
+    长度先保持为 n 再统一截掉尾部 max|shift| 帧，所以**补的零不会进残差**。
+    2026-11-01 修正：原实现在 shift < 0 时执行 np.zeros(负数)，抛 ValueError 后被
+    evaluate 包装成 data_insufficient——只差 1 帧的正常采集也会被判"数据不足"。
+    实测 100 cm 批 183/184 混排、50 cm 批 127/128 混排，两种方向都会出现。
+    """
+    lags = [_estimate_lag(c['ref'][:n], c['mic'][:n]) for c in caps]
+    target = int(np.median(lags))
+    shifts = [int(target - L) for L in lags]
+    trim = max([abs(s) for s in shifts] + [0])
+    keep = max(1, n - trim)
+    pairs = []
+    for cap, shift in zip(caps, shifts):
+        mic = np.asarray(cap['mic'][:n], dtype=float)
+        if shift > 0:
+            mic = np.concatenate([np.zeros(shift), mic[:len(mic) - shift]])
+        elif shift < 0:
+            k = -shift
+            mic = np.concatenate([mic[k:], np.zeros(min(k, len(mic)))])
+        pairs.append((np.asarray(cap['ref'][:n], dtype=float)[:keep], mic[:keep]))
+    return pairs, lags, target, shifts
+
+
 def model_response(h, nfft=NFFT_VALIDATE, lag_first=LAG_FIRST):
     k = np.arange(len(h))
     f = np.fft.rfftfreq(nfft, 1.0 / FS_DEFAULT)
@@ -506,15 +535,7 @@ def _phase_fit(req):
     if n < MIN_VALID_FRAMES:
         return _reply(req, 'data_insufficient', '六段共同有效帧只有 %d（< %d）' % (n, MIN_VALID_FRAMES))
 
-    lags = [_estimate_lag(c['ref'][:n], c['mic'][:n]) for c in caps]
-    expected = int(np.median(lags))
-    aligned = []
-    for c, lag in zip(caps, lags):
-        shift = expected - lag
-        mic = c['mic'][:n]
-        if shift:
-            mic = np.concatenate([np.zeros(shift), mic[:len(mic) - shift]])
-        aligned.append((c['ref'][:n], mic))
+    aligned, lags, expected, shifts = _align_pairs(caps, n)
 
     G, b, rows = segment_gram(aligned)
     if rows < TAPS:
@@ -523,6 +544,7 @@ def _phase_fit(req):
     q = quantize_q20(h)
     ok, status, reasons, metrics = _check_fit(q, caps[0]['fs'], expected_peak_tap=expected)
     metrics.update(equation_rows=int(rows), integer_lags=[int(v) for v in lags],
+                   alignment_shifts=[int(v) for v in shifts],
                    expected_peak_tap=expected)
     if not ok:
         attempts_total = int(req.get('attempts_total') or 1)
@@ -597,8 +619,10 @@ def _phase_validate(req):
     training = req.get('training') or []
     model_path = req.get('model_path')
     model_sha = req.get('model_sha256')
-    if not entries:
-        return _reply(req, 'data_insufficient', '请求里没有 validation 捕获')
+    if len(entries) < MIN_VALIDATION_CAPTURES:
+        return _reply(req, 'data_insufficient',
+                      '验证捕获只有 %d 段，少于 %d 段：单段或零段不构成独立验证'
+                      % (len(entries), MIN_VALIDATION_CAPTURES))
     if not model_path or not model_sha:
         return _reply(req, 'data_insufficient', '请求缺 model_path/model_sha256，无法判同一模型')
     p = Path(str(model_path))
@@ -634,16 +658,7 @@ def _phase_validate(req):
     if n < MIN_VALID_FRAMES:
         return _reply(req, 'data_insufficient',
                       '验证集共同有效帧只有 %d（< %d）' % (n, MIN_VALID_FRAMES))
-    for cap in caps:
-        lags.append(_estimate_lag(cap['ref'][:n], cap['mic'][:n]))
-    target = int(np.median(lags))
-    pairs = []
-    for cap, lag in zip(caps, lags):
-        shift = target - lag
-        mic = cap['mic'][:n]
-        if shift:
-            mic = np.concatenate([np.zeros(shift), mic[:len(mic) - shift]])
-        pairs.append((cap['ref'][:n], mic))
+    pairs, lags, target, shifts = _align_pairs(caps, n)
 
     fs = float(caps[0]['fs'])
     bands = []
@@ -687,6 +702,7 @@ def _phase_validate(req):
                                      'band_reduction_db': round(float(b['band_reduction_db']), 3)}
                                     for b in bands],
                     'validation_lags': [int(v) for v in lags],
+                    'alignment_shifts': [int(v) for v in shifts],
                     'cd_median_db_context_only': cd_med,
                     'cd_p10_db_context_only': cd_p10,
                     'bound_gain_db_context_only': bound_gain},

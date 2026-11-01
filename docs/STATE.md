@@ -58,7 +58,7 @@
 `src/feedback/recal_policy.py`+`excitation.py`、两份契约、两份复核报告（见下）。
 真实数据六例：fit `valid_pass`（L1 2.303、峰位 184 = 实测延迟），validate 对部署模型 +4.21 dB、
 旧夹具 −4.40 dB（拒）、全零 0.00（拒）、借用训练 capture 判不独立。
-**当前卡点**：C 需把 `compute_timeout_seconds` 对 `fit` 改到 ≥ 15 秒；这是唯一阻塞项，其余等整机回包。
+**当前卡点**：C 已接入（7f9e282，fit 时限 30 s 已落实）；本轮补齐负移位与单段验证后，等整机回包。
 
 - **最终验收只走一条路**：模型资格由 `evaluate` 的 `validate`（独立捕获上的逐段带内抑制）判；
   `check_three_point` 降级为历史复核工具，不再作为产品验收。`qualifies_cancellation: true`
