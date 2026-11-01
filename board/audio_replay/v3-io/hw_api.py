@@ -572,13 +572,18 @@ class ProductHardware:
             import math
             seconds = float(request.get('seconds', 10.0))
             q12 = int(request.get('gain_q12', self.allowed_gain_q12[0]))
+            src = self._run_source(request, seconds)
+            if isinstance(src, dict):
+                result.update(src)
+                return result
             self._current_op = 'run'
             control = self._ensure_mmio()['control']
             cur = control.read(0) & 0xFFFFFFFF
             control.write(0, (cur & 0xFFFF0000) | (1 if request.get('bypass') else 0) | 1)
             started = time.monotonic()
             try:
-                path, cap, meta = self._capture(seconds, tag='run', gain_db=20 * math.log10(max(q12, 1) / 4096.0),
+                path, cap, meta = self._capture(seconds, tag='run', source=src,
+                                                gain_db=20 * math.log10(max(q12, 1) / 4096.0),
                                                 bypass=bool(request.get('bypass')), direct_only=False, zero=False)
                 ok = meta.get('stop_reason') == 'completed'
                 status = 'completed' if ok else ('protected' if (int(meta.get('capture_status') or 0) >> 22) & 1 else 'error')
@@ -596,6 +601,48 @@ class ProductHardware:
             return result
         result['reason'] = 'unknown op'
         return result
+
+
+    def _run_source(self, request, seconds):
+        """Program audio for a live run. Returns a PCM16 array, or a dict describing the failure."""
+        import numpy as np
+        budget = int(seconds * 48828.125)   # must match the driver exactly
+        limit = budget - 2
+        raw = request.get('source')
+        if raw is None and request.get('source_path'):
+            path = pathlib.Path(request['source_path'])
+            if not path.is_file():
+                return {'status': 'error', 'reason': 'source_path_missing', 'path': str(path)}
+            if path.suffix.lower() == '.npz':
+                with np.load(str(path)) as z:
+                    raw = np.asarray(z['source_pcm16'] if 'source_pcm16' in z else z['source'])
+            elif path.suffix.lower() == '.wav':
+                import wave
+                with wave.open(str(path), 'rb') as w:
+                    if w.getsampwidth() != 2:
+                        return {'status': 'error', 'reason': 'wav_must_be_16bit', 'path': str(path)}
+                    frames = w.readframes(w.getnframes())
+                raw = np.frombuffer(frames, dtype='<i2')
+            else:
+                return {'status': 'error', 'reason': 'unsupported_source_format', 'path': str(path)}
+        if raw is None and request.get('test_tone_hz'):
+            hz = float(request['test_tone_hz'])
+            level = float(request.get('level_dbfs', -20.0))
+            n = limit
+            tt = np.arange(n) / 48828.125
+            raw = np.rint(10 ** (level / 20.0) * np.sin(2 * np.pi * hz * tt) * 32767).astype(np.int16)
+        if raw is None:
+            return {'status': 'error', 'reason': 'run_requires_source',
+                    'detail': 'pass source, source_path (.npz/.wav) or test_tone_hz; silence is not a run'}
+        src = np.asarray(raw)
+        if src.dtype != np.int16:
+            src = np.clip(src, -1.0, 1.0)
+            src = np.rint(src * 32767.0).astype(np.int16)
+        if len(src) > limit:
+            src = src[:limit]
+        if len(src) < limit:
+            src = np.concatenate([src, np.zeros(limit - len(src), np.int16)])
+        return src
 
     def _cue(self):
         import numpy as np
