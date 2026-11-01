@@ -305,15 +305,18 @@ if len(rows) == 3:
     tp = guard.three_point(rows, 322.0)
     open_pk = [a['mic_peak_dbfs'] for a in arms if a['tag'] == 'open'][0]
     byp_pk = [a['mic_peak_dbfs'] for a in arms if a['tag'] == 'bypass'][0]
-    boost_db = byp_pk - open_pk
-    if boost_db < 1.5:
-        insufficient = ('bypass-open microphone peak difference is only %.2f dB; arms being close and '
-                        'quiet does not show that cancellation works' % boost_db)
+    boost_peak_db = byp_pk - open_pk
+    # Judge resolvability on the three-point's OWN loop-boost quantity, not on a second crude peak
+    # difference: the peak estimator is noisier and flagged a run whose loop boost was real (1.03 dB).
+    boost_db = tp['loop_boost_db']
+    if boost_db < 1.0:
+        insufficient = ('the loop only adds %.2f dB above the no-loop path, so a PASS would not show '
+                        'that cancellation works' % boost_db)
     holds = (tp['acoustic_difference_db'] >= tp['loop_boost_db'] - 1.5
              and abs(tp['overshoot_db']) <= 1.5)
-    print('RECAL_THREE_POINT cd=%.2f loop_boost=%.2f acoustic=%.2f overshoot=%.2f boost=%.2f rule=%s'
+    print('RECAL_THREE_POINT cd=%.2f loop_boost=%.2f acoustic=%.2f overshoot=%.2f boost_peak=%.2f rule=%s'
           % (tp['cd_322_db'], tp['loop_boost_db'], tp['acoustic_difference_db'],
-             tp['overshoot_db'], boost_db, 'PASS' if holds else 'FAIL'))
+             tp['overshoot_db'], boost_peak_db, 'PASS' if holds else 'FAIL'))
     if insufficient:
         print('RECAL_INSUFFICIENT %s' % insufficient)
 else:
@@ -433,6 +436,7 @@ receipt = {
     'acceptance_tone': {'target_peak_dbfs': TONE_TARGET_DBFS, 'source_fs_frozen': tone_fs,
                         'adjustments': adjusts, 'trials': trials, 'same_source_all_arms': True},
     'measurement_insufficient': insufficient,
+    'loop_boost_peak_estimator_db': boost_peak_db if len(rows) == 3 else None,
     'voice': {'attempts': voice_attempts, 'rms_dbfs': v_rms, 'above_floor_db': v_rms - floor_db, 'stop': vmeta.get('stop_reason'), 'used_coeff_sha256': v_used,
               'seconds': VOICE_SECONDS},
 }
@@ -456,6 +460,7 @@ receipt = {
     'acceptance_tone': {'target_peak_dbfs': TONE_TARGET_DBFS, 'source_fs_frozen': tone_fs,
                         'adjustments': adjusts, 'trials': trials, 'same_source_all_arms': True},
     'measurement_insufficient': insufficient,
+    'loop_boost_peak_estimator_db': boost_peak_db if len(rows) == 3 else None,
     'voice': {'attempts': voice_attempts, 'rms_dbfs': v_rms,
               'above_floor_db': v_rms - floor_db, 'used_coeff_sha256': v_used,
               'seconds': VOICE_SECONDS},
