@@ -107,6 +107,7 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         missing=missing,adapters=adapters,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         algorithm_identity=config.get('algorithm_identity'),
         adapter_check_allowed=bool(adapters.get('hardware',{}).get('adapter_check_allowed')),
+        field_trial_allowed=bool(adapters.get('hardware',{}).get('field_trial_allowed')),
         diagnostic_model=adapters.get('hardware',{}).get('diagnostic_model'),
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
             'board/audio_replay/recal_product.py','board/audio_replay/recal_mock.py','board/audio_replay/recal_entry.sh',

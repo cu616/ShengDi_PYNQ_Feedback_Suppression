@@ -194,6 +194,53 @@ class ValidateTest(unittest.TestCase):
                                   validation=fx.entries[4:]))
         return fit
 
+    def test_zero_or_one_validation_capture_rejected(self):
+        """MIN_VALIDATION_CAPTURES=2 必须在生产函数里真的检查，不能只写在常量里。"""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            fx = Fixture(tmp)
+            fit = self._fit(fx)
+            for n in (0, 1):
+                got = ra.evaluate(fx.base(phase="validate", training=fx.entries[:4],
+                                          validation=fx.entries[4:4 + n],
+                                          model_path=fit["model_path"],
+                                          model_sha256=fit["model_sha256"]))
+                self.assertEqual(got["decision"], "data_insufficient", "n=%d" % n)
+                self.assertIn("%d 段" % n, got["reason"])
+
+    def test_mixed_integer_delays_do_not_crash(self):
+        """段间延迟差 1 帧是常态（实测 183/184、127/128 都出现过）。
+
+        对齐时 target−lag 会出现 −1，原实现执行 np.zeros(−1) 抛异常后被包装成
+        data_insufficient，把正常采集判成数据不足。这里三段早一段、三段晚一帧。
+        """
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            h = room_ir(delay=180)
+            entries = []
+            for i in range(6):
+                u = white(seed=20 + i)
+                mic = np.convolve(u, h)[:len(u)] + white(level_db=-42.0, seed=200 + i) * 0.03
+                if i >= 3:                                   # 后三段的 mic 晚一帧
+                    mic = np.concatenate([np.zeros(1), mic])[:len(mic)]
+                entries.append(write_capture(tmp, "mix%d" % i, u, mic))
+            base = dict(contract="recal-product-v1", request_id="r", scene_id="s",
+                        run_dir=tmp, attempt=0, attempts_total=1,
+                        identity={"hp_volume": 40, "gain_q12": 1631})
+            caps = [ra.load_capture(e) for e in entries]
+            pairs, lags, target, shifts = ra._align_pairs(caps, FRAMES)
+            self.assertEqual(len(set(lags)), 2, lags)        # 真的有两档延迟
+            self.assertIn(-1, shifts, shifts)                # 真的有负移位
+            self.assertTrue(all(len(u) == len(m) for u, m in pairs))
+            fit = ra.evaluate(dict(base, phase="fit", training=entries[:4],
+                                   validation=entries[4:]))
+            self.assertEqual(fit["decision"], "valid_pass", fit.get("reason"))
+            val = ra.evaluate(dict(base, phase="validate", training=entries[:4],
+                                   validation=entries[4:],
+                                   model_path=fit["model_path"],
+                                   model_sha256=fit["model_sha256"]))
+            self.assertEqual(val["decision"], "valid_pass", val.get("reason"))
+
     def test_shared_capture_is_not_independent(self):
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:
@@ -212,9 +259,10 @@ class ValidateTest(unittest.TestCase):
             fx = Fixture(tmp)
             fit = self._fit(fx)
             # 换个 capture_id，但沿用训练集的 source_sha256 —— 同一段源不算独立验证
-            val = dict(fx.entries[4], source_sha256=fx.entries[0]["source_sha256"])
+            val = [dict(fx.entries[4], source_sha256=fx.entries[0]["source_sha256"]),
+                   fx.entries[5]]
             got = ra.evaluate(fx.base(phase="validate", training=fx.entries[:4],
-                                      validation=[val],
+                                      validation=val,
                                       model_path=fit["model_path"],
                                       model_sha256=fit["model_sha256"]))
             self.assertEqual(got["decision"], "data_insufficient")
@@ -313,7 +361,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_identity_is_frozen(self):
         i = ra.identity()
-        self.assertEqual(i["version"], "recal-algorithm-2026-11-01")
+        self.assertEqual(i["version"], "recal-algorithm-2026-11-01.1")
         self.assertEqual(i["dependencies"], ["numpy"])
         self.assertEqual(i["taps"], 512)
         self.assertEqual(i["lag_first"], 1)

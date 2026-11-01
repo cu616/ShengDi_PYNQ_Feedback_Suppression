@@ -81,32 +81,26 @@ bash /opt/shengdi/current/recal_entry.sh --state-dir /home/xilinx/.local/state/s
 
 开发者运行`python -m unittest discover -s sim/feedback -p test_recal_product.py -v`。覆盖成功状态流、所有I/O与计算阶段取消、过载、数据不足、拒收、安装/原子指针失败、混搭、能力缺失、提示音窗、独立留出、无效果证据、有限重试、实际模式、单次结束、多布局回包、真实子进程停止和篡改拒绝。所有信号/判据为模拟或固定返回值，不代表上板效果。
 
-## C给A/B的一次性交接
+## 本轮收口（A 22c88bb / B 0b09ef6）
 
-A a3f516f的事件名recalibrate/start/stop/cancel/confirm_quiet/mode与C一致；短按BTN0和BTN1切换已兼容。install请求model_path/run_gain_q12，回复model_sha256/coefficients_sha256/applies_at也已接入，无须改名。API根/发布副本3549及双哈希已更新，旧f617/2f253及混填问题不再列为本轮缺项。
+C直接接B recal-algorithm-2026-11-01.1，文件SHA为489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417；正负移位与0/1段验证修正已跑过，B不再新增修改请求。fit预算仍30秒，ATTEMPTS原样，数值输出继续只表示独立段预测抑制。
 
-prepared_capture=false仍阻塞普通正式流程：prepare之后的input仍会重下位流，不能据prepare=true提前宣称讲话窗已备好。维护链路可先用同一入口独立跑。固定预热选择由A在create_product内实现并单独记录，不把看到异常后的首段删除冒充预热；B ATTEMPTS仍为6训练/2验证。B对16382帧的适用域裁决保留原件，不补零、不直接要求40分钟重构建。
+C已兼容A的描述文件、开环增益集合、单次input/cue路径与返回marker：话音窗从原NPZ取真实源坐标，不改PCM；每次硬件调用隔离目录，各档levels只封当前档。C等待旧硬件调用收尾后才重用，STOP即时静音，queued CAL可被STOP撤销。19秒返回本身不要求A强杀线程。
 
-### A一次性维护操作（板卡）
+A原版22c88bb仍有确定执行错误，已保存纯Python方法调用/替换底层I/O的复现；诊断中为继续定位而加的私有名别名、JSON桥接只存在于隔离检查，不进入候选。
 
-电脑包为materials/final/shengdi-recal-frozen-a3f516f-2ccf746.zip，ZIP不进Git。A将其解压到板卡/home/xilinx/shengdi-install/recal-frozen-a3f516f/。先结束A已有采集/演示，下面只由A执行；默认常驻安装仍会因能力缺项拒绝。
+1. V2的self.__meta解析成_ProductHardwareV2__meta，父类实际只有_ProductHardware__meta；training和cue+input均AttributeError。
+2. install用numpy.load读取JSON模型，解析会失败。仅作诊断修通解析后，direct_only加载结束的gain_q12为0，未恢复请求1631，loaded_count为None。应正确解析JSON，并按实际装载核验填系数身份/数量、恢复运行增益后再读identity。
+3. cancel_event预先置位时，V2 training仍调用driver。需要透传到plan/input/install/run及每次驱动的before_start检查，禁止取消后重新arm；C的收尾等待不能替代这一条。
 
-显式绑定A当前已核对模型，不默认安装仓库旧模型：
+本轮只给A以上必要修正，不再附泛化清单，不向B重复派活。修复后重组同一入口，才安排两布局/拨码/取消的一次完整现场窗口。
 
-```bash
-current_model=/home/xilinx/jupyter_notebooks/base/audio/audio_io/model_recalibrated.json
-current_model_sha=$(sha256sum "$current_model" | cut -d ' ' -f 1)
-bash /home/xilinx/shengdi-install/recal-frozen-a3f516f/recal_entry.sh --adapter-check --model "$current_model" --model-sha256 "$current_model_sha" --state-dir /home/xilinx/.local/state/shengdi/maintenance-a3f516f
-```
+### 包与入口
 
-此命令执行create_product→mute/capabilities→prepare→training一段（开环）→install→run三秒→finally abort。会播放训练激励并做三秒运行，无需人声；不是普通用户重标定验收，不写eligible current。回传单个/home/xilinx/.local/state/shengdi/maintenance-a3f516f/adapter-check.json即可，包含逐步请求/回复、实际模型和B算法身份、结束/静音情况及不兼容项。源模型文件保持原位。
+本地materials/final/shengdi-closeout-22c88bb-0b09ef6-review.zip仅审阅，A/B源字节不改，原A描述文件另存于upstream-product-adapter.json。默认启动、--adapter-check和--field-trial在本版本全部拒绝，避免带确定执行错误进入现场。ZIP不进Git。
 
-### B现有数据裁决
+A修正后的版本经相同离线方法检查后，可按包清单开放同一recal_entry.sh的维护/受控现场参数；--field-trial仅A使用，需显式当前模型路径及完整SHA，回执标field_trial=true；它不把prepared_capture=false改为已验证。默认正式流程继续要求能力和模型事务通过，真实板卡仍由A唯一操作。
 
-C用a3f516f已有bwindow八段原件及2ccf746原算法复核：有效源窗均16382；全6训练因采集资格拒绝；原训练与原验证源SHA重复，因此不能当独立验证。固定“排首段”仅作回顾诊断时，其余5段fit通过，L1约1.788、峰位与本轮延迟130一致；没有把这个对照当验收或自动筛数据。
+### 同一数据复核
 
-请B基于同一原件确认16382是否适用、首段资格与固定预热方案；先使用A已保存的4243独立验证原件（至少两段）补复核，不为字段格式重采。若确需算法变更，用新版本/新identity交接，保持本冻结文件字节不变。C继续使用30秒预算与B原策略；算法的预测资格不写成ASG或听感。
-
-### 当前证据边界
-
-C已从入口执行原版A工厂，但PYNQ/MMIO/Codec/driver叶子被离线替换；真实上板检查留给A。另读main=12a5491的真人主路30秒回执，收录A的completed及“有放大/清晰/无啸叫”主观报告；那不是C入口已上板。此次候选固定a3f516f，不静默混入后续A保护/预热更正。
+A既有八段原件保持不变，用B新.1版本重算：全6训练仍因首段采集资格拒收，验证仍因训练/验证同源拒收；去首段5段仅回顾诊断fit通过（L1约1.788、峰位/本轮延迟130）。有效帧16382按原值交给B代码，无补零/自动删段/格式重采。旧数据限制不再转成泛化A/B修改任务；后续统一现场回包按当前封装的独立种子处理。

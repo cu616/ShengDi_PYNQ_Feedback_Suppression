@@ -1,5 +1,10 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-01 C 收口A22/B.1重组与必要阻塞复现
+
+按用户“仅真实需要改动才留言”收束，接B 0b09ef6原字节与A22描述；71项受影响检查通过，B正负移位/少段验证修正确认，同一原件结论保持采集资格/独立性拒收。C吸收旧调用晚返回、隔离文件与嵌入提示窗格式，未让硬件端隐式重扫档。A原版training/input私有名错误、install JSON解析及后续gain/count问题、预取消仍调用driver经隔离叶子I/O复现；诊断补丁未入候选。只给A必要3项，不追加B任务；现场/维护入口保持关闭，未操板。[A复现](../../report/verification/recal-product-v1/a22-runtime-audit.json)、[71项](../../report/verification/recal-product-v1/closeout-software.json)、[同一数据](../../report/verification/recal-product-v1/closeout-data-review.json)、[收口说明](../ref/recal-product.md#本轮收口a-22c88bb--b-0b09ef6)。
+
+
 ## 2026-11-01 C 接A a3f516f与B冻结身份并复核现有原件
 
 接口变更：交冻结接入v3，直接调用B 2ccf746 identity/evaluate，ATTEMPTS原样及30秒预算，包/每轮/计算回包绑定版本SHA。同一入口加A维护检查与显式当前模型SHA；原版A factory经C main调用、底层叶子I/O替换验证，105项相关软件通过。固定A根/发布3549及8项manifest；接双哈希/applies_at，次捕获生效未获回读不提交current。只读复算已有八段16382帧，全训练拒收/验证同源；去首段5段仅诊断fit通过，不升格验收。1505a17干净源码冻结30载荷本地包，解压哈希/文档/B身份worker通过；维护参数可用，默认普通流程保留prepared_capture阻塞，C未操板。另归档A后续真人30秒回执的来源与听感范围，不混源码。[接口](../contracts/recal-runtime-v3.md)、[105项](../../report/verification/recal-product-v1/frozen-integration.json)、[包核验](../../report/verification/recal-product-v1/frozen-package-check.json)、[现有数据](../../report/verification/recal-product-v1/frozen-data-review.json)、[A/B操作](../ref/recal-product.md#c给ab的一次性交接)。

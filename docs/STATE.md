@@ -40,13 +40,13 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-01固定A a3f516f/B 2ccf746交冻结接入v3：直接B identity/evaluate，ATTEMPTS原样、fit30秒、讲话同档有界重说、算法身份写包及每轮回执；C同一入口提供A三秒维护检查。105项相关软件检查通过，包含C main→原版A factory完整方法链，叶子MMIO/Codec/driver均离线替换。A根/发布hw_api均3549，原manifest实际8项全部吻合；安装双哈希修正已接入。
-**当前卡点**：C入口真实板卡调用未执行，普通常驻流程仍因prepared_capture=false阻塞；先prepare再input仍会再次下载。install登记next_capture未获实际装载回读时不提交有效current。A需在factory落实固定预热/讲话窗口及运行身份/时长回读；B对16382帧适用域和首段采集资格裁决仍需明确。未以板卡重构建或格式重采代替现有原件复核。
+**最后动作**：2026-11-01固定A 22c88bb/B 0b09ef6重组检查。B原字节SHA489064…、版本recal-algorithm-2026-11-01.1已接入，修正正负移位与0/1验证段已验证；仅跑受影响C/B检查71项通过。C补硬件收尾互斥、可撤销CAL排队、单档levels封装、独立落盘目录、原NPZ窗口字段接入、嵌入cue路径和明确受控现场参数；B不再新增修改请求。
+**当前卡点**：A原版方法离线调用复现3项必要修正：V2私有__meta不可见导致training/input报错；install用numpy.load读JSON，诊断修通后运行gain未恢复且loaded_count为空；预取消Event已置位仍调用driver。C未操板，未把隔离诊断补丁写入A候选；重组包仅审阅，维护和现场启动均关闭。只向A汇总这3项，不习惯性给A/B追加清单。
 
-- [冻结接入及维护命令](contracts/recal-runtime-v3.md)、[A/B可执行操作单](ref/recal-product.md#c给ab的一次性交接)、[105项软件检查](../report/verification/recal-product-v1/frozen-integration.json)、[包身份/解压检查](../report/verification/recal-product-v1/frozen-package-check.json)、[固定资产身份](../report/verification/recal-product-v1/frozen-assets.json)、[现有8段独立复核](../report/verification/recal-product-v1/frozen-data-review.json)、[任务与纠错](../report/ai-records/recal-product-v1.md)。
-- 八段源有效帧均16382；当前B算法全6训练以采集资格拒绝，且原训练/验证源SHA重复而不独立。仅作回顾诊断的“去首段5训练”fit通过（L1约1.788，峰位/本轮延迟130一致）；没有将其当模型验收或自动删段。先取A已存4243验证原件，不因格式重跑。
-- 本轮本地shengdi-recal-frozen-a3f516f-2ccf746.zip固定A/B原字节，允许A显式当前模型+完整SHA的维护检查；默认正式启动/安装仍拒绝。旧v1/v2包保留历史身份。C未操板、未改A实现或B冻结算法，没有默认安装旧场景模型。
-- 另只读收到A main=12a5491真人主路30秒completed及“有放大/清晰/无啸叫”听感回执，记录为A现场证据；C正式入口未上板，当前候选不静默混入该后续源码。105项软件结果、B预测验证、A主观回报及ASG口径分别保存。
+- [A运行时复现](../report/verification/recal-product-v1/a22-runtime-audit.json)、[71项受影响检查](../report/verification/recal-product-v1/closeout-software.json)、[固定载荷](../report/verification/recal-product-v1/closeout-assets.json)、[同一原件复算](../report/verification/recal-product-v1/closeout-data-review.json)、[本轮操作边界](ref/recal-product.md#本轮收口a-22c88bb--b-0b09ef6)、[接口](contracts/recal-runtime-v3.md)、[任务与纠错](../report/ai-records/recal-product-v1.md)。
+- 19秒驱动返回可由C收尾状态吸收：立即静音，旧调用未返回不启动新任务；CAL可排队、STOP可撤销，旧代次结果不启用候选。A仍须在取消/arm边界守住旧任务不能重新开声。
+- 同一八原件由新B复算：16382有效源帧保持原值；全6训练采集资格拒收、原验证同源而不独立；去首段5段仅诊断fit通过（L1约1.788、峰位/本轮延迟130）。不把该对照当模型验收，不新增字段格式重采要求。
+- 本轮本地shengdi-closeout-22c88bb-0b09ef6-review.zip只审阅，不自动入Git；原A描述和实际源SHA保留，未混入任何诊断别名/解析补丁。默认常驻、维护和现场参数均按本包门槛拒绝；A修正后复用同一检查再开放完整现场窗口。
 
 ## 已验证 / 未验证（只在这里写一次）
 

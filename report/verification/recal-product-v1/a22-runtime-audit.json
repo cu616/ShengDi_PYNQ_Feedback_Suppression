@@ -1,0 +1,68 @@
+{
+  "a_commit": "22c88bb",
+  "a_file_sha256": "ca76421cb5d7d137f691de9222a906d4e8fbe6dbd2c470ed11ab13d2bc925281",
+  "board_operations": 0,
+  "scope": "original A Python methods, mocked MMIO/driver leaf; isolated diagnostic patches explicitly marked and never shipped",
+  "probes": [
+    {
+      "name": "original training",
+      "exception": "AttributeError",
+      "message": "'ProductHardwareV2' object has no attribute '_ProductHardwareV2__meta'",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\audit-a22.py\", line 26, in probe\n    try: value=fn();probes.append(dict(name=name,returned=value,diagnostic_changes=diagnostic_changes))\n               ^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\audit-a22.py\", line 28, in <lambda>\n    probe(\"original training\",lambda:hardware().perform(req))\n                                     ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a22-runtime-probes\\hw_api.py\", line 892, in perform\n    return self._run_plan(request, op)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a22-runtime-probes\\hw_api.py\", line 823, in _run_plan\n    meta = self.__meta(np.load(str(path)))\n           ^^^^^^^^^^^\nAttributeError: 'ProductHardwareV2' object has no attribute '_ProductHardwareV2__meta'. Did you mean: '_ProductHardware__meta'?\n",
+      "diagnostic_changes": null
+    },
+    {
+      "name": "original cue_input",
+      "exception": "AttributeError",
+      "message": "'ProductHardwareV2' object has no attribute '_ProductHardwareV2__meta'",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\audit-a22.py\", line 26, in probe\n    try: value=fn();probes.append(dict(name=name,returned=value,diagnostic_changes=diagnostic_changes))\n               ^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\audit-a22.py\", line 29, in <lambda>\n    probe(\"original cue_input\",lambda:hardware().perform(dict(req,op=\"input\",cue=True,seconds=2.5)))\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a22-runtime-probes\\hw_api.py\", line 894, in perform\n    return self._cue_input(request, cancel_event)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a22-runtime-probes\\hw_api.py\", line 863, in _cue_input\n    meta = self.__meta(np.load(str(path)))\n           ^^^^^^^^^^^\nAttributeError: 'ProductHardwareV2' object has no attribute '_ProductHardwareV2__meta'. Did you mean: '_ProductHardware__meta'?\n",
+      "diagnostic_changes": null
+    },
+    {
+      "name": "install after diagnostic-only private alias",
+      "exception": "ValueError",
+      "message": "This file contains pickled (object) data. If you trust the file you can load it unsafely using the `allow_pickle=` keyword argument or `pickle.load()`.",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\audit-a22.py\", line 26, in probe\n    try: value=fn();probes.append(dict(name=name,returned=value,diagnostic_changes=diagnostic_changes))\n               ^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\audit-a22.py\", line 32, in <lambda>\n    probe(\"install after diagnostic-only private alias\",lambda:hardware().perform(dict(req,op=\"install\",model_path=str(model),run_gain_q12=1631)),\"private metadata alias only\")\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a22-runtime-probes\\hw_api.py\", line 896, in perform\n    return self._install(request)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a22-runtime-probes\\hw_api.py\", line 921, in _install\n    __import__('numpy').asarray(__import__('numpy').load(str(self.model_path))['coefficients_q20'],\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Chen Zhiyuan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\site-packages\\numpy\\lib\\_npyio_impl.py\", line 489, in load\n    raise ValueError(\nValueError: This file contains pickled (object) data. If you trust the file you can load it unsafely using the `allow_pickle=` keyword argument or `pickle.load()`.\n",
+      "diagnostic_changes": "private metadata alias only"
+    },
+    {
+      "name": "install gain/count after diagnostic-only parser bridge",
+      "returned": {
+        "contract": "recal-product-v1",
+        "request_id": "r",
+        "scene_id": "s",
+        "op": "install",
+        "ok": true,
+        "status": "completed",
+        "model_sha256": "fd079420fc378cc3dfb5a34bbbb4b62f7fbce46f952363b4d19273adf9cdb7d8",
+        "coefficients_sha256": "d5990a0fe875a0aa109edb831f0e95b8f0a3a46b9b78daeaea9ce05c32c7201f",
+        "loaded_count": null,
+        "taps": 512,
+        "applies_at": "immediately",
+        "run_gain_q12": 1631,
+        "identity": {
+          "gain_q12": 0
+        }
+      },
+      "diagnostic_changes": "private alias + JSON parser bridge only; not candidate code"
+    },
+    {
+      "name": "original training with cancellation already set",
+      "exception": "AttributeError",
+      "message": "'ProductHardwareV2' object has no attribute '_ProductHardwareV2__meta'",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\audit-a22.py\", line 26, in probe\n    try: value=fn();probes.append(dict(name=name,returned=value,diagnostic_changes=diagnostic_changes))\n               ^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\audit-a22.py\", line 42, in <lambda>\n    probe(\"original training with cancellation already set\",lambda:hardware().perform(req,cancel))\n                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a22-runtime-probes\\hw_api.py\", line 892, in perform\n    return self._run_plan(request, op)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a22-runtime-probes\\hw_api.py\", line 823, in _run_plan\n    meta = self.__meta(np.load(str(path)))\n           ^^^^^^^^^^^\nAttributeError: 'ProductHardwareV2' object has no attribute '_ProductHardwareV2__meta'. Did you mean: '_ProductHardware__meta'?\n",
+      "diagnostic_changes": null
+    }
+  ],
+  "driver_calls_despite_pre_cancel": 1,
+  "required_A_fixes": [
+    "ProductHardwareV2 private __meta resolves to missing _ProductHardwareV2__meta",
+    "install uses numpy.load on JSON; after parsing also restore requested run gain and return actual loaded_taps count",
+    "propagate cancel_event through plan/install and driver before_start; old calls must not re-arm after stop"
+  ],
+  "C_absorbs": [
+    "late driver return via drain gate; no concurrent replacement hardware request",
+    "missing window fields derived from immutable NPZ metadata",
+    "one sealed level per attempt; no implicit adapter rescan"
+  ]
+}

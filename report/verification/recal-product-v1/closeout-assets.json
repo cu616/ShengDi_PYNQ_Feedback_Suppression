@@ -1,0 +1,19 @@
+{
+  "a_commit": "22c88bb",
+  "b_commit": "0b09ef6",
+  "A_payload_hash_checks": {
+    "audio_replay.bit": true,
+    "audio_replay.hwh": true,
+    "closed_tools.py": true,
+    "hw_api.py": true,
+    "replay_tools.py": true,
+    "replay_trial_repair.py": true,
+    "residual_tools.py": true,
+    "tone_round_guard.py": true
+  },
+  "A_original_descriptor_preserved": true,
+  "expected_runtime_gain_source": "C-selected first gain from A approved run_gain_q12 set; not an upstream readback claim",
+  "B_file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+  "all_payload_hashes_match": true,
+  "board_operations": 0
+}

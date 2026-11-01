@@ -88,7 +88,7 @@ class FrozenTests(unittest.TestCase):
         with self.assertRaises(product.Failure): app._algorithm_done(req,reply)
 
     def test_external_original_is_ingested_without_changing_bytes(self):
-        outside=self.folder/'capture-root';outside.mkdir();raw=outside/'original.npz';raw.write_bytes(b'original')
+        outside=self.folder/'capture-root';outside.mkdir();raw=outside/'original.bin';raw.write_bytes(b'original')
         run=self.folder/'scene';run.mkdir();req=dict(run_dir=str(run),request_id='r')
         reply=dict(captures=[dict(path=str(raw),sha256=product.sha(raw),capture_id='c')])
         result=ingest(req,reply,outside);item=result['captures'][0]

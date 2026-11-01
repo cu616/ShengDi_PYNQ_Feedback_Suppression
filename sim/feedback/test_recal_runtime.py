@@ -126,7 +126,8 @@ class RuntimeTests(unittest.TestCase):
         scene=app.scene;app.tick();self.assertEqual(app.scene,scene)
         self.ready(app);app.cfg['run_seconds']=.5;app.event('start')
         hw.events=[dict(kind='start',value='btn1')];app.tick()
-        self.assertEqual(app.state,'ended');self.assertEqual(hw.mode,'muted')
+        self.assertEqual(hw.mode,'muted');self.assertIn(app.state,('stopping','ended'))
+        self.until(app,lambda:app.state=='ended')
 
     def test_led4_is_translated_and_never_written_when_running(self):
         cfg=sample_config();cfg['indicator_encoding']='led4'
@@ -190,8 +191,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual((out/'residual_tools.py').read_bytes(),(self.folder/'hardware/residual_tools.py').read_bytes())
         self.assertEqual((out/'recal_algorithm.py').read_bytes(),(ROOT/'board/audio_replay/recal_algorithm.py').read_bytes())
 
-    def test_B_mixed_current_lags_return_a_diagnostic_instead_of_a_model(self):
-        # Regression evidence for B: negative alignment shift currently makes np.zeros(-1).
+    def test_B_mixed_current_lags_fit_after_signed_alignment_fix(self):
         from test_recal_algorithm import white,write_capture
         entries=[]
         for i,delay in enumerate((180,181)):
@@ -199,8 +199,8 @@ class RuntimeTests(unittest.TestCase):
             entries.append(write_capture(self.folder,'mixed'+str(i),ref,mic))
         out=b.evaluate(dict(contract='recal-product-v1',request_id='r',scene_id='s',phase='fit',
             run_dir=str(self.folder),training=entries,attempt=0,attempts_total=3,identity={}))
-        self.assertEqual(out['decision'],'data_insufficient')
-        self.assertIn('negative dimensions',out['reason'])
+        self.assertEqual(out['decision'],'valid_pass',out['reason'])
+        self.assertEqual(out['evidence']['metrics']['alignment_shifts'],[0,-1])
 
 
 if __name__=='__main__': unittest.main()

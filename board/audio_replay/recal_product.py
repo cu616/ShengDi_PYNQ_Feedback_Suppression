@@ -24,6 +24,8 @@ CAPS = ('buttons','indicator','nonintrusive_events','abort_mutes','prepared_capt
 PROMPTS = {
     'uncalibrated': ('white','slow/1','待标定：移动设备后按CAL'),
     'preparing': ('yellow','4','正在准备，请稍候'),
+    'input_capture': ('cyan','2','系统正在准备；提示音结束后持续讲话，等下一提示'),
+    'stopping': ('yellow','4','已停声，设备正在收尾，请稍候'),
     'speaking': ('cyan','blink/2','准备完成，请自然讲话'),
     'quiet': ('blue','blink/3','请保持安静，系统可能播放测试声'),
     'capturing': ('blue','blink/3','正在采样，请保持安静'),
@@ -151,6 +153,7 @@ class Product:
         self.gain_scope='prepare' if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') else 'runtime'
         self.caps={};self.input_ready=None;self.indicator_deferred=False
         self.speech_retries=0
+        self.hw_idle=threading.Event();self.hw_idle.set();self.stop_target=None;self.queued_recalibrate=False
         self.store.invalidate(self.scene,'boot_requires_calibration')
         try:
             self._muted(initial_mute)
@@ -160,6 +163,7 @@ class Product:
             required=[k for k in CAPS if k!='prepared_capture']
             prepared=(caps.get('cue_input_ready_event') is True if config.get('input_mode')=='cue_input'
                       else caps.get('prepared_capture') is True)
+            if config.get('field_trial') is True and config.get('input_mode')=='embedded':prepared=True
             if caps.get('contract')!=CONTRACT or not all(caps.get(k) is True for k in required) or not prepared:
                 raise Failure('hardware_error','实体按键/提示/停止接口尚不可用')
             if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') and float(config.get('compute_timeout_seconds',0))<15:
@@ -217,6 +221,8 @@ class Product:
             algorithm_identity=self.cfg.get('algorithm_identity'),speech_retries=self.speech_retries,
             numeric_exit_reason=self.cfg.get('algorithm_identity',{}).get('strategy',{}).get('exit_reasons',{}).get(
                 self.algorithm_receipts[-1]['reply'].get('decision') if self.algorithm_receipts else None),
+            hardware_draining=not self.hw_idle.is_set(),
+            field_trial=self.cfg.get('field_trial',False),
             indicator_deferred=self.indicator_deferred,
             waveform_policy='PCM stays on board; file paths and original hashes retained',hardware_error_latched=self.fatal)
         write_json(self.root/'status.json',status)
@@ -238,9 +244,10 @@ class Product:
         led4=self.cfg.get('indicator_encoding')=='led4' or bool(self.caps.get('led_legend'))
         if led4:
             pattern=({'uncalibrated':'0000','cancelled':'0000','speaking':'0010','quiet':'0100',
+                'input_capture':'0010','stopping':'0001',
                 'capturing':'0100','ready':'1000','running':'1000','ended':'1000',
                 'failed':'1111','protected':'1111','inconclusive':'1111'}).get(state,'0001')
-        self.indicator_deferred=led4 and self.mode!='muted'
+        self.indicator_deferred=led4 and self.mode!='muted' and not self.cfg.get('indicator_armed_safe',False)
         if not self.indicator_deferred:
             answer=self.hw.indicate(dict(state=state,color=color,pattern=pattern,text=text,mode=self.mode))
             if answer.get('ok') is not True: raise Failure('hardware_error','实体提示不可用')
@@ -265,7 +272,8 @@ class Product:
         if not was_running: self.store.invalidate(self.scene,'cancelled')
         if not record: return
         self.outcome='user_cancelled';self.reason='用户停止，未自动重启'
-        self._state('ended' if was_running else 'cancelled')
+        self.queued_recalibrate=False;self.stop_target='ended' if was_running else 'cancelled'
+        self._state(self.stop_target if self.hw_idle.is_set() else 'stopping')
 
     def _abort(self):
         result=self.hw.abort();self._muted(result)
@@ -278,6 +286,9 @@ class Product:
             if self.fatal: return
             if kind=='recalibrate':
                 self.stop(record=self.state not in ('uncalibrated','ready','ended','failed','protected','cancelled','inconclusive'))
+                if not self.hw_idle.is_set():
+                    self.store.invalidate(self.scene,'recalibration_waiting_for_hardware')
+                    self.queued_recalibrate=True;self.stop_target='cancelled';self._state('stopping');return
                 self.scene=uuid.uuid4().hex;self.identity=None
                 self.store.invalidate(self.scene,'scene_changed')
                 self.gain_scope='prepare'
@@ -293,6 +304,7 @@ class Product:
                 self.attempt=0;self.cue_end=0;self.outcome=None;self.reason='';self.run_result=None
                 self.cancel=threading.Event();self._state('preparing');self._hw('prepare',phase='input')
             elif kind=='start' and self.state in ('ready','ended') and self.bundle:
+                if not self.hw_idle.is_set():self.stop_target='ended';self._state('stopping');return
                 current=json.loads(self.store.pointer.read_text(encoding='utf-8'))
                 if not current.get('eligible') or current['scene_id']!=self.scene:
                     raise Failure('model_rejected','当前场景无有效模型')
@@ -307,12 +319,15 @@ class Product:
 
     def _submit(self, kind, request, function):
         if self.pending: raise Failure('hardware_error','硬件任务尚未完成')
+        if kind=='hw' and not self.hw_idle.is_set():raise Failure('hardware_error','旧硬件调用尚未返回')
+        if kind=='hw':self.hw_idle.clear()
         epoch=self.epoch;cancel=self.cancel;self.pending=(kind,request)
         self.job_deadline=self.clock()+float(self.cfg.get('io_timeout_seconds',30) if kind=='hw' else self.cfg.get('compute_timeout_seconds',120))+1
         if kind=='hw' and request.get('op')=='run': self.job_deadline+=float(request['seconds'])
         def worker():
             try: value=function(request,cancel);error=None
             except Exception as exc: value=None;error=exc
+            if kind=='hw':self.hw_idle.set()
             self.results.put((epoch,kind,request,value,error))
         threading.Thread(target=worker,daemon=True).start()
 
@@ -327,6 +342,9 @@ class Product:
             request['plan']=json.loads(json.dumps(self.cfg['capture_plans'][self.attempt][op]))
             for index,item in enumerate(request['plan']['captures']):
                 item['capture_id']='%s-%s-%s-%s'%(self.scene,self.attempt,op,index)
+        if self.cfg.get('request_capture_directories'):
+            folder=self.run_dir/'io'/request['request_id'];folder.mkdir(parents=True)
+            request['run_dir']=str(folder.resolve())
         self._submit('hw',request,self.hw.perform)
     def _alg(self, phase):
         request=self._request(phase=phase,training=self.training,validation=self.validation,
@@ -370,6 +388,8 @@ class Product:
         op=req['op']
         if op=='prepare':
             phase=req['phase']
+            if phase=='input' and self.cfg.get('input_mode')=='embedded':
+                self._state('input_capture');self._hw('input',cue=True,seconds=self.cfg.get('speech_seconds',2.5));return
             if phase=='input' and self.cfg.get('input_mode')=='cue_input':
                 self._hw('cue_input');return
             if phase=='input' and self.cfg.get('cue') and not self.cue_end: self._hw('cue');return
@@ -384,6 +404,7 @@ class Product:
             self.cue_end=reply['end_frame']+reply['tail_frames']
             self._hw('prepare',phase='input',not_before_frame=self.cue_end)
         elif op in ('input','cue_input'):
+            if req.get('cue'):self.cue_end=reply['cue_end_frame']
             if op=='cue_input' and (not self.input_ready or reply.get('frame_domain')!=self.input_ready['frame_domain']):
                 raise Failure('data_insufficient','缺少本次已准备讲话窗事件或帧域不符')
             records=self._captures(reply)
@@ -501,6 +522,18 @@ class Product:
                 events.append(event)
             if any(e['kind'] in ('stop','cancel') for e in events): self.event('stop');return
             if self.fatal: return
+            if self.state=='stopping':
+                for event in events:
+                    if event['kind']=='recalibrate':
+                        self.store.invalidate(self.scene,'recalibration_waiting_for_hardware')
+                        self.queued_recalibrate=True
+                if poll.get('effective_mode')!='muted':
+                    self.fatal=True;raise Failure('hardware_error','取消后旧任务重新启动了音频')
+                if self.hw_idle.is_set():
+                    queued=self.queued_recalibrate;self.queued_recalibrate=False
+                    self._state(self.stop_target or 'cancelled')
+                    if queued:self.event('recalibrate')
+                return
             if self.state in ('failed','protected','cancelled','inconclusive'):
                 for event in events: self.event(event['kind'])
                 return
@@ -639,6 +672,7 @@ def main():
     p.add_argument('--export',type=Path);p.add_argument('--review-return',type=Path)
     p.add_argument('--adapter-check',action='store_true');p.add_argument('--model',type=Path)
     p.add_argument('--model-sha256')
+    p.add_argument('--field-trial',action='store_true')
     args=p.parse_args();manifest=verify_package(args.base)
     sys.path.insert(0,str(args.base.resolve()))
     package_sha=sha(args.base/'product-manifest.json')
@@ -675,9 +709,18 @@ def main():
         with instance_lock(state): result=adapter_check(hw,config,state,model,write_json,cancel)
         print(json.dumps(dict(success=result['success'],receipt=str(state/'adapter-check.json'),
             compatibility_issues=result['compatibility_issues']),ensure_ascii=False));return 0 if result['success'] else 2
-    if not args.simulate and not manifest['deployment_ready']: raise ValueError('physical adapters not ready: '+','.join(manifest['missing']))
+    if args.field_trial and (not manifest.get('field_trial_allowed') or manifest['simulation']):
+        raise ValueError('field trial not enabled for this exact source package')
+    if not args.simulate and not manifest['deployment_ready'] and not args.field_trial: raise ValueError('physical adapters not ready: '+','.join(manifest['missing']))
     if manifest['simulation']!=args.simulate: raise ValueError('simulation/physical package mismatch')
     config=json.loads((args.base/'product-config.json').read_text(encoding='utf-8'))
+    if args.field_trial:
+        if config.get('input_mode')!='embedded' or not args.model or not args.model_sha256:
+            raise ValueError('field trial requires embedded cue and explicit current model identity')
+        if len(args.model_sha256)!=64 or sha(args.model)!=args.model_sha256:
+            raise ValueError('field trial current model hash mismatch')
+        config.update(field_trial=True,model_path=str(args.model.resolve()),
+            fixture=json.loads(args.model.read_text(encoding='utf-8'))['fixture_id'])
     config['package_manifest_sha256']=package_sha
     config['package_dir']=str(args.base.resolve())
     state=args.state_dir or args.base/'state'

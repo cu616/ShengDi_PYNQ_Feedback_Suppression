@@ -25,7 +25,7 @@ def capture_plans(attempts):
         stages={}
         for phase in ('training','validation'):
             item=attempt[phase];seed=int(item.get('seed',4242))+(phase=='validation')
-            stages[phase]=dict(seed=seed,validation_seed=seed,level_dbfs=item['rms_dbfs'],
+            stages[phase]=dict(seed=seed,validation_seed=seed,level_dbfs=item['rms_dbfs'],levels=[item['rms_dbfs']],
                 captures=[dict(level_dbfs=item['rms_dbfs'],seed=seed,direct_only=True,
                                zero_coeff=True,content_kind='onboard_excitation')
                           for _ in range(item['segments'])])
@@ -35,28 +35,47 @@ def capture_plans(attempts):
 
 def ingest(request, reply, import_root):
     """Copy verified originals into this scene; preserve source bytes and metadata."""
-    if not import_root or not reply.get('captures'): return reply
-    root=Path(import_root).resolve();run=Path(request['run_dir']).resolve()
+    if not reply.get('captures'): return reply
+    root=Path(import_root).resolve() if import_root else None;run=Path(request['run_dir']).resolve()
     output=copy.deepcopy(reply)
     for index,item in enumerate(output['captures']):
         source=Path(item['path']).resolve()
-        try: source.relative_to(run);continue
-        except ValueError: pass
-        try: source.relative_to(root)
-        except ValueError: raise ValueError('capture escaped approved import root')
+        try: source.relative_to(run);inside=True
+        except ValueError: inside=False
+        if not inside:
+            if root is None: raise ValueError('capture escaped run directory')
+            try: source.relative_to(root)
+            except ValueError: raise ValueError('capture escaped approved import root')
         if hashlib.sha256(source.read_bytes()).hexdigest()!=item['sha256']:
             raise ValueError('capture original hash changed')
-        target=run/('original-'+request['request_id']+'-'+str(index)+source.suffix)
-        if target.exists(): raise ValueError('capture intake would replace existing evidence')
-        shutil.copyfile(source,target)
-        item.update(original_path=str(source),path=str(target))
+        if not inside:
+            target=run/('original-'+request['request_id']+'-'+str(index)+source.suffix)
+            if target.exists(): raise ValueError('capture intake would replace existing evidence')
+            shutil.copyfile(source,target)
+            item.update(original_path=str(source),path=str(target))
+        if source.suffix.lower()=='.npz' and ('end_frame' not in item or request.get('cue')):
+            import numpy as np
+            with np.load(source,allow_pickle=False) as z:
+                md=json.loads(str(z['metadata_json']));first=int(md['first_frame'])
+                end=first+len(z['microphone']);src_sha=hashlib.sha256(z['source_pcm16'].tobytes()).hexdigest()
+            item['reported_window']={k:item.get(k) for k in ('first_frame','end_frame')}
+            item.update(first_frame=first,end_frame=end,source_sha256=src_sha,
+                        content_kind='human_private' if request.get('op')=='input' else item.get('content_kind','onboard_excitation'))
+            if request.get('cue'):
+                ready=reply.get('input_ready',{})
+                if any(ready.get(k)!=request[k] for k in ('request_id','scene_id')):
+                    raise ValueError('embedded input marker identity mismatch')
+                cue_end=ready.get('cue_end_frame')
+                if type(cue_end) is not int or not 0<cue_end<=first:
+                    raise ValueError('measurement window overlaps cue/tail')
+                output.update(valid_first_frame=first,cue_end_frame=cue_end)
     return output
 
 
 def adapter_check(hardware, config, state, model, save, cancel=None):
     """A explicitly runs this one short chain; C runs it with simulated leaf I/O."""
     state=Path(state);state.mkdir(parents=True,exist_ok=True)
-    cancel=cancel or threading.Event();scene='adapter-check-'+uuid.uuid4().hex
+    cancel=cancel or threading.Event();scene=json.loads(Path(model).read_text(encoding='utf-8')).get('fixture_id') or 'adapter-check-'+uuid.uuid4().hex
     receipt=dict(contract='recal-product-v1',scene_id=scene,scope='maintenance API chain; not recalibration acceptance',
         algorithm_identity=config.get('algorithm_identity'),steps=[],compatibility_issues=[],success=False,
         selected_model=dict(path=str(model),sha256=hashlib.sha256(Path(model).read_bytes()).hexdigest(),
