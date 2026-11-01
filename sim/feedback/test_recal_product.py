@@ -280,6 +280,22 @@ class ProductTests(unittest.TestCase):
 
 
 class ProductPackagingTests(unittest.TestCase):
+    def test_one_shot_simulation_ends_on_inconclusive(self):
+        import assemble_experiment as assembler
+        import hashlib
+        with tempfile.TemporaryDirectory(dir=ROOT/'tmp') as temp:
+            out=Path(temp)/'product';assembler.assemble_product(out)
+            config=json.loads((out/'product-config.json').read_text(encoding='utf-8'))
+            config['attempts'][0]['input_decision']='data_insufficient'
+            (out/'product-config.json').write_text(json.dumps(config),encoding='utf-8')
+            manifest=json.loads((out/'product-manifest.json').read_text(encoding='utf-8'))
+            manifest['hashes']['product-config.json']=hashlib.sha256((out/'product-config.json').read_bytes()).hexdigest()
+            (out/'product-manifest.json').write_text(json.dumps(manifest),encoding='utf-8')
+            run=subprocess.run([sys.executable,'-X','utf8',str(out/'recal_product.py'),'--base',str(out),
+                '--simulate','--once','--state-dir',str(Path(temp)/'state')],capture_output=True,text=True,timeout=8)
+            self.assertEqual(run.returncode,2,run.stderr)
+            self.assertEqual(json.loads(run.stdout)['state'],'inconclusive')
+
     def test_software_package_is_not_mislabelled_as_field_ready_and_tamper_fails(self):
         spec=importlib.util.spec_from_file_location('product_assembler',ROOT/'scripts/assemble_experiment.py')
         assembler=importlib.util.module_from_spec(spec);spec.loader.exec_module(assembler)

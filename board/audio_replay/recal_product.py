@@ -572,7 +572,7 @@ def main():
         try:
             while not shutdown.is_set():
                 app.tick()
-                if args.simulate and args.once and app.state in ('ready','failed','protected','cancelled'):
+                if args.simulate and args.once and app.state in ('ready','failed','protected','cancelled','inconclusive'):
                     print(json.dumps(dict(state=app.state,outcome=app.outcome,reason=app.reason),ensure_ascii=False));return 0 if app.state=='ready' else 2
                 time.sleep(.02)
             return 0

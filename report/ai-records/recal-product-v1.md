@@ -113,3 +113,5 @@ check_fit 的 expected_peak_tap 必须传本轮 estimate_lag 的结果，不是�
 读取main=31882e0：新版位流已有BTN0/LED/SW和采集实测，hw_api代码新增灯键方法，文件顶部旧说明尚未同步；不据旧说明宣称硬件仍无I/O。create_product及整机适配清单未交，B纯判定库也不能代替实际拟合包装；软件包仍明确只供模拟检查。
 
 检查回执见[B策略消费](../verification/recal-product-v1/b-policy-integration.json)。契约扩展单独提交，人工转发交接，不操作REQUESTS、不推main、不改A驱动/RTL。
+
+包复核时发现新增inconclusive未加入模拟单次入口的结束集合，已在交包前修正并增加独立进程的无法评价退出用例；最终67项通过，避免模拟入口在无结论时常驻等待。旧66项记录保留在dc589fe的历史回执，未出现测试失败后改口宣称通过。
