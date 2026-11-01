@@ -9,7 +9,6 @@ echo "operator on site: one-click recalibration (machine-only, no speech)" \
   echo "segments=6"
   echo "seconds=0.3357"
   echo "gain_db=0.0"
-echo "allow_noisy=1"
 } > /home/xilinx/recal.txt
 cat /home/xilinx/OPERATOR_READY /home/xilinx/recal.txt
 echo "--- prerequisites ---"

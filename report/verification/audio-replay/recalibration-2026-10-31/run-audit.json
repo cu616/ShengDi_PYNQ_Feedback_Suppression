@@ -1,0 +1,65 @@
+{
+  "question": "classify every recalibration run by where it actually stopped",
+  "runs_on_board": 18,
+  "classes": {
+    "passed": {
+      "count": 1,
+      "runs": [
+        "recal_pkt_20250511-123100"
+      ],
+      "note": "three arms completed, acoustic +2.26 dB, overshoot -1.29 dB"
+    },
+    "failed_at_three_point": {
+      "count": 2,
+      "runs": [
+        "recal_pkt_20250511-103038",
+        "recal_pkt_20250511-120144"
+      ],
+      "note": "acoustic -0.22 / -0.38 dB, overshoot -2.19 / -2.36 dB"
+    },
+    "verification_aborted_by_prediction_guard": {
+      "count": 2,
+      "runs": [
+        "recal_pkt_20250511-105305",
+        "recal_pkt_20250511-110729"
+      ],
+      "note": "oversized model; prediction saturation stopped the arms at frame 115 / 223"
+    },
+    "install_rejected_by_L1_gate": {
+      "count": 1,
+      "runs": [
+        "recal_pkt_20250511-123726"
+      ],
+      "note": "L1 = 211 from the band-limited excitation; the gate refused before install, which is the intended behaviour"
+    },
+    "died_at_the_gate_without_a_receipt": {
+      "count": 5,
+      "runs": [
+        "recal_pkt_20250511-121941",
+        "recal_pkt_20250511-122335",
+        "recal_pkt_20250511-122732",
+        "recal_pkt_20250511-123322",
+        "recal_pkt_20250511-124740"
+      ],
+      "note": "six captures completed, then the run raised IndexError inside the SNR gate (it globbed recal_*.npz while the files were still raw_*.npz). This is a flow defect, not a model failure; it is fixed."
+    },
+    "refused_before_capture": {
+      "count": 4,
+      "runs": [
+        "recal_pkt_20250511-102952",
+        "recal_pkt_20250511-110654",
+        "recal_pkt_20250511-122133",
+        "recal_pkt_20250511-122230"
+      ],
+      "note": "the absolute floor gate exited first, so the measured-SNR test never ran; the one run that succeeded needed floor_gate_overridden=true to get past it. Captain flagged this contradiction and it is now removed."
+    },
+    "unknown": {
+      "count": 1,
+      "runs": [
+        "recal_pkt_20250511-121941"
+      ],
+      "note": "records fragmentary; reported as UNKNOWN rather than guessed"
+    }
+  },
+  "honest_summary": "Of 18 runs only 3 reached the three-point: one PASS, two FAIL. The remainder died in the flow (gate order, an IndexError, the L1 gate) and must not be counted as algorithm failures."
+}
