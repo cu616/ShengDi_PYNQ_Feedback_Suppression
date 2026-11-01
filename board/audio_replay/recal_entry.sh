@@ -356,41 +356,68 @@ if smeta.get('stop_reason') != 'completed' or used != active_sha:
 print('RECAL_STAGE 7 ok  run used coeff_sha=%s' % used[:16])
 
 # ---- [8] voice ---------------------------------------------------------------------------------
+# The cue has to be unmistakable to someone standing at the microphone who cannot see the screen, and
+# it must not be confusable with the 322 Hz acceptance tone. So: an ascending three-note figure
+# (C5-G5-C6), twice, with gaps - different pitch contour, different rhythm, and it stops. If the voice
+# take carries no voice, the cue repeats and the take is retaken once; each attempt is kept.
 VOICE_SECONDS = 20.0
-print('RECAL_STAGE 8 voice')
-beep = np.rint(0.20 * np.sin(2 * np.pi * 1000.0 * np.arange(int(0.30 * RATE)) / RATE) * 32767).astype(np.int16)
-bp = RUN_DIR / 'prep' / 'beep.npz'
-bp.unlink(missing_ok=True)
-try:
-    replay_trial(str(bp), FIXTURE, str(BASE_MODEL), beep, bypass=True, zero_coeff=False,
-                 gain_db=0.0, seconds=0.40, hp_volume=HP_VOLUME, speaker_confirmed=True,
-                 local_capture_confirmed=True, direct_only=True)
-except Exception as exc:
-    print('RECAL_BEEP_WARN %r' % (exc,))
-print('RECAL_CAN_SPEAK  >>> the board beeped; start talking now for ~20 s <<<')
-time.sleep(2.0)
-voice = RUN_DIR / 'checks' / 'voice.npz'
-voice.unlink(missing_ok=True)
-try:
-    replay_trial(str(voice), FIXTURE, str(ACTIVE), np.zeros(16000, np.int16), bypass=False,
-                 zero_coeff=False, gain_db=GAIN_DB, seconds=VOICE_SECONDS, hp_volume=HP_VOLUME,
-                 speaker_confirmed=True, local_capture_confirmed=True)
-except Exception as exc:
-    fail('voice', 18, 'voice raised %r' % (exc,))
-vmeta = json.loads(str(np.load(str(voice))['metadata_json']))
-v_rms = rms_dbfs(np.load(str(voice))['microphone'])
-v_used = str(vmeta.get('coefficients_sha256') or '')
-if vmeta.get('stop_reason') != 'completed':
-    fail('voice', 18, 'voice stopped: %s' % vmeta.get('stop_reason'))
-if v_used != active_sha:
-    fail('voice', 18, 'voice used %s, not %s' % (v_used[:12], active_sha[:12]))
 VOICE_MIN_SNR_DB = 10.0
-if v_rms - floor_db < VOICE_MIN_SNR_DB:
-    fail('voice', 18, 'no voice detected: mic %.2f dBFS is only %.2f dB above the floor %.2f dBFS '
-                      '(need %.1f). Speak again and rerun.' % (v_rms, v_rms - floor_db, floor_db,
-                                                               VOICE_MIN_SNR_DB))
-print('RECAL_STAGE 8 ok  voice mic_rms=%.2f dBFS (%.2f dB above floor) stop=completed'
-      % (v_rms, v_rms - floor_db))
+VOICE_ATTEMPTS = 2
+
+
+def cue_notes():
+    """Ascending C5-G5-C6 figure, twice, with silent gaps."""
+    parts = []
+    for _rep in range(2):
+        for freq in (523.25, 783.99, 1046.50):
+            parts.append(np.rint(0.22 * np.sin(2 * np.pi * freq * np.arange(int(0.16 * RATE)) / RATE)
+                                 * 32767).astype(np.int16))
+            parts.append(np.zeros(int(0.05 * RATE), np.int16))
+        parts.append(np.zeros(int(0.35 * RATE), np.int16))
+    return np.concatenate(parts)
+
+
+print('RECAL_STAGE 8 voice (%d attempts, cue = ascending three-note figure)' % VOICE_ATTEMPTS)
+voice_attempts = []
+v_rms, v_used = None, None
+for attempt in range(VOICE_ATTEMPTS):
+    cue = RUN_DIR / 'prep' / ('cue_%d.npz' % attempt)
+    cue.unlink(missing_ok=True)
+    try:
+        replay_trial(str(cue), FIXTURE, str(BASE_MODEL), cue_notes(), bypass=True, zero_coeff=False,
+                     gain_db=0.0, seconds=1.8, hp_volume=HP_VOLUME, speaker_confirmed=True,
+                     local_capture_confirmed=True, direct_only=True)
+    except Exception as exc:
+        print('RECAL_CUE_WARN %r' % (exc,))
+    print('RECAL_CAN_SPEAK  >>> three rising notes = speak now (%d/%d) <<<' % (attempt + 1, VOICE_ATTEMPTS))
+    time.sleep(2.0)
+    voice = RUN_DIR / 'checks' / ('voice_%d.npz' % attempt)
+    voice.unlink(missing_ok=True)
+    try:
+        replay_trial(str(voice), FIXTURE, str(ACTIVE), np.zeros(16000, np.int16), bypass=False,
+                     zero_coeff=False, gain_db=GAIN_DB, seconds=VOICE_SECONDS, hp_volume=HP_VOLUME,
+                     speaker_confirmed=True, local_capture_confirmed=True)
+    except Exception as exc:
+        fail('voice', 18, 'voice capture raised %r' % (exc,))
+    vmeta = json.loads(str(np.load(str(voice))['metadata_json']))
+    v_rms = rms_dbfs(np.load(str(voice))['microphone'])
+    v_used = str(vmeta.get('coefficients_sha256') or '')
+    loud = v_rms - floor_db
+    voice_attempts.append({'attempt': attempt + 1, 'rms_dbfs': v_rms, 'above_floor_db': loud,
+                           'stop': vmeta.get('stop_reason'), 'used_coeff_sha256': v_used})
+    print('RECAL_VOICE_TRY %d rms=%.2f dBFS (%.2f dB above floor) stop=%s'
+          % (attempt + 1, v_rms, loud, vmeta.get('stop_reason')))
+    if vmeta.get('stop_reason') != 'completed':
+        fail('voice', 18, 'voice stopped: %s' % vmeta.get('stop_reason'))
+    if v_used != active_sha:
+        fail('voice', 18, 'voice used %s, not %s' % (v_used[:12], active_sha[:12]))
+    if loud >= VOICE_MIN_SNR_DB:
+        print('RECAL_STAGE 8 ok  voice usable (%.2f dB above floor)' % loud)
+        break
+    if attempt + 1 == VOICE_ATTEMPTS:
+        fail('voice', 18, 'no voice detected in %d attempts (best %.2f dB above floor, need %.1f)'
+             % (VOICE_ATTEMPTS, loud, VOICE_MIN_SNR_DB))
+    print('RECAL_VOICE_RETRY  no voice detected; cueing again')
 
 # ---- summary -----------------------------------------------------------------------------------
 receipt = {
@@ -406,7 +433,31 @@ receipt = {
     'acceptance_tone': {'target_peak_dbfs': TONE_TARGET_DBFS, 'source_fs_frozen': tone_fs,
                         'adjustments': adjusts, 'trials': trials, 'same_source_all_arms': True},
     'measurement_insufficient': insufficient,
-    'voice': {'rms_dbfs': v_rms, 'above_floor_db': v_rms - floor_db, 'stop': vmeta.get('stop_reason'), 'used_coeff_sha256': v_used,
+    'voice': {'attempts': voice_attempts, 'rms_dbfs': v_rms, 'above_floor_db': v_rms - floor_db, 'stop': vmeta.get('stop_reason'), 'used_coeff_sha256': v_used,
+              'seconds': VOICE_SECONDS},
+}
+(RUN_DIR / 'receipt.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
+print('RECAL_SUMMARY run=%s position=%s verdict=PASS snr=%.2f L1=%.2f acoustic=%.2f overshoot=%.2f tone_fs=%.4f'
+      % (RUN_ID, POSITION, snr_db, l1_new, tp['acoustic_difference_db'], tp['overshoot_db'], tone_fs))
+print('RECAL_MODEL_IDENTITY candidate=%s active=%s used=%s'
+      % (cand_sha[:16], active_sha[:16], used[:16]))
+print('RECAL_END run=%s verdict=PASS stage=done' % RUN_ID)
+# ---- summary -----------------------------------------------------------------------------------
+receipt = {
+    'run_id': RUN_ID, 'position': POSITION, 'verdict': 'PASS', 'protocol': 'v2_auto_levelled',
+    'config': {'level_db_commanded': LEVEL_DB, 'actual_ref_rms_dbfs': ref_db,
+               'actual_ref_peak_dbfs': pk_db, 'peak_cap': PEAK_CAP, 'gain_db': GAIN_DB,
+               'hp_volume': HP_VOLUME, 'segments': SEGMENTS, 'seg_seconds': SEG_SECONDS,
+               'min_snr_db': MIN_SNR_DB, 'l1_max': L1_MAX},
+    'floor_dbfs': floor_db, 'snr_db': snr_db, 'ref_rms_dbfs': ref_db, 'mic_rms_dbfs': mic_db,
+    'candidate_coeff_sha256': cand_sha, 'active_coeff_sha256': active_sha,
+    'smoke_used_coeff_sha256': used, 'previous_model_backup': prev.name if prev else None,
+    'L1': l1_new, 'L1_deployed': l1_base, 'three_point': tp, 'arms': arms,
+    'acceptance_tone': {'target_peak_dbfs': TONE_TARGET_DBFS, 'source_fs_frozen': tone_fs,
+                        'adjustments': adjusts, 'trials': trials, 'same_source_all_arms': True},
+    'measurement_insufficient': insufficient,
+    'voice': {'attempts': voice_attempts, 'rms_dbfs': v_rms,
+              'above_floor_db': v_rms - floor_db, 'used_coeff_sha256': v_used,
               'seconds': VOICE_SECONDS},
 }
 (RUN_DIR / 'receipt.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
