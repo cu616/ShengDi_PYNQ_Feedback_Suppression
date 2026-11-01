@@ -15,7 +15,7 @@ import threading
 import time
 import uuid
 from recal_policy_consumer import consume_reply
-from recal_link import ingest, adapter_check
+from recal_link import ingest, adapter_check, installed_model, run_evidence
 
 CONTRACT = 'recal-product-v1'
 IDENTITY = ('aux_db','aux_raw_left','aux_raw_right','hp_volume','gain_q12','sample_rate_hz',
@@ -82,6 +82,8 @@ class ModelStore:
         except (ValueError,KeyError): raise Failure('model_rejected','候选模型格式或Q20不兼容')
         if model.get('simulation') is True and not simulation:
             raise Failure('model_rejected','模拟模型不得安装到实体产品')
+        if model.get('bootstrap_only') is True:
+            raise Failure('model_rejected','初始化零模型不得成为有效标定模型')
         if model['taps']!=512: raise Failure('model_rejected','模型抽头数不兼容')
         qsha=hashlib.sha256(np.asarray(q,dtype='<i4').tobytes()).hexdigest()
         folder=self.root/'archive'/(scene+'-'+expected)
@@ -244,8 +246,8 @@ class Product:
         led4=self.cfg.get('indicator_encoding')=='led4' or bool(self.caps.get('led_legend'))
         if led4:
             pattern=({'uncalibrated':'0000','cancelled':'0000','speaking':'0010','quiet':'0100',
-                'input_capture':'0010','stopping':'0001',
-                'capturing':'0100','ready':'1000','running':'1000','ended':'1000',
+                'input_capture':'0001','stopping':'0001',
+                'capturing':'0100','ready':'0110','running':'0001','ended':'0110',
                 'failed':'1111','protected':'1111','inconclusive':'1111'}).get(state,'0001')
         self.indicator_deferred=led4 and self.mode!='muted' and not self.cfg.get('indicator_armed_safe',False)
         if not self.indicator_deferred:
@@ -426,17 +428,28 @@ class Product:
                     raise Failure('data_insufficient','独立验证重用了训练数据/声源')
             self._state('validating');self._alg('validate')
         elif op=='install':
-            for key in ('model_sha256','coefficients_sha256'):
-                if reply.get(key)!=self.bundle[key]: raise Failure('model_rejected','安装实际身份不一致')
+            try: actual=installed_model(req,reply,self.bundle,self.run_dir)
+            except ValueError as exc:raise Failure('model_rejected',str(exc))
+            if self.cfg.get('install_readback_required') and (reply.get('loaded_count')!=512 or reply.get('taps')!=512
+                    or reply.get('reported_coefficients_sha256')!=self.bundle['coefficients_sha256']):
+                raise Failure('model_rejected','缺少实际完整系数装载回读')
             if reply.get('applies_at')=='next_capture':
                 raise Failure('data_insufficient','安装仅登记为下次采集生效，尚无实际装载回读')
             self._muted(self.hw.mute());self.gain_scope='runtime';self._identity(self.hw.poll()['identity'])
+            if reply['model_sha256']!=self.bundle['model_sha256']:
+                source_bundle=self.bundle
+                self.bundle=self.store.stage(actual,reply['model_sha256'],self.scene,self.cfg['expected_identity'],
+                    source_bundle['validation'],simulation=self.cfg.get('simulation',False))
+                self.bundle.update(source_model_sha256=source_bundle['model_sha256'],
+                    installation=dict(request_id=req['request_id'],source_path=str(actual),reply=reply))
             self.store.commit(self.bundle)
             self.outcome='valid_pass';self.reason='独立验证与安装通过';self._state('ready')
         elif op=='run':
             if any(reply.get(k)!=self.bundle[k] for k in ('model_sha256','coefficients_sha256')):
                 raise Failure('hardware_error','运行实际模型不符')
-            elapsed=reply.get('elapsed_seconds')
+            try: reply=run_evidence(req,reply,self.run_dir)
+            except ValueError as exc:raise Failure('hardware_error',str(exc))
+            elapsed=reply.get('audio_elapsed_seconds',reply.get('elapsed_seconds'))
             if type(elapsed) not in (int,float) or not math.isfinite(elapsed) or not 0<elapsed<=float(req['seconds'])+.1:
                 raise Failure('hardware_error','实际运行时长未知或越界')
             if abs(elapsed-float(req['seconds']))>.1:
@@ -599,11 +612,14 @@ def export_return(state, output, package_sha256):
             name='captures/'+source.relative_to(state).as_posix()
             payload[name]=source.read_bytes()
             artifacts.append(dict(original_path=str(source),payload_path=name,sha256=item['sha256']))
-        model=record.get('candidate')
-        if model:
+        models=[]
+        if record.get('candidate'):models.append(record['candidate'])
+        if record.get('bundle'):
+            models.append(dict(path=record['bundle']['model_path'],sha256=record['bundle']['model_sha256']))
+        for model in models:
             source=contained(model['path'],state)
             if sha(source)!=model['sha256']: raise ValueError('candidate changed; original retained')
-            name='models/'+path.parent.name+'/'+source.name;payload[name]=source.read_bytes()
+            name='models/'+path.parent.name+'/'+model['sha256']+'/'+source.name;payload[name]=source.read_bytes()
             artifacts.append(dict(original_path=str(source),payload_path=name,sha256=model['sha256']))
     for path in sorted((state/'compute').glob('*-reply.json')):
         payload['algorithm/'+path.name]=path.read_bytes()
@@ -716,6 +732,11 @@ def main():
     if not args.simulate and not manifest['deployment_ready'] and not args.field_trial: raise ValueError('physical adapters not ready: '+','.join(manifest['missing']))
     if manifest['simulation']!=args.simulate: raise ValueError('simulation/physical package mismatch')
     config=json.loads((args.base/'product-config.json').read_text(encoding='utf-8'))
+    if config.get('bootstrap_model'):
+        bootstrap=contained(args.base/config['bootstrap_model'],args.base)
+        if sha(bootstrap)!=manifest['hashes'].get(config['bootstrap_model']):
+            raise ValueError('bootstrap model identity mismatch')
+        config.update(model_path=str(bootstrap),fixture=json.loads(bootstrap.read_text(encoding='utf-8'))['fixture_id'])
     if args.field_trial:
         if config.get('input_mode')!='embedded' or not args.model or not args.model_sha256:
             raise ValueError('field trial requires embedded cue and explicit current model identity')
@@ -726,7 +747,7 @@ def main():
     config['package_manifest_sha256']=package_sha
     config['package_dir']=str(args.base.resolve())
     state=args.state_dir or args.base/'state'
-    config['run_dir_root']=str((state/'hardware').resolve());config['capture_import_root']=config['run_dir_root']
+    config['run_dir_root']=str((state/'hardware').resolve());config['capture_import_root']=str(state.resolve())
     module=importlib.import_module(config['hardware_module']);hw=module.create_product(config)
     with instance_lock(state):
         app=Product(hw,config,state)

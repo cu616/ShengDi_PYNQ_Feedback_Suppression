@@ -15,7 +15,7 @@ def frozen_policy(algorithm):
         validation_kind='heldout_prediction',input_mode='prepared',cue=True,
         compute_timeout_seconds=30,io_timeout_seconds=30,quiet_seconds=2,run_seconds=30,
         indicator_encoding='led4',phase_gain_q12={k:[0,1631] for k in (
-            'prepare','cue','input','training','validation','run')})
+            'prepare','cue','input','training','validation','install','run')})
 
 
 def capture_plans(attempts):
@@ -72,6 +72,51 @@ def ingest(request, reply, import_root):
     return output
 
 
+def installed_model(request, reply, bundle, scene_root):
+    """Accept A's serialized scene copy only with identical validated model content."""
+    if reply.get('coefficients_sha256')!=bundle['coefficients_sha256']:
+        raise ValueError('installed coefficients differ from validated model')
+    if reply.get('model_sha256')==bundle['model_sha256']:
+        return Path(bundle['model_path'])
+    if reply.get('source_model_sha256')!=bundle['model_sha256']:
+        raise ValueError('installed model has no validated source identity')
+    original=json.loads(Path(bundle['model_path']).read_text(encoding='utf-8'))
+    expected=dict(original,fixture_id=request['scene_id'])
+    matches=[]
+    for path in Path(scene_root).rglob('*.json'):
+        if hashlib.sha256(path.read_bytes()).hexdigest()==reply.get('model_sha256'):
+            if json.loads(path.read_text(encoding='utf-8'))!=expected:
+                raise ValueError('installed scene copy changed model content')
+            matches.append(path)
+    if not matches: raise ValueError('installed scene copy not found in this run')
+    return matches[0]
+
+
+def run_evidence(request, reply, scene_root):
+    """Separate the saved ring window from the driver's actual completed frame counter."""
+    if 'audio_frames' not in reply:return reply  # Older adapters report run duration directly.
+    import numpy as np
+    path=Path(reply['path']).resolve()
+    try:path.relative_to(Path(scene_root).resolve())
+    except ValueError:raise ValueError('run capture escaped this scene')
+    with np.load(path,allow_pickle=False) as z:
+        md=json.loads(str(z['metadata_json']));count=len(z['microphone'])
+    frames=md.get('completed_frames');first=md.get('first_frame');rate=md.get('sample_rate_hz')
+    if (type(frames) is not int or type(first) is not int or not isinstance(rate,(int,float))
+            or rate!=reply['identity']['sample_rate_hz'] or count!=md.get('frames')
+            or count!=reply['audio_frames'] or first+count!=frames
+            or md.get('stop_reason')!='completed' or md.get('early_stop') is True
+            or not (int(md.get('capture_status') or 0)&1)):
+        raise ValueError('run completion counter/window not verified')
+    for field in ('model_sha256','coefficients_sha256'):
+        if md.get(field)!=reply.get(field) or reply.get(field)!=request.get(field):
+            raise ValueError('run capture model identity differs: '+field)
+    output=dict(reply,capture_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+        capture_elapsed_seconds=count/rate,audio_elapsed_seconds=frames/rate,
+        completed_frames=frames,timing_source='driver.completed_frames',metadata=md)
+    return output
+
+
 def adapter_check(hardware, config, state, model, save, cancel=None):
     """A explicitly runs this one short chain; C runs it with simulated leaf I/O."""
     state=Path(state);state.mkdir(parents=True,exist_ok=True)
@@ -106,7 +151,8 @@ def adapter_check(hardware, config, state, model, save, cancel=None):
         trained=perform('training',plan=plan)
         receipt['capture_valid_frames']=[x.get('valid_frames') for x in trained.get('captures',[])]
         installed=perform('install',model_path=str(model),run_gain_q12=config['expected_identity']['gain_q12'])
-        if installed.get('model_sha256')!=hashlib.sha256(Path(model).read_bytes()).hexdigest():
+        original_sha=hashlib.sha256(Path(model).read_bytes()).hexdigest()
+        if installed.get('model_sha256')!=original_sha and installed.get('source_model_sha256')!=original_sha:
             raise ValueError('install returned a different model file hash')
         if installed.get('applies_at')=='next_capture':
             receipt['compatibility_issues'].append('install registered for next_capture; no eligible model pointer committed')
@@ -115,7 +161,11 @@ def adapter_check(hardware, config, state, model, save, cancel=None):
                     coefficients_sha256=installed['coefficients_sha256'])
         for key in ('model_sha256','coefficients_sha256'):
             if run.get(key)!=installed[key]: raise ValueError('run model identity differs: '+key)
-        if 'audio_elapsed_seconds' not in run:
+        if 'audio_frames' in run:
+            run=run_evidence(dict(seconds=3.,model_sha256=installed['model_sha256'],
+                coefficients_sha256=installed['coefficients_sha256']),run,state)
+            receipt['verified_run_timing']=run
+        elif 'audio_elapsed_seconds' not in run:
             receipt['compatibility_issues'].append('elapsed_seconds not independently separated from initialization wall time')
         receipt['success']=True
     except Exception as exc:

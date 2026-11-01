@@ -68,9 +68,22 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
                       expected_identity=adapters['hardware']['expected_identity'])
         config.setdefault('algorithm_module','recal_algorithm')
         config.update(adapters['hardware'].get('config',{}))
+        if config.get('bootstrap_model'):
+            if config['bootstrap_model']!='bootstrap-model.json':raise ValueError('unsupported bootstrap path')
+            bootstrap=dict(fixture_id='bootstrap-muted',taps=512,lag_first=1,
+                coefficient_format='signed24_fraction20',training_source='board',
+                hp_volume=config['expected_identity']['hp_volume'],
+                sample_rate_hz=config['expected_identity']['sample_rate_hz'],
+                coefficients_q20=[0]*512,coefficients=[0.0]*512,bias=0.0,
+                bootstrap_only=True,eligible=False,
+                provenance='generated zero coefficients for muted open-loop initialization; no measured model')
+            (out/config['bootstrap_model']).write_text(json.dumps(bootstrap,indent=2)+'\n',encoding='utf-8')
         allowed=adapters['hardware'].get('allowed_gain_q12',[])
         gains=[g for values in config.get('phase_gain_q12',{}).values() for g in values]
         calibration=adapters['hardware'].get('allowed_calibration_gain_q12',[])
+        if config.get('bootstrap_model'):
+            # mute preserves the previous approved gain; prepare changes it to open-loop zero.
+            config['phase_gain_q12']['prepare']=sorted(set(allowed+calibration))
         if (config['expected_identity']['gain_q12'] not in allowed
                 or any(type(g) is not int or g not in allowed+calibration for g in gains)):
             if not review: raise ValueError('B phase gain policy exceeds A approved gains')
@@ -91,7 +104,8 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         '../contracts/recal-product-v1.md','INTERFACE.md').replace(
         '../contracts/recal-policy-consumer-v1.md','POLICY-CONSUMER.md').replace(
         '../contracts/recal-runtime-v2.md','RUNTIME.md').replace(
-        '../contracts/recal-runtime-v3.md','FROZEN-RUNTIME.md'),encoding='utf-8')
+        '../contracts/recal-runtime-v3.md','FROZEN-RUNTIME.md').replace(
+        '../contracts/recal-runtime-v4.md','INSTALL-RUNTIME.md'),encoding='utf-8')
     (out/'INTERFACE.md').write_text((ROOT/'docs/contracts/recal-product-v1.md').read_text(encoding='utf-8').replace(
         '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     (out/'POLICY.md').write_bytes((ROOT/'docs/contracts/recalibration-policy-v1.md').read_bytes())
@@ -103,6 +117,8 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
     (out/'ALGORITHM.md').write_bytes((ROOT/'docs/contracts/recalibration-algorithm-v1.md').read_bytes())
     (out/'FROZEN-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v3.md').read_text(encoding='utf-8').replace(
         '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'INSTALL-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v4.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v3.md','FROZEN-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation and not review and not missing,
         missing=missing,adapters=adapters,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         algorithm_identity=config.get('algorithm_identity'),
@@ -117,7 +133,8 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
             'src/feedback/recal_policy.py','src/feedback/excitation.py',
             'scripts/assemble_experiment.py','docs/ref/recal-product.md','docs/contracts/recal-product-v1.md',
             'docs/contracts/recalibration-policy-v1.md','docs/contracts/recal-policy-consumer-v1.md',
-            'docs/contracts/recal-runtime-v2.md','docs/contracts/recal-runtime-v3.md','docs/contracts/recalibration-algorithm-v1.md'],cwd=ROOT).strip()),
+            'docs/contracts/recal-runtime-v2.md','docs/contracts/recal-runtime-v3.md',
+            'docs/contracts/recal-runtime-v4.md','docs/contracts/recalibration-algorithm-v1.md'],cwd=ROOT).strip()),
         hashes={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()})
     (out/'product-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:

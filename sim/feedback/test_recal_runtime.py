@@ -132,7 +132,7 @@ class RuntimeTests(unittest.TestCase):
     def test_led4_is_translated_and_never_written_when_running(self):
         cfg=sample_config();cfg['indicator_encoding']='led4'
         app,hw,_=self.app(cfg);self.ready(app)
-        self.assertIn('0010',[p['pattern'] for p in hw.prompts]);self.assertEqual(hw.prompts[-1]['pattern'],'1000')
+        self.assertIn('0010',[p['pattern'] for p in hw.prompts]);self.assertEqual(hw.prompts[-1]['pattern'],'0110')
         app.event('start');self.until(app,lambda:hw.mode=='cancel')
         app.tick();count=len(hw.prompts);hw.mode='bypass';app.tick()
         self.assertEqual(len(hw.prompts),count);self.assertTrue(app.indicator_deferred)
@@ -180,7 +180,8 @@ class RuntimeTests(unittest.TestCase):
                 helper=folder/'residual_tools.py';helper.write_text('# A exact accepted helper\n',encoding='utf-8')
                 hashes['residual_tools.py']=hashlib.sha256(helper.read_bytes()).hexdigest()
                 meta.update(expected_identity=sample_config()['expected_identity'],allowed_gain_q12=[1631],
-                            allowed_calibration_gain_q12=[],capabilities=dict(prepared_capture=False))
+                            allowed_calibration_gain_q12=[],capabilities=dict(prepared_capture=False),
+                            config=dict(bootstrap_model='bootstrap-model.json'))
             else: meta['algorithm_contract']='recalibration-algorithm-v1'
             (folder/'product-adapter.json').write_text(json.dumps(meta),encoding='utf-8')
         out=self.folder/'review'
@@ -190,6 +191,10 @@ class RuntimeTests(unittest.TestCase):
         self.assertFalse(manifest['deployment_ready']);self.assertFalse(manifest['simulation'])
         self.assertEqual((out/'residual_tools.py').read_bytes(),(self.folder/'hardware/residual_tools.py').read_bytes())
         self.assertEqual((out/'recal_algorithm.py').read_bytes(),(ROOT/'board/audio_replay/recal_algorithm.py').read_bytes())
+        bootstrap=json.loads((out/'bootstrap-model.json').read_text())
+        self.assertTrue(bootstrap['bootstrap_only']);self.assertFalse(bootstrap['eligible'])
+        self.assertEqual(bootstrap['coefficients_q20'],[0]*512)
+        self.assertEqual(manifest['hashes']['bootstrap-model.json'],hashlib.sha256((out/'bootstrap-model.json').read_bytes()).hexdigest())
 
     def test_B_mixed_current_lags_fit_after_signed_alignment_fix(self):
         from test_recal_algorithm import white,write_capture

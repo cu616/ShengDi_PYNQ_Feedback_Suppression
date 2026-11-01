@@ -8,7 +8,7 @@ from unittest import mock
 import numpy as np
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/'board/audio_replay'),str(ROOT/'src')]
-from recal_link import capture_plans,ingest
+from recal_link import capture_plans,ingest,installed_model,run_evidence
 from recal_mock import Board,sample_config
 import recal_algorithm as b
 import recal_product as p
@@ -114,6 +114,42 @@ class CloseoutTests(unittest.TestCase):
         self.until(app,lambda:app.state in ('ready','failed','inconclusive'),timeout=20)
         self.assertEqual(app.state,'ready',app.reason);self.assertEqual(hw.calls.count('embedded_input'),1)
         self.assertNotIn('cue',hw.calls);self.assertEqual(app.cue_end,95700)
+
+    def test_scene_serialization_may_change_bytes_but_not_validated_model(self):
+        src=self.folder/'model.json';src.write_text(json.dumps(dict(fixture_id='s',coefficients_q20=[1,2])))
+        actual=self.folder/'bound.json';actual.write_text(json.dumps(json.loads(src.read_text()),indent=2))
+        bundle=dict(model_path=str(src),model_sha256=p.sha(src),coefficients_sha256='q'*64)
+        reply=dict(source_model_sha256=p.sha(src),model_sha256=p.sha(actual),coefficients_sha256='q'*64)
+        self.assertEqual(installed_model(dict(scene_id='s'),reply,bundle,self.folder),actual)
+        actual.write_text(json.dumps(dict(fixture_id='s',coefficients_q20=[2,2])))
+        reply['model_sha256']=p.sha(actual)
+        with self.assertRaisesRegex(ValueError,'changed model content'):
+            installed_model(dict(scene_id='s'),reply,bundle,self.folder)
+        reply['source_model_sha256']='f'*64
+        with self.assertRaisesRegex(ValueError,'source identity'):
+            installed_model(dict(scene_id='s'),reply,bundle,self.folder)
+
+    def test_ring_window_is_not_used_as_completed_run_duration(self):
+        path=self.folder/'run.npz';rate=48828.125;frames=int(3*rate)
+        md=dict(first_frame=frames-16384,frames=16384,completed_frames=frames,sample_rate_hz=rate,
+            stop_reason='completed',capture_status=1,model_sha256='m',coefficients_sha256='q')
+        def save():np.savez(path,microphone=np.zeros(16384),metadata_json=json.dumps(md))
+        save();reply=dict(path=str(path),audio_frames=16384,elapsed_seconds=.336,wall_seconds=8.,
+            identity=dict(sample_rate_hz=rate),model_sha256='m',coefficients_sha256='q')
+        request=dict(seconds=3.,model_sha256='m',coefficients_sha256='q')
+        result=run_evidence(request,reply,self.folder)
+        self.assertAlmostEqual(result['audio_elapsed_seconds'],3.,places=4)
+        self.assertEqual(result['elapsed_seconds'],.336);self.assertEqual(result['wall_seconds'],8.)
+        md['capture_status']=0;save()
+        with self.assertRaisesRegex(ValueError,'completion counter'):run_evidence(request,reply,self.folder)
+
+    def test_bootstrap_zero_cannot_become_eligible_model(self):
+        app,hw,_=self.app();app.event('recalibrate');self.until(app,lambda:app.state=='ready')
+        model=Path(app.bundle['model_path']);data=json.loads(model.read_text());data['bootstrap_only']=True
+        data.pop('simulation',None)
+        path=self.folder/'bootstrap.json';p.write_json(path,data)
+        with self.assertRaisesRegex(p.Failure,'初始化零模型'):
+            app.store.stage(path,p.sha(path),app.scene,app.cfg['expected_identity'],{})
 
 
 if __name__=='__main__':unittest.main()

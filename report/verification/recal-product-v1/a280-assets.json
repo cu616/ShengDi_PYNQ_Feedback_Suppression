@@ -1,0 +1,46 @@
+{
+  "a_commit": "28051a6",
+  "a_payloads": {
+    "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+    "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+    "hw_api.py": "1378b2ea73ee3bf0cd421e0a225c795a2e3395846935730942bb95be78a31b07",
+    "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "replay_trial_repair.py": "22851d322e7c527a8903d367139924b2d780f98814f3ab1af3bd1f07bbf6efbb",
+    "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+    "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4"
+  },
+  "all_payload_hashes_match": true,
+  "b_commit": "0b09ef6",
+  "b_file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+  "original_A_descriptor_preserved": true,
+  "original_descriptor_still_has_old_helper_sha256": "ca76421cb5d7d137f691de9222a906d4e8fbe6dbd2c470ed11ab13d2bc925281",
+  "normalized_expected_identity": {
+    "aux_db": 0.0,
+    "aux_raw_left": 5,
+    "aux_raw_right": 5,
+    "hp_volume": 40,
+    "sample_rate_hz": 48828.125,
+    "driver_sha256": "22851d322e7c527a8903d367139924b2d780f98814f3ab1af3bd1f07bbf6efbb",
+    "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+    "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+    "helper_sha256": "1378b2ea73ee3bf0cd421e0a225c795a2e3395846935730942bb95be78a31b07",
+    "gain_q12": 1631
+  },
+  "board_operations": 0,
+  "evidence_boundary": "A field claims taken from the user handoff and commit messages; no new A raw field audio provided or C board operation",
+  "A_hardware_evidence_received": [
+    "prepared_capture with one-call cue/input talker evidence at 115cm",
+    "6+2 captures with independent seeds and no bit22",
+    "512 coefficient hash readback and restored gain2303",
+    "abort9.8ms and 30-second hardware-layer amplification"
+  ],
+  "not_yet_proven": [
+    "C formal entry on real hardware",
+    "new layout model fitted through real product path",
+    "attributable cancellation or ASG",
+    "50cm talker cue/input"
+  ],
+  "C_selected_runtime_gain_scope": "1631 from A approved set retained for integration; not suppression-performance evidence",
+  "remaining_A_change": "cancel_event propagation and existing driver before_start guard; no B changes requested"
+}

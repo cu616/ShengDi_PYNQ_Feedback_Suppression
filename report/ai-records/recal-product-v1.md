@@ -165,3 +165,21 @@ C吸收晚返回：stopping及时静音、旧调用结束前互斥新任务、�
 此次只向A提供私有方法、install解析/增益/数量、取消传播4项必要修正，不给B追加任务。重组包保留A原描述和源码，门槛关闭；所有原片/原PCM/ZIP仍不自动进Git。
 
 补充一次必要核对：A22继承run方法的AST与12a5491实物回执版本一致，elapsed从初始化前计墙钟，已记录请求30秒/返回35.755秒的A原回执；需要真实音频帧时长分列，列入第4项必要修正。C同时允许run静音初始化期gain=0，但armed后立即恢复严格运行gain校验，避免把初始化过渡当配置漂移。最后受影响72项通过，不增加B任务。
+
+
+## 2026-11-02 A280收尾接入与必要取消边界
+
+用户转发A=28051a6：hw_api SHA1378b2…，真人cue及6+2/装载/静音/abort/30秒硬件层实测；明确C正式入口未上板、现场未真正拟合、不同讲话电平不能归因抵消、50cm真人cue未做。请求用该版接入完整流程，字段问题才转给A；沿用用户“只有真的需要A/B改动才留言”的要求。
+
+fetch取得origin/A280，pull本地远端引用首次Git/MSYS权限失败，提升后Already up to date；不操作板卡、不合main。A v3-io八项清单吻合新字节，但docs/contracts/product-adapter仍钉A22及旧blockers，C保存原件并按实际payload归一，不为格式重新派活。
+
+首次原版A工厂+C Product+真实B子进程仅替换硬件叶子，input/fit/validate均完成，随后C轮询install阶段尚未恢复的gain0导致“阶段数字增益回读不符”。C增加安装静音过渡，兼容A重序列化scene副本：校源SHA、逐项JSON、Q20和实际loaded_count，再归档/原子提交。run.elapsed是末尾16384帧环窗而非运行长度，C从原NPZ completed_frames/done/模型身份复核完整时限，不再拿环窗当提前结束。实际离线到ready和ended，3秒请求完成146484帧=2.99999232秒；0.336秒环窗原字段保留，不声称上板。
+
+原版A取消复现：预置Event的training/input/run不进入driver；install仍进入，因为dispatch调用_install(request)而未传第二参数。模拟driver初始化期间置Event，training/input/install/run均未提供before_start，input/install/run仍completed。C的即时abort和收尾等待无法阻止初始化之后重新开声，所以只向A请求这一边界修正；不重提已修的私有方法、JSON、增益、数量或时长问题，不给B追加任务。
+
+补充C可独立完成的收尾：启动零系数bootstrap文件清单固定、绝对路径、拒绝eligible；初始prepare允许A批准的历史静音增益，运行仍严格当前增益。A可能把第二scene输入落进上次调用目录，C限定自身state根按本次marker/SHA接入，保存原路径不改PCM。四灯ready/ended改0110、运行LD0且LD3留给实际模式；input初始化保持等待灯，三连音结束才轮到讲话，不提前亮“讲话”。
+
+首轮新增bootstrap测试误用带simulation=true的模拟模型，因此先被“模拟模型不得安装到实体产品”拒绝；修正测试夹具移除simulation后检查bootstrap专用拒绝，未放宽生产校验。原75项失败输出留作本轮prior_run，旧72项历史回执恢复原字节。
+
+
+最终75项通过，137文档零错误/警告。一次额外完整入口检查与测试并行时，审计脚本自身20秒总截止落在validating（没有生产阶段超时）；按唯一入口实际OPENBLAS_NUM_THREADS=1串行运行，并给审计总过程90秒后，首scene ready→run→ended、第二scene重新拟合到ready，8.4秒结束。无B代码/阈值变更；审计脚本截止纠正与原失败说明保留。
