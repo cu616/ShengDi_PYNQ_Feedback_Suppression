@@ -318,14 +318,33 @@ class ProductHardware:
         self.run_root.mkdir(parents=True, exist_ok=True)
         return self.run_root / ('%s_%d.npz' % (tag, int(time.time() * 1000)))
 
-    def _capture(self, seconds, tag='cap', gain_db=-8.0, bypass=False, direct_only=True, zero=True):
+    WINDOW_FRAMES = 16384
+    WINDOW_SECONDS = (16384 + 4) / 48828.125
+    stimulus_dbfs = -22.0
+
+    def _make_stimulus(self, seed=4242, level_dbfs=None):
+        """B's excitation: white noise, RMS-normalised, 16384-frame window plus the 2-frame margin."""
+        import numpy as np
+        level = self.stimulus_dbfs if level_dbfs is None else float(level_dbfs)
+        n = self.WINDOW_FRAMES + 2
+        rng = np.random.default_rng(int(seed))
+        x = rng.standard_normal(n)
+        x -= x.mean()
+        x *= 10 ** (level / 20.0) / float(np.sqrt(np.mean(x ** 2)))
+        if float(np.max(np.abs(x))) > 0.80:
+            return None                      # unreachable at this seed/level: report, never clip
+        return np.rint(x * 32767.0).astype(np.int16)
+
+    def _capture(self, seconds, tag='cap', gain_db=-8.0, bypass=False, direct_only=True, zero=True,
+                 source=None):
         import numpy as np
         path = self._new_capture_path(tag)
         path.unlink(missing_ok=True)
         # one overlay for the whole session: prepare seeds it, every later capture reuses it
         self._ensure_mmio()
         self._driver().replay_trial(
-            str(path), self.fixture, str(self.model_path), np.zeros(16000, np.int16),
+            str(path), self.fixture, str(self.model_path),
+            np.zeros(16000, np.int16) if source is None else source,
             bypass=bypass, zero_coeff=zero, gain_db=gain_db, seconds=seconds,
             hp_volume=self.hp_volume, speaker_confirmed=True, local_capture_confirmed=True,
             direct_only=direct_only, reuse_overlay=False, restore_stock=False)
@@ -366,7 +385,12 @@ class ProductHardware:
     # ---- contract methods --------------------------------------------------------------
     def capabilities(self):
         return {'ok': True, 'contract': CONTRACT, 'buttons': True, 'indicator': True,
-                'nonintrusive_events': True, 'abort_mutes': True, 'prepared_capture': True,
+                'nonintrusive_events': True, 'abort_mutes': True, 'prepared_capture': False,
+                'prepared_capture_note': 'partial: prepare() does initialise the codec and set the AUX stage, '
+                                         'but every capture still re-downloads our bitstream (~1 s) before the '
+                                         'window opens. Reusing one overlay fails two ways: bus error when the '
+                                         'driver restores the stock base overlay, and "source load incomplete '
+                                         '52043e80" when it does not. Reported as False rather than claimed.',
                 'bounded_run': True, 'mode_readback': True,
                 'led_legend': LED_LEGEND, 'button_legend': BUTTON_LEGEND,
                 'allowed_gain_q12': self.allowed_gain_q12,
@@ -427,16 +451,18 @@ class ProductHardware:
         if getattr(self, '_last_mode', None) not in (None, mode):
             events.append({'kind': 'mode', 'value': mode})
         self._last_mode = mode
-        prot = self._protected_bits(word)
-        bit_of = {'input_clip_seen': 22, 'gain_clip': 21, 'residual_clip': 20,
-                  'prediction_clip': 19, 'fault': 18}
-        active = {k: v for k, v in prot.items()
-                  if v and not ((self._protect_baseline >> bit_of[k]) & 1)}
+        # Approved v3 protection semantics: an input full-scale event (bit22, sticky) or a fault stops the
+        # run. Prediction/residual/gain saturation are diagnostics; treating them as protected is exactly
+        # the false-stop that v3 removed.
+        stops = {'input_clip_seen': (word >> 22) & 1, 'fault': (word >> 18) & 1}
+        active = {k: v for k, v in stops.items()
+                  if v and not ((self._protect_baseline >> (22 if k == 'input_clip_seen' else 18)) & 1)}
+        saturation = self._protected_bits(word)
         if self._current_op is None:
             self._protect_baseline = word
         return {'ok': True, 'contract': CONTRACT, 'events': events, 'protected': bool(active),
-                'protection': active, 'identity': self.identity(), 'effective_mode': mode,
-                'buttons': bits}
+                'protection': active, 'saturation': saturation,
+                'identity': self.identity(), 'effective_mode': mode, 'buttons': bits}
 
     def indicate(self, prompt):
         pattern = prompt.get('pattern') if isinstance(prompt, dict) else None
@@ -477,28 +503,48 @@ class ProductHardware:
                            'tail_frames': 0, 'path': str(path), 'identity': self.identity()})
             return result
         if op in ('input', 'training', 'validation'):
+            import hashlib
             caps = []
             plan = request.get('plan') or {}
             items = plan.get('captures') or plan.get('segments') or [{'seconds': 3.0}]
+            # B's plan: white noise, RMS-normalised, one 16384-frame window per segment. Training and
+            # validation MUST NOT share a source, otherwise the independence check is meaningless.
+            train_seed = int(plan.get('seed', 4242))
+            valid_seed = int(plan.get('validation_seed', train_seed + 1))
             for i, item in enumerate(items):
                 if cancel_event is not None and cancel_event.is_set():
                     self.mute()
                     result.update({'status': 'error', 'reason': 'cancelled', 'captures': caps})
                     return result
-                seconds = float(item.get('seconds', 3.0))
+                seconds = float(item.get('seconds', self.WINDOW_SECONDS))
                 q12 = int(item.get('gain_q12', self.allowed_gain_q12[0]))
-                path, cap, meta = self._capture(seconds, tag='%s%d' % (op, i),
+                seed = int(item.get('seed', valid_seed if op == 'validation' else train_seed))
+                level = float(item.get('level_dbfs', self.stimulus_dbfs))
+                src = None
+                if op in ('training', 'validation'):
+                    src = self._make_stimulus(seed=seed, level_dbfs=level)
+                    if src is None:
+                        result.update({'status': 'error', 'reason': 'stimulus_unreachable',
+                                       'level_dbfs': level, 'seed': seed})
+                        return result
+                path, cap, meta = self._capture(seconds, tag='%s%d' % (op, i), source=src,
                                                 gain_db=20 * __import__('math').log10(max(q12, 1) / 4096.0),
                                                 bypass=bool(item.get('bypass', False)),
-                                                direct_only=bool(item.get('direct_only', True)),
-                                                zero=bool(item.get('zero_coeff', True)))
-                import hashlib
+                                                direct_only=bool(item.get('direct_only', op == 'input')),
+                                                zero=bool(item.get('zero_coeff', op == 'input')))
+                mic = cap['microphone']
+                first = int(meta.get('first_frame') or 0)
+                valid = (len(src) - first) if src is not None else None
                 caps.append({'capture_id': item.get('capture_id', '%s%d' % (op, i)),
                              'path': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
-                             'first_frame': self._scene_frames - len(cap['microphone']),
+                             'first_frame': self._scene_frames - len(mic),
                              'end_frame': self._scene_frames,
+                             'valid_frames': valid,
                              'source_sha256': meta.get('source_pcm16_sha256'),
-                             'content_kind': item.get('content_kind', 'onboard_excitation'),
+                             'seed': seed if src is not None else None,
+                             'level_dbfs': level if src is not None else None,
+                             'content_kind': item.get('content_kind',
+                                                     'onboard_excitation' if src is not None else 'human_private'),
                              'status': meta.get('stop_reason')})
             result.update({'ok': True, 'status': 'completed', 'captures': caps,
                            'valid_first_frame': caps[0]['first_frame'] if caps else None,
@@ -513,9 +559,13 @@ class ProductHardware:
             cur = self._control_word()
             q12 = int(request.get('run_gain_q12', self.allowed_gain_q12[0]))
             self._ensure_mmio()['control'].write(0, (cur & 0xFFFF) | ((q12 & 0xFFFF) << 16))
+            import hashlib as _h
+            file_sha = _h.sha256(pathlib.Path(model['path']).read_bytes()).hexdigest()
             result.update({'ok': True, 'status': 'completed',
-                           'model_sha256': model['coefficient_sha256'],
+                           'model_sha256': file_sha,
                            'coefficients_sha256': model['coefficient_sha256'],
+                           'model_path': model['path'], 'taps': model['taps'],
+                           'applies_at': 'next_capture',
                            'identity': self.identity()})
             return result
         if op == 'run':
