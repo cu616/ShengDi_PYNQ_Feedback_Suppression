@@ -460,8 +460,9 @@ class ProductHardware:
         # protocol fault (bit18), prediction saturation (bit19), post-gain saturation (bit21) and mix
         # saturation stop the run. The PRE-GAIN residual overflow (bit20) is a diagnostic only - a wide
         # residual may exceed the old rail while the post-gain output is still representable.
-        stop_bits = {'input_clip_seen': 22, 'fault': 18, 'prediction_clip': 19, 'gain_clip': 21,
-                     'mix_clip': 26}
+        # capture_status defines 22/18/19/21. The mix clip counter is not in this word - the driver reads
+        # it from source_len.read(8) - so it is not fabricated here.
+        stop_bits = {'input_clip_seen': 22, 'fault': 18, 'prediction_clip': 19, 'gain_clip': 21}
         stops = {k: (word >> b) & 1 for k, b in stop_bits.items()}
         active = {k: v for k, v in stops.items()
                   if v and not ((self._protect_baseline >> stop_bits[k]) & 1)}
@@ -1029,8 +1030,11 @@ class ProductHardwareV2(ProductHardware):
                 ('protected' if (status >> 22) & 1 else 'error'),
                 'effective_mode': self.effective_mode(),
                 'audio_frames': frames,
-                'elapsed_seconds': round(frames / 48828.125, 3),      # audio time from real frames
+                'requested_seconds': seconds,
+                'elapsed_seconds': round(frames / 48828.125, 3),      # duration of the captured window
                 'wall_seconds': round(wall, 3),                        # init plus waiting, separately
+                'note': 'elapsed_seconds is the captured window, not the requested run length; the run '
+                        'itself played requested_seconds'
                 'model_sha256': self._last_model_sha,
                 'coefficients_sha256': self._last_coeff_sha,
                 'capture_id': cid, 'path': str(cap_path),
