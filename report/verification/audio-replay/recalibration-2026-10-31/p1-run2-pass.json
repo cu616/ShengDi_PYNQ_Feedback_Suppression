@@ -1,0 +1,75 @@
+{
+  "stamp": "20250511-130939",
+  "excitation": "full_band_white_noise_rms_normalised",
+  "fixture_id": "room_v1_20261026b",
+  "excitation_dbfs_commanded": -5.0,
+  "ref_rms_dbfs": -14.073992597724715,
+  "mic_rms_dbfs": -28.549074828823812,
+  "room_floor_dbfs": -38.89158053826573,
+  "excitation_snr_db": 10.342505709441916,
+  "mic_over_ref_db": -14.475082231099098,
+  "segments": 6,
+  "candidate": "model_candidate_20250511-130939.json",
+  "candidate_sha256": "69a6e2ca05ba6c248fbdb76d38ad1c19326a784071c5a932c7515b94a130c831",
+  "fit_returncode": 0,
+  "taps": 512,
+  "lag_first": 1,
+  "q20_sha256": "06121410670b2a37ffc45f87db6570ca0726b5602868da61329eaba85443cf6d",
+  "fractional_spread": 1.0125467460188702,
+  "integer_lags": [
+    178,
+    179,
+    179,
+    179,
+    179,
+    179
+  ],
+  "arms": [
+    {
+      "tag": "open",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "bypass",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "cancel",
+      "stop": "completed",
+      "capture_status": 32769
+    }
+  ],
+  "three_point": {
+    "levels_dbfs": {
+      "open": {
+        "mic": -27.49614730466223,
+        "pred": -31.650928279796222,
+        "residual": -35.883082723078914
+      },
+      "bypass": {
+        "mic": -25.102630700626314,
+        "pred": -28.973723920820035,
+        "residual": -25.102630700626314
+      },
+      "cancel": {
+        "mic": -26.561673467471092,
+        "pred": -30.644645399979396,
+        "residual": -35.07782489671844
+      }
+    },
+    "units": "dBFS re 24-bit full scale, all three signals",
+    "cd_322_db": 9.975194196092126,
+    "loop_boost_db": 2.3935166040359164,
+    "acoustic_difference_db": 1.459042766844778,
+    "overshoot_db": -0.9344738371911383,
+    "names": {
+      "cd_322_db": "residual depth (model fit, NOT benefit)",
+      "loop_boost_db": "audible-benefit scale = what the loop adds and a canceller can at most recover",
+      "acoustic_difference_db": "loop_boost + overshoot, NOT benefit",
+      "overshoot_db": "cancel goes below the no-loop path by this much"
+    }
+  },
+  "verdict": "PASS"
+}
