@@ -24,7 +24,7 @@ B数值请求保留canonical attempts/plan。config可另带capture_plans作为�
 
 recal_entry.sh --adapter-check --model <A已核对模型>执行create_product→capabilities→prepare→training(1段)→install→run(3秒)→abort；这是A维护者主动执行的短链路，不运行普通人声重标定、不启用新候选。C只在离线替换PYNQ/Codec/驱动叶子后执行原A工厂验证字段；真实板卡仍由A唯一操作。
 
-维护检查要求包清单允许adapter_check、模型已列入清单并匹配SHA；无论成功、失败或取消，finally均abort并保存逐步请求/回复。它不放宽默认常驻入口的prepared_capture检查，也不将applies_at=next_capture登记当作实际PL系数已生效。正式模型事务在得到实际装载回读之前不得提交eligible current。
+维护检查要求包清单允许adapter_check；默认模型须列入包清单并匹配SHA。A使用当前板上已核对模型时，须同时显式给--model与--model-sha256，先核完整SHA再创建硬件对象，回执记为operator_supplied_current_model；不默认恢复仓库旧模型。无论成功、失败或取消，finally均abort并保存逐步请求/回复。它不放宽默认常驻入口的prepared_capture检查，也不将applies_at=next_capture登记当作实际PL系数已生效。正式模型事务在得到实际装载回读之前不得提交eligible current。
 
 维护install字段为model_path/run_gain_q12，回复model_sha256为文件SHA、coefficients_sha256为小端Q20 SHA；run携带seconds/gain_q12/bypass/model_path，记录elapsed_seconds原值，不用墙钟值冒充音频时长。poll事件名维持recalibrate/start/stop/cancel/confirm_quiet/mode；短按BTN0过滤及BTN1切换由C兼容。
 
