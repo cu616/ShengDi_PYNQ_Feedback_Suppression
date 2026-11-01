@@ -366,7 +366,12 @@ class ProductHardware:
     # ---- contract methods --------------------------------------------------------------
     def capabilities(self):
         return {'ok': True, 'contract': CONTRACT, 'buttons': True, 'indicator': True,
-                'nonintrusive_events': True, 'abort_mutes': True, 'prepared_capture': True,
+                'nonintrusive_events': True, 'abort_mutes': True, 'prepared_capture': False,
+                'prepared_capture_note': 'partial: prepare() does initialise the codec and set the AUX stage, '
+                                         'but every capture still re-downloads our bitstream (~1 s) before the '
+                                         'window opens. Reusing one overlay fails two ways: bus error when the '
+                                         'driver restores the stock base overlay, and "source load incomplete '
+                                         '52043e80" when it does not. Reported as False rather than claimed.',
                 'bounded_run': True, 'mode_readback': True,
                 'led_legend': LED_LEGEND, 'button_legend': BUTTON_LEGEND,
                 'allowed_gain_q12': self.allowed_gain_q12,
