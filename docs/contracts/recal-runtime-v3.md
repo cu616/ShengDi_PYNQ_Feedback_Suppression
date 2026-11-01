@@ -4,7 +4,7 @@
 生产方：C编排 / A适配 / B算法；消费方：A / B / C。
 最后变更：2026-11-01；原因：接A a3f516f、B 2ccf746，身份和实际调用字段统一。
 
-唯一正式入口仍为recal_entry.sh，消息信封仍为recal-product-v1。正式算法只用B recal_algorithm.evaluate，版本为recal-algorithm-2026-11-01。旧三点Consumer及v2包装只用于历史复核/模拟，不与此路径竞争。
+唯一正式入口仍为recal_entry.sh，消息信封仍为recal-product-v1。正式算法只用B recal_algorithm.evaluate，具体版本及文件SHA由包清单identity固定，本轮接recal-algorithm-2026-11-01.1。旧三点Consumer及v2包装只用于历史复核/模拟，不与此路径竞争。
 
 ## B冻结身份与策略
 
@@ -35,3 +35,11 @@ prepared_capture=false时，先prepare再input仍会再次下载位流；只有p
 A a3f516f保护字段由A解释，C不从saturation诊断字段自行触发停声。后续A版本若修正保护语义，须单独固定来源，不能静默混入a3f516f。16382有效帧、首段异常及B冻结代码的已知诊断应在回执中如实保留。
 
 操作和A/B回传见[统一操作单](../ref/recal-product.md)。
+
+## 2026-11-01 收口补充
+
+收到A 22c88bb的嵌入提示音路径时，C按op=input/cue=true/seconds=2.5调用；听到提示音后讲话，准备和采集属于同一次调用。返回marker只作原件窗校验，C从原NPZ取得真实first_frame/end_frame/source SHA，保留A原字段；不强迫A改成C旧poll事件形式。每次硬件请求使用独立输出目录，各档plan.levels只封装当前B档位，避免硬件端重新扫档或覆盖旧原件。
+
+停止分“已停声”和“驱动调用已返回”：旧硬件调用未返回时进入stopping，轮询和STOP仍可用，禁止并发新硬件任务；可记录一次明确CAL请求，收尾后才执行，STOP可撤销它。C不要求A为19秒返回强杀线程，但A必须传播cancel_event并在driver before_start检查，禁止旧任务再次arm。
+
+--field-trial只供A同一完整现场窗口，通过包清单field_trial_allowed逐版本开放，要求显式当前模型/SHA及嵌入cue路径；回执标field_trial=true。默认正式运行不放宽prepared_capture。存在确定执行错误的A版本不开放该参数，也不开放维护运行；重组审阅和原件复核可独立完成。
