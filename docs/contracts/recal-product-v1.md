@@ -20,6 +20,8 @@
 
 identity逐操作和poll实际回读：aux_db/aux_raw_left/aux_raw_right/hp_volume/gain_q12/sample_rate_hz/driver_sha256/bit_sha256/hwh_sha256/helper_sha256。不把请求值当回读。运行额外绑定模型与实际Q20。
 
+expected_identity是就绪/运行的固定配置；开环标定允许按B封装的phase_gain_q12表使用实际0增益，不能把运行增益冒充开环回读。scope为prepare/cue/input/training/validation/install/run/runtime；未列scope只允许运行增益。prepare表须包含预备交接期允许值。除数字增益外上述identity字段全程不变。A适配清单给allowed_gain_q12，B所有阶段值必须为A允许集合子集；安装完成须回到严格运行配置。bundle绑定运行配置，原捕获保留各阶段真实配置。
+
 cue与input帧号必须属于同一scene的统一时间域，不能直接比较两个重置计数器。A以真实完成/尾声和预备时序映射，不清楚就拒绝有效窗。prepare须让输入采集已预备，input仅消费已备好的捕获，不能等提示后再加载overlay。poll在running时另含实际model_sha256/coefficients_sha256；protected表示当前活动操作的保护事件，不把上一试次sticky状态当新试次事件。
 
 捕获另给content_kind；只有`onboard_excitation`可自动回传原PCM，模拟为`software_fixture`。讲话为`human_private`或未知时原PCM留板。源/数据类型来自A实际计划，不从文件名猜测。计算日志留板，B不在结构化回复中写人声PCM。
