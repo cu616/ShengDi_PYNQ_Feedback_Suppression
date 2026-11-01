@@ -183,3 +183,6 @@ fetch取得origin/A280，pull本地远端引用首次Git/MSYS权限失败，提�
 
 
 最终75项通过，137文档零错误/警告。一次额外完整入口检查与测试并行时，审计脚本自身20秒总截止落在validating（没有生产阶段超时）；按唯一入口实际OPENBLAS_NUM_THREADS=1串行运行，并给审计总过程90秒后，首scene ready→run→ended、第二scene重新拟合到ready，8.4秒结束。无B代码/阈值变更；审计脚本截止纠正与原失败说明保留。
+
+
+冻结时首次独立解压发现OPERATIONS两处链接越出白名单（B契约和历史报告）；保留失败ZIP另名，修正为包内ALGORITHM及源码仓库报告说明。没有改运行/数值逻辑，未重复无关测试；新实际包独立解压重新查全链接、全部SHA、真实B worker、A helper接受零模型、默认/维护/现场均exit2，通过。源码5230e0c，33载荷，ZIP不入Git；实际SHA见a280-package-check.json。

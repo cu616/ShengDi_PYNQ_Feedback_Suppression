@@ -112,3 +112,21 @@ sim/feedback/test_recal_frozen.py
 sim/feedback/test_recal_runtime.py
 report/verification/recal-product-v1/closeout-package-check.json
 report/verification/recal-product-v1/changed-files.txt
+
+# 2026-11-02 A280接入、事务/时长/启动与必要取消复现
+board/audio_replay/recal_link.py
+board/audio_replay/recal_product.py
+docs/STATE.md
+docs/contracts/README.md
+docs/contracts/recal-runtime-v4.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/a280-assets.json
+report/verification/recal-product-v1/a280-entry-review.json
+report/verification/recal-product-v1/a280-package-check.json
+report/verification/recal-product-v1/a280-software.json
+report/verification/recal-product-v1/changed-files.txt
+scripts/assemble_experiment.py
+sim/feedback/test_recal_closeout.py
+sim/feedback/test_recal_runtime.py

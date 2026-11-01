@@ -1,0 +1,279 @@
+{
+  "a_commit": "28051a6",
+  "b_commit": "0b09ef6",
+  "source_commit": "5230e0c02fbbe9c54408c5b98cc950b20f193c24",
+  "source_tree_clean": true,
+  "package": "materials\\final\\shengdi-closeout-28051a6-0b09ef6-review.zip",
+  "package_bytes": 387579,
+  "package_sha256": "ce5f2ca9d7acc34c79040da292a7beec2faceceb2910f88a8d000ea937d77d4f",
+  "manifest_sha256": "0bbe1f386991caee37f056eaafc52cf745b2743217bf75a76f24f93ecc43032d",
+  "payload_count": 33,
+  "all_payload_hashes_match": true,
+  "A_B_sources_exact": true,
+  "diagnostic_patches_in_candidate": false,
+  "document_link_errors": [],
+  "independent_extraction": true,
+  "algorithm_identity": {
+    "contract": "recal-product-v1",
+    "version": "recal-algorithm-2026-11-01.1",
+    "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+    "dependencies": [
+      "numpy"
+    ],
+    "python": ">=3.8",
+    "taps": 512,
+    "lag_first": 1,
+    "strategy": {
+      "attempts": [
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -19.3,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -19.3,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -16.5,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -16.5,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        }
+      ],
+      "max_attempts": 3,
+      "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+      "exit_reasons": {
+        "valid_pass": "PASS",
+        "retry": "RETRY_NEXT_LEVEL",
+        "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+        "model_rejected": "MODEL_UNQUALIFIED"
+      }
+    },
+    "thresholds": {
+      "min_valid_frames": 4096,
+      "near_full_scale": 0.999,
+      "min_excitation_snr_db": 0.0,
+      "min_gated_coherence": 0.3,
+      "coherence_floor": 0.8,
+      "sparse_line_db": 20.0,
+      "band_hz": [
+        150.0,
+        10000.0
+      ],
+      "speech_min_rms_dbfs": -55.0,
+      "speech_min_peak": 0.003,
+      "l1_max": 4.0,
+      "l1_over_max_range": [
+        25.0,
+        80.0
+      ],
+      "peak_tap_tolerance": 4,
+      "validate_band_hz": [
+        300.0,
+        460.0
+      ],
+      "validate_band_reduction_min_db": 0.5,
+      "validate_full_reduction_min_db": 0.0,
+      "min_validation_captures": 2
+    },
+    "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+    "not_asg": true
+  },
+  "worker_reply": {
+    "contract": "recal-product-v1",
+    "request_id": "offline",
+    "scene_id": "software",
+    "decision": "data_insufficient",
+    "reason": "验证捕获只有 0 段，少于 2 段：单段或零段不构成独立验证",
+    "algorithm_identity": {
+      "contract": "recal-product-v1",
+      "version": "recal-algorithm-2026-11-01.1",
+      "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+      "dependencies": [
+        "numpy"
+      ],
+      "python": ">=3.8",
+      "taps": 512,
+      "lag_first": 1,
+      "strategy": {
+        "attempts": [
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          }
+        ],
+        "max_attempts": 3,
+        "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+        "exit_reasons": {
+          "valid_pass": "PASS",
+          "retry": "RETRY_NEXT_LEVEL",
+          "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+          "model_rejected": "MODEL_UNQUALIFIED"
+        }
+      },
+      "thresholds": {
+        "min_valid_frames": 4096,
+        "near_full_scale": 0.999,
+        "min_excitation_snr_db": 0.0,
+        "min_gated_coherence": 0.3,
+        "coherence_floor": 0.8,
+        "sparse_line_db": 20.0,
+        "band_hz": [
+          150.0,
+          10000.0
+        ],
+        "speech_min_rms_dbfs": -55.0,
+        "speech_min_peak": 0.003,
+        "l1_max": 4.0,
+        "l1_over_max_range": [
+          25.0,
+          80.0
+        ],
+        "peak_tap_tolerance": 4,
+        "validate_band_hz": [
+          300.0,
+          460.0
+        ],
+        "validate_band_reduction_min_db": 0.5,
+        "validate_full_reduction_min_db": 0.0,
+        "min_validation_captures": 2
+      },
+      "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+      "not_asg": true
+    }
+  },
+  "bootstrap": {
+    "sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8",
+    "zero_coefficients": true,
+    "eligible": false,
+    "actual_A_helper_accepts": true
+  },
+  "commands": [
+    {
+      "name": "default resident blocked",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED physical adapters not ready: hardware: A perform(install) drops the second cancel_event; pre-cancel still invokes driver,hardware: A driver calls omit before_start; cancellation during codec/overlay initialization can re-arm after abort,hardware: integration not approved\n"
+    },
+    {
+      "name": "package check reports blocked",
+      "exit_code": 2,
+      "output": "{\"identity_ok\": true, \"deployment_ready\": false, \"missing\": [\"hardware: A perform(install) drops the second cancel_event; pre-cancel still invokes driver\", \"hardware: A driver calls omit before_start; cancellation during codec/overlay initialization can re-arm after abort\", \"hardware: integration not approved\"]}\n"
+    },
+    {
+      "name": "maintenance blocked before hardware import",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED maintenance adapter check not enabled for this package\n"
+    },
+    {
+      "name": "field trial blocked before hardware import",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED field trial not enabled for this exact source package\n"
+    }
+  ],
+  "deployment_ready": false,
+  "adapter_check_allowed": false,
+  "field_trial_allowed": false,
+  "blockers": [
+    "hardware: A perform(install) drops the second cancel_event; pre-cancel still invokes driver",
+    "hardware: A driver calls omit before_start; cancellation during codec/overlay initialization can re-arm after abort",
+    "hardware: integration not approved"
+  ],
+  "scope": "review only until the A cancellation/pre-arm boundary is repaired; complete offline factory/B entry was verified separately",
+  "board_operations": 0,
+  "prior_package_verification": {
+    "issue": "two package OPERATIONS links pointed outside whitelist",
+    "corrected": "map B contract to ALGORITHM.md and historical report links to a source-repository note",
+    "failed_archive_preserved": "materials/final/shengdi-closeout-28051a6-0b09ef6-review-link-check-failed.zip"
+  },
+  "post_test_change_scope": "packaged documentation links only; independently extracted and checked"
+}

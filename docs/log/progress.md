@@ -2,7 +2,7 @@
 
 ## 2026-11-02 C 接通A280原版工厂与B完整数值流程
 
-接口变更v4：C接收source_model_sha256/scene绑定副本，逐项核验内容及Q20后原子提交；从原NPZ completed_frames区分完整运行与16384帧环窗；封装不可成为有效模型的静音启动零模型，四灯图例保留LD3实际模式。A原版工厂+C状态机+B子进程仅替换硬件叶子，连续两个scene均ready，首个运行ended；75项受影响软件检查及137文档检查通过。复现预取消install仍进入driver，以及初始化中取消缺少before_start；只向A请求这一取消边界修正，B无新增任务。A现场消息与C离线结果分别归档，未操板。[入口与停止证据](../../report/verification/recal-product-v1/a280-entry-review.json)、[固定载荷](../../report/verification/recal-product-v1/a280-assets.json)、[v4](../contracts/recal-runtime-v4.md)、[操作单](../ref/recal-product.md)。
+接口变更v4：C接收source_model_sha256/scene绑定副本，逐项核验内容及Q20后原子提交；从原NPZ completed_frames区分完整运行与16384帧环窗；封装不可成为有效模型的静音启动零模型，四灯图例保留LD3实际模式。A原版工厂+C状态机+B子进程仅替换硬件叶子，连续两个scene均ready，首个运行ended；75项受影响软件检查及137文档检查通过。5230e0c干净源码冻结33载荷审阅ZIP，独立解压、A/B字节、零模型格式、B worker、包内链接及三种启动门槛核验通过；原链接失败包另名保留。复现预取消install仍进入driver，以及初始化中取消缺少before_start；只向A请求这一取消边界修正，B无新增任务。A现场消息与C离线结果分别归档，未操板。[入口与停止证据](../../report/verification/recal-product-v1/a280-entry-review.json)、[固定载荷](../../report/verification/recal-product-v1/a280-assets.json)、[v4](../contracts/recal-runtime-v4.md)、[操作单](../ref/recal-product.md)。
 
 
 ## 2026-11-01 C 收口A22/B.1重组与必要阻塞复现

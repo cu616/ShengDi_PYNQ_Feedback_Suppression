@@ -43,7 +43,7 @@
 **最后动作**：2026-11-02接A 28051a6/B 0b09ef6原字节，以A原版create_product、C Product和B真实子进程完成离线完整重标定→ready→run→ended；仅MMIO/Codec/驱动叶子为模拟，无C上板。C补安装阶段开环过渡、scene绑定副本事务、原NPZ完整帧计时、静音启动零模型和四灯图例，数值判据不改。
 **当前卡点**：只剩A一项取消边界：install丢失perform第二参数cancel_event，所有驱动调用未用已有before_start，初始化中取消仍会继续开声。已用原A方法和模拟驱动初始化钩子复现；本包默认/维护/现场仍关闭。B无新增请求；不再索要泛化清单。A修正后复用同一接入核对并只做一个完整现场窗口。
 
-- [完整入口与取消复现](../report/verification/recal-product-v1/a280-entry-review.json)、[75项受影响检查](../report/verification/recal-product-v1/a280-software.json)、[载荷/原描述及证据边界](../report/verification/recal-product-v1/a280-assets.json)、[操作单](ref/recal-product.md)、[安装事务v4](contracts/recal-runtime-v4.md)。
+- [完整入口与取消复现](../report/verification/recal-product-v1/a280-entry-review.json)、[75项受影响检查](../report/verification/recal-product-v1/a280-software.json)、[33载荷审阅包核验](../report/verification/recal-product-v1/a280-package-check.json)、[载荷/原描述及证据边界](../report/verification/recal-product-v1/a280-assets.json)、[操作单](ref/recal-product.md)、[安装事务v4](contracts/recal-runtime-v4.md)。
 - A转发的115cm真人cue+input、6+2独立激励、512系数装载/恢复2303、abort9.8ms、30秒硬件层扩声和按钮/拨码结果按A现场证据记录；未替代C真实入口、现场拟合或ASG。50cm真人cue尚未验证。
 - C运行收益仍仅B独立段预测抑制；新副本须源模型SHA、逐项JSON及Q20一致后才原子启用。初始化零模型不能提交为有效模型，移动/失败不恢复旧模型。
 - 本地shengdi-closeout-28051a6-0b09ef6-review.zip只审阅，不进Git。A/B代码保持原字节，未插入C硬件补丁；A旧描述原件保留，新实际源哈希由v3-io清单核验。
