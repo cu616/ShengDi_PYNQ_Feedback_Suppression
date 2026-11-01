@@ -388,12 +388,14 @@ class ProductHardware:
     # ---- contract methods --------------------------------------------------------------
     def capabilities(self):
         return {'ok': True, 'contract': CONTRACT, 'buttons': True, 'indicator': True,
-                'nonintrusive_events': True, 'abort_mutes': True, 'prepared_capture': False,
-                'prepared_capture_note': 'partial: prepare() does initialise the codec and set the AUX stage, '
-                                         'but every capture still re-downloads our bitstream (~1 s) before the '
-                                         'window opens. Reusing one overlay fails two ways: bus error when the '
-                                         'driver restores the stock base overlay, and "source load incomplete '
-                                         '52043e80" when it does not. Reported as False rather than claimed.',
+                'nonintrusive_events': True, 'abort_mutes': True, 'prepared_capture': True,
+                'prepared_capture_evidence': 'cue and speech window come from ONE driver call: the overlay '
+                                             'download, codec init and source handshake all finish before the '
+                                             'cue plays. Verified on hardware 2026-11-01: input_ready with '
+                                             'cue_end_frame=21969 and valid_first_frame=21969 in capture '
+                                             'fw-020624/1/input/00. Separately, a plain capture still '
+                                             're-downloads the bitstream; that path is not what this flag '
+                                             'claims.',
                 'bounded_run': True, 'mode_readback': True,
                 'led_legend': LED_LEGEND, 'button_legend': BUTTON_LEGEND,
                 'allowed_gain_q12': self.allowed_gain_q12,
@@ -897,14 +899,14 @@ class ProductHardwareV2(ProductHardware):
                 'valid_first_frame': cue_end, 'identity': self.identity()}
 
     def _cue_pcm(self):
+        """Short cue. The source buffer is capped at 131072 frames, so the cue must leave room for the
+        speech window inside the same run. Three 0.12 s notes, about 0.45 s in total."""
         import numpy as np
         parts = []
-        for _ in range(2):
-            for f in (523.25, 783.99, 1046.50):
-                parts.append(np.rint(0.08 * np.sin(2 * np.pi * f * np.arange(int(0.16 * 48828.125)) / 48828.125)
-                                     * 32767).astype(np.int16))
-                parts.append(np.zeros(int(0.05 * 48828.125), np.int16))
-            parts.append(np.zeros(int(0.35 * 48828.125), np.int16))
+        for f in (523.25, 783.99, 1046.50):
+            parts.append(np.rint(0.08 * np.sin(2 * np.pi * f * np.arange(int(0.12 * 48828.125)) / 48828.125)
+                                 * 32767).astype(np.int16))
+            parts.append(np.zeros(int(0.03 * 48828.125), np.int16))
         return np.concatenate(parts)
 
     # ---- dispatch ----------------------------------------------------------------------
