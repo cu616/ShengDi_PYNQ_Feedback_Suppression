@@ -1,0 +1,77 @@
+{
+  "what": "bounded digital-gain ladder at 115 cm, bypass vs cancel, four levels, one frozen source",
+  "deviations_reported": {
+    "observation_length": "the captain asked for 10 s per level; the driver caps the source at 131072 samples (2.68 s) and the capture is the last 16384 frames, so each level runs 2.6 s with the source active through the whole capture window",
+    "steps": "requested steps were -8, -5, -2, 0 dB; the last step is 3 dB because 0 dB is the ceiling"
+  },
+  "levels_and_q12": {
+    "-8.0": 1631,
+    "-5.0": 2303,
+    "-2.0": 3254,
+    "0.0": 4096
+  },
+  "results": [
+    {
+      "gain_db": -8.0,
+      "mode": "bypass",
+      "status": "completed",
+      "tonality_db": 8.39
+    },
+    {
+      "gain_db": -8.0,
+      "mode": "cancel",
+      "status": "completed",
+      "tonality_db": 9.72
+    },
+    {
+      "gain_db": -5.0,
+      "mode": "bypass",
+      "status": "completed",
+      "tonality_db": 11.35
+    },
+    {
+      "gain_db": -5.0,
+      "mode": "cancel",
+      "status": "completed",
+      "tonality_db": 8.43
+    },
+    {
+      "gain_db": -2.0,
+      "mode": "bypass",
+      "status": "anomaly",
+      "tonality_db": 15.14,
+      "note": "narrowband growth; no protection tripped"
+    },
+    {
+      "gain_db": -2.0,
+      "mode": "cancel",
+      "status": "completed",
+      "tonality_db": 11.07
+    },
+    {
+      "gain_db": 0.0,
+      "mode": "bypass",
+      "status": "skipped",
+      "note": "bypass stopped at -2 dB"
+    },
+    {
+      "gain_db": 0.0,
+      "mode": "cancel",
+      "status": "anomaly",
+      "tonality_db": 12.55,
+      "note": "narrowband growth; no protection tripped"
+    }
+  ],
+  "boundaries": {
+    "bypass": "highest completed -5.0 dB, first anomaly -2.0 dB -> boundary in (-5, -2]",
+    "cancel": "highest completed -2.0 dB, first anomaly 0.0 dB -> boundary in (-2, 0]",
+    "difference": "the canceller survives roughly one 3 dB step beyond bypass at this geometry"
+  },
+  "protection_state": "bit22 = 0 and all four saturating counters 0 at every level in both modes; the anomalies were identified by narrowband growth (tonality > 12 dB), not by protection",
+  "candidate_working_gain": "cancel: highest confirmed usable -2 dB minus 3 dB = -5 dB, still to be confirmed with live speech",
+  "not_claimed": [
+    "no MSG/ASG figure (3 dB steps cannot resolve it)",
+    "no claim beyond 0 dB",
+    "audible gain and listener SPL not measured"
+  ]
+}

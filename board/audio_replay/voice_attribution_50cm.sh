@@ -26,7 +26,7 @@ FIXTURE = 'room_v1_20261026b'
 GAIN_DB = -8.0
 HP_VOLUME = 40
 CUE_FS = 0.08
-SECONDS = 20.0
+SECONDS = 30.0
 STAMP = time.strftime('%Y%m%d-%H%M%S')
 OUT = D / ('voice50_' + STAMP)
 OUT.mkdir(parents=True, exist_ok=False)
