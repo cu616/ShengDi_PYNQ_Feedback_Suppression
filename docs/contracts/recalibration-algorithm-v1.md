@@ -220,7 +220,7 @@ manifest = identity()      # C 原样写进 package-manifest 与每个 run 的�
 | 字段 | 值 / 含义 |
 |---|---|
 | `contract` | `recal-product-v1` |
-| `version` | `recal-algorithm-2026-11-01` |
+| `version` | `recal-algorithm-2026-11-01.1`（补丁版：正负移位 + 单段验证） |
 | `file_sha256` | 本文件自身的 sha256，运行时算 |
 | `dependencies` | `['numpy']`（无 scipy、无 PYNQ、无网络） |
 | `python` | `>=3.8` |

@@ -361,7 +361,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_identity_is_frozen(self):
         i = ra.identity()
-        self.assertEqual(i["version"], "recal-algorithm-2026-11-01")
+        self.assertEqual(i["version"], "recal-algorithm-2026-11-01.1")
         self.assertEqual(i["dependencies"], ["numpy"])
         self.assertEqual(i["taps"], 512)
         self.assertEqual(i["lag_first"], 1)

@@ -4,7 +4,7 @@
 > 每次会话结束**原地覆盖**本文件中自己负责的那一段，不要新建副本、不要在别处复述。
 > 其他文档若与本文件冲突，以本文件为准。
 
-最后更新：2026-11-01 19:40，B 线（冻结一键重标定数值版 `recal-algorithm-2026-11-01`；讲话检查与激励检查分开口径；唯一阻塞是 C 侧 fit 超时需 ≥15 秒）
+最后更新：2026-11-01 20:50，B 线（一键重标定数值版补丁 `recal-algorithm-2026-11-01.1`：修 fit/validate 负移位与单段验证；C 已接入，等整机回包）
 
 ## 一句话
 
@@ -54,7 +54,7 @@
 ### B 数据与算法
 
 **最后动作**：2026-11-01 交一键重标定的数值侧并**冻结**：`board/audio_replay/recal_algorithm.py`
-（input/fit/validate 真实实现，`VERSION=recal-algorithm-2026-11-01`，只依赖 numpy，`identity()` 给打包用）、
+（input/fit/validate 真实实现，`VERSION=…-11-01.1`，只依赖 numpy，`identity()` 给打包用）、
 `src/feedback/recal_policy.py`+`excitation.py`、两份契约、两份复核报告（见下）。
 真实数据六例：fit `valid_pass`（L1 2.303、峰位 184 = 实测延迟），validate 对部署模型 +4.21 dB、
 旧夹具 −4.40 dB（拒）、全零 0.00（拒）、借用训练 capture 判不独立。

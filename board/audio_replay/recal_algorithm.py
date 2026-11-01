@@ -32,7 +32,7 @@ from pathlib import Path
 import numpy as np
 
 CONTRACT = 'recal-product-v1'
-VERSION = 'recal-algorithm-2026-11-01'
+VERSION = 'recal-algorithm-2026-11-01.1'
 TAPS = 512
 LAG_FIRST = 1
 FS_DEFAULT = 48828.125
