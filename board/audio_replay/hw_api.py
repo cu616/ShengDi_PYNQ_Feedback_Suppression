@@ -1034,7 +1034,7 @@ class ProductHardwareV2(ProductHardware):
                 'elapsed_seconds': round(frames / 48828.125, 3),      # duration of the captured window
                 'wall_seconds': round(wall, 3),                        # init plus waiting, separately
                 'note': 'elapsed_seconds is the captured window, not the requested run length; the run '
-                        'itself played requested_seconds'
+                        'itself played requested_seconds',
                 'model_sha256': self._last_model_sha,
                 'coefficients_sha256': self._last_coeff_sha,
                 'capture_id': cid, 'path': str(cap_path),
