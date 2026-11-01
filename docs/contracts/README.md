@@ -8,6 +8,8 @@
 
 | 契约 | 覆盖什么 | 生产方 | 消费方 | 状态 |
 |---|---|---|---|---|
+| [recal-policy-consumer-v1.md](recal-policy-consumer-v1.md) | C消费B判定、四类cause、本轮延迟及验收缺项 | C | A / B / C | 实现待验证 |
+| [recalibration-policy-v1.md](recalibration-policy-v1.md) | B采集/激励/拟合/三点判定；阈值唯一来源 | B | C / A | B已交库，待上板验证 |
 | [recal-product-v1.md](recal-product-v1.md) | 常驻产品编排、A/B接口及原子模型事务 | C / A / B | A / B / C | C接口/模拟实现；实体适配待验 |
 | [audio-closed-v1.md](audio-closed-v1.md) | 闭环 overlay 的控制位、增益编码、帧关系、缓存读回 | C | A / B | 已实现并构建，未上板验收 |
 | [feedback-fir-v1.md](feedback-fir-v1.md) | 定点抵消核：24 位 PCM / Q20 系数 / 58 位累加 / 771 拍 | B | C / A | 已验证（仿真 + 板上逐样本） |
