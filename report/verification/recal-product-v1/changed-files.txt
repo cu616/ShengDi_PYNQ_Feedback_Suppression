@@ -88,3 +88,27 @@ sim/feedback/test_recal_algorithm.py
 sim/feedback/test_recal_frozen.py
 report/verification/recal-product-v1/frozen-package-check.json
 report/verification/recal-product-v1/changed-files.txt
+
+# Closeout A22/B.1: 3e4458e..ff9e5c8 plus final package receipt
+board/audio_replay/recal_algorithm.py
+board/audio_replay/recal_link.py
+board/audio_replay/recal_product.py
+docs/STATE.md
+docs/contracts/recal-runtime-v3.md
+docs/contracts/recalibration-algorithm-v1.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/a22-runtime-audit.json
+report/verification/recal-product-v1/closeout-assets.json
+report/verification/recal-product-v1/closeout-data-review.json
+report/verification/recal-product-v1/closeout-software.json
+report/verification/recalibration-algorithm-2026-11-01/README.md
+report/verification/recalibration-algorithm-2026-11-01/cases.json
+scripts/assemble_experiment.py
+sim/feedback/test_recal_algorithm.py
+sim/feedback/test_recal_closeout.py
+sim/feedback/test_recal_frozen.py
+sim/feedback/test_recal_runtime.py
+report/verification/recal-product-v1/closeout-package-check.json
+report/verification/recal-product-v1/changed-files.txt
