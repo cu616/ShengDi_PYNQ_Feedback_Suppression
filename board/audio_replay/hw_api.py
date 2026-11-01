@@ -451,13 +451,18 @@ class ProductHardware:
         if getattr(self, '_last_mode', None) not in (None, mode):
             events.append({'kind': 'mode', 'value': mode})
         self._last_mode = mode
-        # Approved v3 protection semantics: an input full-scale event (bit22, sticky) or a fault stops the
-        # run. Prediction/residual/gain saturation are diagnostics; treating them as protected is exactly
-        # the false-stop that v3 removed.
-        stops = {'input_clip_seen': (word >> 22) & 1, 'fault': (word >> 18) & 1}
+        # Must agree with the driver's runtime_stop (captain 2026-11-01): input full scale (bit22),
+        # protocol fault (bit18), prediction saturation (bit19), post-gain saturation (bit21) and mix
+        # saturation stop the run. The PRE-GAIN residual overflow (bit20) is a diagnostic only - a wide
+        # residual may exceed the old rail while the post-gain output is still representable.
+        stop_bits = {'input_clip_seen': 22, 'fault': 18, 'prediction_clip': 19, 'gain_clip': 21,
+                     'mix_clip': 26}
+        stops = {k: (word >> b) & 1 for k, b in stop_bits.items()}
         active = {k: v for k, v in stops.items()
-                  if v and not ((self._protect_baseline >> (22 if k == 'input_clip_seen' else 18)) & 1)}
-        saturation = self._protected_bits(word)
+                  if v and not ((self._protect_baseline >> stop_bits[k]) & 1)}
+        saturation = {'residual_clip_pre_gain': (word >> 20) & 1,
+                      'prediction_saturations': (word >> 19) & 1,
+                      'gain_saturations': (word >> 21) & 1}
         if self._current_op is None:
             self._protect_baseline = word
         return {'ok': True, 'contract': CONTRACT, 'events': events, 'protected': bool(active),
@@ -603,6 +608,18 @@ class ProductHardware:
         return result
 
 
+
+    def warm_up(self, seconds=None):
+        """Fixed initialisation warm-up: one capture that is recorded but never used for training or
+        validation. Its only purpose is to leave the codec in a settled state before the measured
+        segments, and it is always run, never chosen after seeing results."""
+        try:
+            path, cap, meta = self._capture(seconds or self.WINDOW_SECONDS, tag='warmup')
+            return {'ok': meta.get('stop_reason') == 'completed', 'path': str(path),
+                    'status': meta.get('stop_reason'), 'used_for_fit': False}
+        except Exception as exc:
+            return {'ok': False, 'status': 'error', 'reason': repr(exc)[:160], 'used_for_fit': False}
+
     def _run_source(self, request, seconds):
         """Program audio for a live run. Returns a PCM16 array, or a dict describing the failure."""
         import numpy as np
@@ -632,8 +649,10 @@ class ProductHardware:
             tt = np.arange(n) / 48828.125
             raw = np.rint(10 ** (level / 20.0) * np.sin(2 * np.pi * hz * tt) * 32767).astype(np.int16)
         if raw is None:
-            return {'status': 'error', 'reason': 'run_requires_source',
-                    'detail': 'pass source, source_path (.npz/.wav) or test_tone_hz; silence is not a run'}
+            # Live amplification does not need injection: output = injection + gain*residual and the
+            # voice arrives through the microphone. A short zero array satisfies the driver protocol
+            # without padding the whole run with zeros.
+            return np.zeros(16, np.int16)
         src = np.asarray(raw)
         if src.dtype != np.int16:
             src = np.clip(src, -1.0, 1.0)
