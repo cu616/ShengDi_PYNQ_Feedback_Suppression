@@ -161,6 +161,16 @@ class ProductTests(unittest.TestCase):
         app,hw,_=self.app();self.ready(app);hw.events=[dict(kind='start'),dict(kind='stop')]
         app.tick();self.assertNotIn('run',hw.calls)
 
+    def test_invalid_cue_timeline_stops_instead_of_replaying_cues(self):
+        app,hw,_=self.app();original=hw.perform
+        def invalid(req,cancel):
+            result=original(req,cancel)
+            if req['op']=='cue': result['end_frame']=0;result['tail_frames']=0
+            return result
+        hw.perform=invalid;app.event('recalibrate');self.until(app,lambda:app.state=='failed')
+        self.assertEqual(hw.calls.count('cue'),1);self.assertNotIn('input',hw.calls)
+        self.assertEqual(app.outcome,'hardware_error');self.assertFalse(self.pointer(app)['eligible'])
+
     def test_direct_capture_gain_is_bound_per_phase_and_runtime_gain_cannot_drift(self):
         cfg=sample_config()
         cfg['phase_gain_q12']={op:[0,1631] for op in ('prepare','cue','input','training','validation')}

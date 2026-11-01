@@ -301,9 +301,10 @@ class Product:
         for item in records:
             path=contained(item['path'],self.run_dir)
             if sha(path)!=item['sha256']: raise Failure('hardware_error','捕获文件身份改变')
-            if type(item['first_frame']) is not int or type(item['end_frame']) is not int or item['end_frame']<=item['first_frame']:
+            if type(item['first_frame']) is not int or type(item['end_frame']) is not int or item['first_frame']<0 or item['end_frame']<=item['first_frame']:
                 raise Failure('data_insufficient','有效测量窗未知')
-            if not item.get('source_sha256') or not item.get('capture_id'):
+            source=item.get('source_sha256')
+            if not isinstance(source,str) or len(source)!=64 or any(c not in '0123456789abcdef' for c in source) or not item.get('capture_id'):
                 raise Failure('data_insufficient','捕获来源身份缺失')
             ids.append(item['capture_id'])
         if len(set(ids))!=len(ids): raise Failure('data_insufficient','捕获身份重复')
@@ -325,7 +326,7 @@ class Product:
                 self._state('capturing' if phase=='training' else 'validating')
                 self._hw(phase)
         elif op=='cue':
-            if type(reply.get('end_frame')) is not int or type(reply.get('tail_frames')) is not int or reply['tail_frames']<0:
+            if type(reply.get('end_frame')) is not int or type(reply.get('tail_frames')) is not int or reply['end_frame']<=0 or reply['tail_frames']<0:
                 raise Failure('hardware_error','提示音尾声帧域未知')
             self.cue_end=reply['end_frame']+reply['tail_frames']
             self._hw('prepare',phase='input',not_before_frame=self.cue_end)
