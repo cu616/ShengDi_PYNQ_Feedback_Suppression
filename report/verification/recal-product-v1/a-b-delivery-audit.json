@@ -1,0 +1,66 @@
+{
+  "a_commit": "c49662d",
+  "b_commit": "0bdf7fa",
+  "board_operations": 0,
+  "scope": "byte check and pure Python adapter calls with mocked MMIO/captures; not an on-board test",
+  "original_v3_manifest_checks": {
+    "audio_replay.bit": true,
+    "audio_replay.hwh": true,
+    "closed_tools.py": true,
+    "hw_api.py": true,
+    "replay_tools.py": true,
+    "replay_trial_repair.py": true,
+    "residual_tools.py": true,
+    "tone_round_guard.py": true
+  },
+  "root_hw_api_sha256": "f61749729f554a95c4e9ce3a172a7ecaeb887ea4ae3eeab061f33dec12f3cb15",
+  "bundle_hw_api_sha256": "2f253b188ab884d88411ad77f7a30897d98e9c9c927c3b15a8c1eef475a3f484",
+  "root_prepared_capture_false": true,
+  "bundle_still_claims_prepared_capture_true": true,
+  "training_plan_probe": {
+    "requested_segments": 6,
+    "returned_segments": 1,
+    "calls": [
+      {
+        "seconds": 3.0,
+        "tag": "training0",
+        "gain_db": -7.9981197385499705,
+        "bypass": false,
+        "direct_only": true,
+        "zero": true
+      }
+    ],
+    "returned_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-runtime-v2-adapters\\a\\audit-fixture.npz",
+    "request_run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\tmp"
+  },
+  "armed_indicator_probe": {
+    "initial_control": 1,
+    "writes": [
+      [
+        0,
+        9
+      ]
+    ]
+  },
+  "install_probe": {
+    "expected_model_file_sha256": "b0b89707b1ef7932d620ee5cd034a1a61a9aff4a5cc4ddffb220f63c3d862122",
+    "returned_model_sha256": "d5990a0fe875a0aa109edb831f0e95b8f0a3a46b9b78daeaea9ce05c32c7201f",
+    "returned_coefficients_sha256": "d5990a0fe875a0aa109edb831f0e95b8f0a3a46b9b78daeaea9ce05c32c7201f",
+    "model_hash_matches_file": false
+  },
+  "a_blockers": [
+    "prepared_capture false; atomic cue_input readiness not implemented",
+    "v3-io manifest still refers to older hw_api 2f253; root f617 selected explicitly",
+    "training plan ignored: received six segments but returned one 3-second capture",
+    "capture source is fixed 16000 zeros, not B white-noise recipe",
+    "capture paths ignore request.run_dir",
+    "calibration gain zero approval and mute-preserves-gain semantics pending",
+    "install model_sha256 currently contains Q20 hash rather than model file SHA",
+    "armed indicate writes control; requires guard and independent actual mode indication",
+    "running poll lacks actual installed model/Q20 hashes; run elapsed includes initialization",
+    "abort quiescent needs proof that an in-flight driver cannot re-arm after cancellation"
+  ],
+  "b_blockers": [
+    "mixed per-capture current lags can cause negative alignment shift; B correction pending"
+  ]
+}

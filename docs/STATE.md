@@ -40,13 +40,13 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-01接入B edfa698判定交付：7份文件与B原字节一致；C新增独立消费层，三点验收显式require_three_point=True且另查三步齐全，本轮estimate_lag绑定scene及训练原件，重试与封装下一档逐项核对。相关软件67项通过（B策略31、C消费12、产品24）；原8份B输出完成字段映射，其中D3为构造样例，未冒称历史原件重算。证据及新版包身份见下。
-**当前卡点**：尚不能宣称陌生队友实体流程完成。main=31882e0已有v3-io按键/LED/拨码及采集实测记录，hw_api也新增灯键方法；未提供本产品create_product工厂及v1适配清单。B判定库已到，产品evaluate的真实捕获解析/拟合包装器与受审整机策略仍需适配。软件包维持software_simulation_only，真实启动/安装检查拒绝开启音频；适配齐备后由A在同一窗口验证两布局/拨码。
+**最后动作**：2026-11-01接收A c49662d/B 0bdf7fa，B六文件原字节一致。C交整机扩展v2、真实B包装与三档源计划、30秒fit时限、讲话健康/训练激励资格分离、原子cue_input事件路径、BTN/LED适配、armed延后写、run含准备开销的超时预算及显式预测口径。95项相关软件检查通过，含真实B子进程+模拟六训练两验证全流程；首次临时目录权限和模拟停止竞态等纠错保留在回执。
+**当前卡点**：正式实体启用仍阻塞。A根hw_api=f617如实prepared_capture=false，但v3-io包内仍2f253声明true，原包8/8哈希自洽而未同步能力修正。离线调用确认训练6段计划被忽略为1段默认采集，install模型文件SHA与Q20 SHA混填；原子讲话窗、真实源/路径/阶段增益、armed指示防护、运行模型/时长回读及并发取消仍待A适配。B混合本轮延迟会负长度对齐报错，最少两段验证常量未被原validate检查；C已加缺段拒收，未改B算法。已有现场原件保留，不因格式要求重跑；一次完整现场窗口仍由A安排。
 
-- [最小接口与文件边界](contracts/recal-product-v1.md)、[B判定消费](contracts/recal-policy-consumer-v1.md)、[首次安装/日常实体操作/单一回包](ref/recal-product.md)、[本轮67项与原样引入](../report/verification/recal-product-v1/b-policy-integration.json)、[新版包身份与解压回执](../report/verification/recal-product-v1/policy-package-check.json)、[原包21项与历史身份](../report/verification/recal-product-v1/package-check.json)、[结构化样例](../report/verification/recal-product-v1/interface-samples.json)、[原始任务及纠错](../report/ai-records/recal-product-v1.md)。
-- 候选须独立验证并核安装实际模型/Q20身份后才原子生效；移动后重标定首先禁用旧模型，失败仅保留归档。开环与运行增益按A允许集合/B阶段策略分别绑定；AUX实际字节、Codec、采样率、位流/驱动/helper全程核对。无保护不自动通过。
-- STOP不等待计算；每个硬件/计算阶段取消、过载、拒收、数据不足、安装失败、混搭、提示窗、独立验证、实际模式与有限重试均有模拟证据。数据不足和测量不适用均为inconclusive并静音，四类B cause保留在原始算法回执；数值硬件异常锁定等待维护。单次结束不拼段；听感另存。
-- 安装ZIP位于materials/final，仅本地保存不进Git；新版shengdi-recal-product-v1-policy.zip含B库/C消费层，原shengdi-recal-product-v1.zip保留历史身份。systemd/本产品灯键映射/本产品真实数值全流程及两布局现场尚未执行，C未操板、未改B判据或A实现。原报告/Skill与历史r1验收保留原范围，不作为本产品已上板证据。技术硬件现状读最新main/A STATE，不能用C旧硬件副本覆盖main。
+- [整机扩展及A/B输入输出](contracts/recal-runtime-v2.md)、[首次安装/实体按钮/一次性交接](ref/recal-product.md#c给ab的一次性交接)、[95项软件验证](../report/verification/recal-product-v1/runtime-integration.json)、[A/B原样交付审计](../report/verification/recal-product-v1/a-b-delivery-audit.json)、[B算法口径](contracts/recalibration-algorithm-v1.md)、[任务与纠错](../report/ai-records/recal-product-v1.md)。
+- C同意A实施cue+input单次驱动调用：下载/握手在三连音之前，尾声后input_ready才提示讲话，同scene/源帧域；旧prepared_capture=false不能仅翻标志。B input改用于训练激励，不再要求人声相干；讲话仅健康检查。三档固定-22/-19.3/-16.5，6/2段，所有实际源逐seed验证可达与独立。单次结束不拼段，STOP不等待计算。
+- 新profile只把300–460Hz独立段预测抑制当数值验收，保留not_asg/meaning及B原回复，不冒称三臂实测、MSG/ASG或听感；旧三点Consumer仍保持缺三点不可启用。模型/config在实际安装身份匹配后才原子提交；移动后失败不恢复旧模型。
+- 本轮本地shengdi-recal-runtime-v2-review.zip为真实A/B组合审阅包，deployment_ready=false，真实启动和安装检查拒绝；A源码/驱动/位流不回写C旧副本，B算法不改，C未操板。旧v1与v1-policy软件包保留原身份，不作为现场已完成证据。包、原片、授权书及大文件均不自动进Git。
 
 ## 已验证 / 未验证（只在这里写一次）
 

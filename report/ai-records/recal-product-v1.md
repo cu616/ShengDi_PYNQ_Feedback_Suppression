@@ -115,3 +115,21 @@ check_fit 的 expected_peak_tap 必须传本轮 estimate_lag 的结果，不是�
 检查回执见[B策略消费](../verification/recal-product-v1/b-policy-integration.json)。契约扩展单独提交，人工转发交接，不操作REQUESTS、不推main、不改A驱动/RTL。
 
 包复核时发现新增inconclusive未加入模拟单次入口的结束集合，已在交包前修正并增加独立进程的无法评价退出用例；最终67项通过，避免模拟入口在无结论时常驻等待。旧66项记录保留在dc589fe的历史回执，未出现测试失败后改口宣称通过。
+
+
+## 2026-11-01 A/B新交接与C处理
+
+用户转发A main=c49662d：板上/home/xilinx/jupyter_notebooks/base/audio/audio_io/，仓库board/audio_replay/v3-io/；hw_api f6174972、driver 22851d32、bit 32235065、hwh bbe1eb49。create_product已实现，prepared_capture如实为False：overlay复用先Bus error，关闭restore_stock后源加载52043e80失败，实际每次重下约1秒。A请求C决定是否阻塞、是否同意cue+input单次调用，核对events命名并给额外打包字段；BTN0长按CAL、BTN1开始/停止、BTN2安静、BTN3取消，allowed_gain_q12=[1631,2303,3254,4096]；强调poll直读及armed不得写LED。
+
+用户转发B 0bdf7fa：真实recal_algorithm.evaluate、契约recalibration-algorithm-v1；fit预算必须>=15秒，PC fit约0.45秒/validate约0.10秒。三档低到高-22/-19.3/-16.5dBFS，每段16384帧、白噪、peak_cap .80，6训练/2验证；retry仅input激励/相干不足及fit REJECT_SCALE，shape与validate不重试。qualifies_cancellation是独立段预测抑制；每次evidence.not_asg=true/meaning明确非MSG/ASG/听感。独立验收改为300–460Hz时间域，不再按随窗漂移的CD/界差。
+
+### C决策、证据与纠错
+
+- 先fetch并pull C；A/B固定快照只读，B六交付文件原字节接入；C未改A/B算法或操作板卡。首次导出误用了不存在的根driver路径，改从git tree核实v3-io确切路径，不拿旧文件凑齐。
+- prepared_capture=False当前阻塞。C同意A在硬件适配内合并cue+input；新增请求/scene绑定的input_ready，同域排除提示和尾声。C负责唯一入口、状态机和算法包装，A负责驱动/原子采集/实体灯键，不并改入口。
+- 实际A根f617为False，包内2f253仍True，原包8/8哈希自洽。C选用户指定的根f617拼独立审阅件并保留身份分裂证据，不改A仓库或伪造原manifest。
+- A纯Python适配调用配mock MMIO/捕获，证实六段训练请求只返一段默认3秒；armed indicate仍写；install把Q20 SHA混作文件SHA。另源固定16000零、路径忽略run_dir、gain/时长/模型回读等问题按代码列入一次性交接；不把静音耗时9.8ms单独当并发driver已停止的证据。
+- B input会检查reference宽带与相干，C改为讲话健康独立检查，训练后才调用B input。B fit/validate实际source保留；30秒预算、attempts_total和三档实际源一次封装。预测通过另存heldout_prediction/not_asg，不偷换成三臂效果。
+- B在target-lag<0时np.zeros(shift)报负维度，以相差1帧的本轮延迟复现；C不修改B数值逻辑。原validate未检查两段最小值，C按B契约在消费边界拒收单段。
+- 首次82项有14错误：B测试写系统临时目录权限不足，改TEMP/TMP/tempfile.tempdir到仓库tmp，B原测试不改。C新增10项初跑两失败：mock run在启动sleep后可迟到arm、缺ready测试在其他线程读走事件后才清空；修正mock取消检查与夹具发送开关。最终95项通过，含B原15项、策略/消费者及产品相关检查；不重跑无关旧大套。
+- 正式启用仍有A/B外部缺项；交deployment_ready=false的真实组合审阅件，入口检查在导入A硬件前拒绝。只推C，人工转发交接，未使用REQUESTS等待。

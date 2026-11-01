@@ -147,15 +147,21 @@ class Product:
         self.hardware_receipts=[]
         self.algorithm_receipts=[];self.cause=None
         self.job_deadline=None
-        self.gain_scope='runtime'
+        self.gain_scope='prepare' if config.get('runtime_profile')=='b-heldout-v1' else 'runtime'
+        self.caps={};self.input_ready=None;self.indicator_deferred=False
         self.store.invalidate(self.scene,'boot_requires_calibration')
         try:
             self._muted(initial_mute)
             if set(config['expected_identity'])!=set(IDENTITY):
                 raise Failure('hardware_error','部署身份白名单不完整')
-            caps=self.hw.capabilities()
-            if caps.get('contract')!=CONTRACT or not all(caps.get(k) is True for k in CAPS):
+            caps=self.hw.capabilities();self.caps=caps
+            required=[k for k in CAPS if k!='prepared_capture']
+            prepared=(caps.get('cue_input_ready_event') is True if config.get('input_mode')=='cue_input'
+                      else caps.get('prepared_capture') is True)
+            if caps.get('contract')!=CONTRACT or not all(caps.get(k) is True for k in required) or not prepared:
                 raise Failure('hardware_error','实体按键/提示/停止接口尚不可用')
+            if config.get('runtime_profile')=='b-heldout-v1' and float(config.get('compute_timeout_seconds',0))<15:
+                raise Failure('data_insufficient','真实拟合计算时限不得低于15秒')
             from residual_tools import load_candidate  # Resolve dependencies before asking for speech.
             if not callable(getattr(importlib.import_module(config['algorithm_module']),'evaluate',None)):
                 raise Failure('hardware_error','数值接口尚不可用')
@@ -200,6 +206,8 @@ class Product:
             candidate=self.candidate,capture_history=self.capture_history,
             hardware_receipts=self.hardware_receipts,
             algorithm_receipts=self.algorithm_receipts,cause=self.cause,
+            validation_kind=self.cfg.get('validation_kind'),input_ready=self.input_ready,
+            indicator_deferred=self.indicator_deferred,
             waveform_policy='PCM stays on board; file paths and original hashes retained',hardware_error_latched=self.fatal)
         write_json(self.root/'status.json',status)
         if self.run_dir: write_json(self.run_dir/'result.json',status)
@@ -217,8 +225,15 @@ class Product:
                   'hardware_error':'设备异常：保持静音，按CAL重试，仍失败联系维护',
                   'protected':'保护停声：保持静音，按CAL重新检查'}.get(self.outcome,text)
             if self.fatal: text='设备异常：保持静音，请联系维护；当前不能启动'
-        answer=self.hw.indicate(dict(state=state,color=color,pattern=pattern,text=text,mode=self.mode))
-        if answer.get('ok') is not True: raise Failure('hardware_error','实体提示不可用')
+        led4=self.cfg.get('indicator_encoding')=='led4' or bool(self.caps.get('led_legend'))
+        if led4:
+            pattern=({'uncalibrated':'0000','cancelled':'0000','speaking':'0010','quiet':'0100',
+                'capturing':'0100','ready':'1000','running':'1000','ended':'1000',
+                'failed':'1111','protected':'1111','inconclusive':'1111'}).get(state,'0001')
+        self.indicator_deferred=led4 and self.mode!='muted'
+        if not self.indicator_deferred:
+            answer=self.hw.indicate(dict(state=state,color=color,pattern=pattern,text=text,mode=self.mode))
+            if answer.get('ok') is not True: raise Failure('hardware_error','实体提示不可用')
         self.checkpoint()
 
     def fail(self, exc):
@@ -263,6 +278,7 @@ class Product:
                 self.capture_history=[];self.events=[];self.listening=[]
                 self.hardware_receipts=[]
                 self.algorithm_receipts=[];self.cause=None
+                self.input_ready=None
                 self.attempt=0;self.cue_end=0;self.outcome=None;self.reason='';self.run_result=None
                 self.cancel=threading.Event();self._state('preparing');self._hw('prepare',phase='input')
             elif kind=='start' and self.state in ('ready','ended') and self.bundle:
@@ -272,7 +288,8 @@ class Product:
                 self.gain_scope='runtime';self._identity(self.hw.poll()['identity']);self.cancel=threading.Event()
                 self.outcome=None;self._state('running')
                 self._hw('run',model_path=self.bundle['model_path'],model_sha256=self.bundle['model_sha256'],
-                    coefficients_sha256=self.bundle['coefficients_sha256'],seconds=self.cfg['run_seconds'])
+                    coefficients_sha256=self.bundle['coefficients_sha256'],seconds=self.cfg['run_seconds'],
+                    gain_q12=self.cfg['expected_identity']['gain_q12'])
             elif kind=='confirm_quiet' and self.state=='quiet' and self.quiet_deadline is not None:
                 self.quiet_deadline=self.clock()
         except Exception as exc: self.fail(exc)
@@ -281,6 +298,7 @@ class Product:
         if self.pending: raise Failure('hardware_error','硬件任务尚未完成')
         epoch=self.epoch;cancel=self.cancel;self.pending=(kind,request)
         self.job_deadline=self.clock()+float(self.cfg.get('io_timeout_seconds',30) if kind=='hw' else self.cfg.get('compute_timeout_seconds',120))+1
+        if kind=='hw' and request.get('op')=='run': self.job_deadline+=float(request['seconds'])
         def worker():
             try: value=function(request,cancel);error=None
             except Exception as exc: value=None;error=exc
@@ -296,10 +314,10 @@ class Product:
         self.gain_scope=op;self._submit('hw',self._request(op=op,**extra),self.hw.perform)
     def _alg(self, phase):
         request=self._request(phase=phase,training=self.training,validation=self.validation,
-            input=self.input_records,
+            input=self.training if phase=='input' and self.cfg.get('runtime_profile')=='b-heldout-v1' else self.input_records,
             model_path=self.candidate['path'] if self.candidate else None,
             model_sha256=self.candidate['sha256'] if self.candidate else None,
-            compute_timeout_seconds=self.cfg.get('compute_timeout_seconds',120))
+            compute_timeout_seconds=self.cfg.get('compute_timeout_seconds',120),attempts_total=len(self.cfg['attempts']))
         self._submit('algorithm',request,self.calculator.evaluate)
 
     def _envelope(self, req, reply):
@@ -334,6 +352,8 @@ class Product:
         op=req['op']
         if op=='prepare':
             phase=req['phase']
+            if phase=='input' and self.cfg.get('input_mode')=='cue_input':
+                self._hw('cue_input');return
             if phase=='input' and self.cfg.get('cue') and not self.cue_end: self._hw('cue');return
             if phase=='input':
                 self._state('speaking');self._hw('input',not_before_frame=self.cue_end)
@@ -345,16 +365,18 @@ class Product:
                 raise Failure('hardware_error','提示音尾声帧域未知')
             self.cue_end=reply['end_frame']+reply['tail_frames']
             self._hw('prepare',phase='input',not_before_frame=self.cue_end)
-        elif op=='input':
+        elif op in ('input','cue_input'):
+            if op=='cue_input' and (not self.input_ready or reply.get('frame_domain')!=self.input_ready['frame_domain']):
+                raise Failure('data_insufficient','缺少本次已准备讲话窗事件或帧域不符')
             records=self._captures(reply)
             if type(reply.get('valid_first_frame')) is not int or reply['valid_first_frame']<self.cue_end or any(x['first_frame']<self.cue_end for x in records):
                 raise Failure('data_insufficient','讲话窗口混入提示音或尾声')
             self.training=[];self.validation=[];self.input_records=records
-            self._state('quiet');self._alg('input')
+            self._state('quiet');self._alg('speech' if self.cfg.get('runtime_profile')=='b-heldout-v1' else 'input')
         elif op=='training':
             self.training=self._captures(reply)
             self.capture_history.append(dict(stage=op,attempt=self.attempt,captures=self.training))
-            self._state('fitting');self._alg('fit')
+            self._state('fitting');self._alg('input' if self.cfg.get('runtime_profile')=='b-heldout-v1' else 'fit')
         elif op=='validation':
             self.validation=self._captures(reply)
             self.capture_history.append(dict(stage=op,attempt=self.attempt,captures=self.validation))
@@ -388,9 +410,11 @@ class Product:
         if self.cause=='HARDWARE_ERROR': self.fatal=True
         if not reply.get('reason'): raise Failure('model_rejected','数值判断缺少依据')
         if decision=='retry':
+            if self.cfg.get('runtime_profile')=='b-heldout-v1' and req['phase'] not in ('input','fit'):
+                raise Failure('data_insufficient','此阶段不允许重试')
             if self.attempt+1>=len(self.cfg['attempts']): raise Failure('data_insufficient','已达到预定重试上限')
             self.attempt+=1;self.training=[];self.validation=[];self.candidate=None
-            if req['phase']=='input':
+            if req['phase']=='input' and self.cfg.get('runtime_profile')!='b-heldout-v1':
                 self._state('preparing');self._hw('prepare',phase='input')
             else:
                 self._state('quiet');self.quiet_deadline=self.clock()+self.cfg['quiet_seconds']
@@ -398,7 +422,11 @@ class Product:
         if decision!='valid_pass':
             raise Failure(decision if decision in ('data_insufficient','model_rejected','measurement_inapplicable',
                 'hardware_error','input_overload') else 'data_insufficient',reason)
-        if req['phase']=='input':
+        if req['phase']=='speech':
+            self.quiet_deadline=self.clock()+self.cfg['quiet_seconds']
+        elif req['phase']=='input' and self.cfg.get('runtime_profile')=='b-heldout-v1':
+            self._alg('fit')
+        elif req['phase']=='input':
             self.quiet_deadline=self.clock()+self.cfg['quiet_seconds']
         elif req['phase']=='fit':
             path=contained(reply['model_path'],self.run_dir)
@@ -407,17 +435,39 @@ class Product:
             self._state('validating');self._hw('prepare',phase='validation')
         else:
             ids=[r['capture_id'] for r in self.validation]
+            if self.cfg.get('runtime_profile')=='b-heldout-v1':
+                evidence=reply.get('evidence',{})
+                if (evidence.get('not_asg') is not True or evidence.get('policy')!='recalibration-algorithm-v1'
+                        or not evidence.get('meaning') or reply.get('validation_kind')!='heldout_prediction'):
+                    raise Failure('data_insufficient','独立预测验收口径缺失，未启用候选')
             if reply.get('qualifies_cancellation') is not True or reply.get('model_sha256')!=self.candidate['sha256'] or reply.get('validation_ids')!=ids or not reply.get('evidence'):
                 raise Failure('data_insufficient','独立效果判断/验证身份不足，未启用候选')
             self.bundle=self.store.stage(self.candidate['path'],self.candidate['sha256'],self.scene,self.cfg['expected_identity'],reply,
                                          simulation=self.cfg.get('simulation',False))
-            self._state('installing');self._hw('install',**{k:self.bundle[k] for k in ('model_path','model_sha256','coefficients_sha256')})
+            self._state('installing');self._hw('install',run_gain_q12=self.cfg['expected_identity']['gain_q12'],
+                **{k:self.bundle[k] for k in ('model_path','model_sha256','coefficients_sha256')})
+
+    def _input_ready_event(self, event):
+        if not self.pending or self.pending[0]!='hw' or self.pending[1].get('op')!='cue_input': return
+        req=self.pending[1]
+        if any(event.get(k)!=req[k] for k in ('request_id','scene_id')): return
+        end,tail,first=(event.get(k) for k in ('cue_end_frame','tail_frames','valid_first_frame'))
+        if (type(end) is not int or end<=0 or type(tail) is not int or tail<0
+                or type(first) is not int or first<end+tail or not event.get('frame_domain')):
+            raise Failure('data_insufficient','讲话提示窗或尾声帧域无效')
+        self.cue_end=end+tail;self.input_ready=dict(event);self._state('speaking')
 
     def tick(self):
         try:
             poll=self.hw.poll()
             if poll.get('ok') is not True: raise Failure('hardware_error','硬件状态读取失败')
-            events=poll.get('events',[])
+            events=[]
+            for original in poll.get('events',[]):
+                event=dict(original)
+                if event['kind']=='recalibrate' and event.get('value')=='short_ignored': continue
+                if event.get('value')=='btn1' and event['kind'] in ('start','stop'):
+                    event['kind']='stop' if self.state=='running' else 'start'
+                events.append(event)
             if any(e['kind'] in ('stop','cancel') for e in events): self.event('stop');return
             if self.fatal: return
             if self.state in ('failed','protected','cancelled','inconclusive'):
@@ -433,7 +483,9 @@ class Product:
                 self.mode=mode;self._state(self.state)
             if self.state=='running' and self.bundle and any(poll.get(k)!=self.bundle[k] for k in ('model_sha256','coefficients_sha256')):
                 raise Failure('hardware_error','运行模型实际回读改变')
-            for event in events: self.event(event['kind'])
+            for event in events:
+                if event['kind']=='input_ready': self._input_ready_event(event)
+                else: self.event(event['kind'])
             while True:
                 try: epoch,kind,req,reply,error=self.results.get_nowait()
                 except queue.Empty: break

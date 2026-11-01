@@ -1,5 +1,10 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-01 C 对接A整机适配与B真实evaluate
+
+接口变更：C交整机扩展v2，允许A实施原子cue_input，以匹配的ready事件约束讲话提示；保留prepared_capture缺项阻塞。接入B 0bdf7fa原字节，自带30秒时限和三档6/2段源计划；区分讲话健康与激励资格，保存独立预测口径，补两验证段拒收。95项软件检查通过，真实B子进程配模拟采集到ready；A原包8/8但hw_api根/包分裂、六段计划变单段、安装hash混填经离线调用确认，B负延迟对齐已复现。仅组装禁止真实启动的审阅包，不改A/B实现、不操板、不要求重跑有效原件。[接口](../contracts/recal-runtime-v2.md)、[95项](../../report/verification/recal-product-v1/runtime-integration.json)、[交付审计](../../report/verification/recal-product-v1/a-b-delivery-audit.json)、[一次性交接](../ref/recal-product.md#c给ab的一次性交接)。
+
+
 ## 2026-11-01 C 承接B判定库与三项确认
 
 接口变更：新增recal-policy-consumer-v1扩展，B契约按edfa698原样引入。C显式要求三点及采集/拟合齐全，绑定本轮estimate_lag与训练原件；四类cause分别停声/无法评价/拒收，原回执留存，有限激励重试只匹配预封装下一档。B的0 dB SNR与30%门控阈值未改。相关67项软件检查通过，B七文件原字节一致；8份已存B输出只做字段映射，D3为构造样例，未声称新实测或原PCM重算。175e469干净源码冻结新版本地ZIP，独立解压入口/回包/B库导入通过，实体模式仍拒绝。另只读确认A=31882e0已提供灯键实测，未再沿用旧缺I/O结论。实体适配/拟合包装与统一现场验收仍待交付，未操板。[消费接口](../contracts/recal-policy-consumer-v1.md)、[检查回执](../../report/verification/recal-product-v1/b-policy-integration.json)、[包身份](../../report/verification/recal-product-v1/policy-package-check.json)、[操作说明](../ref/recal-product.md)。

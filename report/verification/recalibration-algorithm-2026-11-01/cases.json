@@ -1,0 +1,175 @@
+{
+ "schema_version": 1,
+ "generated_by": "scripts/recal_algorithm_offline.py",
+ "contract": "recal-product-v1",
+ "packet": "2026-10-26_bindcapture_rewired",
+ "split": {
+  "training": [
+   "bind4_00_1746832927253437612",
+   "bind4_01_1746832962577236520",
+   "bind4_02_1746832997608122031",
+   "bind4_03_1746833033647207392"
+  ],
+  "validation": [
+   "bind4_04_1746833069163613450",
+   "bind4_05_1746833105158088504"
+  ]
+ },
+ "thresholds": {
+  "band_hz": [
+   300.0,
+   460.0
+  ],
+  "band_reduction_min_db": 0.5,
+  "full_reduction_min_db": 0.0,
+  "min_validation_captures": 2
+ },
+ "cases": [
+  {
+   "case": "fit_4train_2val",
+   "decision": "valid_pass",
+   "reason": "拟合后判据：L1 2.303、峰位 184 与实测延迟 184 一致",
+   "seconds": 0.541,
+   "model_sha256": "25d285f7a0b1022fad91218b219545c1fa6dc8f827287e3fdde2c9f02fb11b81",
+   "metrics": {
+    "taps": 512,
+    "L1": 2.3032217025756836,
+    "max_abs": 0.045823097229003906,
+    "L1_over_max": 50.26333534516847,
+    "peak_tap": 184,
+    "q20_sha256": "b89944a96898b0d5022fc48ec08d239140f51459fb4153dcbe39d50424bef7fc",
+    "hardware_cycles": 1539,
+    "memory_ms": 10.48576,
+    "expected_peak_tap": 184,
+    "peak_tap_delta": 0,
+    "equation_rows": 59580,
+    "integer_lags": [
+     184,
+     184,
+     184,
+     183
+    ]
+   }
+  },
+  {
+   "case": "validate_fitted",
+   "decision": "valid_pass",
+   "reason": "独立验证通过：300–460 Hz 带内抑制中位 +4.17 dB（最低 +3.47）",
+   "seconds": 0.109,
+   "qualifies_cancellation": true,
+   "metrics": {
+    "band_reduction_median_db": 4.172257543563396,
+    "band_reduction_min_db": 3.466671128069925,
+    "full_reduction_median_db": 2.119719682695758,
+    "per_capture": [
+     {
+      "reduction_db": 1.988,
+      "band_reduction_db": 4.878
+     },
+     {
+      "reduction_db": 2.252,
+      "band_reduction_db": 3.467
+     }
+    ],
+    "validation_lags": [
+     183,
+     183
+    ],
+    "cd_median_db_context_only": 2.9875352929447745,
+    "cd_p10_db_context_only": -1.2997883541118838,
+    "bound_gain_db_context_only": 3.225727918254345
+   }
+  },
+  {
+   "case": "validate_deployed_model",
+   "model": "rewired_512_20261026.json",
+   "decision": "valid_pass",
+   "reason": "独立验证通过：300–460 Hz 带内抑制中位 +4.21 dB（最低 +3.49）",
+   "qualifies_cancellation": true,
+   "metrics": {
+    "band_reduction_median_db": 4.214505298763097,
+    "band_reduction_min_db": 3.488461081177893,
+    "full_reduction_median_db": 2.1846882052247727,
+    "per_capture": [
+     {
+      "reduction_db": 2.071,
+      "band_reduction_db": 4.941
+     },
+     {
+      "reduction_db": 2.299,
+      "band_reduction_db": 3.488
+     }
+    ],
+    "validation_lags": [
+     183,
+     183
+    ],
+    "cd_median_db_context_only": 3.062018536345146,
+    "cd_p10_db_context_only": -1.2846785361396216,
+    "bound_gain_db_context_only": 3.4191153242935854
+   }
+  },
+  {
+   "case": "validate_old_fixture_model",
+   "model": "candidate_512.json",
+   "decision": "model_rejected",
+   "reason": "至少一段在 300–460 Hz 带内变差（最低 -4.45 dB）；带内抑制中位 -4.40 dB < 0.5；全带抑制中位 -11.38 dB < 0.0（把别的频段搞差了）",
+   "qualifies_cancellation": false,
+   "metrics": {
+    "band_reduction_median_db": -4.397991901927986,
+    "band_reduction_min_db": -4.451157038502854,
+    "full_reduction_median_db": -11.376772792211597,
+    "per_capture": [
+     {
+      "reduction_db": -11.088,
+      "band_reduction_db": -4.345
+     },
+     {
+      "reduction_db": -11.665,
+      "band_reduction_db": -4.451
+     }
+    ],
+    "validation_lags": [
+     183,
+     183
+    ],
+    "cd_median_db_context_only": -15.234398136139628,
+    "cd_p10_db_context_only": -24.450507850917987,
+    "bound_gain_db_context_only": -5.551507932248249
+   }
+  },
+  {
+   "case": "validate_zero_model",
+   "decision": "model_rejected",
+   "reason": "带内抑制中位 +0.00 dB < 0.5",
+   "qualifies_cancellation": false,
+   "metrics": {
+    "band_reduction_median_db": 0.0,
+    "band_reduction_min_db": 0.0,
+    "full_reduction_median_db": 0.0,
+    "per_capture": [
+     {
+      "reduction_db": 0.0,
+      "band_reduction_db": 0.0
+     },
+     {
+      "reduction_db": 0.0,
+      "band_reduction_db": 0.0
+     }
+    ],
+    "validation_lags": [
+     183,
+     183
+    ],
+    "cd_median_db_context_only": 0.0,
+    "cd_p10_db_context_only": 0.0,
+    "bound_gain_db_context_only": 0.0
+   }
+  },
+  {
+   "case": "validate_shared_capture",
+   "decision": "data_insufficient",
+   "reason": "验证集与训练集重叠（capture_id ['bind4_00_1746832927253437612']，source_sha256 ['bind4_00_1746832927253437612']）：不是独立验证"
+  }
+ ]
+}

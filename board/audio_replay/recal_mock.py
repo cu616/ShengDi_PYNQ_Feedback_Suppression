@@ -11,7 +11,7 @@ def sample_config():
         expected_identity=dict(aux_db=0.,aux_raw_left=5,aux_raw_right=5,hp_volume=40,gain_q12=1631,
             sample_rate_hz=48828.125,driver_sha256='1'*64,bit_sha256='2'*64,hwh_sha256='3'*64,helper_sha256='4'*64),
         attempts=[dict(training={'signal':'synthetic training'},validation={'signal':'independent synthetic validation'})],
-        quiet_seconds=.01,run_seconds=.05,compute_timeout_seconds=3,cue=True)
+        quiet_seconds=.01,run_seconds=.05,compute_timeout_seconds=30,cue=True)
 
 
 def envelope(req): return {k:req[k] for k in ('contract','request_id','scene_id')}
@@ -69,6 +69,8 @@ class Board:
             return dict(envelope(req),ok=False,status='error',identity=self.identity)
         time.sleep(.005)
         reply=dict(envelope(req),ok=True,status='completed',identity=dict(self.identity))
+        if cancel.is_set():
+            self.mode='muted';return dict(reply,ok=False,status='error')
         if self.fault==op:
             return dict(reply,ok=False,status='protected',input_clip=True)
         if op=='cue': reply.update(end_frame=1000,tail_frames=200)
@@ -88,7 +90,8 @@ class Board:
             if self.install_bad: reply['model_sha256']='0'*64
         if op=='run':
             self.mode='cancel'
-            if cancel.wait(req['seconds']): return dict(reply,ok=False,status='error')
+            if cancel.wait(req['seconds']):
+                self.mode='muted';return dict(reply,ok=False,status='error')
             reply.update(self.installed,effective_mode=self.mode,elapsed_seconds=req['seconds'])
             self.mode='muted'
         return reply
