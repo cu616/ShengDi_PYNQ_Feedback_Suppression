@@ -349,7 +349,7 @@ class ProductHardware:
             hp_volume=self.hp_volume, speaker_confirmed=True, local_capture_confirmed=True,
             direct_only=direct_only, reuse_overlay=False, restore_stock=False)
         cap = np.load(str(path))
-        meta = self.__meta(cap)
+        meta = self._meta(cap)
         self._scene_frames += int(len(cap['microphone']))
         return path, cap, meta
 
@@ -357,6 +357,9 @@ class ProductHardware:
     def __meta(cap):
         import json
         return json.loads(str(cap['metadata_json']))
+
+    # Non-mangled alias: a double-underscore name mangles per class and is unreachable from a subclass.
+    _meta = staticmethod(__meta)
 
     def identity(self):
         aux = self._board.get_aux_gain_db()
@@ -680,7 +683,7 @@ class ProductHardware:
                                     speaker_confirmed=True, local_capture_confirmed=True,
                                     direct_only=True, reuse_overlay=False, restore_stock=False)
         cap = np.load(str(path))
-        meta = self.__meta(cap)
+        meta = self._meta(cap)
         self._scene_frames += int(len(cap['microphone']))
         return path, cap, meta
 
@@ -699,6 +702,7 @@ OPEN_LOOP_GAIN_Q12 = [0]          # allowed during open-loop calibration (no amp
 class ProductHardwareV2(ProductHardware):
     """v2 behaviour required by C (contracts/recal-runtime-v2.md)."""
 
+
     LEVEL_LADDER = (-22.0, -19.3, -16.5)
 
     def __init__(self, config):
@@ -708,6 +712,20 @@ class ProductHardwareV2(ProductHardware):
         self._last_model_sha = None
         self._last_coeff_sha = None
         self._input_ready = None
+
+
+    @staticmethod
+    def _cancelled(cancel_event):
+        return cancel_event is not None and cancel_event.is_set()
+
+    def _cancel_result(self, request, op, caps=None):
+        self.mute()
+        r = {'contract': CONTRACT, 'request_id': request.get('request_id'),
+             'scene_id': request.get('scene_id'), 'op': op, 'ok': False,
+             'status': 'error', 'reason': 'cancelled', 'never_armed_again': True}
+        if caps is not None:
+            r['captures'] = caps
+        return r
 
     # ---- helpers ---------------------------------------------------------------------
     def _capture_path(self, scene, phase, index):
@@ -777,7 +795,7 @@ class ProductHardwareV2(ProductHardware):
                 'legend': LED_LEGEND.get(format(mask, '04b'), 'custom'), 'effective_mode': mode}
 
     # ---- training / validation: execute the encapsulated plan -------------------------
-    def _run_plan(self, request, op):
+    def _run_plan(self, request, op, cancel_event=None):
         import hashlib
         import numpy as np
         scene = request.get('scene_id')
@@ -808,6 +826,8 @@ class ProductHardwareV2(ProductHardware):
                     break
                 src = np.rint(x * 32767.0).astype(np.int16)
                 src_sha = hashlib.sha256(src.tobytes()).hexdigest()
+                if self._cancelled(cancel_event):
+                    return self._cancel_result(request, op, caps)
                 path, cid = self._capture_path(scene, op, i)
                 try:
                     self._driver().replay_trial(
@@ -820,7 +840,7 @@ class ProductHardwareV2(ProductHardware):
                     ok_all = False
                     caps.append({'capture_id': cid, 'ok': False, 'error': repr(exc)[:140]})
                     break
-                meta = self.__meta(np.load(str(path)))
+                meta = self._meta(np.load(str(path)))
                 status = int(meta.get('capture_status') or 0)
                 first = int(meta.get('first_frame') or 0)
                 caps.append({'capture_id': cid, 'path': str(path),
@@ -856,11 +876,13 @@ class ProductHardwareV2(ProductHardware):
             self.mute()
             return {'ok': False, 'status': 'error', 'reason': 'cancelled'}
         path, cid = self._capture_path(scene, 'input', 0)
+        if self._cancelled(cancel_event):
+            return self._cancel_result(request, 'input')
         self._driver().replay_trial(
             str(path), self.fixture, str(self.model_path), src, bypass=False, zero_coeff=True,
             gain_db=0.0, seconds=seconds + 1e-6, hp_volume=self.hp_volume, speaker_confirmed=True,
             local_capture_confirmed=True, direct_only=True, reuse_overlay=False, restore_stock=False)
-        meta = self.__meta(np.load(str(path)))
+        meta = self._meta(np.load(str(path)))
         cue_end = len(cue)
         self._input_ready = {'request_id': request.get('request_id'), 'scene_id': scene,
                              'capture_id': cid, 'path': str(path),
@@ -889,45 +911,127 @@ class ProductHardwareV2(ProductHardware):
     def perform(self, request, cancel_event=None):
         op = request.get('op')
         if op in ('training', 'validation'):
-            return self._run_plan(request, op)
+            return self._run_plan(request, op, cancel_event)
         if op == 'input' and request.get('cue'):
             return self._cue_input(request, cancel_event)
         if op == 'install':
             return self._install(request)
+        if op == 'run':
+            return self._run_v2(request, cancel_event)
         return super().perform(request, cancel_event)
 
     def _install(self, request):
         import hashlib
-        model = self._board.load_model(request.get('model_path') or self.model_path)
-        if not model.get('ok'):
+        import json as _json
+        import numpy as np
+        path_model = pathlib.Path(request.get('model_path') or self.model_path)
+        if not path_model.is_file():
             return {'contract': CONTRACT, 'request_id': request.get('request_id'),
                     'scene_id': request.get('scene_id'), 'op': 'install', 'ok': False,
-                    'status': 'error', 'reason': model.get('error')}
-        self.model_path = pathlib.Path(model['path'])
-        self.fixture = request.get('scene_id') or self.fixture      # model is bound to this scene
+                    'status': 'error', 'reason': 'model_missing', 'path': str(path_model)}
+        try:
+            md = _json.loads(path_model.read_text(encoding='utf-8'))
+        except Exception as exc:
+            return {'contract': CONTRACT, 'request_id': request.get('request_id'),
+                    'scene_id': request.get('scene_id'), 'op': 'install', 'ok': False,
+                    'status': 'error', 'reason': 'model_not_json: %s' % repr(exc)[:100]}
+        coeff = md.get('coefficients_q20') or md.get('coefficients')
+        if not coeff:
+            return {'contract': CONTRACT, 'request_id': request.get('request_id'),
+                    'scene_id': request.get('scene_id'), 'op': 'install', 'ok': False,
+                    'status': 'error', 'reason': 'model_has_no_coefficients'}
+        arr = np.asarray(coeff, dtype=np.int64)
+        padded = np.concatenate([arr, np.zeros(max(0, 512 - len(arr)), dtype=np.int64)])
+        coeff_sha = hashlib.sha256(padded.astype('<i4').tobytes()).hexdigest()
+        file_sha = hashlib.sha256(path_model.read_bytes()).hexdigest()
+        file_sha_original = file_sha
+        # The model file carries its own fixture_id. Bind a copy to this scene rather than pretending the
+        # old fixture still applies (C: the model belongs to the scene of this round).
+        scene_id = request.get('scene_id')
+        bound = pathlib.Path(self.run_dir or self.run_root) / ('%s_model.json' % scene_id)
+        bound.parent.mkdir(parents=True, exist_ok=True)
+        md['fixture_id'] = scene_id
+        bound.write_text(_json.dumps(md, ensure_ascii=False), encoding='utf-8')
+        file_sha = hashlib.sha256(bound.read_bytes()).hexdigest()
+        self.model_path = bound
+        self.fixture = scene_id or self.fixture
         gain = int(request.get('run_gain_q12', self.allowed_gain_q12[0]))
-        r = self._write_control(gain_q12=gain, arm=False, bypass=False)
-        # verify the load: one short capture with the model coefficients loaded, then read back what the
-        # PL reports it received
-        path, cid = self._capture_path(request.get('scene_id'), 'install', 0)
-        self._driver().replay_trial(str(path), self.fixture, str(self.model_path),
+
+        # load through the real driver, then read back what the PL says it received
+        scene = request.get('scene_id')
+        cap_path, cid = self._capture_path(scene, 'install', 0)
+        if self._cancelled(request.get('cancel_event')):
+            return self._cancel_result(request, 'install')
+        self._driver().replay_trial(str(cap_path), self.fixture, str(self.model_path),
                                     self._make_stimulus(seed=1, level_dbfs=-30.0),
                                     bypass=False, zero_coeff=False, gain_db=0.0,
                                     seconds=self.WINDOW_SECONDS + 1e-6, hp_volume=self.hp_volume,
                                     speaker_confirmed=True, local_capture_confirmed=True,
                                     direct_only=True, reuse_overlay=False, restore_stock=False)
-        meta = self.__meta(np.load(str(path)))
-        coeff_sha = hashlib.sha256(
-            __import__('numpy').asarray(__import__('numpy').load(str(self.model_path))['coefficients_q20'],
-                                        dtype='<i4').tobytes()).hexdigest() if True else None
-        file_sha = hashlib.sha256(pathlib.Path(model['path']).read_bytes()).hexdigest()
+        meta = self._meta(np.load(str(cap_path)))
+        reported = meta.get('coefficients_sha256')
+        loaded_count = meta.get('loaded_count')
+        verified = (reported == coeff_sha) if reported else None
+        if loaded_count is None and verified:
+            loaded_count = int(len(arr))
+        # restore the run gain and read the identity back, never the requested values
+        self._write_control(gain_q12=gain, arm=False, bypass=False)
         self._last_model_sha, self._last_coeff_sha = file_sha, coeff_sha
-        return {'contract': CONTRACT, 'request_id': request.get('request_id'),
-                'scene_id': request.get('scene_id'), 'op': 'install',
-                'ok': bool(r.get('ok')), 'status': 'completed',
-                'model_sha256': file_sha, 'coefficients_sha256': coeff_sha,
-                'loaded_count': meta.get('loaded_count'), 'taps': model['taps'],
-                'applies_at': 'immediately', 'run_gain_q12': gain,
+        return {'contract': CONTRACT, 'request_id': request.get('request_id'), 'scene_id': scene,
+                'op': 'install', 'ok': bool(verified), 'status': 'completed' if verified else 'error',
+                'reason': None if verified else 'coefficient_readback_mismatch',
+                'model_sha256': file_sha, 'source_model_sha256': file_sha_original,
+                'coefficients_sha256': coeff_sha,
+                'reported_coefficients_sha256': reported, 'loaded_count': loaded_count,
+                'taps': int(len(arr)), 'applies_at': 'immediately',
+                'run_gain_q12': gain, 'identity': self.identity()}
+
+    def _run_v2(self, request, cancel_event=None):
+        import math
+        import time
+        if self._cancelled(cancel_event):
+            return self._cancel_result(request, 'run')
+        seconds = float(request.get('seconds', 30.0))
+        q12 = int(request.get('gain_q12', self.allowed_gain_q12[0]))
+        src = self._run_source(request, seconds)
+        if isinstance(src, dict):
+            return src
+        scene = request.get('scene_id')
+        self._current_op = 'run'
+        self._write_control(arm=False, bypass=bool(request.get('bypass')), gain_q12=q12,
+                            allow_armed=True)
+        if self._cancelled(cancel_event):
+            self.mute()
+            return self._cancel_result(request, 'run')
+        self._write_control(arm=True, allow_armed=True)
+        cap_path, cid = self._capture_path(scene, 'run', 0)
+        wall0 = time.monotonic()
+        try:
+            self._driver().replay_trial(str(cap_path), self.fixture, str(self.model_path), src,
+                                        bypass=bool(request.get('bypass')), zero_coeff=False,
+                                        gain_db=20 * math.log10(max(q12, 1) / 4096.0),
+                                        seconds=seconds, hp_volume=self.hp_volume,
+                                        speaker_confirmed=True, local_capture_confirmed=True,
+                                        direct_only=False, reuse_overlay=False, restore_stock=False)
+            meta = self._meta(np.load(str(cap_path)))
+        finally:
+            wall = time.monotonic() - wall0
+            self._write_control(arm=False, allow_armed=True)
+            self.mute()
+            self._current_op = None
+        frames = int(meta.get('frames') or meta.get('captured_frames') or 0)
+        status = int(meta.get('capture_status') or 0)
+        ok = meta.get('stop_reason') == 'completed'
+        return {'contract': CONTRACT, 'request_id': request.get('request_id'), 'scene_id': scene,
+                'op': 'run', 'ok': ok, 'status': 'completed' if ok else
+                ('protected' if (status >> 22) & 1 else 'error'),
+                'effective_mode': self.effective_mode(),
+                'audio_frames': frames,
+                'elapsed_seconds': round(frames / 48828.125, 3),      # audio time from real frames
+                'wall_seconds': round(wall, 3),                        # init plus waiting, separately
+                'model_sha256': self._last_model_sha,
+                'coefficients_sha256': self._last_coeff_sha,
+                'capture_id': cid, 'path': str(cap_path),
                 'identity': self.identity()}
 
     # ---- poll: running identity ---------------------------------------------------------
