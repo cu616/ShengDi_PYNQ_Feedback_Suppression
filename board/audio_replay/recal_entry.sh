@@ -207,7 +207,7 @@ if l1_new > L1_MAX:
 # ---- [5] verify with an auto-levelled acceptance tone ------------------------------------------
 TONE_TARGET_DBFS = -12.0
 TONE_BAND_DB = 2.0
-TONE_MAX_ADJUST = 4
+TONE_MAX_ADJUST = 6
 TONE_START_FS = 0.05
 print('RECAL_STAGE 5 verify (acceptance tone auto-levelled to %.1f dBFS mic peak)' % TONE_TARGET_DBFS)
 sys.path.insert(0, str(D))
@@ -221,40 +221,61 @@ def tone_at(fs):
 
 
 fs_now = TONE_START_FS
-tone = tone_at(fs_now)
 adjusts = 0
 trials = []
+last_good_fs = None
+last_good_peak = None
 while True:
+    tone = tone_at(fs_now)
     out = RUN_DIR / 'prep' / ('open_probe_%d.npz' % adjusts)
     out.unlink(missing_ok=True)
+    clipped = False
+    pk = None
+    raised = None
     try:
         replay_trial(str(out), FIXTURE, str(cand), tone, bypass=False, zero_coeff=False,
                      gain_db=GAIN_DB, seconds=2.2, hp_volume=HP_VOLUME, speaker_confirmed=True,
                      local_capture_confirmed=True, direct_only=True)
     except Exception as exc:
-        fail('verify', 15, 'open pre-check raised %r' % (exc,))
-    m = json.loads(str(np.load(str(out))['metadata_json']))
-    pk = peak_dbfs(np.load(str(out))['microphone'])
-    clipped = m.get('stop_reason') != 'completed' or (int(m.get('capture_status') or 0) >> 22) & 1
-    trials.append({'source_fs': fs_now, 'mic_peak_dbfs': pk, 'clipped': bool(clipped)})
-    print('RECAL_TONE_LEVEL try=%d source_fs=%.4f mic_peak=%.2f clipped=%s'
-          % (adjusts, fs_now, pk, clipped))
+        # The driver raises on input full scale. That is not a hard failure of the run: it is one
+        # clipped trial, and the whole point of the levelling loop is to back off from it.
+        raised = repr(exc)
+        if 'full scale' in raised or 'bit22' in raised:
+            clipped = True
+        else:
+            fail('verify', 15, 'open pre-check raised %r' % (exc,))
+    if out.is_file():
+        pk = peak_dbfs(np.load(str(out))['microphone'])
+        m = json.loads(str(np.load(str(out))['metadata_json']))
+        if m.get('stop_reason') != 'completed' or (int(m.get('capture_status') or 0) >> 22) & 1:
+            clipped = True
+    trials.append({'source_fs': fs_now, 'mic_peak_dbfs': pk, 'clipped': bool(clipped),
+                   'raised': raised})
+    print('RECAL_TONE_LEVEL try=%d source_fs=%.4f mic_peak=%s clipped=%s'
+          % (adjusts, fs_now, 'n/a' if pk is None else '%.2f' % pk, clipped))
+
     if clipped:
+        # never extrapolate from a clipped peak; fall back to the last known-good amplitude
+        if last_good_fs is not None:
+            fs_now = last_good_fs
+            break
         if adjusts >= TONE_MAX_ADJUST:
-            fail('verify', 15, 'tone still clipping after %d adjustments' % adjusts)
+            fail('verify', 15, 'tone clipped at every amplitude tried (%d)' % adjusts)
         fs_now *= 0.5
         adjusts += 1
-        tone = tone_at(fs_now)
         continue
+
+    last_good_fs, last_good_peak = fs_now, pk
     if abs(pk - TONE_TARGET_DBFS) <= TONE_BAND_DB or adjusts >= TONE_MAX_ADJUST:
         break
-    fs_now = min(0.5, max(0.005, fs_now * 10 ** ((TONE_TARGET_DBFS - pk) / 20.0)))
+    # step up gently (~3 dB) instead of extrapolating the exact ratio: the speaker compresses, so the
+    # exact-ratio jump overshoots into clipping in one step
+    fs_now = min(0.5, fs_now * 1.4)
     adjusts += 1
-    tone = tone_at(fs_now)
 
 tone_fs = fs_now
 print('RECAL_TONE_FROZEN source_fs=%.4f mic_peak=%.2f adjustments=%d (identical for all arms)'
-      % (tone_fs, trials[-1]['mic_peak_dbfs'], adjusts))
+      % (tone_fs, last_good_peak if last_good_peak is not None else float('nan'), adjusts))
 
 rows, arms = {}, []
 for tag, bypass, direct in (('open', False, True), ('bypass', True, False), ('cancel', False, False)):
@@ -298,6 +319,10 @@ if len(rows) == 3:
 else:
     print('RECAL_THREE_POINT not all three arms completed -> FAIL')
 
+if insufficient:
+    cand.rename(cand.with_suffix('.rejected.json'))
+    print('RECAL_MODEL rejected - measurement invalid, the installed model was NOT changed')
+    fail('verify', 15, 'measurement insufficient: %s' % insufficient)
 if not holds:
     cand.rename(cand.with_suffix('.rejected.json'))
     print('RECAL_MODEL rejected - the installed model was NOT changed')
@@ -359,7 +384,13 @@ if vmeta.get('stop_reason') != 'completed':
     fail('voice', 18, 'voice stopped: %s' % vmeta.get('stop_reason'))
 if v_used != active_sha:
     fail('voice', 18, 'voice used %s, not %s' % (v_used[:12], active_sha[:12]))
-print('RECAL_STAGE 8 ok  voice mic_rms=%.2f dBFS stop=completed' % v_rms)
+VOICE_MIN_SNR_DB = 10.0
+if v_rms - floor_db < VOICE_MIN_SNR_DB:
+    fail('voice', 18, 'no voice detected: mic %.2f dBFS is only %.2f dB above the floor %.2f dBFS '
+                      '(need %.1f). Speak again and rerun.' % (v_rms, v_rms - floor_db, floor_db,
+                                                               VOICE_MIN_SNR_DB))
+print('RECAL_STAGE 8 ok  voice mic_rms=%.2f dBFS (%.2f dB above floor) stop=completed'
+      % (v_rms, v_rms - floor_db))
 
 # ---- summary -----------------------------------------------------------------------------------
 receipt = {
@@ -375,7 +406,7 @@ receipt = {
     'acceptance_tone': {'target_peak_dbfs': TONE_TARGET_DBFS, 'source_fs_frozen': tone_fs,
                         'adjustments': adjusts, 'trials': trials, 'same_source_all_arms': True},
     'measurement_insufficient': insufficient,
-    'voice': {'rms_dbfs': v_rms, 'stop': vmeta.get('stop_reason'), 'used_coeff_sha256': v_used,
+    'voice': {'rms_dbfs': v_rms, 'above_floor_db': v_rms - floor_db, 'stop': vmeta.get('stop_reason'), 'used_coeff_sha256': v_used,
               'seconds': VOICE_SECONDS},
 }
 (RUN_DIR / 'receipt.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
