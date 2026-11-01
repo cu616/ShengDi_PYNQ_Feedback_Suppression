@@ -312,6 +312,51 @@ if used != active_sha:
     fail('smoke', 17, 'run used coefficients %s but installed model is %s' % (used[:16], active_sha[:16]))
 print('RECAL_STAGE 7 ok  run used coeff_sha=%s (matches installed model)' % used[:16])
 
+# ---- [8] voice check: the part a silent smoke run cannot prove ---------------------------------
+# The smoke run proves the installed coefficients are the ones in use, but its source is silence, so it
+# says nothing about a person speaking. This stage records a real voice segment through the new model
+# and reports whether it stayed usable: completed, no protection, no implied attenuation.
+VOICE_SECONDS = 20.0
+print('RECAL_STAGE 8 voice (operator will speak; the model stays exactly as installed)')
+# The operator cannot see the terminal, so the cue has to be audible and come from the board itself:
+# a short beep through the speaker, then a 2 s gap so the beep is NOT inside the voice capture.
+_beep_n = int(0.30 * RATE)
+_beep = np.rint(0.20 * np.sin(2 * np.pi * 1000.0 * np.arange(_beep_n) / RATE) * 32767).astype(np.int16)
+_beep_path = RUN_DIR / 'prep' / 'beep.npz'
+_beep_path.unlink(missing_ok=True)
+try:
+    replay_trial(str(_beep_path), FIXTURE, str(BASE_MODEL), _beep, bypass=True, zero_coeff=False,
+                 gain_db=0.0, seconds=0.40, hp_volume=HP_VOLUME, speaker_confirmed=True,
+                 local_capture_confirmed=True, direct_only=True)
+except Exception as exc:
+    print('RECAL_BEEP_WARN %r (continuing; the terminal cue still applies)' % (exc,))
+print('RECAL_CAN_SPEAK  >>> the board just beeped; start talking now, keep going ~20 s <<<')
+print('RECAL_CAN_SPEAK  (2 s lead-in, then the capture starts; talk through it)')
+time.sleep(2.0)
+voice = RUN_DIR / 'checks' / 'voice.npz'
+voice.unlink(missing_ok=True)
+try:
+    replay_trial(str(voice), FIXTURE, str(ACTIVE), np.zeros(16000, dtype=np.int16), bypass=False,
+                 zero_coeff=False, gain_db=GAIN_DB, seconds=VOICE_SECONDS, hp_volume=HP_VOLUME,
+                 speaker_confirmed=True, local_capture_confirmed=True)
+except Exception as exc:
+    fail('voice', 18, 'voice capture raised %r' % (exc,))
+vmeta = json.loads(str(np.load(str(voice))['metadata_json']))
+vmic = np.asarray(np.load(str(voice))['microphone'], float)
+v_rms = float(20 * np.log10(max(np.sqrt(np.mean(vmic ** 2)), 1e-12)))
+v_status = int(vmeta.get('capture_status') or 0)
+v_used = str(vmeta.get('coefficients_sha256') or '')
+if vmeta.get('stop_reason') != 'completed':
+    fail('voice', 18, 'voice stopped: %s (this is not a usable take)' % vmeta.get('stop_reason'))
+if (v_status >> 22) & 1:
+    fail('voice', 18, 'voice tripped the input full-scale flag')
+if v_used != active_sha:
+    fail('voice', 18, 'voice run used coefficients %s, not the installed %s'
+         % (v_used[:16], active_sha[:16]))
+print('RECAL_STAGE 8 ok  voice mic_rms=%.2f dBFS stop=%s capture_status=0x%08x'
+      % (v_rms, vmeta.get('stop_reason'), v_status))
+print('RECAL_VOICE_USABLE rms=%.2f db n_protection=0 coeff_sha=%s' % (v_rms, v_used[:16]))
+
 # ---- summary -----------------------------------------------------------------------------------
 receipt = {
     'run_id': RUN_ID, 'position': POSITION, 'verdict': 'PASS',
@@ -323,13 +368,16 @@ receipt = {
     'candidate_coeff_sha256': cand_sha, 'active_coeff_sha256': active_sha,
     'smoke_used_coeff_sha256': used, 'previous_model_backup': prev.name if prev else None,
     'L1': l1_new, 'L1_deployed': l1_base, 'three_point': tp, 'arms': arms,
+    'voice': {'rms_dbfs': v_rms, 'stop': vmeta.get('stop_reason'),
+              'capture_status': v_status, 'used_coeff_sha256': v_used,
+              'seconds': VOICE_SECONDS},
 }
 (RUN_DIR / 'receipt.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
 print('RECAL_SUMMARY run=%s position=%s verdict=PASS snr=%.2f L1=%.2f acoustic=%.2f overshoot=%.2f'
       % (RUN_ID, POSITION, snr_db, l1_new, tp['acoustic_difference_db'], tp['overshoot_db']))
 print('RECAL_MODEL_IDENTITY candidate=%s active=%s used=%s'
       % (cand_sha[:16], active_sha[:16], used[:16]))
-print('RECAL_READY_FOR_SPEECH  (the new model is installed and in use)')
+print('RECAL_READY_FOR_SPEECH  (voice stage passed with the new model in use)')
 print('RECAL_END run=%s verdict=PASS stage=done' % RUN_ID)
 PY
 rc=$?

@@ -1,0 +1,81 @@
+{
+  "run_id": "20250511-152329",
+  "position": "P2_115cm",
+  "verdict": "PASS",
+  "config": {
+    "level_db_commanded": -19.3,
+    "actual_ref_rms_dbfs": -19.30329807100292,
+    "actual_ref_peak_dbfs": -7.1677246915418955,
+    "peak_cap": 0.8,
+    "gain_db": -8.0,
+    "hp_volume": 40,
+    "segments": 6,
+    "seg_seconds": 0.3357,
+    "min_snr_db": 6.0,
+    "l1_max": 4.0
+  },
+  "floor_dbfs": -39.931049459218016,
+  "snr_db": 7.7512079252911406,
+  "ref_rms_dbfs": -19.30329807100292,
+  "mic_rms_dbfs": -32.179841533926876,
+  "candidate_coeff_sha256": "072a06ae1a35ddf66f379580b077f56934ffd803d0cba3c66a8f56c7bde954dc",
+  "active_coeff_sha256": "072a06ae1a35ddf66f379580b077f56934ffd803d0cba3c66a8f56c7bde954dc",
+  "smoke_used_coeff_sha256": "072a06ae1a35ddf66f379580b077f56934ffd803d0cba3c66a8f56c7bde954dc",
+  "previous_model_backup": "model_prev_20250511-152329.json",
+  "L1": 2.541147232055664,
+  "L1_deployed": 2.2875843048095703,
+  "three_point": {
+    "levels_dbfs": {
+      "open": {
+        "mic": -29.420066272591914,
+        "pred": -29.519964147972033,
+        "residual": -41.02415234433616
+      },
+      "bypass": {
+        "mic": -26.051958626306174,
+        "pred": -26.824793490258724,
+        "residual": -26.051958626306174
+      },
+      "cancel": {
+        "mic": -29.032128600240075,
+        "pred": -29.610890596592053,
+        "residual": -40.220919821019535
+      }
+    },
+    "units": "dBFS re 24-bit full scale, all three signals",
+    "cd_322_db": 14.168961194713361,
+    "loop_boost_db": 3.3681076462857398,
+    "acoustic_difference_db": 2.9801699739339007,
+    "overshoot_db": -0.38793767235183907,
+    "names": {
+      "cd_322_db": "residual depth (model fit, NOT benefit)",
+      "loop_boost_db": "audible-benefit scale = what the loop adds and a canceller can at most recover",
+      "acoustic_difference_db": "loop_boost + overshoot, NOT benefit",
+      "overshoot_db": "cancel goes below the no-loop path by this much"
+    }
+  },
+  "arms": [
+    {
+      "tag": "open",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "bypass",
+      "stop": "completed",
+      "capture_status": 32769
+    },
+    {
+      "tag": "cancel",
+      "stop": "completed",
+      "capture_status": 32769
+    }
+  ],
+  "voice": {
+    "rms_dbfs": -23.642499782274058,
+    "stop": "completed",
+    "capture_status": 32769,
+    "used_coeff_sha256": "072a06ae1a35ddf66f379580b077f56934ffd803d0cba3c66a8f56c7bde954dc",
+    "seconds": 20.0
+  }
+}
