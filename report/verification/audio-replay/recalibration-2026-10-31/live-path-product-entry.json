@@ -1,0 +1,22 @@
+{
+  "topic": "live-path through the product entry (recal-product-v1)",
+  "date": "2026-11-01",
+  "version": "main = 8a9dfa2",
+  "route": "perform(op='run') -> driver replay_trial(direct_only=False, zero_coeff=False, source=zeros[16])",
+  "semantics": "output = injection + gain * residual, residual = mic - prediction. Injection is zero, so the speaker is driven by the microphone path; no program source is needed for live amplification.",
+  "request": {"seconds": 30.0, "gain_q12": 2303, "gain_db": -5.0, "bypass": false},
+  "result": {"ok": true, "status": "completed", "elapsed_seconds": 35.755,
+             "single_call": true, "segment_stitching": false},
+  "capture": {"mic_rms_dbfs": -42.73, "injection_rms_dbfs": -240.0,
+              "capture_window_frames": 16384,
+              "note": "only the last 16384 frames (about 0.34 s) are kept, so this level reflects the end of the run and not the whole 30 s"},
+  "protection": {"bit22_input_full_scale": 0, "prediction_saturations": 0,
+                 "residual_saturations_pre_gain": 5, "gain_saturations": 0,
+                 "poll_protected": false,
+                 "interpretation": "pre-gain residual overflow is a diagnostic per the approved semantics; it did not stop the run and poll reported protected=false"},
+  "listener": {"amplified": true, "clear": true, "howling": false,
+               "who": "operator at the board, talker distance about 35 cm",
+               "note": "verbal confirmation, not a measurement"},
+  "not_verified": ["C's formal entry has not yet called this object",
+                   "the whole 30 s was not audited by ear over its full length; the listener confirmed the run as a whole"]
+}
