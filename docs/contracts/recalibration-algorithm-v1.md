@@ -7,6 +7,20 @@
 
 状态：**离线通过，待上板验证。** C 的 `recal_entry.sh` / `recal_product.py` 由 C 维护，本文件不碰。
 
+## 0 最终路径（2026-11-01 冻结，只此一条）
+
+**产品链路上的模型资格判断由 `evaluate(request)` 的 `validate` 承担**，依据是独立验证捕获上的
+逐段时间域带内抑制（§2.3）。这是唯一被冻结的路径。
+
+- `src/feedback/recal_policy.py` 的 `check_three_point` **仍是历史复核工具**，用于回看 10-28 / 10-31
+  那两轮的三臂读数，**不再作为产品验收路径**。两套同时维护会让"什么算通过"出现两个答案。
+- **`qualifies_cancellation: true` 的含义限于**："这个模型在自己的独立验证段上预测有抑制。"
+  它**不是**整机抗啸叫结论，**不是** MSG/ASG，**不是**听感。`evidence.not_asg = true` 每次都在，
+  `evidence.meaning` 明文写死这句。
+- 整机抗啸叫仍需另册的三点 / ASG 证据。冻结这一版不影响那条路，也**不声称**已经走通。
+
+需要队长拍板的契约矛盾：**没有。** 上面是分工，不是冲突。唯一需要 C 改的接入项在 §4 第 4 条（超时）。
+
 ## 1 入口
 
 ```python
@@ -44,6 +58,24 @@ reply = evaluate(request)          # 纯数值，不开设备、不写硬件
 **第 5 条是主判据，第 6 条只是兜底。** 1 m 侧对布置下全局比值只有 3.9 dB 但相干 0.90、门控 73%，
 是可用的数据；把 6 dB 当主判据会否掉部署模型自己的训练集（详见 `recalibration-policy-v1` 与
 `report/verification/recalibration-policy-2026-11-01/`）。
+
+### 2.1b 讲话阶段 `input` —— 门槛与激励阶段不同，不能共用
+
+`_check_capture(cap, mode='speech')` **不读 reference 的任何统计量**，也不做相干/SNR/宽带性判断。
+理由：讲话时播放参考通常为零或极低，要求人声与它相干是把不适用的门槛套上去，会系统性误拒。
+
+| 判据 | 阈值 | 说明 |
+|---|---|---|
+| 完整性 | 同 §2.1 第 1 条 | 长度、有限值、dropped_frames |
+| 过载 | 同 §2.1 第 2 条 | 近满幅计数或 `bit22` |
+| 输入响应 | `mic_rms ≥ −55 dBFS` | 正常讲话在麦克风端约 −30…−20 dBFS；−55 已是"没说话" |
+| 输入响应 | `mic_peak ≥ 0.003`（约 −50 dBFS） | 抓全零 / 死通道 |
+
+失败返回 `REJECT_SPEECH_ABSENT`，在还有 attempt 时给 `retry`（请用户重说），否则 `data_insufficient`。
+**同一份"参考全零、麦克风有人声"的采集，在 `mode='speech'` 下必须 `valid_pass`，
+在 `mode='excitation'` 下必须被拒**——回归里两条都钉了
+（`test_speech_does_not_require_coherence_with_playback`、
+`test_same_zero_reference_capture_rejected_for_excitation`）。
 
 ### 2.2 拟合 `fit`
 
@@ -170,3 +202,34 @@ ATTEMPTS = [
 | `fit` 在 PYNQ 上的耗时 | PC 0.45 s | 实测后定 `compute_timeout_seconds` |
 | 验证判据的两侧余量 | 好 4.17 / 坏 −4.40，阈值 0.5 | 一次真实"好模型"与一次"错布置模型" |
 | `source_sha256` 由 A 提供且正确 | 未联调 | A 的 `hw_api` 首次回包 |
+
+## 8 版本身份与冻结
+
+```python
+from recal_algorithm import identity
+manifest = identity()      # C 原样写进 package-manifest 与每个 run 的收据
+```
+
+返回（字段固定）：
+
+| 字段 | 值 / 含义 |
+|---|---|
+| `contract` | `recal-product-v1` |
+| `version` | `recal-algorithm-2026-11-01` |
+| `file_sha256` | 本文件自身的 sha256，运行时算 |
+| `dependencies` | `['numpy']`（无 scipy、无 PYNQ、无网络） |
+| `python` | `>=3.8` |
+| `taps` / `lag_first` | 512 / 1 |
+| `strategy.attempts` | §3 的三档，顺序 `−22.0 → −19.3 → −16.5 dBFS` |
+| `strategy.validation_source` | 独立开环捕获，`capture_id` 与 `source_sha256` 都不得与训练重叠 |
+| `strategy.exit_reasons` | `valid_pass→PASS`、`retry→RETRY_NEXT_LEVEL`、`data_insufficient→DATA_OR_MEASUREMENT_INSUFFICIENT`、`model_rejected→MODEL_UNQUALIFIED` |
+| `thresholds` | §2 的全部阈值 |
+| `not_asg` | 固定 `true` |
+
+**冻结规则**：C 打包后 B 不再改本文件。回包里的 `file_sha256` 与 `version` 若与包内不一致，
+说明装错了包或混了旧版——这是唯一的包身份判据，不要用文件名或时间戳判。
+
+**重试与退出**（与 `strategy` 一致）：
+- 最多 3 档，`retry` 只前进一档；
+- 第 3 档失败 → `data_insufficient` 或 `model_rejected`，不自动安装；
+- 讲话阶段的 `REJECT_SPEECH_ABSENT` 也走 `retry`，但重说不消耗"新算法"——它只是同一档内重来。

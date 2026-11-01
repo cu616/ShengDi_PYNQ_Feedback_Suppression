@@ -32,9 +32,36 @@ from pathlib import Path
 import numpy as np
 
 CONTRACT = 'recal-product-v1'
+VERSION = 'recal-algorithm-2026-11-01'
 TAPS = 512
 LAG_FIRST = 1
 FS_DEFAULT = 48828.125
+
+# C 的 config['attempts'] 直接用这个。三档从低到高：C 的 retry 只能顺序前进，
+# 先从安全端开始；-16.5 是白噪波形因数 12 dB + peak_cap 0.80 算出来的边缘（可达上限约 -17 dBFS）。
+ATTEMPTS = [
+    {'training':   {'excitation': 'white_noise', 'rms_dbfs': -22.0, 'frames': 16384,
+                    'segments': 6, 'peak_cap': 0.80, 'seed': 4242},
+     'validation': {'excitation': 'white_noise', 'rms_dbfs': -22.0, 'frames': 16384,
+                    'segments': 2, 'peak_cap': 0.80, 'seed': 4242}},
+    {'training':   {'excitation': 'white_noise', 'rms_dbfs': -19.3, 'frames': 16384,
+                    'segments': 6, 'peak_cap': 0.80, 'seed': 4242},
+     'validation': {'excitation': 'white_noise', 'rms_dbfs': -19.3, 'frames': 16384,
+                    'segments': 2, 'peak_cap': 0.80, 'seed': 4242}},
+    {'training':   {'excitation': 'white_noise', 'rms_dbfs': -16.5, 'frames': 16384,
+                    'segments': 6, 'peak_cap': 0.80, 'seed': 4242},
+     'validation': {'excitation': 'white_noise', 'rms_dbfs': -16.5, 'frames': 16384,
+                    'segments': 2, 'peak_cap': 0.80, 'seed': 4242}},
+]
+MAX_ATTEMPTS = len(ATTEMPTS)
+
+# decision -> 退出原因。C 的 status.json 直接用这张表，不要自己另编。
+EXIT_REASONS = {
+    'valid_pass': 'PASS',
+    'retry': 'RETRY_NEXT_LEVEL',
+    'data_insufficient': 'DATA_OR_MEASUREMENT_INSUFFICIENT',
+    'model_rejected': 'MODEL_UNQUALIFIED',
+}
 
 # ---------------------------------------------------------------- 阈值（与 src/feedback/recal_policy.py 同源）
 
@@ -45,6 +72,11 @@ MIN_GATED_COHERENCE = 0.30
 COHERENCE_FLOOR = 0.8
 SPARSE_LINE_DB = 20.0
 BAND_HZ = (150.0, 10000.0)
+
+# 讲话阶段（用户说话时采集）：只判"麦克风确实拾到声音 + 没过载"。
+# 播放参考在这一阶段通常为零，任何"人声与参考相干"的门槛都不适用。
+SPEECH_MIN_RMS_DBFS = -55.0     # 正常讲话在麦克风端约 −30…−20 dBFS；−55 已是"没说话"
+SPEECH_MIN_PEAK = 0.003         # 约 −50 dBFS 峰值，用来抓全零/死通道
 
 L1_MAX = 4.0
 L1_OVER_MAX_RANGE = (25.0, 80.0)
@@ -259,8 +291,19 @@ def quantize_q20(h):
 
 # ---------------------------------------------------------------- input
 
-def _check_capture(cap, source_expected=True):
-    """返回 (ok, status, reasons, metrics)。与 src/feedback/recal_policy.check_capture 同口径。"""
+def _check_capture(cap, mode='excitation'):
+    """返回 (ok, status, reasons, metrics)。
+
+    mode 区分两种完全不同的采集，**门槛不能共用**：
+
+      'excitation'  机器激励（训练/验证）。必须查参考资格、宽带性、相干与激励信噪比，
+                    因为后面要用 reference/microphone 做系统辨识。
+      'speech'      用户讲话（讲话输入检查）。播放参考在讲话阶段通常为零或极低，
+                    要求人声与它相干是把不适用的门槛套上去，会系统性误拒。
+                    只判：采样有效性、输入响应（麦克风确实拾到声音）、过载。
+
+    'speech' 不读 reference 的任何统计量，也不做相干/SNR/宽带性判断。
+    """
     ref, mic, fs = cap['ref'], cap['mic'], cap['fs']
     md = cap['metadata'] or {}
     reasons, metrics = [], {'frames': int(len(ref)), 'sample_rate_hz': float(fs), 'taps': TAPS}
@@ -292,7 +335,25 @@ def _check_capture(cap, source_expected=True):
                                       % (fs_marks['reference_near'], fs_marks['microphone_near'],
                                          fs_marks['bit22'])], metrics
 
-    if source_expected and cap['source'] is not None:
+    # ---- 讲话阶段到此为止：不碰参考相干
+    if mode == 'speech':
+        mic_peak = float(np.max(np.abs(mic)))
+        metrics['speech_mic_peak'] = mic_peak
+        metrics['speech_mic_rms_dbfs'] = metrics['mic_rms_dbfs']
+        metrics['mic_over_ref_db'] = None      # 讲话阶段参考通常为零，这个比值没有意义
+        metrics['reference_ignored'] = True
+        reasons = []
+        if metrics['mic_rms_dbfs'] < SPEECH_MIN_RMS_DBFS:
+            reasons.append('麦克风几乎没有信号（RMS %.1f dBFS < %.1f）：用户未讲话，'
+                           '或输入通道被静音/接错' % (metrics['mic_rms_dbfs'], SPEECH_MIN_RMS_DBFS))
+        if mic_peak < SPEECH_MIN_PEAK:
+            reasons.append('麦克风峰值 %.5f 低于 %.5f：采集到的是全零或死通道'
+                           % (mic_peak, SPEECH_MIN_PEAK))
+        if reasons:
+            return False, 'REJECT_SPEECH_ABSENT', reasons, metrics
+        return True, 'OK', [], metrics
+
+    if mode == 'excitation' and cap['source'] is not None:
         src = cap['source']
         first = int(md.get('first_frame', cap['first_frame'] or 0) or 0)
         k = min(len(ref), len(src) - first)
@@ -340,8 +401,8 @@ def _check_capture(cap, source_expected=True):
     return True, 'OK', [], metrics
 
 
-# 能在"加一档激励或重采一次"后变得更好的失败；其余必须回硬件/数据
-_RETRYABLE = {'REJECT_EXCITATION', 'REJECT_COHERENCE'}
+# 能在"重说一次 / 加一档激励"后变得更好的失败；其余必须回硬件或数据本身
+_RETRYABLE = {'REJECT_EXCITATION', 'REJECT_COHERENCE', 'REJECT_SPEECH_ABSENT'}
 
 
 def _phase_input(req):
@@ -355,13 +416,14 @@ def _phase_input(req):
             cap = load_capture(entry)
         except ValueError as exc:
             return _reply(req, 'data_insufficient', str(exc))
-        ok, status, reasons, m = _check_capture(cap, source_expected=False)
+        ok, status, reasons, m = _check_capture(cap, mode='speech')
         metrics[entry.get('capture_id')] = m
         if not ok and worst is None:
             worst = (status, reasons)
     attempts_total = int(req.get('attempts_total') or 1)
     if worst is None:
-        return _reply(req, 'valid_pass', '讲话输入检查：采样完整、未触满幅、参考合格',
+        return _reply(req, 'valid_pass',
+                      '讲话输入检查：采样完整、未触满幅、麦克风拾到声音（不要求与播放参考相干）',
                       evidence={'metrics': metrics})
     status, reasons = worst
     if status in _RETRYABLE and int(req.get('attempt') or 0) + 1 < attempts_total:
@@ -676,3 +738,40 @@ def evaluate(request):
         return _reply(request, 'data_insufficient',
                       '数值计算失败（%s: %s），按数据不足处理，不宣布失败'
                       % (type(exc).__name__, exc))
+
+
+def identity():
+    """C 打包与收据用的版本身份：版本、文件哈希、依赖、受限策略、判据阈值。
+
+    冻结前 C 应把这份 dict 原样写进 package-manifest 与每个 run 的收据里，
+    B 之后不再改本文件；回包若与此不一致，说明装错了包。
+    """
+    here = Path(__file__).resolve()
+    return {
+        'contract': CONTRACT,
+        'version': VERSION,
+        'file_sha256': _sha256_file(here),
+        'dependencies': ['numpy'],
+        'python': '>=3.8',
+        'taps': TAPS,
+        'lag_first': LAG_FIRST,
+        'strategy': {'attempts': ATTEMPTS, 'max_attempts': MAX_ATTEMPTS,
+                     'validation_source': 'independent open-loop captures; '
+                                           'capture_id and source_sha256 must not overlap training',
+                     'exit_reasons': EXIT_REASONS},
+        'thresholds': {
+            'min_valid_frames': MIN_VALID_FRAMES, 'near_full_scale': NEAR_FULL_SCALE,
+            'min_excitation_snr_db': MIN_EXCITATION_SNR_DB,
+            'min_gated_coherence': MIN_GATED_COHERENCE, 'coherence_floor': COHERENCE_FLOOR,
+            'sparse_line_db': SPARSE_LINE_DB, 'band_hz': list(BAND_HZ),
+            'speech_min_rms_dbfs': SPEECH_MIN_RMS_DBFS, 'speech_min_peak': SPEECH_MIN_PEAK,
+            'l1_max': L1_MAX, 'l1_over_max_range': list(L1_OVER_MAX_RANGE),
+            'peak_tap_tolerance': PEAK_TAP_TOLERANCE,
+            'validate_band_hz': list(BAND_LOW_HZ),
+            'validate_band_reduction_min_db': BAND_REDUCTION_MIN_DB,
+            'validate_full_reduction_min_db': FULL_REDUCTION_MIN_DB,
+            'min_validation_captures': MIN_VALIDATION_CAPTURES,
+        },
+        'meaning': 'prediction residuals on independent captures; not MSG/ASG, not listening',
+        'not_asg': True,
+    }

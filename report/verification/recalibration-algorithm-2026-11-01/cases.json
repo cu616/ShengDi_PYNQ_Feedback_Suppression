@@ -29,7 +29,7 @@
    "case": "fit_4train_2val",
    "decision": "valid_pass",
    "reason": "拟合后判据：L1 2.303、峰位 184 与实测延迟 184 一致",
-   "seconds": 0.541,
+   "seconds": 0.553,
    "model_sha256": "25d285f7a0b1022fad91218b219545c1fa6dc8f827287e3fdde2c9f02fb11b81",
    "metrics": {
     "taps": 512,
@@ -55,7 +55,7 @@
    "case": "validate_fitted",
    "decision": "valid_pass",
    "reason": "独立验证通过：300–460 Hz 带内抑制中位 +4.17 dB（最低 +3.47）",
-   "seconds": 0.109,
+   "seconds": 0.105,
    "qualifies_cancellation": true,
    "metrics": {
     "band_reduction_median_db": 4.172257543563396,
