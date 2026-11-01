@@ -1,0 +1,39 @@
+{
+  "what": "30 s live-speech validation at 115 cm, canceller ON, digital gain -5 dB",
+  "purpose": "decide whether -5 dB is a usable candidate working point under these conditions; NOT a confirmation of added stable gain",
+  "setup": {
+    "speaker_mic_cm": 115,
+    "talker_mic_cm": 35,
+    "codec_volume": 40,
+    "model": "model_recalibrated.json",
+    "gain_db": -5.0,
+    "gain_q12_readback": 2303
+  },
+  "measurements": {
+    "floor_dbfs": -30.63,
+    "cue_mic_peak_dbfs": -25.61,
+    "stop": "completed",
+    "bit22": 0,
+    "mic_rms_dbfs": -21.11,
+    "mic_peak_dbfs": -10.06,
+    "above_floor_db": 9.52,
+    "saturations": {
+      "prediction": 0,
+      "residual": 0,
+      "gain": 0,
+      "mix": 0
+    },
+    "coefficients_sha256": "94ee584919c147dd537c5aaed6f1fa34e78aefdc2a97950bc0e41da341cd97e1"
+  },
+  "listener_feedback": {
+    "audible_amplification": true,
+    "clarity": "clear",
+    "howling": "none"
+  },
+  "verdict": "PASS - registered as the candidate working point verified by a 30 s live test under these conditions (115 cm, talker 35 cm, Codec 40, gain -5 dB)",
+  "limits": [
+    "one take",
+    "the tail capture window is 16384 frames, so the capture is audio evidence only for that window; the 30 s completion and protection status cover the whole run",
+    "no listener SPL measurement"
+  ]
+}

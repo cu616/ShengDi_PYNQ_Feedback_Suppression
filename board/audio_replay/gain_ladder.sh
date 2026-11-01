@@ -109,8 +109,9 @@ for g_db in LEVELS:
                                      'gain_saturations', 'mix_saturations')},
                     'tonality_db': tonality_db(mic)})
         if rec['bit22'] or meta.get('stop_reason') != 'completed' or rec['tonality_db'] > 12.0:
-            rec['status'] = 'anomaly'
-            stopped[mode] = 'first anomaly at %.1f dB' % g_db
+            rec['status'] = 'threshold_crossed'
+            stopped[mode] = 'first threshold crossing at %.1f dB' % g_db
+        results.append(rec)          # the normal-completion path must also be recorded
         print('LADDER_RESULT %s' % json.dumps(rec, ensure_ascii=False))
 
 summary = {'stamp': STAMP, 'model': model.name, 'geometry': 'speaker-mic 115 cm',
