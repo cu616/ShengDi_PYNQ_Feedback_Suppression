@@ -43,3 +43,26 @@ src/feedback/excitation.py
 src/feedback/recal_policy.py
 report/verification/recal-product-v1/policy-package-check.json
 report/verification/recal-product-v1/changed-files.txt
+
+# Runtime A/B integration: 09aa482..90a96ac plus frozen review receipt
+board/audio_replay/recal_algorithm.py
+board/audio_replay/recal_mock.py
+board/audio_replay/recal_product.py
+board/audio_replay/recal_runtime.py
+docs/STATE.md
+docs/contracts/README.md
+docs/contracts/recal-runtime-v2.md
+docs/contracts/recalibration-algorithm-v1.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/a-b-delivery-audit.json
+report/verification/recal-product-v1/runtime-integration.json
+report/verification/recalibration-algorithm-2026-11-01/README.md
+report/verification/recalibration-algorithm-2026-11-01/cases.json
+scripts/assemble_experiment.py
+scripts/recal_algorithm_offline.py
+sim/feedback/test_recal_algorithm.py
+sim/feedback/test_recal_runtime.py
+report/verification/recal-product-v1/runtime-package-check.json
+report/verification/recal-product-v1/changed-files.txt

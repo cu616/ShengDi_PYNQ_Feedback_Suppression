@@ -2,7 +2,7 @@
 
 ## 2026-11-01 C 对接A整机适配与B真实evaluate
 
-接口变更：C交整机扩展v2，允许A实施原子cue_input，以匹配的ready事件约束讲话提示；保留prepared_capture缺项阻塞。接入B 0bdf7fa原字节，自带30秒时限和三档6/2段源计划；区分讲话健康与激励资格，保存独立预测口径，补两验证段拒收。95项软件检查通过，真实B子进程配模拟采集到ready；A原包8/8但hw_api根/包分裂、六段计划变单段、安装hash混填经离线调用确认，B负延迟对齐已复现。仅组装禁止真实启动的审阅包，不改A/B实现、不操板、不要求重跑有效原件。[接口](../contracts/recal-runtime-v2.md)、[95项](../../report/verification/recal-product-v1/runtime-integration.json)、[交付审计](../../report/verification/recal-product-v1/a-b-delivery-audit.json)、[一次性交接](../ref/recal-product.md#c给ab的一次性交接)。
+接口变更：C交整机扩展v2，允许A实施原子cue_input，以匹配的ready事件约束讲话提示；保留prepared_capture缺项阻塞。接入B 0bdf7fa原字节，自带30秒时限和三档6/2段源计划；区分讲话健康与激励资格，保存独立预测口径，补两验证段拒收。95项软件检查通过，真实B子进程配模拟采集到ready；A原包8/8但hw_api根/包分裂、六段计划变单段、安装hash混填经离线调用确认，B负延迟对齐已复现。90a96ac干净源码冻结27项载荷审阅包，独立解压/身份核对/B worker通过，真实和混合模拟启动均退出2。不改A/B实现、不操板、不要求重跑有效原件。[接口](../contracts/recal-runtime-v2.md)、[95项](../../report/verification/recal-product-v1/runtime-integration.json)、[包核验](../../report/verification/recal-product-v1/runtime-package-check.json)、[交付审计](../../report/verification/recal-product-v1/a-b-delivery-audit.json)、[一次性交接](../ref/recal-product.md#c给ab的一次性交接)。
 
 
 ## 2026-11-01 C 承接B判定库与三项确认
