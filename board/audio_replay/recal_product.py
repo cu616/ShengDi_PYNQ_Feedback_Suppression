@@ -142,6 +142,7 @@ class Product:
         self.listening=[];self.run_result=None;self.fatal=False
         self.input_records=[]
         self.capture_history=[]
+        self.hardware_receipts=[]
         self.job_deadline=None
         self.gain_scope='runtime'
         self.store.invalidate(self.scene,'boot_requires_calibration')
@@ -194,6 +195,7 @@ class Product:
             effective_mode=self.mode,attempt=self.attempt,training=self.training,validation=self.validation,
             bundle=self.bundle,run=self.run_result,listening=self.listening,events=self.events,
             candidate=self.candidate,capture_history=self.capture_history,
+            hardware_receipts=self.hardware_receipts,
             waveform_policy='PCM stays on board; file paths and original hashes retained',hardware_error_latched=self.fatal)
         write_json(self.root/'status.json',status)
         if self.run_dir: write_json(self.run_dir/'result.json',status)
@@ -253,6 +255,7 @@ class Product:
                 self.training=[];self.validation=[];self.bundle=None;self.candidate=None
                 self.input_records=[]
                 self.capture_history=[];self.events=[];self.listening=[]
+                self.hardware_receipts=[]
                 self.attempt=0;self.cue_end=0;self.outcome=None;self.reason='';self.run_result=None
                 self.cancel=threading.Event();self._state('preparing');self._hw('prepare',phase='input')
             elif kind=='start' and self.state in ('ready','ended') and self.bundle:
@@ -313,7 +316,10 @@ class Product:
         return records
 
     def _hw_done(self, req, reply):
-        self._envelope(req,reply);self._identity(reply['identity'])
+        self._envelope(req,reply)
+        self.hardware_receipts.append(dict(request=req,reply=reply))
+        self.checkpoint()  # Preserve protection/failure metadata before rejecting it.
+        self._identity(reply['identity'])
         if reply.get('input_clip'): raise Failure('input_overload','输入过载，已保护停声')
         if reply.get('status')=='protected': raise Failure('protected','硬件保护停声')
         if reply.get('ok') is not True or reply.get('status')!='completed':

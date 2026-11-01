@@ -83,6 +83,7 @@ class ProductTests(unittest.TestCase):
         self.until(app,lambda:app.state=='protected')
         self.assertEqual(app.outcome,'input_overload');self.assertNotIn('install',hw.calls)
         self.assertFalse(self.pointer(app)['eligible'])
+        self.assertTrue(app.hardware_receipts[-1]['reply']['input_clip'])
 
     def test_insufficient_data_and_model_rejection_never_install(self):
         for phase,outcome in [('input','data_insufficient'),('fit','model_rejected'),('validate','data_insufficient')]:
