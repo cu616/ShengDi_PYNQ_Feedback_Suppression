@@ -1,0 +1,21 @@
+{
+  "what": "demo_recalibrate.sh run end to end on hardware after the flow rewrite",
+  "phases": {
+    "1_recalibration": "accepted (PASS); the previous run of the same flow gave PASS with SNR 11.59, L1 2.49, acoustic +2.12 dB, overshoot +1.08 dB",
+    "2_speech_cancel": {
+      "stop": "completed",
+      "mic_rms_dbfs": -35.89,
+      "capture_status": "0x00008001"
+    },
+    "3_speech_switch_up": {
+      "stop": "completed",
+      "mic_rms_dbfs": -39.3,
+      "capture_status": "0x00008001"
+    }
+  },
+  "must_not_claim": [
+    "The two mic_rms values are separate 20 s takes of different speech, one short capture window each. They are NOT a comparison and say nothing about audible benefit.",
+    "Both arms completed without tripping a protection, which only means nothing went wrong, not that cancellation worked."
+  ],
+  "value": "the recomproducible part is the recalibration itself: one command, machine-only measurement, a verdict, and the board switches to the fresh model by itself."
+}

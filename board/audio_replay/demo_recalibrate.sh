@@ -17,7 +17,7 @@ D=/home/xilinx/jupyter_notebooks/base/audio/audio_switch
 cd $D || exit 1
 
 echo "DEMO_PHASE 1  recalibration (machine only - nobody needs to be quiet on cue)"
-./recalibrate_oneclick.sh
+bash ./recalibrate_oneclick.sh   # via bash: the uploaded file has no exec bit
 if [ $? -ne 0 ]; then
   echo "DEMO_STOP  recalibration failed. Nothing was switched; the deployed model still runs."
   exit 1
