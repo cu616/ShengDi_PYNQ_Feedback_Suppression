@@ -8,6 +8,8 @@
 
 | 契约 | 覆盖什么 | 生产方 | 消费方 | 状态 |
 |---|---|---|---|---|
+| [recal-runtime-v2.md](recal-runtime-v2.md) | 整机编排扩展、原子提示与输入、B真实算法与预测口径 | C / A / B | A / B / C | 实现待验证 |
+| [recalibration-algorithm-v1.md](recalibration-algorithm-v1.md) | B真实evaluate、六训练两验证和时间域预测判据 | B | C / A | 离线通过，待上板 |
 | [recal-policy-consumer-v1.md](recal-policy-consumer-v1.md) | C消费B判定、四类cause、本轮延迟及验收缺项 | C | A / B / C | 实现待验证 |
 | [recalibration-policy-v1.md](recalibration-policy-v1.md) | B采集/激励/拟合/三点判定；阈值唯一来源 | B | C / A | B已交库，待上板验证 |
 | [recal-product-v1.md](recal-product-v1.md) | 常驻产品编排、A/B接口及原子模型事务 | C / A / B | A / B / C | C接口/模拟实现；实体适配待验 |
