@@ -1,0 +1,35 @@
+{
+  "what": "50 cm live-voice attempts with the talker at 20 cm and 35 cm, at the fixed -8 dB working gain",
+  "attempts": [
+    {
+      "talker_cm": 20,
+      "script": "voice_attribution_50cm",
+      "result": "both arms tripped bit22",
+      "detail": "open arm (feedback return disconnected) had 7/16384 samples at full scale with RMS -18.43 dBFS and peak 0.00 dBFS; cancel arm 3/16384. The cue itself was clean (-26.31 dBFS peak)."
+    },
+    {
+      "talker_cm": 35,
+      "script": "voice_attribution_50cm",
+      "result": "both arms completed, bit22=0",
+      "detail": "open arm RMS -36.24 / peak -22.81 dBFS (the talker was mostly silent in that window); cancel arm RMS -18.08 / peak -3.94 dBFS"
+    },
+    {
+      "talker_cm": 35,
+      "script": "voice_check",
+      "result": "tripped bit22 again",
+      "detail": "same position, different attempt: the voice peaks intermittently reach the ADC rail"
+    }
+  ],
+  "attribution": "The open arm carries evidence that the direct voice alone can reach full scale (7 samples in 16384 with the feedback return disconnected), so the saturation is not caused by the feedback loop. It is a transient peak phenomenon, not sustained overload: RMS stayed at -18 dBFS.",
+  "why_attempts_differ": "The protection is sticky: one full-scale sample voids the whole 16384-frame capture. Whether a given 20 s take trips it depends on the talker's loudest moment, so the same geometry can pass once and fail the next time.",
+  "state_at_16_00": {
+    "band_improvement_50cm": "400 Hz band, canceller lowers the closed-loop level by 3.0-3.6 dB in two runs (captain accepted as a local measured improvement)",
+    "live_use_50cm": "marginal at -8 dB: 2 of 3 attempts completed without protection, 1 tripped bit22",
+    "reliable_config": "115 cm, three entry runs PASS including a live-voice take"
+  },
+  "not_claimed": [
+    "no broadband improvement",
+    "no claim that 5 cm talk distance works",
+    "no change of gain or protection semantics in this round"
+  ]
+}
