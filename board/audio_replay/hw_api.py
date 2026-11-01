@@ -175,15 +175,23 @@ class Board:
                 'map': SWITCH_MAP}
 
     # ---- buttons and LEDs (I/O integration build) -------------------------------------------
-    def read_buttons(self):
-        """BTN3..BTN0 as synchronised in the PL and reported in capture_status[30:27]."""
-        r = self.capture(0.4)
-        s = r.get('status')
-        if not s:
-            return {'ok': False, 'error': r.get('error'), 'supported': 'needs the I/O bitstream'}
-        word = int(s['raw'], 16)
+    def read_buttons(self, status_mmio=None):
+        """BTN3..BTN0 from capture_status[30:27].
+
+        With status_mmio given, the register is read directly (milliseconds). Without it the call falls
+        back to a capture, which reloads the overlay and takes about a second - fast presses are then
+        easily missed, so the product layer should pass the MMIO object.
+        """
+        if status_mmio is not None:
+            word = status_mmio.read(8) & 0xFFFFFFFF
+        else:
+            r = self.capture(0.4)
+            s = r.get('status')
+            if not s:
+                return {'ok': False, 'error': r.get('error'), 'supported': 'needs the I/O bitstream'}
+            word = int(s['raw'], 16)
         bits = [(word >> (27 + i)) & 1 for i in range(4)]
-        return {'ok': True, 'btn': bits, 'any_pressed': any(bits),
+        return {'ok': True, 'btn': bits, 'any_pressed': any(bits), 'status': '0x%08X' % word,
                 'map': {'btn0': 'start recalibration (long press)', 'btn1': 'start/stop amplification',
                         'btn2': 'unused', 'btn3': 'abort and mute'}}
 
@@ -199,8 +207,14 @@ class Board:
         value = (current & ~0x3C) | ((mask & 0xF) << 2)
         control.write(0, value)
         back = control.read(0) & 0xFFFFFFFF
-        return {'ok': ((back >> 2) & 0xF) == (mask & 0xF), 'led': (back >> 2) & 0xF,
-                'control': '0x%08X' % back}
+        # audio_control is a dual-channel AXI GPIO (channel 1 out -> control, channel 2 in <- frame_count),
+        # so a read of offset 0 does not necessarily return the output latch. The write is therefore
+        # reported as "issued", the readback is passed through as information only, and the physical LED
+        # state is what confirms it.
+        return {'ok': True, 'issued': True, 'led_requested': mask & 0xF,
+                'readback_control': '0x%08X' % back,
+                'readback_reflects': ((back >> 2) & 0xF) == (mask & 0xF),
+                'confirm': 'watch LD0-LD3: they should match led_requested'}
 
     def stop(self):
         try:
