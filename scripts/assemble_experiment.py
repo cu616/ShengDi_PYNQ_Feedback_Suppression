@@ -56,8 +56,10 @@ def assemble_product(out, hardware=None, algorithm=None):
         if not allowed or any(type(g) is not int or g not in allowed for g in gains):
             raise ValueError('B phase gain policy exceeds A approved gains')
     (out/'product-config.json').write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    shutil.copyfile(ROOT/'docs/ref/recal-product.md',out/'OPERATIONS.md')
-    shutil.copyfile(ROOT/'docs/contracts/recal-product-v1.md',out/'INTERFACE.md')
+    (out/'OPERATIONS.md').write_text((ROOT/'docs/ref/recal-product.md').read_text(encoding='utf-8').replace(
+        '../contracts/recal-product-v1.md','INTERFACE.md'),encoding='utf-8')
+    (out/'INTERFACE.md').write_text((ROOT/'docs/contracts/recal-product-v1.md').read_text(encoding='utf-8').replace(
+        '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation,
         missing=missing,adapters=adapters,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
