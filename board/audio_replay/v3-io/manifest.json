@@ -1,11 +1,12 @@
 {
   "package": "audio-replay-v3-io",
-  "note": "v3-sw + BTN0-3 + LD0-3; algorithm core unchanged",
+  "note": "v3-sw + BTN0-3 (status[30:27]) + LD0-3 (control[5:2]); algorithm core unchanged",
+  "contract": "recal-runtime-v2",
   "hashes": {
     "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
     "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
     "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
-    "hw_api.py": "fd572bb9a732050e604b4a870334ccb58c776991937195ea307f50a503db2964",
+    "hw_api.py": "ca76421cb5d7d137f691de9222a906d4e8fbe6dbd2c470ed11ab13d2bc925281",
     "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
     "replay_trial_repair.py": "22851d322e7c527a8903d367139924b2d780f98814f3ab1af3bd1f07bbf6efbb",
     "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",

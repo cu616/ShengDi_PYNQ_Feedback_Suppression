@@ -1,0 +1,38 @@
+{
+  "leds": {
+    "LD0": "R14 (control[2])",
+    "LD1": "P14 (control[3])",
+    "LD2": "N16 (control[4])",
+    "LD3": "M14 (control[5])"
+  },
+  "buttons": {
+    "BTN0": "D19 (status[27])",
+    "BTN1": "D20 (status[28])",
+    "BTN2": "L20 (status[29])",
+    "BTN3": "L19 (status[30])"
+  },
+  "switches": {
+    "SW0": "M20 (status[25] raw, status[24] synced) - up forces bypass",
+    "SW1": "M19 (status[23] synced)"
+  },
+  "patterns": {
+    "0000": "idle / muted",
+    "0001": "recalibration in progress",
+    "0010": "speak now (cue played)",
+    "0100": "quiet please",
+    "1000": "ready / running",
+    "1111": "error or protected"
+  },
+  "bypass_indicator": "LD3 is forced high while effective_mode is bypass and forced low while it is cancel, independently of the pattern the caller asks for",
+  "button_semantics": {
+    "BTN0": "long press >=1.0 s starts recalibration (short presses ignored by A)",
+    "BTN1": "short press toggles start/stop; C interprets it against its own state",
+    "BTN2": "short press confirms quiet",
+    "BTN3": "short press aborts and mutes"
+  },
+  "verified_on_hardware": [
+    "BTN0 press visible in status[30:27]",
+    "LED bits writable and readback 0x3C",
+    "SW0 flip changes status[25]/[24]"
+  ]
+}

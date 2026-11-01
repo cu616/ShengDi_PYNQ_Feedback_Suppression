@@ -688,3 +688,257 @@ class ProductHardware:
 def create_product(config):
     """Factory required by recal-product-v1."""
     return ProductHardware(config)
+
+
+# ================================================================================================
+# recal-runtime-v2 adaptation
+# ================================================================================================
+OPEN_LOOP_GAIN_Q12 = [0]          # allowed during open-loop calibration (no amplification)
+
+
+class ProductHardwareV2(ProductHardware):
+    """v2 behaviour required by C (contracts/recal-runtime-v2.md)."""
+
+    LEVEL_LADDER = (-22.0, -19.3, -16.5)
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.run_dir = None
+        self.attempt = int(config.get('attempt', 1))
+        self._last_model_sha = None
+        self._last_coeff_sha = None
+        self._input_ready = None
+
+    # ---- helpers ---------------------------------------------------------------------
+    def _capture_path(self, scene, phase, index):
+        root = pathlib.Path(self.run_dir) if self.run_dir else self.run_root
+        root.mkdir(parents=True, exist_ok=True)
+        cid = '%s/%s/%s/%02d' % (scene, self.attempt, phase, index)
+        return root / ('%s_%s_%s_%02d.npz' % (scene, self.attempt, phase, index)), cid
+
+    def _ctrl(self):
+        return self._ensure_mmio()['control']
+
+    def _write_control(self, **fields):
+        """Write control with armed-write protection and LED/gain preserved by default."""
+        control = self._ctrl()
+        cur = control.read(0) & 0xFFFFFFFF
+        if cur & 1 and not fields.pop('allow_armed', False):
+            return {'ok': False, 'error': 'refused: armed, writing control would fault the run',
+                    'control': '0x%08X' % cur}
+        value = cur
+        if 'arm' in fields:
+            value = (value & ~1) | (1 if fields['arm'] else 0)
+        if 'bypass' in fields:
+            value = (value & ~2) | (2 if fields['bypass'] else 0)
+        if 'led' in fields:
+            value = (value & ~0x3C) | ((fields['led'] & 0xF) << 2)
+        if 'gain_q12' in fields:
+            value = (value & 0xFFFF) | ((fields['gain_q12'] & 0xFFFF) << 16)
+        control.write(0, value)
+        return {'ok': True, 'control': '0x%08X' % (control.read(0) & 0xFFFFFFFF)}
+
+    # ---- mute: stop sound only --------------------------------------------------------
+    def mute(self):
+        try:
+            r = self._write_control(arm=False, allow_armed=True)
+            import os as _os
+            for reg, val in ((0x401C, 0), (0x401E, 0), (0x4023, 0xE5), (0x4024, 0xE5)):
+                fd = self._board._fd()
+                try:
+                    self._board._write8(fd, reg, val)
+                finally:
+                    _os.close(fd)
+            cur = self._ctrl().read(0) & 0xFFFFFFFF
+            return {'ok': bool(r.get('ok')), 'contract': CONTRACT, 'muted': True,
+                    'gain_q12_kept': (cur >> 16) & 0xFFFF, 'led_kept': (cur >> 2) & 0xF,
+                    'effective_mode': self.effective_mode()}
+        except Exception as exc:
+            return {'ok': False, 'contract': CONTRACT, 'muted': False, 'error': repr(exc)[:160]}
+
+    # ---- independent bypass / cancel indication ---------------------------------------
+    def indicate(self, prompt):
+        pattern = (prompt or {}).get('pattern') if isinstance(prompt, dict) else None
+        if isinstance(pattern, str) and len(pattern) == 4 and set(pattern) <= {'0', '1'}:
+            mask = int(pattern, 2)
+        else:
+            state = (prompt or {}).get('state', 'idle') if isinstance(prompt, dict) else 'idle'
+            mask = int(LED_PATTERNS.get(state, '0000'), 2)
+        mode = self.effective_mode()
+        # LD3 tells bypass apart from cancel independently of what the caller asked for
+        if mode == 'bypass':
+            mask = (mask & 0x7) | 0x8
+        elif mode == 'cancel':
+            mask = mask & 0x7
+        r = self._write_control(led=mask, allow_armed=True)
+        if not r.get('ok'):
+            return {'ok': False, 'contract': CONTRACT, 'error': r.get('error')}
+        return {'ok': True, 'contract': CONTRACT, 'pattern': format(mask, '04b'),
+                'legend': LED_LEGEND.get(format(mask, '04b'), 'custom'), 'effective_mode': mode}
+
+    # ---- training / validation: execute the encapsulated plan -------------------------
+    def _run_plan(self, request, op):
+        import hashlib
+        import numpy as np
+        scene = request.get('scene_id')
+        self.run_dir = request.get('run_dir') or self.run_dir
+        plan = request.get('plan') or {}
+        segs = plan.get(op) or plan.get('segments') or plan.get('captures') or []
+        if not segs:
+            return {'contract': CONTRACT, 'request_id': request.get('request_id'), 'scene_id': scene,
+                    'op': op, 'ok': False, 'status': 'error',
+                    'reason': 'plan_missing_%s_segments' % op}
+        peak_cap = float(plan.get('peak_cap', 0.80))
+        levels = [float(x) for x in (plan.get('levels') or self.LEVEL_LADDER)]
+        caps, accepted = [], None
+        for level in levels:
+            caps = []
+            ok_all = True
+            for i, seg in enumerate(segs):
+                seed = int(seg.get('seed', plan.get('seed', 4242) + (0 if op == 'training' else 1)))
+                n = int(seg.get('frames', self.WINDOW_FRAMES)) + 2
+                rng = np.random.default_rng(seed)
+                x = rng.standard_normal(n)
+                x -= x.mean()
+                x *= 10 ** (level / 20.0) / float(np.sqrt(np.mean(x ** 2)))
+                if float(np.max(np.abs(x))) > peak_cap:
+                    ok_all = False
+                    caps.append({'capture_id': '%s/%s/%s/%02d' % (scene, self.attempt, op, i),
+                                 'ok': False, 'reason': 'unreachable', 'level_dbfs': level, 'seed': seed})
+                    break
+                src = np.rint(x * 32767.0).astype(np.int16)
+                src_sha = hashlib.sha256(src.tobytes()).hexdigest()
+                path, cid = self._capture_path(scene, op, i)
+                try:
+                    self._driver().replay_trial(
+                        str(path), self.fixture, str(self.model_path), src, bypass=False,
+                        zero_coeff=True, gain_db=0.0, seconds=(len(src) + 2) / 48828.125 + 1e-6,
+                        hp_volume=self.hp_volume, speaker_confirmed=True,
+                        local_capture_confirmed=True, direct_only=True,
+                        reuse_overlay=False, restore_stock=False)
+                except Exception as exc:
+                    ok_all = False
+                    caps.append({'capture_id': cid, 'ok': False, 'error': repr(exc)[:140]})
+                    break
+                meta = self.__meta(np.load(str(path)))
+                status = int(meta.get('capture_status') or 0)
+                first = int(meta.get('first_frame') or 0)
+                caps.append({'capture_id': cid, 'path': str(path),
+                             'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+                             'first_frame': first, 'valid_frames': len(src) - first,
+                             'source_sha256': src_sha, 'seed': seed, 'level_dbfs': level,
+                             'ok': (status >> 22) & 1 == 0, 'bit22': (status >> 22) & 1,
+                             'content_kind': 'onboard_excitation'})
+                self._scene_frames += int(meta.get('frames') or 0)
+            if ok_all and all(c.get('ok') for c in caps):
+                accepted = level
+                break
+        return {'contract': CONTRACT, 'request_id': request.get('request_id'), 'scene_id': scene,
+                'op': op, 'ok': accepted is not None,
+                'status': 'completed' if accepted is not None else 'error',
+                'level_accepted_dbfs': accepted, 'captures': caps,
+                'source_sha256': sorted({c.get('source_sha256') for c in caps if c.get('source_sha256')}),
+                'identity': self.identity()}
+
+    # ---- cue + input in one call -------------------------------------------------------
+    def _cue_input(self, request, cancel_event=None):
+        import hashlib
+        import numpy as np
+        scene = request.get('scene_id')
+        seconds = float(request.get('seconds', 6.0))
+        cue = self._cue_pcm()
+        budget = int(seconds * 48828.125)
+        limit = budget - 2
+        if len(cue) > limit:
+            return {'ok': False, 'status': 'error', 'reason': 'window_too_short_for_cue'}
+        src = np.concatenate([cue, np.zeros(limit - len(cue), np.int16)])
+        if cancel_event is not None and cancel_event.is_set():
+            self.mute()
+            return {'ok': False, 'status': 'error', 'reason': 'cancelled'}
+        path, cid = self._capture_path(scene, 'input', 0)
+        self._driver().replay_trial(
+            str(path), self.fixture, str(self.model_path), src, bypass=False, zero_coeff=True,
+            gain_db=0.0, seconds=seconds + 1e-6, hp_volume=self.hp_volume, speaker_confirmed=True,
+            local_capture_confirmed=True, direct_only=True, reuse_overlay=False, restore_stock=False)
+        meta = self.__meta(np.load(str(path)))
+        cue_end = len(cue)
+        self._input_ready = {'request_id': request.get('request_id'), 'scene_id': scene,
+                             'capture_id': cid, 'path': str(path),
+                             'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+                             'cue_end_frame': cue_end, 'valid_first_frame': cue_end,
+                             'end_frame': self._scene_frames + int(meta.get('frames') or 0),
+                             'status': meta.get('stop_reason')}
+        self._scene_frames += int(meta.get('frames') or 0)
+        return {'contract': CONTRACT, 'request_id': request.get('request_id'), 'scene_id': scene,
+                'op': 'input', 'ok': meta.get('stop_reason') == 'completed', 'status': 'completed',
+                'input_ready': dict(self._input_ready), 'captures': [self._input_ready],
+                'valid_first_frame': cue_end, 'identity': self.identity()}
+
+    def _cue_pcm(self):
+        import numpy as np
+        parts = []
+        for _ in range(2):
+            for f in (523.25, 783.99, 1046.50):
+                parts.append(np.rint(0.08 * np.sin(2 * np.pi * f * np.arange(int(0.16 * 48828.125)) / 48828.125)
+                                     * 32767).astype(np.int16))
+                parts.append(np.zeros(int(0.05 * 48828.125), np.int16))
+            parts.append(np.zeros(int(0.35 * 48828.125), np.int16))
+        return np.concatenate(parts)
+
+    # ---- dispatch ----------------------------------------------------------------------
+    def perform(self, request, cancel_event=None):
+        op = request.get('op')
+        if op in ('training', 'validation'):
+            return self._run_plan(request, op)
+        if op == 'input' and request.get('cue'):
+            return self._cue_input(request, cancel_event)
+        if op == 'install':
+            return self._install(request)
+        return super().perform(request, cancel_event)
+
+    def _install(self, request):
+        import hashlib
+        model = self._board.load_model(request.get('model_path') or self.model_path)
+        if not model.get('ok'):
+            return {'contract': CONTRACT, 'request_id': request.get('request_id'),
+                    'scene_id': request.get('scene_id'), 'op': 'install', 'ok': False,
+                    'status': 'error', 'reason': model.get('error')}
+        self.model_path = pathlib.Path(model['path'])
+        self.fixture = request.get('scene_id') or self.fixture      # model is bound to this scene
+        gain = int(request.get('run_gain_q12', self.allowed_gain_q12[0]))
+        r = self._write_control(gain_q12=gain, arm=False, bypass=False)
+        # verify the load: one short capture with the model coefficients loaded, then read back what the
+        # PL reports it received
+        path, cid = self._capture_path(request.get('scene_id'), 'install', 0)
+        self._driver().replay_trial(str(path), self.fixture, str(self.model_path),
+                                    self._make_stimulus(seed=1, level_dbfs=-30.0),
+                                    bypass=False, zero_coeff=False, gain_db=0.0,
+                                    seconds=self.WINDOW_SECONDS + 1e-6, hp_volume=self.hp_volume,
+                                    speaker_confirmed=True, local_capture_confirmed=True,
+                                    direct_only=True, reuse_overlay=False, restore_stock=False)
+        meta = self.__meta(np.load(str(path)))
+        coeff_sha = hashlib.sha256(
+            __import__('numpy').asarray(__import__('numpy').load(str(self.model_path))['coefficients_q20'],
+                                        dtype='<i4').tobytes()).hexdigest() if True else None
+        file_sha = hashlib.sha256(pathlib.Path(model['path']).read_bytes()).hexdigest()
+        self._last_model_sha, self._last_coeff_sha = file_sha, coeff_sha
+        return {'contract': CONTRACT, 'request_id': request.get('request_id'),
+                'scene_id': request.get('scene_id'), 'op': 'install',
+                'ok': bool(r.get('ok')), 'status': 'completed',
+                'model_sha256': file_sha, 'coefficients_sha256': coeff_sha,
+                'loaded_count': meta.get('loaded_count'), 'taps': model['taps'],
+                'applies_at': 'immediately', 'run_gain_q12': gain,
+                'identity': self.identity()}
+
+    # ---- poll: running identity ---------------------------------------------------------
+    def poll(self):
+        r = super().poll()
+        if self._last_model_sha:
+            r['model_sha256'] = self._last_model_sha
+            r['coefficients_sha256'] = self._last_coeff_sha
+        r['open_loop_gain_q12_allowed'] = OPEN_LOOP_GAIN_Q12
+        return r
+
+
+def create_product(config):          # noqa: F811 - v2 replaces the factory
+    return ProductHardwareV2(config)
