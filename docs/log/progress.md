@@ -1,5 +1,9 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-01 C 交常驻重标定产品软件v1
+
+核对main=f378262缺实体I/O及即时停止能力后，先交最小接口和A/B/C文件边界，使用模拟硬件与固定算法返回独立开发。实现唯一recal_entry、显式状态机、可终止B子进程、配置身份绑定、独立验证后原子模型安装、真实单次结束与多布局单回包；复用assembler与Q20检查，不改A/B实现。21项软件用例、Bash语法、独立解压模拟到ready及启动拒绝/回包核验通过；首次文件句柄/路径失败、阶段增益与坏提示窗纠错保留。真实适配/灯键/服务安装及两布局现场未执行，安装包不标实物就绪。[接口](../contracts/recal-product-v1.md)、[操作](../ref/recal-product.md)、[机器回执](../../report/verification/recal-product-v1/package-check.json)、[任务与纠错](../../report/ai-records/recal-product-v1.md)。
+
 ## 2026-10-30 C 修正集成树五项历史验收失败
 
 取得5c43d62并原样复现delivery四项/tail一项失败，确认两项源钉值属于be3200e r1，不重钉为现行字节。2e7c205改测试指向SHA固定的原ZIP解压根并保持五项哈希校验，源篡改仍D2拒绝；registry不再钉总数或旧文件哈希，旧默认缺项仍拒绝、不改生产选择。C及集成副本定向20/20，v3载荷10/10，C文档126份零错误；正式集成目录文档与全379由A按原计划执行。认可C三栏metric与A现行README入口，未改硬件/模型或操板。[证据](../../materials/work/c/integration-review-5c43d62.json)、[历史作用域](../ref/cold-start-reproduction.md#在后续集成树中复核历史r1)。

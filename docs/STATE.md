@@ -38,15 +38,15 @@
   对照与现场增益点位：`python scripts/analyze_path.py --data-dir <目录>`。
 - 可选并行：512 抽头的 RTL 仿真与布局布线（现在只有公式推算）。
 
-### C 测评与工具
+### C 产品软件、统一入口与测评
 
-**最后动作**：2026-10-30复核A集成树5c43d62的五项失败，修复提交2e7c205已推C。历史r1验收改指SHA固定的冻结ZIP解压根；registry测试按指定条目与测试局部批准，不钉总数或旧文件哈希。C及独立集成副本的delivery7/tail13均通过，测试不增不减、不跳过；v3载荷10/10不变。
-**当前卡点**：A取修复提交后按其计划执行全量379、A三套及正式集成目录文档检查，main由队长决定。报告与候选后续需汇入已到的A/B材料；官方模板、最终媒体与真实RAR仍待收口。本轮未操板、未改A运行源码/RTL、B模型或默认模型选择。
+**最后动作**：2026-11-01按队长新任务交recal-product-v1：C拥有唯一recal_entry.sh、常驻状态机、原子模型事务与打包/回包入口。软件21项定向用例通过，Bash语法通过；独立解压用真实B子进程的模拟流程到ready，缺适配拒绝真实启动、导出与只读审计通过。最终软件包源2a7e3c9，安装ZIP23884字节，SHA及完整回执见下。
+**当前卡点**：尚不能宣称陌生队友的实体流程完成。已核对main=f378262的hw_api缺按钮/LED、非侵入poll和即时abort，且未提供create_product；B evaluate与受审策略未交。当前安装包明确software_simulation_only，真实启动/安装检查拒绝开启音频；A/B按v1适配后由A统一一次现场窗口验证两布局/拨码。
 
-- [本轮集成复核证据](../materials/work/c/integration-review-5c43d62.json)、[历史r1作用域及正确入口](ref/cold-start-reproduction.md#在后续集成树中复核历史r1)。五项旧源哈希与be3200e和原ZIP一致，manifest/ZIP未改；源被篡改仍报D2，不把历史验收改写成v3验收。
-- B现行catalog缺少旧默认标定条目时保持拒绝，不退选其他模型；正路径仅在测试内显式批准所需条目。03-metric.txt采用C三栏版、运行README保留A现行入口并链接C历史说明均已接受。
-- 既有[报告初稿与候选回执](../materials/work/c/release-checklist.md)、[引用表](../materials/work/c/claims.md)、Skill和源稿ff8e77d保持原冻结范围；原候选121项及9页PDF未因本次测试修正重新生成。A e939bf0/B683493c的片段与清单已在远端集成树可见，不再列为缺件。
-- 本C分支A/B段及顶部全局段是旧快照，冻结技术现状读[最新A STATE](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/A/docs/STATE.md)，不以本C旧硬件副本覆盖A。推送只用C，采用本机代理和Git OpenSSL命令级配置，未改origin或持久配置。
+- [最小接口与文件边界](contracts/recal-product-v1.md)、[首次安装/日常实体操作/单一回包](ref/recal-product.md)、[软件21项](../report/verification/recal-product-v1/software-tests.json)、[包身份与解压检查](../report/verification/recal-product-v1/package-check.json)、[结构化样例](../report/verification/recal-product-v1/interface-samples.json)、[原始任务及纠错](../report/ai-records/recal-product-v1.md)。
+- 候选须独立验证并核安装实际模型/Q20身份后才原子生效；移动后重标定首先禁用旧模型，失败仅保留归档。开环与运行增益按A允许集合/B阶段策略分别绑定；AUX实际字节、Codec、采样率、位流/驱动/helper全程核对。无保护不自动通过。
+- STOP不等待计算；每个硬件/计算阶段取消、过载、拒收、数据不足、安装失败、混搭、提示窗、独立验证、实际模式与有限重试均有模拟证据。单次真实结束不拼段；返回区分有效/不足/拒收/过载/异常/取消，听感另存。
+- 安装ZIP位于materials/final，仅本地保存不进Git；systemd/真实灯键/真实B数值及现场两布局尚未执行，C未操板、未改A/B实现。原报告/Skill与历史r1验收保留原范围，不作为本产品已上板证据。技术硬件现状读最新main/A STATE，不能用本C分支旧硬件副本覆盖main。
 
 ## 已验证 / 未验证（只在这里写一次）
 

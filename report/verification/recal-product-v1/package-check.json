@@ -1,0 +1,82 @@
+{
+  "contract": "recal-product-v1",
+  "source_commit": "2a7e3c94b299a648be9a6d0dabdcd114ccb2997c",
+  "source_tree_clean": true,
+  "package": "materials\\final\\shengdi-recal-product-v1.zip",
+  "package_sha256": "d4f8c6077ebab83506878b0526933710bea14f9d29d7e051440906e7e0072c0a",
+  "package_bytes": 23884,
+  "manifest_sha256": "c6f1315ab91c04246a12873dc8c928dcedb7c6812118367737861832764e8c10",
+  "payload_count": 9,
+  "simulation_only": true,
+  "deployment_ready": false,
+  "missing": [
+    "hardware: v1 adapter and approved policy not delivered",
+    "algorithm: v1 adapter and approved policy not delivered"
+  ],
+  "independent_extraction": true,
+  "document_link_errors": 0,
+  "checks": [
+    {
+      "name": "physical launch blocked",
+      "args": [
+        "--check"
+      ],
+      "expected_exit_code": 2,
+      "exit_code": 2,
+      "passed": true,
+      "output": "{\"identity_ok\": true, \"deployment_ready\": false, \"missing\": [\"hardware: v1 adapter and approved policy not delivered\", \"algorithm: v1 adapter and approved policy not delivered\"]}\n"
+    },
+    {
+      "name": "physical mode blocked without adapters",
+      "args": [],
+      "expected_exit_code": 2,
+      "exit_code": 2,
+      "passed": true,
+      "output": "PRODUCT_STOPPED physical adapters not ready: hardware: v1 adapter and approved policy not delivered,algorithm: v1 adapter and approved policy not delivered\n"
+    },
+    {
+      "name": "full process simulation",
+      "args": [
+        "--simulate",
+        "--once",
+        "--state-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-smoke"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "passed": true,
+      "output": "{\"state\": \"ready\", \"outcome\": \"valid_pass\", \"reason\": \"独立验证与安装通过\"}\n"
+    },
+    {
+      "name": "single return export",
+      "args": [
+        "--state-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-smoke",
+        "--export",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-return.zip"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "passed": true,
+      "output": "{\"path\": \"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\recal-product-v1-final-return.zip\", \"sha256\": \"ecca8217b5fc3efe95a0b9a0a155371c783b90d73ad6ffffc0dc57d6b3fec080\", \"records\": 1}\n"
+    },
+    {
+      "name": "offline return identity audit",
+      "args": [
+        "--review-return",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-return.zip"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "passed": true,
+      "output": "{\"identity_ok\": true, \"issues\": [], \"layouts\": [{\"scene_id\": \"0b8a8fbb395a4dec9c264c37a136fdae\", \"state\": \"cancelled\", \"outcome\": \"user_cancelled\", \"observed_modes\": [], \"numeric_validation\": {\"contract\": \"recal-product-v1\", \"request_id\": \"d38c29bcfc7f4a69bb848b1450f4397e\", \"scene_id\": \"0b8a8fbb395a4dec9c264c37a136fdae\", \"decision\": \"valid_pass\", \"reason\": \"SYNTHETIC fixed algorithm result; not measured benefit\", \"model_sha256\": \"e1cd659e6f5cbe0c19e0187a1546b554adc74f01a7c54b62d22c1e5cf45bb94c\", \"validation_ids\": [\"0b8a8fbb395a4dec9c264c37a136fdae-validation-0\"], \"qualifies_cancellation\": true, \"evidence\": {\"kind\": \"synthetic fixed decision, not hardware\"}}, \"listening\": [], \"raw_paths_retained\": [\"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\recal-product-v1-final-smoke\\\\runs\\\\0b8a8fbb395a4dec9c264c37a136fdae\\\\training0.json\", \"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\recal-product-v1-final-smoke\\\\runs\\\\0b8a8fbb395a4dec9c264c37a136fdae\\\\validation0.json\"]}], \"layout_count\": 1, \"scope\": \"independent return identity/scope audit; numerical re-analysis uses included originals with the frozen B interface\", \"effect_pass_inferred\": false, \"hardware_operations\": 0}\n"
+    }
+  ],
+  "ok": true,
+  "hardware_operations": 0,
+  "unexecuted": [
+    "Linux/systemd installation",
+    "real A/B numerical and hardware adapters",
+    "two-layout physical acceptance"
+  ]
+}
