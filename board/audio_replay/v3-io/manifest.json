@@ -1,13 +1,13 @@
 {
   "package": "audio-replay-v3-io",
-  "note": "v3-sw plus BTN0-3 inputs (status[30:27]) and LED0-3 outputs (control[5:2]); algorithm core unchanged",
+  "note": "v3-sw + BTN0-3 (status[30:27]) + LD0-3 (control[5:2]); algorithm core unchanged",
   "hashes": {
     "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
     "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
     "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
-    "hw_api.py": "7cff49836597d1e2792134d8aefd1fbea16f3da09395327c8b4741305ada7d3d",
+    "hw_api.py": "2f253b188ab884d88411ad77f7a30897d98e9c9c927c3b15a8c1eef475a3f484",
     "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
-    "replay_trial_repair.py": "46da32c743adca3acbc04b80483fbbcbca5bbef2d94be3600bd628db5918131e",
+    "replay_trial_repair.py": "22851d322e7c527a8903d367139924b2d780f98814f3ab1af3bd1f07bbf6efbb",
     "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
     "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4"
   }
