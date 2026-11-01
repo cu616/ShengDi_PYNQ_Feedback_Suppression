@@ -37,7 +37,7 @@ REG_AUX_R = 0x400D
 
 SWITCH_MAP = {'sw0_raw_bit': 25, 'sw0_sync_bit': 24, 'sw1_sync_bit': 23,
               'sw0_up_means': 'bypass forced (canceller off)'}
-UNSUPPORTED = {'led': 'no LED interface in bitstream 2113a454', 'buttons': 'no button interface in bitstream 2113a454'}
+UNSUPPORTED = {'led': 'requires the I/O integration bitstream (audio_replay_io)', 'buttons': 'requires the I/O integration bitstream (audio_replay_io)'}
 
 
 def _driver():
@@ -174,13 +174,33 @@ class Board:
                 'sw1_up': bool(s['sw1_sync']), 'sw0_up_means': SWITCH_MAP['sw0_up_means'],
                 'map': SWITCH_MAP}
 
+    # ---- buttons and LEDs (I/O integration build) -------------------------------------------
     def read_buttons(self):
-        return {'ok': False, 'supported': False, 'detail': UNSUPPORTED['buttons'],
-                'action_needed': 'one I/O integration build adding BTN0/1/3'}
+        """BTN3..BTN0 as synchronised in the PL and reported in capture_status[30:27]."""
+        r = self.capture(0.4)
+        s = r.get('status')
+        if not s:
+            return {'ok': False, 'error': r.get('error'), 'supported': 'needs the I/O bitstream'}
+        word = int(s['raw'], 16)
+        bits = [(word >> (27 + i)) & 1 for i in range(4)]
+        return {'ok': True, 'btn': bits, 'any_pressed': any(bits),
+                'map': {'btn0': 'start recalibration (long press)', 'btn1': 'start/stop amplification',
+                        'btn2': 'unused', 'btn3': 'abort and mute'}}
 
-    def set_led(self, mask=0):
-        return {'ok': False, 'supported': False, 'detail': UNSUPPORTED['led'],
-                'action_needed': 'one I/O integration build adding LD0-3'}
+    def set_led(self, mask=0, control_mmio=None):
+        """Drive LD3..LD0 from control[5:2]. Refused while armed."""
+        if control_mmio is None:
+            return {'ok': False, 'error': 'control MMIO base required', 'supported': True}
+        control = control_mmio
+        current = control.read(0) & 0xFFFFFFFF
+        if current & 1:
+            return {'ok': False, 'error': 'refused: pipeline is armed, writing control would fault the run',
+                    'control': '0x%08X' % current}
+        value = (current & ~0x3C) | ((mask & 0xF) << 2)
+        control.write(0, value)
+        back = control.read(0) & 0xFFFFFFFF
+        return {'ok': ((back >> 2) & 0xF) == (mask & 0xF), 'led': (back >> 2) & 0xF,
+                'control': '0x%08X' % back}
 
     def stop(self):
         try:
@@ -191,6 +211,6 @@ class Board:
 
     def capabilities(self):
         return {'audio': True, 'aux_stage': True, 'switches': True,
-                'buttons': False, 'leds': False,
+                'buttons': True, 'leds': True,
                 'notes': ['buttons and LEDs need one I/O integration build; the algorithm core is untouched',
                           'all audio goes through replay_trial_repair (single formal driver)']}
