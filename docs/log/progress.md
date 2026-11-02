@@ -1,5 +1,19 @@
 ## 2026-10-31 重标定第二次尝试（多音）　A　未到判据即被保护拦下：模型系数放大 48 倍，发现缺"预测余量"闸
 
+## 2026-11-02 A 线交接（会话结束）
+
+- 冻结并通过验收：`shengdi-recal-7bd365b-0b09ef6-final.zip`（sha256 `4be5083a…`），板上
+  `deployment_ready=true`、`missing=[]`、`--adapter-check` 返回 `compatibility_issues=[]` 且
+  `CLOSED_VERIFICATION bit_exact=True`（15872 帧逐位一致）；已安装到 `/opt/shengdi/current`。
+- 已完成并验证：cue+input 单次调用（`cue_end=valid_first=21969`）、6+2 三档标定（首档 −22.0 通过、
+  训练/验证源独立）、install 装载核验（512 taps、系数回读一致）、30 秒实时扩声（有放大/清晰/无啸叫）、
+  急停 9.8 ms、115 cm 物理控件三项全过。
+- 未解决：产品服务三次把 PS 卡死（其中一次仅执行 `systemctl restart`，排除并发因素）；
+  上电后 codec AUX 为默认值 `0x00` 导致启动即身份校验失败（临时绕过 `fix_aux_boot.sh`）；
+  CAL 失败后必须重启服务才能重试；时序 `quiet=2s / speech=2.5s` 偏紧。
+- 交接文档：`docs/ref/a-line-handover.md`、`docs/ref/ai-collaboration-habits.md`。
+
+
 - 白噪在 322 Hz 相干仅 0.374（3–8 kHz 有 0.73），故换成 bin 对齐 1/3 倍频程多音 + 322 Hz 线。
 - 结果：`runtime saturation guard` 在第 115 帧停声，三臂一臂都没完成 → 候选被拒。
   系数：max|h| **2.217**、L1 **178.3**；部署模型 max|h| 0.046、L1 2.288（约 48 倍）。

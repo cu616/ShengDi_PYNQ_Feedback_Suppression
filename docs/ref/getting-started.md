@@ -125,6 +125,9 @@ Capture.validate / load_capture
 
 构建脚本会创建或覆盖生成工程，第一次阅读不要直接运行。已有验证使用Vivado2018.3；升级工具链不属于入门必做项。
 
+**接手 A 线之前**：先读 [a-line-handover.md](a-line-handover.md)（现状、阻塞、路径、下一步）
+和 [ai-collaboration-habits.md](ai-collaboration-habits.md)（与 A 协作的硬性习惯）。
+
 **只想上板操作**（按哪个键、拨哪个开关、换距离怎么做、卡住怎么复位）：直接看
 [board-quickstart.md](board-quickstart.md)，不用读上面这些。
 
