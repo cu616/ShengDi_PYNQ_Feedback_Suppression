@@ -35,30 +35,37 @@
     <line x1="80" y1="108" x2="1840" y2="108" stroke="#dfe3e8" stroke-width="2"/>
   </g>
 
-  <!-- 场景 -->
+  <!-- 场景
+       坐标约定（改位置就看这里）：
+         四个图形的基准点 = <g transform="translate(X,Y)">
+         水平连线统一走 y=330，箭头尖端落在目标图形边缘外 4px
+         麦克风话筒头 508–612 × 268–372，支架底 438
+         处理器框     770–1150 × 228–408
+         扬声器框     1350–1490 × 234–406
+  -->
   <g id="scene">
     <!-- 说话的人 -->
-    <g id="person" transform="translate(180,300)">
-      <circle cx="0" cy="0" r="34" fill="#cfd6de"/>
-      <path d="M-46,86 C-46,44 -18,26 0,26 C18,26 46,44 46,86 Z" fill="#cfd6de"/>
-      <text x="0" y="140" text-anchor="middle" class="lbl">讲话者</text>
+    <g id="person" transform="translate(180,320)">
+      <circle cx="0" cy="-14" r="34" fill="#cfd6de"/>
+      <path d="M-46,72 C-46,30 -18,12 0,12 C18,12 46,30 46,72 Z" fill="#cfd6de"/>
+      <text x="0" y="122" text-anchor="middle" class="lbl">讲话者</text>
     </g>
 
     <!-- 麦克风 -->
-    <g id="mic" transform="translate(560,330)">
+    <g id="mic" transform="translate(560,320)">
       <rect x="-26" y="-52" width="52" height="104" rx="26" fill="#1f2933"/>
-      <path d="M-44,20 L-44,40 A44,44 0 0,0 44,40 L44,20" fill="none" stroke="#1f2933" stroke-width="7" stroke-linecap="round"/>
-      <line x1="0" y1="78" x2="0" y2="118" stroke="#1f2933" stroke-width="7" stroke-linecap="round"/>
-      <text x="0" y="160" text-anchor="middle" class="lbl">麦克风</text>
+      <path d="M-44,10 L-44,30 A44,44 0 0,0 44,30 L44,10" fill="none" stroke="#1f2933" stroke-width="7" stroke-linecap="round"/>
+      <line x1="0" y1="74" x2="0" y2="118" stroke="#1f2933" stroke-width="7" stroke-linecap="round"/>
+      <text x="-34" y="196" text-anchor="end" class="lbl">麦克风</text>
     </g>
 
     <!-- 处理器 -->
-    <g id="proc" transform="translate(960,280)">
+    <g id="proc" transform="translate(960,320)">
       <rect x="-190" y="-92" width="380" height="180" rx="16" fill="#ffffff" stroke="#c9d1da" stroke-width="3"/>
-      <text x="0" y="-52" text-anchor="middle" class="k" font-weight="600">反馈预测与相减</text>
-      <text x="0" y="-8" text-anchor="middle" class="small" id="procA">用实际播放信号 u[n] 预测回传</text>
-      <text x="0" y="32" text-anchor="middle" class="small" id="procB">麦克风信号 − 预测 = 残差</text>
-      <text x="0" y="128" text-anchor="middle" class="lbl">FPGA（PL 侧）</text>
+      <text x="0" y="-50" text-anchor="middle" class="k" font-weight="600">反馈预测与相减</text>
+      <text x="0" y="-6" text-anchor="middle" class="small" id="procA">用实际播放信号 u[n] 预测回传</text>
+      <text x="0" y="34" text-anchor="middle" class="small" id="procB">麦克风信号 − 预测 = 残差</text>
+      <text x="0" y="126" text-anchor="middle" class="lbl">FPGA（PL 侧）</text>
     </g>
 
     <!-- 扬声器 -->
@@ -66,33 +73,33 @@
       <rect x="-70" y="-86" width="140" height="172" rx="12" fill="#e6ebf0" stroke="#c9d1da" stroke-width="3"/>
       <circle cx="0" cy="-32" r="30" fill="#1f2933" opacity="0.85"/>
       <circle cx="0" cy="56" r="20" fill="#1f2933" opacity="0.55"/>
-      <text x="0" y="140" text-anchor="middle" class="lbl">扬声器</text>
+      <text x="0" y="126" text-anchor="middle" class="lbl">扬声器</text>
     </g>
 
-    <!-- 人 → 麦：有用语音 -->
-    <path id="voicePath" d="M250,360 C330,360 400,352 486,348" fill="none"
+    <!-- 人 → 麦：有用语音（终点贴话筒头左缘 508） -->
+    <path id="voicePath" d="M222,330 L504,330" fill="none"
           stroke="#2f7ed8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
-    <text id="voiceLbl" x="330" y="322" class="lbl" fill="#2f7ed8">有用语音</text>
+    <text id="voiceLbl" x="368" y="296" text-anchor="middle" class="lbl" fill="#2f7ed8">有用语音</text>
 
-    <!-- 麦 → 处理器 -->
-    <path id="micToProc" d="M610,368 C680,368 710,368 762,368" fill="none"
+    <!-- 麦 → 处理器（起点贴话筒头右缘 612，终点贴框左缘 770） -->
+    <path id="micToProc" d="M616,330 L766,330" fill="none"
           stroke="#2f7ed8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
-    <text id="micToProcLbl" x="640" y="336" class="small">麦克风信号</text>
+    <text id="micToProcLbl" x="692" y="296" text-anchor="middle" class="small">麦克风信号</text>
 
-    <!-- 处理器 → 扬声器 -->
-    <path id="procToSpk" d="M1158,368 C1210,368 1250,368 1330,368" fill="none"
+    <!-- 处理器 → 扬声器（起点贴框右缘 1150，终点贴扬声器左缘 1350） -->
+    <path id="procToSpk" d="M1154,330 L1346,330" fill="none"
           stroke="#2f7ed8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
-    <text id="outLbl" x="1170" y="336" class="small">输出</text>
+    <text id="outLbl" x="1250" y="296" text-anchor="middle" class="small">输出</text>
 
-    <!-- 回传弧：扬声器 → 麦克风 -->
-    <path id="fbPath" d="M1420,470 C1420,760 620,820 562,470" fill="none"
+    <!-- 回传弧：扬声器底 406 → 麦克风支架底 438，箭头朝上落在支架末端 -->
+    <path id="fbPath" d="M1470,406 C1560,640 560,700 560,444" fill="none"
           stroke="#e8833a" stroke-width="7" stroke-linecap="round" stroke-dasharray="18 14"/>
-    <text id="fbLbl" x="960" y="800" text-anchor="middle" class="lbl" fill="#c96a1e">扬声器声音回传到麦克风 = 反馈</text>
+    <text id="fbLbl" x="960" y="742" text-anchor="middle" class="lbl" fill="#c96a1e">扬声器声音回传到麦克风 = 反馈</text>
 
-    <!-- 预测支路：u → FIR → 预测 -->
-    <path id="predPath" d="M1280,300 C1280,196 1080,196 990,196" fill="none"
+    <!-- 预测支路：从扬声器上方回到处理器框顶部，箭头向下进框 -->
+    <path id="predPath" d="M1420,232 C1330,152 1120,140 1052,224" fill="none"
           stroke="#2e9e6b" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
-    <text id="predLbl" x="1010" y="168" class="lbl" fill="#237a52">预测回传分量</text>
+    <text id="predLbl" x="1258" y="128" text-anchor="middle" class="lbl" fill="#237a52">预测回传分量</text>
 
     <!-- 相减符号（处理器框内已用文字表达，这里不再单独画，避免压住文字） -->
 
@@ -221,8 +228,70 @@ function render(t){
   set('head', (1 - e) * head);
 }
 
-// 截图模式：#t=12.5 渲染该时刻的静态帧；无 hash 则循环播放
+/* ---------------- 手动微调模式：地址栏加 #edit ---------------- */
+function svgPoint(evt){
+  const svg = document.getElementById('stage');
+  const pt = svg.createSVGPoint();
+  pt.x = evt.clientX; pt.y = evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function enableEdit(){
+  render(17);                       // 17 秒时所有元素都已出现
+  const panel = document.createElement('div');
+  panel.style.cssText = 'position:fixed;right:16px;top:16px;width:360px;background:#fff;'
+    + 'border:1px solid #c9d1da;border-radius:10px;padding:12px;z-index:99;'
+    + 'font:13px/1.6 "Microsoft YaHei",sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.14)';
+  panel.innerHTML =
+    '<b>拖动元素改位置</b><br>'
+    + '<span style="color:#5b6672">直接拖图里的方块、文字、箭头。拖完点“生成代码”，'
+    + '把框里的内容整段发给我。</span>'
+    + '<textarea id="out" style="width:100%;height:190px;margin-top:8px;font:12px monospace;'
+    + 'border:1px solid #dfe3e8;border-radius:6px;padding:6px"></textarea>'
+    + '<button id="dump" style="margin-top:6px;padding:5px 12px;cursor:pointer">生成代码</button>'
+    + '<button id="reset" style="margin-top:6px;margin-left:8px;padding:5px 12px;cursor:pointer">'
+    + '撤销全部</button>';
+  document.body.appendChild(panel);
+
+  const dirty = new Set();
+  let cur = null, start = null, base = '';
+
+  document.querySelectorAll('#scene [id], #signals [id]').forEach(el => {
+    if (el.id === 'scene' || el.id === 'signals') return;
+    el.style.cursor = 'move';
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      cur = el; start = svgPoint(e);
+      base = el.getAttribute('transform') || '';
+      el.dataset.base = base;
+      el.setPointerCapture(e.pointerId);
+      dirty.add(el);
+    });
+    el.addEventListener('pointermove', e => {
+      if (cur !== el || !start) return;
+      const p = svgPoint(e);
+      const m = /translate\(\s*([-\d.]+)[,\s]+([-\d.]+)\s*\)/.exec(el.dataset.base || '');
+      const bx = m ? parseFloat(m[1]) : 0, by = m ? parseFloat(m[2]) : 0;
+      el.setAttribute('transform',
+        `translate(${(bx + p.x - start.x).toFixed(0)},${(by + p.y - start.y).toFixed(0)})`);
+    });
+    el.addEventListener('pointerup', () => { cur = null; start = null; });
+  });
+
+  document.getElementById('dump').onclick = () => {
+    const lines = [...dirty].map(el => `${el.id}  ${el.getAttribute('transform') || 'translate(0,0)'}`);
+    document.getElementById('out').value = lines.length ? lines.join('\n') : '还没拖动任何元素';
+  };
+  document.getElementById('reset').onclick = () => {
+    dirty.forEach(el => el.setAttribute('transform', el.dataset.base || ''));
+    dirty.clear();
+    document.getElementById('out').value = '';
+  };
+}
+
+// 截图模式：#t=12.5 渲染该时刻的静态帧；#edit 进微调；无 hash 则循环播放
 function boot(){
+  if (/edit/.test(location.hash || '')) { enableEdit(); return; }
   const m = /t=([\d.]+)/.exec(location.hash || '');
   if (m) {
     render(Math.min(DUR, parseFloat(m[1])));
