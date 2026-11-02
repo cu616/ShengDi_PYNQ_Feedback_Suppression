@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;padding:0;background:#fff;}
+  svg{display:block;font-family:"Microsoft YaHei","PingFang SC",sans-serif;}
+</style>
+</head>
+<body>
+<svg width="1200" height="859" viewBox="0 0 1200 859" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#2F2F2F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#D2691E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="859" fill="#FFFFFF"/>
+
+  <rect x="40" y="192" width="170" height="96" rx="10" fill="#FFFFFF" stroke="#2F2F2F" stroke-width="2.5"/>
+  <text x="125" y="236" text-anchor="middle" font-size="46" fill="#2F2F2F">麦克风</text>
+
+  <line x1="214" y1="240" x2="234" y2="240" stroke="#2F2F2F" stroke-width="3" marker-end="url(#ar)"/>
+
+  <circle cx="280" cy="240" r="38" fill="#FFFFFF" stroke="#2F2F2F" stroke-width="2.5"/>
+  <line x1="264" y1="240" x2="296" y2="240" stroke="#2F2F2F" stroke-width="3.5"/>
+
+  <line x1="322" y1="240" x2="342" y2="240" stroke="#2F2F2F" stroke-width="3" marker-end="url(#ar)"/>
+
+  <rect x="350" y="192" width="160" height="96" rx="10" fill="#FFFFFF" stroke="#2F2F2F" stroke-width="2.5"/>
+  <text x="430" y="236" text-anchor="middle" font-size="46" fill="#2F2F2F">× g</text>
+
+  <line x1="514" y1="240" x2="552" y2="240" stroke="#2F2F2F" stroke-width="3" marker-end="url(#ar)"/>
+
+  <rect x="560" y="192" width="190" height="96" rx="10" fill="#FFFFFF" stroke="#2F2F2F" stroke-width="2.5"/>
+  <text x="655" y="236" text-anchor="middle" font-size="44" fill="#2F2F2F">Codec</text>
+
+  <line x1="754" y1="240" x2="792" y2="240" stroke="#2F2F2F" stroke-width="3" marker-end="url(#ar)"/>
+
+  <rect x="800" y="192" width="170" height="96" rx="10" fill="#FFFFFF" stroke="#2F2F2F" stroke-width="2.5"/>
+  <text x="885" y="236" text-anchor="middle" font-size="46" fill="#2F2F2F">音箱</text>
+
+  <circle cx="533" cy="240" r="7" fill="#2F2F2F"/>
+  <polyline points="533,247 533,462 380,462 380,514" fill="none" stroke="#2F2F2F" stroke-width="3" marker-end="url(#ar)"/>
+  <text x="552" y="418" font-size="42" fill="#2F2F2F">u[n]</text>
+
+  <rect x="160" y="520" width="240" height="110" rx="10" fill="#EEF3FB" stroke="#2F2F2F" stroke-width="2.5"/>
+  <text x="280" y="568" text-anchor="middle" font-size="48" fill="#2F2F2F">FIR</text>
+  <text x="280" y="612" text-anchor="middle" font-size="38" fill="#5A5A5A">预测回传</text>
+
+  <line x1="280" y1="520" x2="280" y2="284" stroke="#2F2F2F" stroke-width="3" marker-end="url(#ar)"/>
+
+  <path d="M885 288 L885 726 L125 726 L125 288" fill="none" stroke="#D2691E" stroke-width="4"
+        stroke-dasharray="16 12" marker-end="url(#arO)"/>
+  <text x="505" y="786" text-anchor="middle" font-size="42" fill="#B45309">房间反馈 β</text>
+
+  <text x="1150" y="70" text-anchor="end" font-size="40" fill="#5A5A5A">PS：配置 · 记录 · 停声</text>
+</svg>
+</body>
+</html>
