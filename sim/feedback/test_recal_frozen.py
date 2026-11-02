@@ -123,6 +123,8 @@ class FrozenTests(unittest.TestCase):
             (package/name).write_bytes(subprocess.check_output(['git','show','a3f516f:board/audio_replay/v3-io/'+name]))
         model=self.folder/'current-model.json';model.write_bytes(subprocess.check_output(['git','show',
             'a3f516f:models/room_v1/rewired_512_20261026.json']))
+        selected=json.loads(model.read_text());selected['fixture_id']='maintenance-current-scene'
+        model.write_text(json.dumps(selected),encoding='utf-8')
         (package/'recal_algorithm.py').write_bytes((ROOT/'board/audio_replay/recal_algorithm.py').read_bytes())
         cfg=self.config();cfg.update(hardware_module='hw_api',fixture='room_v1_20261026b',hp_volume=40,aux_db=0,
             allowed_gain_q12=[1631,2303,3254,4096])
@@ -140,7 +142,7 @@ class FrozenTests(unittest.TestCase):
         control=Register();status=Register();calls=[]
         q=json.loads(model.read_text())['coefficients_q20'];qsha=hashlib.sha256(np.asarray(q,dtype='<i4').tobytes()).hexdigest()
         def trial(path,fixture,model_path,source,**kw):
-            calls.append(dict(seconds=kw['seconds'],direct_only=kw['direct_only'],source_frames=len(source)))
+            calls.append(dict(seconds=kw['seconds'],direct_only=kw['direct_only'],source_frames=len(source),fixture=fixture))
             control.value=0 if kw['direct_only'] else 1631<<16
             md=dict(first_frame=4,stop_reason='completed',capture_status=0,
                 source_pcm16_sha256=hashlib.sha256(source.tobytes()).hexdigest(),
@@ -166,6 +168,7 @@ class FrozenTests(unittest.TestCase):
         self.assertEqual([s['name'] for s in receipt['steps']],['mute','capabilities','prepare','training','install','run','abort'])
         self.assertEqual(receipt['capture_valid_frames'],[16382]);self.assertFalse(receipt['steps'][1]['reply']['prepared_capture'])
         self.assertEqual(calls[1]['source_frames'],16386);self.assertEqual(calls[-1]['seconds'],3.)
+        self.assertTrue(all(c['fixture']=='maintenance-current-scene' for c in calls))
         self.assertFalse((state/'models/current.json').exists())
         self.assertTrue(receipt['compatibility_issues'])
         self.assertEqual(receipt['selected_model']['provenance'],'operator_supplied_current_model')

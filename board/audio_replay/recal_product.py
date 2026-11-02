@@ -719,6 +719,7 @@ def main():
         config=json.loads((args.base/'product-config.json').read_text(encoding='utf-8'))
         state=(args.state_dir or args.base/'maintenance-state').resolve()
         config.update(package_dir=str(args.base.resolve()),model_path=str(model),run_dir_root=str(state/'hardware'),
+                      fixture=json.loads(model.read_text(encoding='utf-8'))['fixture_id'],
                       maintenance_model_provenance=provenance)
         hw=importlib.import_module(config['hardware_module']).create_product(config)
         cancel=threading.Event()

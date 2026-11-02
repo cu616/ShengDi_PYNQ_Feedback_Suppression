@@ -1,0 +1,4729 @@
+{
+  "a_commit": "5939ee5",
+  "a_file_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9",
+  "scope": "unmodified A factory and C entry; fake MMIO/codec/driver leaf; real B subprocess",
+  "board_operations": 0,
+  "calibration": {
+    "state": "ready",
+    "outcome": "valid_pass",
+    "reason": "独立验证与安装通过"
+  },
+  "final_entry": {
+    "state": "ended",
+    "outcome": "completed",
+    "reason": "单次运行已真实结束，未拼段重启"
+  },
+  "first_scene_id": "149b106ce8684e62b259585b038286a0",
+  "second_scene": {
+    "scene_id": "89d38958f4734a22bc9872642c632e05",
+    "state": "ready",
+    "outcome": "valid_pass",
+    "reason": "独立验证与安装通过"
+  },
+  "first_scene_result": {
+    "contract": "recal-product-v1",
+    "simulation": false,
+    "scene_id": "149b106ce8684e62b259585b038286a0",
+    "package_manifest_sha256": null,
+    "runtime_identity": {
+      "aux_db": 0.0,
+      "aux_raw_left": 5,
+      "aux_raw_right": 5,
+      "hp_volume": 40,
+      "gain_q12": 1631,
+      "sample_rate_hz": 48828.125,
+      "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+      "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+      "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+    },
+    "gain_scope": "runtime",
+    "state": "ended",
+    "outcome": "completed",
+    "reason": "单次运行已真实结束，未拼段重启",
+    "identity": {
+      "aux_db": 0.0,
+      "aux_raw_left": 5,
+      "aux_raw_right": 5,
+      "hp_volume": 40,
+      "gain_q12": 1631,
+      "sample_rate_hz": 48828.125,
+      "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+      "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+      "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+    },
+    "effective_mode": "muted",
+    "attempt": 0,
+    "training": [
+      {
+        "capture_id": "149b106ce8684e62b259585b038286a0/1/training/00",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_00.npz",
+        "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+        "first_frame": 4,
+        "valid_frames": 16382,
+        "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+        "seed": 4242,
+        "level_dbfs": -22.0,
+        "ok": true,
+        "bit22": 0,
+        "content_kind": "onboard_excitation",
+        "reported_window": {
+          "first_frame": 4,
+          "end_frame": null
+        },
+        "end_frame": 16388
+      },
+      {
+        "capture_id": "149b106ce8684e62b259585b038286a0/1/training/01",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_01.npz",
+        "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+        "first_frame": 4,
+        "valid_frames": 16382,
+        "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+        "seed": 4242,
+        "level_dbfs": -22.0,
+        "ok": true,
+        "bit22": 0,
+        "content_kind": "onboard_excitation",
+        "reported_window": {
+          "first_frame": 4,
+          "end_frame": null
+        },
+        "end_frame": 16388
+      },
+      {
+        "capture_id": "149b106ce8684e62b259585b038286a0/1/training/02",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_02.npz",
+        "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+        "first_frame": 4,
+        "valid_frames": 16382,
+        "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+        "seed": 4242,
+        "level_dbfs": -22.0,
+        "ok": true,
+        "bit22": 0,
+        "content_kind": "onboard_excitation",
+        "reported_window": {
+          "first_frame": 4,
+          "end_frame": null
+        },
+        "end_frame": 16388
+      },
+      {
+        "capture_id": "149b106ce8684e62b259585b038286a0/1/training/03",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_03.npz",
+        "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+        "first_frame": 4,
+        "valid_frames": 16382,
+        "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+        "seed": 4242,
+        "level_dbfs": -22.0,
+        "ok": true,
+        "bit22": 0,
+        "content_kind": "onboard_excitation",
+        "reported_window": {
+          "first_frame": 4,
+          "end_frame": null
+        },
+        "end_frame": 16388
+      },
+      {
+        "capture_id": "149b106ce8684e62b259585b038286a0/1/training/04",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_04.npz",
+        "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+        "first_frame": 4,
+        "valid_frames": 16382,
+        "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+        "seed": 4242,
+        "level_dbfs": -22.0,
+        "ok": true,
+        "bit22": 0,
+        "content_kind": "onboard_excitation",
+        "reported_window": {
+          "first_frame": 4,
+          "end_frame": null
+        },
+        "end_frame": 16388
+      },
+      {
+        "capture_id": "149b106ce8684e62b259585b038286a0/1/training/05",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_05.npz",
+        "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+        "first_frame": 4,
+        "valid_frames": 16382,
+        "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+        "seed": 4242,
+        "level_dbfs": -22.0,
+        "ok": true,
+        "bit22": 0,
+        "content_kind": "onboard_excitation",
+        "reported_window": {
+          "first_frame": 4,
+          "end_frame": null
+        },
+        "end_frame": 16388
+      }
+    ],
+    "validation": [
+      {
+        "capture_id": "149b106ce8684e62b259585b038286a0/1/validation/00",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_validation_00.npz",
+        "sha256": "a42f1247139bb40a85530ff141af1c3c07dbcf0a689a54d610381f6c08c4fdb7",
+        "first_frame": 4,
+        "valid_frames": 16382,
+        "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+        "seed": 4243,
+        "level_dbfs": -22.0,
+        "ok": true,
+        "bit22": 0,
+        "content_kind": "onboard_excitation",
+        "reported_window": {
+          "first_frame": 4,
+          "end_frame": null
+        },
+        "end_frame": 16388
+      },
+      {
+        "capture_id": "149b106ce8684e62b259585b038286a0/1/validation/01",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_validation_01.npz",
+        "sha256": "a42f1247139bb40a85530ff141af1c3c07dbcf0a689a54d610381f6c08c4fdb7",
+        "first_frame": 4,
+        "valid_frames": 16382,
+        "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+        "seed": 4243,
+        "level_dbfs": -22.0,
+        "ok": true,
+        "bit22": 0,
+        "content_kind": "onboard_excitation",
+        "reported_window": {
+          "first_frame": 4,
+          "end_frame": null
+        },
+        "end_frame": 16388
+      }
+    ],
+    "bundle": {
+      "eligible": true,
+      "scene_id": "149b106ce8684e62b259585b038286a0",
+      "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\models\\archive\\149b106ce8684e62b259585b038286a0-975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c\\model.json",
+      "model_sha256": "975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c",
+      "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+      "identity": {
+        "aux_db": 0.0,
+        "aux_raw_left": 5,
+        "aux_raw_right": 5,
+        "hp_volume": 40,
+        "gain_q12": 1631,
+        "sample_rate_hz": 48828.125,
+        "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+        "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+        "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+        "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+      },
+      "validation": {
+        "contract": "recal-product-v1",
+        "request_id": "6e775c8ab28641db9c50e60abe4cfe83",
+        "scene_id": "149b106ce8684e62b259585b038286a0",
+        "decision": "valid_pass",
+        "reason": "独立验证通过：300–460 Hz 带内抑制中位 +286.35 dB（最低 +286.35）",
+        "model_sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2",
+        "validation_ids": [
+          "149b106ce8684e62b259585b038286a0/1/validation/00",
+          "149b106ce8684e62b259585b038286a0/1/validation/01"
+        ],
+        "qualifies_cancellation": true,
+        "evidence": {
+          "not_asg": true,
+          "policy": "recalibration-algorithm-v1",
+          "thresholds": {
+            "band_reduction_min_db": 0.5,
+            "full_reduction_min_db": 0.0,
+            "band_hz": [
+              300.0,
+              460.0
+            ]
+          },
+          "metrics": {
+            "band_reduction_median_db": 286.3461014673252,
+            "band_reduction_min_db": 286.3461014673252,
+            "full_reduction_median_db": 304.1020925676533,
+            "per_capture": [
+              {
+                "reduction_db": 304.102,
+                "band_reduction_db": 286.346
+              },
+              {
+                "reduction_db": 304.102,
+                "band_reduction_db": 286.346
+              }
+            ],
+            "validation_lags": [
+              180,
+              180
+            ],
+            "alignment_shifts": [
+              0,
+              0
+            ],
+            "cd_median_db_context_only": 26.612645372450245,
+            "cd_p10_db_context_only": 18.866121824358398,
+            "bound_gain_db_context_only": 9.832325119370257
+          },
+          "meaning": "measured as held-out prediction residuals on independent captures; these are prediction-suppression figures, NOT a gain-before-feedback (MSG/ASG) and NOT a listening result"
+        },
+        "algorithm_identity": {
+          "contract": "recal-product-v1",
+          "version": "recal-algorithm-2026-11-01.1",
+          "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+          "dependencies": [
+            "numpy"
+          ],
+          "python": ">=3.8",
+          "taps": 512,
+          "lag_first": 1,
+          "strategy": {
+            "attempts": [
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              }
+            ],
+            "max_attempts": 3,
+            "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+            "exit_reasons": {
+              "valid_pass": "PASS",
+              "retry": "RETRY_NEXT_LEVEL",
+              "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+              "model_rejected": "MODEL_UNQUALIFIED"
+            }
+          },
+          "thresholds": {
+            "min_valid_frames": 4096,
+            "near_full_scale": 0.999,
+            "min_excitation_snr_db": 0.0,
+            "min_gated_coherence": 0.3,
+            "coherence_floor": 0.8,
+            "sparse_line_db": 20.0,
+            "band_hz": [
+              150.0,
+              10000.0
+            ],
+            "speech_min_rms_dbfs": -55.0,
+            "speech_min_peak": 0.003,
+            "l1_max": 4.0,
+            "l1_over_max_range": [
+              25.0,
+              80.0
+            ],
+            "peak_tap_tolerance": 4,
+            "validate_band_hz": [
+              300.0,
+              460.0
+            ],
+            "validate_band_reduction_min_db": 0.5,
+            "validate_full_reduction_min_db": 0.0,
+            "min_validation_captures": 2
+          },
+          "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+          "not_asg": true
+        }
+      },
+      "source_model_sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2",
+      "installation": {
+        "request_id": "2d09e22e4fb94807a401cff65bd6bca3",
+        "source_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_model.json",
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "2d09e22e4fb94807a401cff65bd6bca3",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "install",
+          "ok": true,
+          "status": "completed",
+          "reason": null,
+          "model_sha256": "975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c",
+          "source_model_sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2",
+          "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+          "reported_coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+          "loaded_count": 512,
+          "taps": 512,
+          "applies_at": "immediately",
+          "run_gain_q12": 1631,
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 1631,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      }
+    },
+    "run": {
+      "contract": "recal-product-v1",
+      "request_id": "2ccedbb8d156447e8c4dc7debd9c6581",
+      "scene_id": "149b106ce8684e62b259585b038286a0",
+      "op": "run",
+      "ok": true,
+      "status": "completed",
+      "effective_mode": "muted",
+      "audio_frames": 16384,
+      "requested_seconds": 3.0,
+      "elapsed_seconds": 0.336,
+      "wall_seconds": 0.015,
+      "note": "elapsed_seconds is the captured window, not the requested run length; the run itself played requested_seconds",
+      "model_sha256": "975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c",
+      "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+      "capture_id": "149b106ce8684e62b259585b038286a0/1/run/00",
+      "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_run_00.npz",
+      "identity": {
+        "aux_db": 0.0,
+        "aux_raw_left": 5,
+        "aux_raw_right": 5,
+        "hp_volume": 40,
+        "gain_q12": 1631,
+        "sample_rate_hz": 48828.125,
+        "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+        "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+        "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+        "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+      },
+      "capture_sha256": "0fd0dd577b65ceb816dd245181947c28b61dc968dc6bdc6a62f7e102a1673b23",
+      "capture_elapsed_seconds": 0.33554432,
+      "audio_elapsed_seconds": 2.99999232,
+      "completed_frames": 146484,
+      "timing_source": "driver.completed_frames",
+      "metadata": {
+        "first_frame": 130100,
+        "frames": 16384,
+        "completed_frames": 146484,
+        "stop_reason": "completed",
+        "capture_status": 1,
+        "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+        "model_sha256": "975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c",
+        "sample_rate_hz": 48828.125
+      }
+    },
+    "listening": [],
+    "events": [
+      {
+        "state": "preparing",
+        "effective_mode": "muted",
+        "time_monotonic": 9666.796
+      },
+      {
+        "state": "input_capture",
+        "effective_mode": "muted",
+        "time_monotonic": 9666.89
+      },
+      {
+        "state": "quiet",
+        "effective_mode": "muted",
+        "time_monotonic": 9666.968
+      },
+      {
+        "state": "capturing",
+        "effective_mode": "muted",
+        "time_monotonic": 9667.562
+      },
+      {
+        "state": "fitting",
+        "effective_mode": "muted",
+        "time_monotonic": 9667.765
+      },
+      {
+        "state": "validating",
+        "effective_mode": "muted",
+        "time_monotonic": 9669.109
+      },
+      {
+        "state": "validating",
+        "effective_mode": "muted",
+        "time_monotonic": 9669.171
+      },
+      {
+        "state": "validating",
+        "effective_mode": "muted",
+        "time_monotonic": 9669.265
+      },
+      {
+        "state": "installing",
+        "effective_mode": "muted",
+        "time_monotonic": 9669.953
+      },
+      {
+        "state": "ready",
+        "effective_mode": "muted",
+        "time_monotonic": 9670.062
+      },
+      {
+        "state": "running",
+        "effective_mode": "muted",
+        "time_monotonic": 9670.093
+      },
+      {
+        "state": "running",
+        "effective_mode": "cancel",
+        "time_monotonic": 9670.125
+      },
+      {
+        "state": "ended",
+        "effective_mode": "muted",
+        "time_monotonic": 9670.171
+      }
+    ],
+    "candidate": {
+      "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\candidate_model.json",
+      "sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2"
+    },
+    "capture_history": [
+      {
+        "stage": "training",
+        "attempt": 0,
+        "captures": [
+          {
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/training/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_00.npz",
+            "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/training/01",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_01.npz",
+            "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/training/02",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_02.npz",
+            "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/training/03",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_03.npz",
+            "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/training/04",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_04.npz",
+            "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/training/05",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_05.npz",
+            "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          }
+        ]
+      },
+      {
+        "stage": "validation",
+        "attempt": 0,
+        "captures": [
+          {
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/validation/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_validation_00.npz",
+            "sha256": "a42f1247139bb40a85530ff141af1c3c07dbcf0a689a54d610381f6c08c4fdb7",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+            "seed": 4243,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/validation/01",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_validation_01.npz",
+            "sha256": "a42f1247139bb40a85530ff141af1c3c07dbcf0a689a54d610381f6c08c4fdb7",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+            "seed": 4243,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          }
+        ]
+      }
+    ],
+    "hardware_receipts": [
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "7405b2f4459d425091c06a8eb02bee60",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\7405b2f4459d425091c06a8eb02bee60",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 1631,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "op": "prepare",
+          "phase": "input"
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "7405b2f4459d425091c06a8eb02bee60",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "prepare",
+          "ok": true,
+          "status": "completed",
+          "prepared": true,
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "8030f202b964468ab365e2ab3a05e724",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\8030f202b964468ab365e2ab3a05e724",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "op": "input",
+          "cue": true,
+          "seconds": 2.5
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "8030f202b964468ab365e2ab3a05e724",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "input",
+          "ok": true,
+          "status": "completed",
+          "input_ready": {
+            "request_id": "8030f202b964468ab365e2ab3a05e724",
+            "scene_id": "149b106ce8684e62b259585b038286a0",
+            "capture_id": "149b106ce8684e62b259585b038286a0/1/input/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\hardware\\149b106ce8684e62b259585b038286a0_1_input_00.npz",
+            "sha256": "bd7c12e63ea4c564592d2ff5b5d1bccc26ef520b149493ccb417af9ad0bc1a9b",
+            "cue_end_frame": 21969,
+            "valid_first_frame": 21969,
+            "end_frame": 32768,
+            "status": "completed"
+          },
+          "captures": [
+            {
+              "request_id": "8030f202b964468ab365e2ab3a05e724",
+              "scene_id": "149b106ce8684e62b259585b038286a0",
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/input/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\hardware\\149b106ce8684e62b259585b038286a0_1_input_00.npz",
+              "sha256": "bd7c12e63ea4c564592d2ff5b5d1bccc26ef520b149493ccb417af9ad0bc1a9b",
+              "cue_end_frame": 21969,
+              "valid_first_frame": 21969,
+              "end_frame": 32768,
+              "status": "completed"
+            }
+          ],
+          "valid_first_frame": 21969,
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "4c67e519164f4bc18237ca41133d6419",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\4c67e519164f4bc18237ca41133d6419",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "op": "prepare",
+          "phase": "training"
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "4c67e519164f4bc18237ca41133d6419",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "prepare",
+          "ok": true,
+          "status": "completed",
+          "prepared": true,
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "79417fe20fa941409b7911bb210c8992",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "seed": 4242,
+            "validation_seed": 4242,
+            "level_dbfs": -22.0,
+            "levels": [
+              -22.0
+            ],
+            "captures": [
+              {
+                "level_dbfs": -22.0,
+                "seed": 4242,
+                "direct_only": true,
+                "zero_coeff": true,
+                "content_kind": "onboard_excitation",
+                "capture_id": "149b106ce8684e62b259585b038286a0-0-training-0"
+              },
+              {
+                "level_dbfs": -22.0,
+                "seed": 4242,
+                "direct_only": true,
+                "zero_coeff": true,
+                "content_kind": "onboard_excitation",
+                "capture_id": "149b106ce8684e62b259585b038286a0-0-training-1"
+              },
+              {
+                "level_dbfs": -22.0,
+                "seed": 4242,
+                "direct_only": true,
+                "zero_coeff": true,
+                "content_kind": "onboard_excitation",
+                "capture_id": "149b106ce8684e62b259585b038286a0-0-training-2"
+              },
+              {
+                "level_dbfs": -22.0,
+                "seed": 4242,
+                "direct_only": true,
+                "zero_coeff": true,
+                "content_kind": "onboard_excitation",
+                "capture_id": "149b106ce8684e62b259585b038286a0-0-training-3"
+              },
+              {
+                "level_dbfs": -22.0,
+                "seed": 4242,
+                "direct_only": true,
+                "zero_coeff": true,
+                "content_kind": "onboard_excitation",
+                "capture_id": "149b106ce8684e62b259585b038286a0-0-training-4"
+              },
+              {
+                "level_dbfs": -22.0,
+                "seed": 4242,
+                "direct_only": true,
+                "zero_coeff": true,
+                "content_kind": "onboard_excitation",
+                "capture_id": "149b106ce8684e62b259585b038286a0-0-training-5"
+              }
+            ]
+          },
+          "op": "training"
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "79417fe20fa941409b7911bb210c8992",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "training",
+          "ok": true,
+          "status": "completed",
+          "level_accepted_dbfs": -22.0,
+          "captures": [
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_00.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/01",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_01.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/02",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_02.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/03",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_03.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/04",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_04.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/05",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_05.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            }
+          ],
+          "source_sha256": [
+            "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5"
+          ],
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "c4050c31175645a981b73fbc5a7a2fac",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\c4050c31175645a981b73fbc5a7a2fac",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "op": "prepare",
+          "phase": "validation"
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "c4050c31175645a981b73fbc5a7a2fac",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "prepare",
+          "ok": true,
+          "status": "completed",
+          "prepared": true,
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "d162dff0074a403e87ac039eeb9e66d1",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "seed": 4243,
+            "validation_seed": 4243,
+            "level_dbfs": -22.0,
+            "levels": [
+              -22.0
+            ],
+            "captures": [
+              {
+                "level_dbfs": -22.0,
+                "seed": 4243,
+                "direct_only": true,
+                "zero_coeff": true,
+                "content_kind": "onboard_excitation",
+                "capture_id": "149b106ce8684e62b259585b038286a0-0-validation-0"
+              },
+              {
+                "level_dbfs": -22.0,
+                "seed": 4243,
+                "direct_only": true,
+                "zero_coeff": true,
+                "content_kind": "onboard_excitation",
+                "capture_id": "149b106ce8684e62b259585b038286a0-0-validation-1"
+              }
+            ]
+          },
+          "op": "validation"
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "d162dff0074a403e87ac039eeb9e66d1",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "validation",
+          "ok": true,
+          "status": "completed",
+          "level_accepted_dbfs": -22.0,
+          "captures": [
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/validation/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_validation_00.npz",
+              "sha256": "a42f1247139bb40a85530ff141af1c3c07dbcf0a689a54d610381f6c08c4fdb7",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+              "seed": 4243,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/validation/01",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_validation_01.npz",
+              "sha256": "a42f1247139bb40a85530ff141af1c3c07dbcf0a689a54d610381f6c08c4fdb7",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+              "seed": 4243,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            }
+          ],
+          "source_sha256": [
+            "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2"
+          ],
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "2d09e22e4fb94807a401cff65bd6bca3",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\2d09e22e4fb94807a401cff65bd6bca3",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "op": "install",
+          "run_gain_q12": 1631,
+          "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\models\\archive\\149b106ce8684e62b259585b038286a0-fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2\\model.json",
+          "model_sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2",
+          "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa"
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "2d09e22e4fb94807a401cff65bd6bca3",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "install",
+          "ok": true,
+          "status": "completed",
+          "reason": null,
+          "model_sha256": "975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c",
+          "source_model_sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2",
+          "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+          "reported_coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+          "loaded_count": 512,
+          "taps": 512,
+          "applies_at": "immediately",
+          "run_gain_q12": 1631,
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 1631,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "2ccedbb8d156447e8c4dc7debd9c6581",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\2ccedbb8d156447e8c4dc7debd9c6581",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 1631,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "op": "run",
+          "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\models\\archive\\149b106ce8684e62b259585b038286a0-975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c\\model.json",
+          "model_sha256": "975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c",
+          "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+          "seconds": 3.0,
+          "gain_q12": 1631
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "2ccedbb8d156447e8c4dc7debd9c6581",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "op": "run",
+          "ok": true,
+          "status": "completed",
+          "effective_mode": "muted",
+          "audio_frames": 16384,
+          "requested_seconds": 3.0,
+          "elapsed_seconds": 0.336,
+          "wall_seconds": 0.015,
+          "note": "elapsed_seconds is the captured window, not the requested run length; the run itself played requested_seconds",
+          "model_sha256": "975f297a09584137829d2a9c079913e1cb4891a1b151f25be3482d7918ac526c",
+          "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+          "capture_id": "149b106ce8684e62b259585b038286a0/1/run/00",
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_run_00.npz",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 1631,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          }
+        }
+      }
+    ],
+    "algorithm_receipts": [
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "be1aa1c241ae43a3bd8dca25478f5f9e",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "phase": "input",
+          "training": [],
+          "validation": [],
+          "input": [
+            {
+              "request_id": "8030f202b964468ab365e2ab3a05e724",
+              "scene_id": "149b106ce8684e62b259585b038286a0",
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/input/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\8030f202b964468ab365e2ab3a05e724\\original-8030f202b964468ab365e2ab3a05e724-0.npz",
+              "sha256": "bd7c12e63ea4c564592d2ff5b5d1bccc26ef520b149493ccb417af9ad0bc1a9b",
+              "cue_end_frame": 21969,
+              "valid_first_frame": 21969,
+              "end_frame": 122070,
+              "status": "completed",
+              "original_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\hardware\\149b106ce8684e62b259585b038286a0_1_input_00.npz",
+              "reported_window": {
+                "first_frame": null,
+                "end_frame": 32768
+              },
+              "first_frame": 105686,
+              "source_sha256": "085809a1ca6476385de52ebcbec1f831f582f724c58d3420283b5acd912e29cf",
+              "content_kind": "human_private"
+            }
+          ],
+          "model_path": null,
+          "model_sha256": null,
+          "compute_timeout_seconds": 30,
+          "attempts_total": 3,
+          "algorithm_identity": {
+            "contract": "recal-product-v1",
+            "version": "recal-algorithm-2026-11-01.1",
+            "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+            "dependencies": [
+              "numpy"
+            ],
+            "python": ">=3.8",
+            "taps": 512,
+            "lag_first": 1,
+            "strategy": {
+              "attempts": [
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                }
+              ],
+              "max_attempts": 3,
+              "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+              "exit_reasons": {
+                "valid_pass": "PASS",
+                "retry": "RETRY_NEXT_LEVEL",
+                "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+                "model_rejected": "MODEL_UNQUALIFIED"
+              }
+            },
+            "thresholds": {
+              "min_valid_frames": 4096,
+              "near_full_scale": 0.999,
+              "min_excitation_snr_db": 0.0,
+              "min_gated_coherence": 0.3,
+              "coherence_floor": 0.8,
+              "sparse_line_db": 20.0,
+              "band_hz": [
+                150.0,
+                10000.0
+              ],
+              "speech_min_rms_dbfs": -55.0,
+              "speech_min_peak": 0.003,
+              "l1_max": 4.0,
+              "l1_over_max_range": [
+                25.0,
+                80.0
+              ],
+              "peak_tap_tolerance": 4,
+              "validate_band_hz": [
+                300.0,
+                460.0
+              ],
+              "validate_band_reduction_min_db": 0.5,
+              "validate_full_reduction_min_db": 0.0,
+              "min_validation_captures": 2
+            },
+            "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+            "not_asg": true
+          }
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "be1aa1c241ae43a3bd8dca25478f5f9e",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "decision": "valid_pass",
+          "reason": "讲话输入检查：采样完整、未触满幅、麦克风拾到声音（不要求与播放参考相干）",
+          "evidence": {
+            "metrics": {
+              "149b106ce8684e62b259585b038286a0/1/input/00": {
+                "frames": 16384,
+                "sample_rate_hz": 48828.125,
+                "taps": 512,
+                "valid_frames": 16384,
+                "fullscale": {
+                  "reference_near": 0,
+                  "microphone_near": 0,
+                  "bit22": null
+                },
+                "ref_rms_dbfs": -600.0,
+                "mic_rms_dbfs": -23.011774344225614,
+                "mic_over_ref_db": null,
+                "speech_mic_peak": 0.09999999957836139,
+                "speech_mic_rms_dbfs": -23.011774344225614,
+                "reference_ignored": true
+              }
+            }
+          },
+          "algorithm_identity": {
+            "contract": "recal-product-v1",
+            "version": "recal-algorithm-2026-11-01.1",
+            "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+            "dependencies": [
+              "numpy"
+            ],
+            "python": ">=3.8",
+            "taps": 512,
+            "lag_first": 1,
+            "strategy": {
+              "attempts": [
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                }
+              ],
+              "max_attempts": 3,
+              "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+              "exit_reasons": {
+                "valid_pass": "PASS",
+                "retry": "RETRY_NEXT_LEVEL",
+                "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+                "model_rejected": "MODEL_UNQUALIFIED"
+              }
+            },
+            "thresholds": {
+              "min_valid_frames": 4096,
+              "near_full_scale": 0.999,
+              "min_excitation_snr_db": 0.0,
+              "min_gated_coherence": 0.3,
+              "coherence_floor": 0.8,
+              "sparse_line_db": 20.0,
+              "band_hz": [
+                150.0,
+                10000.0
+              ],
+              "speech_min_rms_dbfs": -55.0,
+              "speech_min_peak": 0.003,
+              "l1_max": 4.0,
+              "l1_over_max_range": [
+                25.0,
+                80.0
+              ],
+              "peak_tap_tolerance": 4,
+              "validate_band_hz": [
+                300.0,
+                460.0
+              ],
+              "validate_band_reduction_min_db": 0.5,
+              "validate_full_reduction_min_db": 0.0,
+              "min_validation_captures": 2
+            },
+            "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+            "not_asg": true
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "5f9669a0ad3746ad8e561406ec16ddaa",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "phase": "fit",
+          "training": [
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_00.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/01",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_01.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/02",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_02.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/03",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_03.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/04",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_04.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/05",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_05.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            }
+          ],
+          "validation": [],
+          "input": [
+            {
+              "request_id": "8030f202b964468ab365e2ab3a05e724",
+              "scene_id": "149b106ce8684e62b259585b038286a0",
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/input/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\8030f202b964468ab365e2ab3a05e724\\original-8030f202b964468ab365e2ab3a05e724-0.npz",
+              "sha256": "bd7c12e63ea4c564592d2ff5b5d1bccc26ef520b149493ccb417af9ad0bc1a9b",
+              "cue_end_frame": 21969,
+              "valid_first_frame": 21969,
+              "end_frame": 122070,
+              "status": "completed",
+              "original_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\hardware\\149b106ce8684e62b259585b038286a0_1_input_00.npz",
+              "reported_window": {
+                "first_frame": null,
+                "end_frame": 32768
+              },
+              "first_frame": 105686,
+              "source_sha256": "085809a1ca6476385de52ebcbec1f831f582f724c58d3420283b5acd912e29cf",
+              "content_kind": "human_private"
+            }
+          ],
+          "model_path": null,
+          "model_sha256": null,
+          "compute_timeout_seconds": 30,
+          "attempts_total": 3,
+          "algorithm_identity": {
+            "contract": "recal-product-v1",
+            "version": "recal-algorithm-2026-11-01.1",
+            "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+            "dependencies": [
+              "numpy"
+            ],
+            "python": ">=3.8",
+            "taps": 512,
+            "lag_first": 1,
+            "strategy": {
+              "attempts": [
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                }
+              ],
+              "max_attempts": 3,
+              "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+              "exit_reasons": {
+                "valid_pass": "PASS",
+                "retry": "RETRY_NEXT_LEVEL",
+                "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+                "model_rejected": "MODEL_UNQUALIFIED"
+              }
+            },
+            "thresholds": {
+              "min_valid_frames": 4096,
+              "near_full_scale": 0.999,
+              "min_excitation_snr_db": 0.0,
+              "min_gated_coherence": 0.3,
+              "coherence_floor": 0.8,
+              "sparse_line_db": 20.0,
+              "band_hz": [
+                150.0,
+                10000.0
+              ],
+              "speech_min_rms_dbfs": -55.0,
+              "speech_min_peak": 0.003,
+              "l1_max": 4.0,
+              "l1_over_max_range": [
+                25.0,
+                80.0
+              ],
+              "peak_tap_tolerance": 4,
+              "validate_band_hz": [
+                300.0,
+                460.0
+              ],
+              "validate_band_reduction_min_db": 0.5,
+              "validate_full_reduction_min_db": 0.0,
+              "min_validation_captures": 2
+            },
+            "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+            "not_asg": true
+          }
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "5f9669a0ad3746ad8e561406ec16ddaa",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "decision": "valid_pass",
+          "reason": "拟合后判据：L1 0.250、峰位 180 与实测延迟 180 一致",
+          "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\candidate_model.json",
+          "model_sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2",
+          "evidence": {
+            "not_asg": true,
+            "metrics": {
+              "taps": 512,
+              "L1": 0.25,
+              "max_abs": 0.25,
+              "L1_over_max": 1.0,
+              "peak_tap": 180,
+              "q20_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+              "hardware_cycles": 1539,
+              "memory_ms": 10.48576,
+              "expected_peak_tap": 180,
+              "peak_tap_delta": 0,
+              "equation_rows": 95220,
+              "integer_lags": [
+                180,
+                180,
+                180,
+                180,
+                180,
+                180
+              ],
+              "alignment_shifts": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          "algorithm_identity": {
+            "contract": "recal-product-v1",
+            "version": "recal-algorithm-2026-11-01.1",
+            "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+            "dependencies": [
+              "numpy"
+            ],
+            "python": ">=3.8",
+            "taps": 512,
+            "lag_first": 1,
+            "strategy": {
+              "attempts": [
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                }
+              ],
+              "max_attempts": 3,
+              "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+              "exit_reasons": {
+                "valid_pass": "PASS",
+                "retry": "RETRY_NEXT_LEVEL",
+                "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+                "model_rejected": "MODEL_UNQUALIFIED"
+              }
+            },
+            "thresholds": {
+              "min_valid_frames": 4096,
+              "near_full_scale": 0.999,
+              "min_excitation_snr_db": 0.0,
+              "min_gated_coherence": 0.3,
+              "coherence_floor": 0.8,
+              "sparse_line_db": 20.0,
+              "band_hz": [
+                150.0,
+                10000.0
+              ],
+              "speech_min_rms_dbfs": -55.0,
+              "speech_min_peak": 0.003,
+              "l1_max": 4.0,
+              "l1_over_max_range": [
+                25.0,
+                80.0
+              ],
+              "peak_tap_tolerance": 4,
+              "validate_band_hz": [
+                300.0,
+                460.0
+              ],
+              "validate_band_reduction_min_db": 0.5,
+              "validate_full_reduction_min_db": 0.0,
+              "min_validation_captures": 2
+            },
+            "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+            "not_asg": true
+          }
+        }
+      },
+      {
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "6e775c8ab28641db9c50e60abe4cfe83",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+          },
+          "attempt": 0,
+          "plan": {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          "phase": "validate",
+          "training": [
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_00.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/01",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_01.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/02",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_02.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/03",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_03.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/04",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_04.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/training/05",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\79417fe20fa941409b7911bb210c8992\\149b106ce8684e62b259585b038286a0_1_training_05.npz",
+              "sha256": "5b33acaa1cce8729dd5771a26b9ff304d65602943000954ec2fe50cffced2635",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            }
+          ],
+          "validation": [
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/validation/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_validation_00.npz",
+              "sha256": "a42f1247139bb40a85530ff141af1c3c07dbcf0a689a54d610381f6c08c4fdb7",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+              "seed": 4243,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            },
+            {
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/validation/01",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\149b106ce8684e62b259585b038286a0_1_validation_01.npz",
+              "sha256": "a42f1247139bb40a85530ff141af1c3c07dbcf0a689a54d610381f6c08c4fdb7",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+              "seed": 4243,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation",
+              "reported_window": {
+                "first_frame": 4,
+                "end_frame": null
+              },
+              "end_frame": 16388
+            }
+          ],
+          "input": [
+            {
+              "request_id": "8030f202b964468ab365e2ab3a05e724",
+              "scene_id": "149b106ce8684e62b259585b038286a0",
+              "capture_id": "149b106ce8684e62b259585b038286a0/1/input/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\8030f202b964468ab365e2ab3a05e724\\original-8030f202b964468ab365e2ab3a05e724-0.npz",
+              "sha256": "bd7c12e63ea4c564592d2ff5b5d1bccc26ef520b149493ccb417af9ad0bc1a9b",
+              "cue_end_frame": 21969,
+              "valid_first_frame": 21969,
+              "end_frame": 122070,
+              "status": "completed",
+              "original_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\hardware\\149b106ce8684e62b259585b038286a0_1_input_00.npz",
+              "reported_window": {
+                "first_frame": null,
+                "end_frame": 32768
+              },
+              "first_frame": 105686,
+              "source_sha256": "085809a1ca6476385de52ebcbec1f831f582f724c58d3420283b5acd912e29cf",
+              "content_kind": "human_private"
+            }
+          ],
+          "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\candidate_model.json",
+          "model_sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2",
+          "compute_timeout_seconds": 30,
+          "attempts_total": 3,
+          "algorithm_identity": {
+            "contract": "recal-product-v1",
+            "version": "recal-algorithm-2026-11-01.1",
+            "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+            "dependencies": [
+              "numpy"
+            ],
+            "python": ">=3.8",
+            "taps": 512,
+            "lag_first": 1,
+            "strategy": {
+              "attempts": [
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                }
+              ],
+              "max_attempts": 3,
+              "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+              "exit_reasons": {
+                "valid_pass": "PASS",
+                "retry": "RETRY_NEXT_LEVEL",
+                "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+                "model_rejected": "MODEL_UNQUALIFIED"
+              }
+            },
+            "thresholds": {
+              "min_valid_frames": 4096,
+              "near_full_scale": 0.999,
+              "min_excitation_snr_db": 0.0,
+              "min_gated_coherence": 0.3,
+              "coherence_floor": 0.8,
+              "sparse_line_db": 20.0,
+              "band_hz": [
+                150.0,
+                10000.0
+              ],
+              "speech_min_rms_dbfs": -55.0,
+              "speech_min_peak": 0.003,
+              "l1_max": 4.0,
+              "l1_over_max_range": [
+                25.0,
+                80.0
+              ],
+              "peak_tap_tolerance": 4,
+              "validate_band_hz": [
+                300.0,
+                460.0
+              ],
+              "validate_band_reduction_min_db": 0.5,
+              "validate_full_reduction_min_db": 0.0,
+              "min_validation_captures": 2
+            },
+            "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+            "not_asg": true
+          }
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "6e775c8ab28641db9c50e60abe4cfe83",
+          "scene_id": "149b106ce8684e62b259585b038286a0",
+          "decision": "valid_pass",
+          "reason": "独立验证通过：300–460 Hz 带内抑制中位 +286.35 dB（最低 +286.35）",
+          "model_sha256": "fe77608f8e3817e3d3a2f68295793ce3f2aa1eea7aa5127cf3777033ee6dd7c2",
+          "validation_ids": [
+            "149b106ce8684e62b259585b038286a0/1/validation/00",
+            "149b106ce8684e62b259585b038286a0/1/validation/01"
+          ],
+          "qualifies_cancellation": true,
+          "evidence": {
+            "not_asg": true,
+            "policy": "recalibration-algorithm-v1",
+            "thresholds": {
+              "band_reduction_min_db": 0.5,
+              "full_reduction_min_db": 0.0,
+              "band_hz": [
+                300.0,
+                460.0
+              ]
+            },
+            "metrics": {
+              "band_reduction_median_db": 286.3461014673252,
+              "band_reduction_min_db": 286.3461014673252,
+              "full_reduction_median_db": 304.1020925676533,
+              "per_capture": [
+                {
+                  "reduction_db": 304.102,
+                  "band_reduction_db": 286.346
+                },
+                {
+                  "reduction_db": 304.102,
+                  "band_reduction_db": 286.346
+                }
+              ],
+              "validation_lags": [
+                180,
+                180
+              ],
+              "alignment_shifts": [
+                0,
+                0
+              ],
+              "cd_median_db_context_only": 26.612645372450245,
+              "cd_p10_db_context_only": 18.866121824358398,
+              "bound_gain_db_context_only": 9.832325119370257
+            },
+            "meaning": "measured as held-out prediction residuals on independent captures; these are prediction-suppression figures, NOT a gain-before-feedback (MSG/ASG) and NOT a listening result"
+          },
+          "algorithm_identity": {
+            "contract": "recal-product-v1",
+            "version": "recal-algorithm-2026-11-01.1",
+            "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+            "dependencies": [
+              "numpy"
+            ],
+            "python": ">=3.8",
+            "taps": 512,
+            "lag_first": 1,
+            "strategy": {
+              "attempts": [
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -22.0,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -19.3,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                },
+                {
+                  "training": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 6,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  },
+                  "validation": {
+                    "excitation": "white_noise",
+                    "rms_dbfs": -16.5,
+                    "frames": 16384,
+                    "segments": 2,
+                    "peak_cap": 0.8,
+                    "seed": 4242
+                  }
+                }
+              ],
+              "max_attempts": 3,
+              "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+              "exit_reasons": {
+                "valid_pass": "PASS",
+                "retry": "RETRY_NEXT_LEVEL",
+                "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+                "model_rejected": "MODEL_UNQUALIFIED"
+              }
+            },
+            "thresholds": {
+              "min_valid_frames": 4096,
+              "near_full_scale": 0.999,
+              "min_excitation_snr_db": 0.0,
+              "min_gated_coherence": 0.3,
+              "coherence_floor": 0.8,
+              "sparse_line_db": 20.0,
+              "band_hz": [
+                150.0,
+                10000.0
+              ],
+              "speech_min_rms_dbfs": -55.0,
+              "speech_min_peak": 0.003,
+              "l1_max": 4.0,
+              "l1_over_max_range": [
+                25.0,
+                80.0
+              ],
+              "peak_tap_tolerance": 4,
+              "validate_band_hz": [
+                300.0,
+                460.0
+              ],
+              "validate_band_reduction_min_db": 0.5,
+              "validate_full_reduction_min_db": 0.0,
+              "min_validation_captures": 2
+            },
+            "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+            "not_asg": true
+          }
+        }
+      }
+    ],
+    "cause": null,
+    "validation_kind": "heldout_prediction",
+    "input_ready": null,
+    "algorithm_identity": {
+      "contract": "recal-product-v1",
+      "version": "recal-algorithm-2026-11-01.1",
+      "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+      "dependencies": [
+        "numpy"
+      ],
+      "python": ">=3.8",
+      "taps": 512,
+      "lag_first": 1,
+      "strategy": {
+        "attempts": [
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          }
+        ],
+        "max_attempts": 3,
+        "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+        "exit_reasons": {
+          "valid_pass": "PASS",
+          "retry": "RETRY_NEXT_LEVEL",
+          "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+          "model_rejected": "MODEL_UNQUALIFIED"
+        }
+      },
+      "thresholds": {
+        "min_valid_frames": 4096,
+        "near_full_scale": 0.999,
+        "min_excitation_snr_db": 0.0,
+        "min_gated_coherence": 0.3,
+        "coherence_floor": 0.8,
+        "sparse_line_db": 20.0,
+        "band_hz": [
+          150.0,
+          10000.0
+        ],
+        "speech_min_rms_dbfs": -55.0,
+        "speech_min_peak": 0.003,
+        "l1_max": 4.0,
+        "l1_over_max_range": [
+          25.0,
+          80.0
+        ],
+        "peak_tap_tolerance": 4,
+        "validate_band_hz": [
+          300.0,
+          460.0
+        ],
+        "validate_band_reduction_min_db": 0.5,
+        "validate_full_reduction_min_db": 0.0,
+        "min_validation_captures": 2
+      },
+      "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+      "not_asg": true
+    },
+    "speech_retries": 0,
+    "numeric_exit_reason": "PASS",
+    "hardware_draining": false,
+    "field_trial": false,
+    "indicator_deferred": false,
+    "waveform_policy": "PCM stays on board; file paths and original hashes retained",
+    "hardware_error_latched": false
+  },
+  "C_initial_corrections": [
+    "install polling must allow muted open-loop zero before restoring the selected runtime gain",
+    "scene-bound serialization is verified semantically and by source/Q20 hashes before atomic commit",
+    "run completion uses completed_frames from original NPZ, not 16384-frame ring duration"
+  ],
+  "algorithm_receipts": [
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "74b0db0090ec49f2a95f291a47d2872f",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        "phase": "input",
+        "training": [],
+        "validation": [],
+        "input": [
+          {
+            "request_id": "1febb32824f548a1be5ba98a640574e6",
+            "scene_id": "89d38958f4734a22bc9872642c632e05",
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/input/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\1febb32824f548a1be5ba98a640574e6\\original-1febb32824f548a1be5ba98a640574e6-0.npz",
+            "sha256": "164acd1d83b4a97cdf751a828b5dfa70cb458f665e6cb510079216c2eec4e14b",
+            "cue_end_frame": 21969,
+            "valid_first_frame": 21969,
+            "end_frame": 122070,
+            "status": "completed",
+            "original_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\89d38958f4734a22bc9872642c632e05_1_input_00.npz",
+            "reported_window": {
+              "first_frame": null,
+              "end_frame": 32768
+            },
+            "first_frame": 105686,
+            "source_sha256": "085809a1ca6476385de52ebcbec1f831f582f724c58d3420283b5acd912e29cf",
+            "content_kind": "human_private"
+          }
+        ],
+        "model_path": null,
+        "model_sha256": null,
+        "compute_timeout_seconds": 30,
+        "attempts_total": 3,
+        "algorithm_identity": {
+          "contract": "recal-product-v1",
+          "version": "recal-algorithm-2026-11-01.1",
+          "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+          "dependencies": [
+            "numpy"
+          ],
+          "python": ">=3.8",
+          "taps": 512,
+          "lag_first": 1,
+          "strategy": {
+            "attempts": [
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              }
+            ],
+            "max_attempts": 3,
+            "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+            "exit_reasons": {
+              "valid_pass": "PASS",
+              "retry": "RETRY_NEXT_LEVEL",
+              "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+              "model_rejected": "MODEL_UNQUALIFIED"
+            }
+          },
+          "thresholds": {
+            "min_valid_frames": 4096,
+            "near_full_scale": 0.999,
+            "min_excitation_snr_db": 0.0,
+            "min_gated_coherence": 0.3,
+            "coherence_floor": 0.8,
+            "sparse_line_db": 20.0,
+            "band_hz": [
+              150.0,
+              10000.0
+            ],
+            "speech_min_rms_dbfs": -55.0,
+            "speech_min_peak": 0.003,
+            "l1_max": 4.0,
+            "l1_over_max_range": [
+              25.0,
+              80.0
+            ],
+            "peak_tap_tolerance": 4,
+            "validate_band_hz": [
+              300.0,
+              460.0
+            ],
+            "validate_band_reduction_min_db": 0.5,
+            "validate_full_reduction_min_db": 0.0,
+            "min_validation_captures": 2
+          },
+          "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+          "not_asg": true
+        }
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "74b0db0090ec49f2a95f291a47d2872f",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "decision": "valid_pass",
+        "reason": "讲话输入检查：采样完整、未触满幅、麦克风拾到声音（不要求与播放参考相干）",
+        "evidence": {
+          "metrics": {
+            "89d38958f4734a22bc9872642c632e05/1/input/00": {
+              "frames": 16384,
+              "sample_rate_hz": 48828.125,
+              "taps": 512,
+              "valid_frames": 16384,
+              "fullscale": {
+                "reference_near": 0,
+                "microphone_near": 0,
+                "bit22": null
+              },
+              "ref_rms_dbfs": -600.0,
+              "mic_rms_dbfs": -23.011774344225614,
+              "mic_over_ref_db": null,
+              "speech_mic_peak": 0.09999999957836139,
+              "speech_mic_rms_dbfs": -23.011774344225614,
+              "reference_ignored": true
+            }
+          }
+        },
+        "algorithm_identity": {
+          "contract": "recal-product-v1",
+          "version": "recal-algorithm-2026-11-01.1",
+          "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+          "dependencies": [
+            "numpy"
+          ],
+          "python": ">=3.8",
+          "taps": 512,
+          "lag_first": 1,
+          "strategy": {
+            "attempts": [
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              }
+            ],
+            "max_attempts": 3,
+            "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+            "exit_reasons": {
+              "valid_pass": "PASS",
+              "retry": "RETRY_NEXT_LEVEL",
+              "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+              "model_rejected": "MODEL_UNQUALIFIED"
+            }
+          },
+          "thresholds": {
+            "min_valid_frames": 4096,
+            "near_full_scale": 0.999,
+            "min_excitation_snr_db": 0.0,
+            "min_gated_coherence": 0.3,
+            "coherence_floor": 0.8,
+            "sparse_line_db": 20.0,
+            "band_hz": [
+              150.0,
+              10000.0
+            ],
+            "speech_min_rms_dbfs": -55.0,
+            "speech_min_peak": 0.003,
+            "l1_max": 4.0,
+            "l1_over_max_range": [
+              25.0,
+              80.0
+            ],
+            "peak_tap_tolerance": 4,
+            "validate_band_hz": [
+              300.0,
+              460.0
+            ],
+            "validate_band_reduction_min_db": 0.5,
+            "validate_full_reduction_min_db": 0.0,
+            "min_validation_captures": 2
+          },
+          "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+          "not_asg": true
+        }
+      }
+    },
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "0f42a387f78f43b69e6eeba4caee1e12",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        "phase": "fit",
+        "training": [
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_00.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/01",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_01.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/02",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_02.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/03",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_03.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/04",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_04.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/05",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_05.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          }
+        ],
+        "validation": [],
+        "input": [
+          {
+            "request_id": "1febb32824f548a1be5ba98a640574e6",
+            "scene_id": "89d38958f4734a22bc9872642c632e05",
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/input/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\1febb32824f548a1be5ba98a640574e6\\original-1febb32824f548a1be5ba98a640574e6-0.npz",
+            "sha256": "164acd1d83b4a97cdf751a828b5dfa70cb458f665e6cb510079216c2eec4e14b",
+            "cue_end_frame": 21969,
+            "valid_first_frame": 21969,
+            "end_frame": 122070,
+            "status": "completed",
+            "original_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\89d38958f4734a22bc9872642c632e05_1_input_00.npz",
+            "reported_window": {
+              "first_frame": null,
+              "end_frame": 32768
+            },
+            "first_frame": 105686,
+            "source_sha256": "085809a1ca6476385de52ebcbec1f831f582f724c58d3420283b5acd912e29cf",
+            "content_kind": "human_private"
+          }
+        ],
+        "model_path": null,
+        "model_sha256": null,
+        "compute_timeout_seconds": 30,
+        "attempts_total": 3,
+        "algorithm_identity": {
+          "contract": "recal-product-v1",
+          "version": "recal-algorithm-2026-11-01.1",
+          "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+          "dependencies": [
+            "numpy"
+          ],
+          "python": ">=3.8",
+          "taps": 512,
+          "lag_first": 1,
+          "strategy": {
+            "attempts": [
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              }
+            ],
+            "max_attempts": 3,
+            "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+            "exit_reasons": {
+              "valid_pass": "PASS",
+              "retry": "RETRY_NEXT_LEVEL",
+              "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+              "model_rejected": "MODEL_UNQUALIFIED"
+            }
+          },
+          "thresholds": {
+            "min_valid_frames": 4096,
+            "near_full_scale": 0.999,
+            "min_excitation_snr_db": 0.0,
+            "min_gated_coherence": 0.3,
+            "coherence_floor": 0.8,
+            "sparse_line_db": 20.0,
+            "band_hz": [
+              150.0,
+              10000.0
+            ],
+            "speech_min_rms_dbfs": -55.0,
+            "speech_min_peak": 0.003,
+            "l1_max": 4.0,
+            "l1_over_max_range": [
+              25.0,
+              80.0
+            ],
+            "peak_tap_tolerance": 4,
+            "validate_band_hz": [
+              300.0,
+              460.0
+            ],
+            "validate_band_reduction_min_db": 0.5,
+            "validate_full_reduction_min_db": 0.0,
+            "min_validation_captures": 2
+          },
+          "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+          "not_asg": true
+        }
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "0f42a387f78f43b69e6eeba4caee1e12",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "decision": "valid_pass",
+        "reason": "拟合后判据：L1 0.250、峰位 180 与实测延迟 180 一致",
+        "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\candidate_model.json",
+        "model_sha256": "7b867bfc86e61b147b9e5a30d94cb3eb2608697dbef0ab339d5b2b34fdeec567",
+        "evidence": {
+          "not_asg": true,
+          "metrics": {
+            "taps": 512,
+            "L1": 0.25,
+            "max_abs": 0.25,
+            "L1_over_max": 1.0,
+            "peak_tap": 180,
+            "q20_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+            "hardware_cycles": 1539,
+            "memory_ms": 10.48576,
+            "expected_peak_tap": 180,
+            "peak_tap_delta": 0,
+            "equation_rows": 95220,
+            "integer_lags": [
+              180,
+              180,
+              180,
+              180,
+              180,
+              180
+            ],
+            "alignment_shifts": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "algorithm_identity": {
+          "contract": "recal-product-v1",
+          "version": "recal-algorithm-2026-11-01.1",
+          "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+          "dependencies": [
+            "numpy"
+          ],
+          "python": ">=3.8",
+          "taps": 512,
+          "lag_first": 1,
+          "strategy": {
+            "attempts": [
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              }
+            ],
+            "max_attempts": 3,
+            "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+            "exit_reasons": {
+              "valid_pass": "PASS",
+              "retry": "RETRY_NEXT_LEVEL",
+              "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+              "model_rejected": "MODEL_UNQUALIFIED"
+            }
+          },
+          "thresholds": {
+            "min_valid_frames": 4096,
+            "near_full_scale": 0.999,
+            "min_excitation_snr_db": 0.0,
+            "min_gated_coherence": 0.3,
+            "coherence_floor": 0.8,
+            "sparse_line_db": 20.0,
+            "band_hz": [
+              150.0,
+              10000.0
+            ],
+            "speech_min_rms_dbfs": -55.0,
+            "speech_min_peak": 0.003,
+            "l1_max": 4.0,
+            "l1_over_max_range": [
+              25.0,
+              80.0
+            ],
+            "peak_tap_tolerance": 4,
+            "validate_band_hz": [
+              300.0,
+              460.0
+            ],
+            "validate_band_reduction_min_db": 0.5,
+            "validate_full_reduction_min_db": 0.0,
+            "min_validation_captures": 2
+          },
+          "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+          "not_asg": true
+        }
+      }
+    },
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "7b0e97ea20714fada53091d43efa0dfc",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        "phase": "validate",
+        "training": [
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_00.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/01",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_01.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/02",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_02.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/03",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_03.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/04",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_04.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/05",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_05.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          }
+        ],
+        "validation": [
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/validation/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\5504a893cb454ca081830ff5aa1df0a4\\89d38958f4734a22bc9872642c632e05_1_validation_00.npz",
+            "sha256": "f61e69088cf113e1452fe5f099a6a9c42da353a41541ff8c2be3c547fa42b7b2",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+            "seed": 4243,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/validation/01",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\5504a893cb454ca081830ff5aa1df0a4\\89d38958f4734a22bc9872642c632e05_1_validation_01.npz",
+            "sha256": "f61e69088cf113e1452fe5f099a6a9c42da353a41541ff8c2be3c547fa42b7b2",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+            "seed": 4243,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation",
+            "reported_window": {
+              "first_frame": 4,
+              "end_frame": null
+            },
+            "end_frame": 16388
+          }
+        ],
+        "input": [
+          {
+            "request_id": "1febb32824f548a1be5ba98a640574e6",
+            "scene_id": "89d38958f4734a22bc9872642c632e05",
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/input/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\1febb32824f548a1be5ba98a640574e6\\original-1febb32824f548a1be5ba98a640574e6-0.npz",
+            "sha256": "164acd1d83b4a97cdf751a828b5dfa70cb458f665e6cb510079216c2eec4e14b",
+            "cue_end_frame": 21969,
+            "valid_first_frame": 21969,
+            "end_frame": 122070,
+            "status": "completed",
+            "original_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\89d38958f4734a22bc9872642c632e05_1_input_00.npz",
+            "reported_window": {
+              "first_frame": null,
+              "end_frame": 32768
+            },
+            "first_frame": 105686,
+            "source_sha256": "085809a1ca6476385de52ebcbec1f831f582f724c58d3420283b5acd912e29cf",
+            "content_kind": "human_private"
+          }
+        ],
+        "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\candidate_model.json",
+        "model_sha256": "7b867bfc86e61b147b9e5a30d94cb3eb2608697dbef0ab339d5b2b34fdeec567",
+        "compute_timeout_seconds": 30,
+        "attempts_total": 3,
+        "algorithm_identity": {
+          "contract": "recal-product-v1",
+          "version": "recal-algorithm-2026-11-01.1",
+          "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+          "dependencies": [
+            "numpy"
+          ],
+          "python": ">=3.8",
+          "taps": 512,
+          "lag_first": 1,
+          "strategy": {
+            "attempts": [
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              }
+            ],
+            "max_attempts": 3,
+            "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+            "exit_reasons": {
+              "valid_pass": "PASS",
+              "retry": "RETRY_NEXT_LEVEL",
+              "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+              "model_rejected": "MODEL_UNQUALIFIED"
+            }
+          },
+          "thresholds": {
+            "min_valid_frames": 4096,
+            "near_full_scale": 0.999,
+            "min_excitation_snr_db": 0.0,
+            "min_gated_coherence": 0.3,
+            "coherence_floor": 0.8,
+            "sparse_line_db": 20.0,
+            "band_hz": [
+              150.0,
+              10000.0
+            ],
+            "speech_min_rms_dbfs": -55.0,
+            "speech_min_peak": 0.003,
+            "l1_max": 4.0,
+            "l1_over_max_range": [
+              25.0,
+              80.0
+            ],
+            "peak_tap_tolerance": 4,
+            "validate_band_hz": [
+              300.0,
+              460.0
+            ],
+            "validate_band_reduction_min_db": 0.5,
+            "validate_full_reduction_min_db": 0.0,
+            "min_validation_captures": 2
+          },
+          "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+          "not_asg": true
+        }
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "7b0e97ea20714fada53091d43efa0dfc",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "decision": "valid_pass",
+        "reason": "独立验证通过：300–460 Hz 带内抑制中位 +286.35 dB（最低 +286.35）",
+        "model_sha256": "7b867bfc86e61b147b9e5a30d94cb3eb2608697dbef0ab339d5b2b34fdeec567",
+        "validation_ids": [
+          "89d38958f4734a22bc9872642c632e05/1/validation/00",
+          "89d38958f4734a22bc9872642c632e05/1/validation/01"
+        ],
+        "qualifies_cancellation": true,
+        "evidence": {
+          "not_asg": true,
+          "policy": "recalibration-algorithm-v1",
+          "thresholds": {
+            "band_reduction_min_db": 0.5,
+            "full_reduction_min_db": 0.0,
+            "band_hz": [
+              300.0,
+              460.0
+            ]
+          },
+          "metrics": {
+            "band_reduction_median_db": 286.3461014673252,
+            "band_reduction_min_db": 286.3461014673252,
+            "full_reduction_median_db": 304.1020925676533,
+            "per_capture": [
+              {
+                "reduction_db": 304.102,
+                "band_reduction_db": 286.346
+              },
+              {
+                "reduction_db": 304.102,
+                "band_reduction_db": 286.346
+              }
+            ],
+            "validation_lags": [
+              180,
+              180
+            ],
+            "alignment_shifts": [
+              0,
+              0
+            ],
+            "cd_median_db_context_only": 26.612645372450245,
+            "cd_p10_db_context_only": 18.866121824358398,
+            "bound_gain_db_context_only": 9.832325119370257
+          },
+          "meaning": "measured as held-out prediction residuals on independent captures; these are prediction-suppression figures, NOT a gain-before-feedback (MSG/ASG) and NOT a listening result"
+        },
+        "algorithm_identity": {
+          "contract": "recal-product-v1",
+          "version": "recal-algorithm-2026-11-01.1",
+          "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+          "dependencies": [
+            "numpy"
+          ],
+          "python": ">=3.8",
+          "taps": 512,
+          "lag_first": 1,
+          "strategy": {
+            "attempts": [
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -22.0,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -19.3,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              },
+              {
+                "training": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 6,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                },
+                "validation": {
+                  "excitation": "white_noise",
+                  "rms_dbfs": -16.5,
+                  "frames": 16384,
+                  "segments": 2,
+                  "peak_cap": 0.8,
+                  "seed": 4242
+                }
+              }
+            ],
+            "max_attempts": 3,
+            "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+            "exit_reasons": {
+              "valid_pass": "PASS",
+              "retry": "RETRY_NEXT_LEVEL",
+              "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+              "model_rejected": "MODEL_UNQUALIFIED"
+            }
+          },
+          "thresholds": {
+            "min_valid_frames": 4096,
+            "near_full_scale": 0.999,
+            "min_excitation_snr_db": 0.0,
+            "min_gated_coherence": 0.3,
+            "coherence_floor": 0.8,
+            "sparse_line_db": 20.0,
+            "band_hz": [
+              150.0,
+              10000.0
+            ],
+            "speech_min_rms_dbfs": -55.0,
+            "speech_min_peak": 0.003,
+            "l1_max": 4.0,
+            "l1_over_max_range": [
+              25.0,
+              80.0
+            ],
+            "peak_tap_tolerance": 4,
+            "validate_band_hz": [
+              300.0,
+              460.0
+            ],
+            "validate_band_reduction_min_db": 0.5,
+            "validate_full_reduction_min_db": 0.0,
+            "min_validation_captures": 2
+          },
+          "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+          "not_asg": true
+        }
+      }
+    }
+  ],
+  "hardware_receipts": [
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "6b48a109cc82447291a4acecae553587",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\6b48a109cc82447291a4acecae553587",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 1631,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        "op": "prepare",
+        "phase": "input"
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "6b48a109cc82447291a4acecae553587",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "prepare",
+        "ok": true,
+        "status": "completed",
+        "prepared": true,
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        }
+      }
+    },
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "1febb32824f548a1be5ba98a640574e6",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\1febb32824f548a1be5ba98a640574e6",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        "op": "input",
+        "cue": true,
+        "seconds": 2.5
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "1febb32824f548a1be5ba98a640574e6",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "input",
+        "ok": true,
+        "status": "completed",
+        "input_ready": {
+          "request_id": "1febb32824f548a1be5ba98a640574e6",
+          "scene_id": "89d38958f4734a22bc9872642c632e05",
+          "capture_id": "89d38958f4734a22bc9872642c632e05/1/input/00",
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\89d38958f4734a22bc9872642c632e05_1_input_00.npz",
+          "sha256": "164acd1d83b4a97cdf751a828b5dfa70cb458f665e6cb510079216c2eec4e14b",
+          "cue_end_frame": 21969,
+          "valid_first_frame": 21969,
+          "end_frame": 32768,
+          "status": "completed"
+        },
+        "captures": [
+          {
+            "request_id": "1febb32824f548a1be5ba98a640574e6",
+            "scene_id": "89d38958f4734a22bc9872642c632e05",
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/input/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\149b106ce8684e62b259585b038286a0\\io\\d162dff0074a403e87ac039eeb9e66d1\\89d38958f4734a22bc9872642c632e05_1_input_00.npz",
+            "sha256": "164acd1d83b4a97cdf751a828b5dfa70cb458f665e6cb510079216c2eec4e14b",
+            "cue_end_frame": 21969,
+            "valid_first_frame": 21969,
+            "end_frame": 32768,
+            "status": "completed"
+          }
+        ],
+        "valid_first_frame": 21969,
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        }
+      }
+    },
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "3d677319bb724b9e83f9634e9c2299c7",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\3d677319bb724b9e83f9634e9c2299c7",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        "op": "prepare",
+        "phase": "training"
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "3d677319bb724b9e83f9634e9c2299c7",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "prepare",
+        "ok": true,
+        "status": "completed",
+        "prepared": true,
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        }
+      }
+    },
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "a6387a4eba9b4ae89cd47b436feeaddd",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "seed": 4242,
+          "validation_seed": 4242,
+          "level_dbfs": -22.0,
+          "levels": [
+            -22.0
+          ],
+          "captures": [
+            {
+              "level_dbfs": -22.0,
+              "seed": 4242,
+              "direct_only": true,
+              "zero_coeff": true,
+              "content_kind": "onboard_excitation",
+              "capture_id": "89d38958f4734a22bc9872642c632e05-0-training-0"
+            },
+            {
+              "level_dbfs": -22.0,
+              "seed": 4242,
+              "direct_only": true,
+              "zero_coeff": true,
+              "content_kind": "onboard_excitation",
+              "capture_id": "89d38958f4734a22bc9872642c632e05-0-training-1"
+            },
+            {
+              "level_dbfs": -22.0,
+              "seed": 4242,
+              "direct_only": true,
+              "zero_coeff": true,
+              "content_kind": "onboard_excitation",
+              "capture_id": "89d38958f4734a22bc9872642c632e05-0-training-2"
+            },
+            {
+              "level_dbfs": -22.0,
+              "seed": 4242,
+              "direct_only": true,
+              "zero_coeff": true,
+              "content_kind": "onboard_excitation",
+              "capture_id": "89d38958f4734a22bc9872642c632e05-0-training-3"
+            },
+            {
+              "level_dbfs": -22.0,
+              "seed": 4242,
+              "direct_only": true,
+              "zero_coeff": true,
+              "content_kind": "onboard_excitation",
+              "capture_id": "89d38958f4734a22bc9872642c632e05-0-training-4"
+            },
+            {
+              "level_dbfs": -22.0,
+              "seed": 4242,
+              "direct_only": true,
+              "zero_coeff": true,
+              "content_kind": "onboard_excitation",
+              "capture_id": "89d38958f4734a22bc9872642c632e05-0-training-5"
+            }
+          ]
+        },
+        "op": "training"
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "a6387a4eba9b4ae89cd47b436feeaddd",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "training",
+        "ok": true,
+        "status": "completed",
+        "level_accepted_dbfs": -22.0,
+        "captures": [
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_00.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation"
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/01",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_01.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation"
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/02",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_02.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation"
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/03",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_03.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation"
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/04",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_04.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation"
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/05",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\a6387a4eba9b4ae89cd47b436feeaddd\\89d38958f4734a22bc9872642c632e05_1_training_05.npz",
+            "sha256": "acd158624e6e79b851bd7a9448693bf8edc99dbfd4124ff6945ceaf1788f403d",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+            "seed": 4242,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation"
+          }
+        ],
+        "source_sha256": [
+          "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5"
+        ],
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        }
+      }
+    },
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "25f4e1134a304217bda079c1f9fb63ab",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\25f4e1134a304217bda079c1f9fb63ab",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        "op": "prepare",
+        "phase": "validation"
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "25f4e1134a304217bda079c1f9fb63ab",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "prepare",
+        "ok": true,
+        "status": "completed",
+        "prepared": true,
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        }
+      }
+    },
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "5504a893cb454ca081830ff5aa1df0a4",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\5504a893cb454ca081830ff5aa1df0a4",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "seed": 4243,
+          "validation_seed": 4243,
+          "level_dbfs": -22.0,
+          "levels": [
+            -22.0
+          ],
+          "captures": [
+            {
+              "level_dbfs": -22.0,
+              "seed": 4243,
+              "direct_only": true,
+              "zero_coeff": true,
+              "content_kind": "onboard_excitation",
+              "capture_id": "89d38958f4734a22bc9872642c632e05-0-validation-0"
+            },
+            {
+              "level_dbfs": -22.0,
+              "seed": 4243,
+              "direct_only": true,
+              "zero_coeff": true,
+              "content_kind": "onboard_excitation",
+              "capture_id": "89d38958f4734a22bc9872642c632e05-0-validation-1"
+            }
+          ]
+        },
+        "op": "validation"
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "5504a893cb454ca081830ff5aa1df0a4",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "validation",
+        "ok": true,
+        "status": "completed",
+        "level_accepted_dbfs": -22.0,
+        "captures": [
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/validation/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\5504a893cb454ca081830ff5aa1df0a4\\89d38958f4734a22bc9872642c632e05_1_validation_00.npz",
+            "sha256": "f61e69088cf113e1452fe5f099a6a9c42da353a41541ff8c2be3c547fa42b7b2",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+            "seed": 4243,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation"
+          },
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/validation/01",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\5504a893cb454ca081830ff5aa1df0a4\\89d38958f4734a22bc9872642c632e05_1_validation_01.npz",
+            "sha256": "f61e69088cf113e1452fe5f099a6a9c42da353a41541ff8c2be3c547fa42b7b2",
+            "first_frame": 4,
+            "valid_frames": 16382,
+            "source_sha256": "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2",
+            "seed": 4243,
+            "level_dbfs": -22.0,
+            "ok": true,
+            "bit22": 0,
+            "content_kind": "onboard_excitation"
+          }
+        ],
+        "source_sha256": [
+          "b3f4c1d8386bc31b71acb65338bb19e163b5697489ddb6f594b51e092e2ae2e2"
+        ],
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        }
+      }
+    },
+    {
+      "request": {
+        "contract": "recal-product-v1",
+        "request_id": "b1deabdaa4a04165beadec484cc7be90",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\runs\\89d38958f4734a22bc9872642c632e05\\io\\b1deabdaa4a04165beadec484cc7be90",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 0,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "attempt": 0,
+        "plan": {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        "op": "install",
+        "run_gain_q12": 1631,
+        "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\models\\archive\\89d38958f4734a22bc9872642c632e05-7b867bfc86e61b147b9e5a30d94cb3eb2608697dbef0ab339d5b2b34fdeec567\\model.json",
+        "model_sha256": "7b867bfc86e61b147b9e5a30d94cb3eb2608697dbef0ab339d5b2b34fdeec567",
+        "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa"
+      },
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "b1deabdaa4a04165beadec484cc7be90",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "install",
+        "ok": true,
+        "status": "completed",
+        "reason": null,
+        "model_sha256": "d8cdc021ab9e38579490aebd355319c7f282fd4e4ff395c746651665f11ace15",
+        "source_model_sha256": "7b867bfc86e61b147b9e5a30d94cb3eb2608697dbef0ab339d5b2b34fdeec567",
+        "coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+        "reported_coefficients_sha256": "600990e635c97ae5c688750ba0dd486494ebf3a76a3cd3928dabfed5889c54aa",
+        "loaded_count": 512,
+        "taps": 512,
+        "applies_at": "immediately",
+        "run_gain_q12": 1631,
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 1631,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        }
+      }
+    }
+  ],
+  "cancellation_probes": [
+    {
+      "op": "training",
+      "error": null,
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\cancel\\89d38958f4734a22bc9872642c632e05_1_training_00.npz",
+          "fixture": "89d38958f4734a22bc9872642c632e05",
+          "seconds": 0.33562724,
+          "direct_only": true,
+          "has_before_start": true
+        }
+      ],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "cancel-training",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "training",
+        "ok": false,
+        "status": "error",
+        "level_accepted_dbfs": null,
+        "captures": [
+          {
+            "capture_id": "89d38958f4734a22bc9872642c632e05/1/training/00",
+            "ok": false,
+            "error": "RuntimeError('cancelled before start')"
+          }
+        ],
+        "source_sha256": [],
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 1631,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        }
+      }
+    },
+    {
+      "op": "input",
+      "error": "RuntimeError('cancelled before start')",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\cancel\\89d38958f4734a22bc9872642c632e05_1_input_00.npz",
+          "fixture": "89d38958f4734a22bc9872642c632e05",
+          "seconds": 2.500001,
+          "direct_only": true,
+          "has_before_start": true
+        }
+      ],
+      "reply": {}
+    },
+    {
+      "op": "install",
+      "error": "RuntimeError('cancelled before start')",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\cancel\\89d38958f4734a22bc9872642c632e05_1_install_00.npz",
+          "fixture": "89d38958f4734a22bc9872642c632e05",
+          "seconds": 0.33562724,
+          "direct_only": true,
+          "has_before_start": true
+        }
+      ],
+      "reply": {}
+    },
+    {
+      "op": "run",
+      "error": "RuntimeError('cancelled before start')",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-original-entry-probe\\cancel\\89d38958f4734a22bc9872642c632e05_1_run_00.npz",
+          "fixture": "89d38958f4734a22bc9872642c632e05",
+          "seconds": 2.5,
+          "direct_only": false,
+          "has_before_start": true
+        }
+      ],
+      "reply": {}
+    },
+    {
+      "op": "training",
+      "timing": "pre-cancelled",
+      "error": null,
+      "driver_calls": [],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "preset-training",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "training",
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled",
+        "never_armed_again": true,
+        "captures": []
+      }
+    },
+    {
+      "op": "input",
+      "timing": "pre-cancelled",
+      "error": null,
+      "driver_calls": [],
+      "reply": {
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled"
+      }
+    },
+    {
+      "op": "install",
+      "timing": "pre-cancelled",
+      "error": null,
+      "driver_calls": [],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "preset-install",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "install",
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled",
+        "never_armed_again": true
+      }
+    },
+    {
+      "op": "run",
+      "timing": "pre-cancelled",
+      "error": null,
+      "driver_calls": [],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "preset-run",
+        "scene_id": "89d38958f4734a22bc9872642c632e05",
+        "op": "run",
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled",
+        "never_armed_again": true
+      }
+    }
+  ]
+}

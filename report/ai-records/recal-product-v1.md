@@ -186,3 +186,14 @@ fetch取得origin/A280，pull本地远端引用首次Git/MSYS权限失败，提�
 
 
 冻结时首次独立解压发现OPERATIONS两处链接越出白名单（B契约和历史报告）；保留失败ZIP另名，修正为包内ALGORITHM及源码仓库报告说明。没有改运行/数值逻辑，未重复无关测试；新实际包独立解压重新查全链接、全部SHA、真实B worker、A helper接受零模型、默认/维护/现场均exit2，通过。源码5230e0c，33载荷，ZIP不入Git；实际SHA见a280-package-check.json。
+
+
+## 2026-11-02 A593重新冻结与维护开放
+
+用户转发A=5939ee5：新hw_api 9cb48a0…、driver 0dc80c2…，要求“打开adapter_check_allowed: true”、新ZIP“放仓库根目录即可”。A已核旧ZIP ce5f2…完整部署，--check显示旧missing，--adapter-check因旧adapter_check_allowed=false拒绝；A明确不私换文件造成manifest身份不符。预期新包check部署就绪，再由A运行无听众适配检查，已有有效数据不重采。
+
+fetch取得A593，C本地pull/rebase已对齐。原版代码已透传training/validation/input/install/run回调，driver在解除codec静音前和最终arm前均检查。原manifest实际8载荷、加清单自身9文件逐字保留；原适配描述仍旧，C只归一实际driver/helper身份，不因格式请A补单。
+
+12个原版方法+模拟驱动初始化检查：五条路径各两项均阻止开声；父类prepare预取消仍调用driver，初始化取消仍无回调，真实存在既有取消要求的遗漏。按用户授权开启维护，但不将正式deployment_ready伪写true；只保留prepare具体missing，移除已关闭的install/运行缺口和泛化未批准提示，field-trial关闭。
+
+C现有adapter_check短链路成功；维护模型若fixture改变，C main应从已核SHA模型取fixture_id再创建对象，新增一行并在既有原版A工厂测试中用不同fixture验证，7项通过。另真实B子进程、原版A工厂、模拟硬件叶子完整走两scene，首个ready/run/ended，第二个重新拟合ready。未改A/B源、未操作板卡、不重复无关75项。

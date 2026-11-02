@@ -1,5 +1,10 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-02 C 按A593原字节重冻结并开放维护自检
+
+用户要求新包adapter_check_allowed=true并放仓库根目录；A旧包部署/校验回执按现场反馈保存。核A八项载荷与原manifest，新的driver/helper身份同步，B原字节不动。12项预取消/初始化取消定向检查关闭五条路径的旧阻塞，仅父类prepare两项仍失败；维护链路通过，7项既有受影响检查通过，两个scene真实B完整模拟接入通过。接口变更v5按用户授权把维护开放与正式部署门槛分开；C维护创建对象使用显式当前模型fixture。只向A提供prepare这一处必要修正，B无新增请求，未操板。[原版方法检查](../../report/verification/recal-product-v1/a593-runtime-check.json)、[软件](../../report/verification/recal-product-v1/a593-software.json)、[新载荷](../../report/verification/recal-product-v1/a593-assets.json)、[维护v5](../contracts/recal-runtime-v5.md)、[准确命令](../ref/recal-product.md#a在板卡执行维护自检)。
+
+
 ## 2026-11-02 C 接通A280原版工厂与B完整数值流程
 
 接口变更v4：C接收source_model_sha256/scene绑定副本，逐项核验内容及Q20后原子提交；从原NPZ completed_frames区分完整运行与16384帧环窗；封装不可成为有效模型的静音启动零模型，四灯图例保留LD3实际模式。A原版工厂+C状态机+B子进程仅替换硬件叶子，连续两个scene均ready，首个运行ended；75项受影响软件检查及137文档检查通过。5230e0c干净源码冻结33载荷审阅ZIP，独立解压、A/B字节、零模型格式、B worker、包内链接及三种启动门槛核验通过；原链接失败包另名保留。复现预取消install仍进入driver，以及初始化中取消缺少before_start；只向A请求这一取消边界修正，B无新增任务。A现场消息与C离线结果分别归档，未操板。[入口与停止证据](../../report/verification/recal-product-v1/a280-entry-review.json)、[固定载荷](../../report/verification/recal-product-v1/a280-assets.json)、[v4](../contracts/recal-runtime-v4.md)、[操作单](../ref/recal-product.md)。

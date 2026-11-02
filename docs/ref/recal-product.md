@@ -2,11 +2,36 @@
 
 C维护唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
-## 本轮接入（A 28051a6 / B 0b09ef6）
+## 本轮接入（A 5939ee5 / B 0b09ef6）
 
-本地交付materials/final/shengdi-closeout-28051a6-0b09ef6-review.zip；ZIP不自动进Git。它保留A八项载荷、B文件原字节和A原始描述；C按实际v3-io清单生成归一描述，不把旧描述中的ca764…哈希当新文件身份。B版本recal-algorithm-2026-11-01.1，SHA489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417；ATTEMPTS不变，fit预算30秒。B无需改动。
+仓库根目录交付shengdi-recal-5939ee5-0b09ef6-maintenance.zip及同名.zip.sha256；ZIP不进Git。A所有载荷取5939ee5的v3-io原字节，原清单与原适配描述一并保留；B仍为recal-algorithm-2026-11-01.1，ATTEMPTS不变，fit预算30秒。当前权限见[维护开放v5](../contracts/recal-runtime-v5.md)。
 
-该版本仍只供审阅，默认、维护、现场参数均关闭。唯一需要A修改的是取消传播：install丢失perform第二个cancel_event；各驱动调用未使用已有before_start，初始化中STOP后旧调用仍可能开声。C已支持即时abort和等待旧调用返回，不能代替驱动在解除静音前再次检查。A修正后只重组相同入口，不增加第二套正式脚本。
+adapter_check_allowed=true，维护者可以使用本包入口验证create_product。五条路径training/validation/input/install/run取消修正已通过离线调用。deployment_ready仍为false，missing只剩prepare父类路径未传cancel_event/before_start；预取消prepare仍调用driver，初始化取消后仍会继续。默认常驻、服务安装及field-trial继续关闭，避免把维护开放误写成正式产品已通过。C未操作板卡，B不需修改。
+
+### A在板卡执行维护自检
+
+电脑先核根目录ZIP的SHA，将原ZIP传到板卡/home/xilinx/shengdi-install/，解压到/home/xilinx/shengdi-install/recal-5939ee5/，保留feedback等子目录。停止旧演示/Notebook，同一时刻只让本入口控制硬件。
+
+板卡核完整包：
+
+```text
+bash /home/xilinx/shengdi-install/recal-5939ee5/recal_entry.sh --check
+```
+
+此版本预期identity_ok=true、deployment_ready=false且只列prepare取消缺口，退出码2。它与允许维护检查独立，不要为让check变绿修改manifest。
+
+然后A显式使用板上当前已核对模型（仅维护使用，不提交日常current）：
+
+```bash
+MODEL=/home/xilinx/jupyter_notebooks/base/audio/audio_io/model_recalibrated.json
+bash /home/xilinx/shengdi-install/recal-5939ee5/recal_entry.sh \
+  --adapter-check \
+  --model "$MODEL" \
+  --model-sha256 "$(sha256sum "$MODEL" | cut -d ' ' -f1)" \
+  --state-dir /home/xilinx/.local/state/shengdi-a593-maintenance
+```
+
+该命令直接使用既有维护短链路：mute→capabilities→prepare→单段training→install→3秒run→abort，结束写adapter-check.json；成功退出0。C不把它称为完整6+2拟合或真人产品验收。A已有有效6+2和真人原件继续保留，不因格式重采。普通用户仍按下方实体动作操作；其正式启动须等prepare缺口修复后重新冻结。
 
 ## 设备旁操作卡
 
@@ -64,4 +89,4 @@ C原版工厂接入检查用真实A方法和真实B子进程，只替换MMIO/Cod
 
 ## 本轮收口（A 22c88bb / B 0b09ef6）
 
-历史审阅包shengdi-closeout-22c88bb-0b09ef6-review.zip及原回执保留；本次接入以本文A280版本及STATE为准。旧原件的回顾诊断不变，不重新派给B。[历史收口证据](../../report/verification/recal-product-v1/closeout-package-check.json)。
+历史审阅包shengdi-closeout-22c88bb-0b09ef6-review.zip及原回执保留；本次接入以本文A593版本及STATE为准。旧原件的回顾诊断不变，不重新派给B。[历史收口证据](../../report/verification/recal-product-v1/closeout-package-check.json)。
