@@ -1,3 +1,10 @@
+## 2026-11-02 B 交付线迁到 main，海报改为纯文字替换
+
+- main 从 ff1c5b3 快进到 132a5dd（落后 497 个提交）；本线只有 271361c 一个提交不在 main，按 cherry-pick 集成，不做 reset/clean。切分支前把 core-loop.html 的手动微调 stash 并另存备份，main 稳定后 pop，干净应用。
+- 海报中英两版按"只改文字"重做：与 AMD 模板按几何位置逐个比对，模板 50 个形状、成品 41 个，差的 9 个全是黄色填写说明；5 张图片原位原尺寸换标注框；文字只改 `<a:t>`，段落数与模板逐段对齐（左栏四个空段原样保留，用来跳过中间的图）。
+- 记一条会复现的写法：`a:latin`/`a:ea` 必须插在 `a:cs` 之前；追加到 `rPr` 末尾会被 PowerPoint 判非法并丢弃整段属性，模板继承来的白字会退回默认深色。
+- 提交 0fa367b、52beaaf 已直推 main；`check_docs` 0 错误 0 警告，`poster-hush-cn.pptx` 的 blob `c5425be` 与本地备份一致。
+
 ## 2026-11-02 C 交付0cab非blocked整包
 
 - 从干净提交冻结新包，A九项运行时和原manifest、B算法逐字节核对，四处helper钉值一致；40文件SHA与包内链接全通过，check返回identity_ok/deployment_ready=true、missing=[]，adapter-check开放。
