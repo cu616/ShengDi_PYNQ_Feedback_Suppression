@@ -5,7 +5,7 @@
     "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
     "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
     "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
-    "hw_api.py": "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0",
+    "hw_api.py": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
     "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
     "replay_trial_repair.py": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
     "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
@@ -20,7 +20,7 @@
     "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
     "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
     "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
-    "helper_sha256": "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0"
+    "helper_sha256": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5"
   },
   "gain_sets": {
     "run_gain_q12": [

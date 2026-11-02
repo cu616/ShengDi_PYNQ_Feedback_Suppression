@@ -100,3 +100,33 @@ polls=127  protected_events=0
   因此这些结果**不是**对交付包的验收，只是根因与修法的证据。
 - 三处改动进冻结包需要 C 同时重钉 `helper_sha256`（测试副本里已按新哈希重述 manifest）。
 - `BTN3` 急停延迟代价（约 0.9 s）尚未在真板上量过。
+
+## 2026-11-02 追加：按 C 的 guard150 要求补两项（已进根目录、v3-io 与清单）
+
+C 独立复现出**基线漏报**：空闲时 `capture_status` 带 `fault`(bit18)，poll 把它记进
+`_protect_baseline`；运行中同一 fault 再起，poll 因旧基线仍报 `protected=false`，真故障被吞掉
+（证据 `report/verification/recal-product-v1/guard150-baseline-probe.json`）。
+
+补的两项：
+
+1. **在真正 arm 的时刻重建基线**：新增 `_arm_baseline(cancel_event)` 作为驱动的 `before_start`
+   回调——先按原语义拒绝已取消的请求（返回 False、基线不动），通过后
+   `_protect_baseline = self._status_word()`。五处 `before_start` 全部改走它。
+2. **`poll()` 区分实读与缓存**：新增 `capture_status`、`control_word`、`mmio_held`、
+   `protect_baseline` 四个字段；`mmio_held=true` 表示该次值来自位流重载期间的缓存。
+
+软件序列复核（[probe_baseline.py](probe_baseline.py)，无板、无 pynq，MMIO 用两个寄存器替身）：
+
+```
+without rebaseline: idle protected=true -> new_fault_in_run protected=false   <- C 报的漏报
+with    rebaseline: arm_baseline 返回 true、baseline 262144->0，
+                    new_fault_in_run protected=true、fault=1
+cancel_still_refuses: true        <- 取消语义仍在
+VERDICT PASS
+```
+
+输出留存：[probe_baseline-output.json](probe_baseline-output.json)。改后 `hw_api.py`
+（LF，59277 字节）哈希
+`0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5`，已同步 `v3-io` 副本、
+`v3-io/manifest.json` 与 `docs/contracts/product-adapter.json`。
+

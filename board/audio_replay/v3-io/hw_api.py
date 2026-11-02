@@ -36,6 +36,9 @@ ADDR = 0x3B
 REG_AUX_L = 0x400B
 REG_AUX_R = 0x400D
 
+# >0 while the PL is being reconfigured; reading an AXI register then wedges the PS.
+_MM_HOLD = 0
+
 SWITCH_MAP = {'sw0_raw_bit': 25, 'sw0_sync_bit': 24, 'sw1_sync_bit': 23,
               'sw0_up_means': 'bypass forced (canceller off)'}
 UNSUPPORTED = {'led': 'requires the I/O integration bitstream (audio_replay_io)', 'buttons': 'requires the I/O integration bitstream (audio_replay_io)'}
@@ -268,6 +271,10 @@ class ProductHardware:
         self.allowed_gain_q12 = list(config.get('allowed_gain_q12', [1631, 2303, 3254, 4096]))
         self._board = Board(str(self.dir), fixture=self.fixture, hp_volume=self.hp_volume)
         self._mm = None
+        self._mm_cached = {'status': 0, 'control': 0}
+        self._mm_last_cached = False
+        self._aux_cache = None
+        self._op_hold = 0
         self._prepared = False
         self._scene = None
         self._scene_frames = 0
@@ -299,10 +306,62 @@ class ProductHardware:
         return self._mm
 
     def _status_word(self):
-        return self._ensure_mmio()['status'].read(8) & 0xFFFFFFFF
+        if _MM_HOLD:
+            self._mm_last_cached = True
+            return self._mm_cached['status']
+        self._mm_last_cached = False
+        self._mm_cached['status'] = self._ensure_mmio()['status'].read(8) & 0xFFFFFFFF
+        return self._mm_cached['status']
 
     def _control_word(self):
-        return self._ensure_mmio()['control'].read(0) & 0xFFFFFFFF
+        if _MM_HOLD:
+            self._mm_last_cached = True
+            return self._mm_cached['control']
+        self._mm_last_cached = False
+        self._mm_cached['control'] = self._ensure_mmio()['control'].read(0) & 0xFFFFFFFF
+        return self._mm_cached['control']
+
+    def _guard_overlay(self, drv):
+        """Guard the driver: no MMIO while the PL reloads, no live AUX read while it re-inits."""
+        global _MM_HOLD
+        if getattr(drv, '_mm_guarded', False):
+            return drv
+        real_overlay = drv.Overlay
+        real_trial = drv.replay_trial
+        owner = self
+
+        class _GuardedOverlay(real_overlay):
+            def __init__(self, *a, **k):
+                global _MM_HOLD
+                _MM_HOLD += 1
+                try:
+                    super().__init__(*a, **k)
+                finally:
+                    _MM_HOLD -= 1
+
+        def guarded_trial(*a, **k):
+            owner._op_hold += 1
+            try:
+                return real_trial(*a, **k)
+            finally:
+                owner._op_hold -= 1
+
+        drv.Overlay = _GuardedOverlay
+        drv.replay_trial = guarded_trial
+        drv._mm_guarded = True
+        return drv
+
+    def _arm_baseline(self, cancel_event=None):
+        """Driver callback, raised right before the pipeline arms.
+
+        Keeps the original cancellation semantics and takes a fresh protection baseline for this
+        round. Without it the baseline latched while idle keeps masking a real fault that appears
+        during the run (C's guard150-baseline-probe), so poll() would report protected=False.
+        """
+        if cancel_event is not None and cancel_event.is_set():
+            return False
+        self._protect_baseline = self._status_word()
+        return True
 
     def _protected_bits(self, word):
         return {name: (word >> bit) & 1 for name, bit in
@@ -311,7 +370,7 @@ class ProductHardware:
 
     def _driver(self):
         import importlib
-        return importlib.import_module('replay_trial_repair')
+        return self._guard_overlay(importlib.import_module('replay_trial_repair'))
 
     def _new_capture_path(self, tag):
         import time
@@ -348,7 +407,7 @@ class ProductHardware:
             bypass=bypass, zero_coeff=zero, gain_db=gain_db, seconds=seconds,
             hp_volume=self.hp_volume, speaker_confirmed=True, local_capture_confirmed=True,
             direct_only=direct_only, reuse_overlay=False, restore_stock=False,
-            before_start=lambda: not (cancel_event is not None and cancel_event.is_set()))
+            before_start=lambda: self._arm_baseline(cancel_event))
         cap = np.load(str(path))
         meta = self._meta(cap)
         self._scene_frames += int(len(cap['microphone']))
@@ -363,7 +422,13 @@ class ProductHardware:
     _meta = staticmethod(__meta)
 
     def identity(self):
-        aux = self._board.get_aux_gain_db()
+        # The driver re-initialises the codec at the start of every call; a live AUX read in that
+        # window sees 0x00 and looks like an identity mismatch. Cache across the call instead.
+        if self._op_hold and self._aux_cache is not None:
+            aux = self._aux_cache
+        else:
+            aux = self._board.get_aux_gain_db()
+            self._aux_cache = aux
         control = self._control_word()
         import hashlib
         def h(p):
@@ -474,7 +539,11 @@ class ProductHardware:
             self._protect_baseline = word
         return {'ok': True, 'contract': CONTRACT, 'events': events, 'protected': bool(active),
                 'protection': active, 'saturation': saturation,
-                'identity': self.identity(), 'effective_mode': mode, 'buttons': bits}
+                'identity': self.identity(), 'effective_mode': mode, 'buttons': bits,
+                # raw readback, plus whether it came from the cache during a PL reload
+                'capture_status': word, 'control_word': control,
+                'mmio_held': bool(self._mm_last_cached),
+                'protect_baseline': self._protect_baseline}
 
     def indicate(self, prompt):
         pattern = prompt.get('pattern') if isinstance(prompt, dict) else None
@@ -845,7 +914,7 @@ class ProductHardwareV2(ProductHardware):
                         hp_volume=self.hp_volume, speaker_confirmed=True,
                         local_capture_confirmed=True, direct_only=True,
                         reuse_overlay=False, restore_stock=False,
-                        before_start=lambda: not self._cancelled(cancel_event))
+                        before_start=lambda: self._arm_baseline(cancel_event))
                 except Exception as exc:
                     ok_all = False
                     caps.append({'capture_id': cid, 'ok': False, 'error': repr(exc)[:140]})
@@ -892,7 +961,7 @@ class ProductHardwareV2(ProductHardware):
             str(path), self.fixture, str(self.model_path), src, bypass=False, zero_coeff=True,
             gain_db=0.0, seconds=seconds + 1e-6, hp_volume=self.hp_volume, speaker_confirmed=True,
             local_capture_confirmed=True, direct_only=True, reuse_overlay=False, restore_stock=False,
-            before_start=lambda: not self._cancelled(cancel_event))
+            before_start=lambda: self._arm_baseline(cancel_event))
         meta = self._meta(np.load(str(path)))
         cue_end = len(cue)
         self._input_ready = {'request_id': request.get('request_id'), 'scene_id': scene,
@@ -986,7 +1055,7 @@ class ProductHardwareV2(ProductHardware):
                                     seconds=self.WINDOW_SECONDS + 1e-6, hp_volume=self.hp_volume,
                                     speaker_confirmed=True, local_capture_confirmed=True,
                                     direct_only=True, reuse_overlay=False, restore_stock=False,
-                                    before_start=lambda: not self._cancelled(cancel_event))
+                                    before_start=lambda: self._arm_baseline(cancel_event))
         meta = self._meta(np.load(str(cap_path)))
         reported = meta.get('coefficients_sha256')
         loaded_count = meta.get('loaded_count')
@@ -1022,7 +1091,9 @@ class ProductHardwareV2(ProductHardware):
         if self._cancelled(cancel_event):
             self.mute()
             return self._cancel_result(request, 'run')
-        self._write_control(arm=True, allow_armed=True)
+        # Do NOT arm here: the coefficients from the previous capture are spent (fresh=0), so the
+        # RTL latches fault the instant arm rises. The driver arms the pipeline itself once the new
+        # coefficients are in place, and _arm_baseline re-baselines at that moment.
         cap_path, cid = self._capture_path(scene, 'run', 0)
         wall0 = time.monotonic()
         try:
@@ -1032,7 +1103,7 @@ class ProductHardwareV2(ProductHardware):
                                         seconds=seconds, hp_volume=self.hp_volume,
                                         speaker_confirmed=True, local_capture_confirmed=True,
                                         direct_only=False, reuse_overlay=False, restore_stock=False,
-                                        before_start=lambda: not self._cancelled(cancel_event))
+                                        before_start=lambda: self._arm_baseline(cancel_event))
             meta = self._meta(np.load(str(cap_path)))
         finally:
             wall = time.monotonic() - wall0
