@@ -1,0 +1,228 @@
+{
+ "schema_version": 1,
+ "generated_by": "scripts/recal_offline_cases.py",
+ "thresholds": {
+  "MIN_VALID_FRAMES": 4096,
+  "MIN_EXCITATION_SNR_DB": 0.0,
+  "MIN_GATED_COHERENCE": 0.3,
+  "SPARSE_LINE_DB": 20.0,
+  "L1_MAX": 4.0,
+  "PEAK_TAP_TOLERANCE": 4,
+  "BOOST_MIN_DB": 0.5,
+  "OVER_MIN_DB": -1.5,
+  "ACOUSTIC_MIN_DB": 0.0,
+  "MIN_PASSING_PROBES": 2
+ },
+ "cases": [
+  {
+   "case": "A_old_model_mismatch",
+   "question": "上一套布置（0.5 m）的模型装到本轮（1 m 侧对）数据上，能不能装",
+   "inputs": {
+    "model": "models\\room_v1\\candidate_512.json",
+    "fixture": "room_v1_20261021",
+    "expected_peak_tap": 184
+   },
+   "status": "REJECT_SHAPE",
+   "metrics": {
+    "L1": 7.838112831115723,
+    "L1_over_max": 24.01285830735474,
+    "peak_tap": 125,
+    "peak_tap_delta": -59
+   },
+   "reasons": [
+    "抽头峰位 125 与本轮实测延迟 184 差 -59 帧（> 4）：拟合的时间原点与本轮采集不一致，不是换摆位的问题"
+   ],
+   "next": {
+    "kind": "stop",
+    "escalate": "MODEL_UNQUALIFIED",
+    "hint": "先确认对齐用的是本轮 estimate_lag，而不是上一批的坐标"
+   }
+  },
+  {
+   "case": "B_low_snr_capture",
+   "question": "麦克风里没有与参考相干的成分时，采集资格怎么判",
+   "inputs": {
+    "file": "_inbox\\2026-10-22_room256\\candidate_room_v1_256_final(1)\\seg_3.npz",
+    "mic_rms_dbfs": -37.713763476076224
+   },
+   "status": "REJECT_EXCITATION",
+   "metrics": {
+    "excitation_snr_db": -326.68137296213723,
+    "coherence_median": 0.0,
+    "coherence_gated_ratio": 0.0
+   },
+   "reasons": [
+    "麦克风功率里只有 -326.7 dB 能被参考解释（< 0.0）：激励没进来，或进来的不是这一路参考"
+   ],
+   "next": {
+    "kind": "raise_excitation",
+    "why": "先确认音响在响、参考与麦克风同源，再谈电平"
+   }
+  },
+  {
+   "case": "B2_deployed_training_capture_must_pass",
+   "question": "部署模型自己的训练段（snr 3.9 dB、相干 0.90、门控 73%）会不会被误拒",
+   "inputs": {
+    "file": "_inbox\\2026-10-26_bindcapture_rewired\\bind4_00_1746832927253437612.npz"
+   },
+   "status": "OK",
+   "metrics": {
+    "excitation_snr_db": 4.6121040774641475,
+    "coherence_median": 0.8947290463925517,
+    "coherence_gated_ratio": 0.7288135593220338
+   },
+   "reasons": [],
+   "next": {
+    "kind": "fit",
+    "why": "可以进入拟合"
+   }
+  },
+  {
+   "case": "C_clipped_capture",
+   "question": "麦克风近满幅时采集资格怎么判",
+   "inputs": {
+    "file": "_inbox\\2026-10-25_lowband2_return\\scene\\mic_check_after_repair.npz",
+    "mic_peak": 0.9999998807907104
+   },
+   "status": "REJECT_CLIP",
+   "metrics": {
+    "reference_fullscale": 0,
+    "microphone_fullscale": 14,
+    "reference_near": 0,
+    "microphone_near": 14,
+    "bit22": null
+   },
+   "reasons": [
+    "输入触及满幅：ref 近满幅 0、mic 近满幅 14、bit22=None"
+   ],
+   "next": {
+    "kind": "lower_input_gain",
+    "why": "先收回输入余量再谈激励"
+   }
+  },
+  {
+   "case": "D1_322Hz_positive_boost_single_point",
+   "question": "322 Hz 有 3.75 dB 环路提升、抵消收回 4.76 dB，但只有这一个频点，够不够判 PASS",
+   "inputs": {
+    "source": "10-28 v3 evidence.json#steady_state_tone_three_point（仅 322 Hz 一点）"
+   },
+   "status": "INCONCLUSIVE",
+   "points": [
+    {
+     "frequency_hz": 322.0,
+     "open_db": 45.44,
+     "bypass_db": 49.19,
+     "cancel_db": 44.43,
+     "boost_db": 3.75,
+     "overshoot_db": 1.009999999999998,
+     "acoustic_db": 4.759999999999998,
+     "cd_db": null,
+     "coherence": null,
+     "status": "PASS",
+     "why": "收回 +4.76 dB，过冲 +1.01 dB"
+    }
+   ],
+   "reasons": [
+    "可判的频点只有 1 个（< 2）"
+   ]
+  },
+  {
+   "case": "D2_322Hz_residual_positive_feedback",
+   "question": "残差压了 8.26 dB 但抵消臂比零臂还响 0.22 dB 时怎么判",
+   "inputs": {
+    "source": "10-31 recalibration receipt（boost 1.9756 / over -2.1944）"
+   },
+   "status": "FAIL",
+   "cause": "MODEL_UNQUALIFIED",
+   "points": [
+    {
+     "frequency_hz": 322.0,
+     "open_db": 0.0,
+     "bypass_db": 1.9756,
+     "cancel_db": 2.1943,
+     "boost_db": 1.9756,
+     "overshoot_db": -2.1943,
+     "acoustic_db": -0.21870000000000012,
+     "cd_db": null,
+     "coherence": null,
+     "status": "FAIL",
+     "why": "抵消臂比零臂还响 0.22 dB：残留误差仍在正反馈方向上"
+    }
+   ],
+   "reasons": [
+    "抵消臂比零臂还响 0.22 dB：残留误差仍在正反馈方向上"
+   ]
+  },
+  {
+   "case": "D3_322Hz_no_loop_boost_inapplicable",
+   "question": "环路提升只有 0.2 dB（低于 0.5）时怎么判",
+   "inputs": {
+    "source": "构造：仅用于覆盖规则分支，不是实测"
+   },
+   "status": "INCONCLUSIVE",
+   "cause": "MEASUREMENT_INAPPLICABLE",
+   "points": [
+    {
+     "frequency_hz": 322.0,
+     "open_db": 0.0,
+     "bypass_db": 0.2,
+     "cancel_db": -2.0,
+     "boost_db": 0.2,
+     "overshoot_db": 2.0,
+     "acoustic_db": 2.2,
+     "cd_db": null,
+     "coherence": null,
+     "status": "INAPPLICABLE",
+     "why": "环路提升 +0.20 dB < 0.50：这个频点本来就没有可收回的增益，不能拿它判成败"
+    }
+   ],
+   "reasons": [
+    "1 个预选频点全部没有可收回的环路提升（boost < 0.5 dB）：这套布置在该频段本来就没有可抑制的反馈，既不能宣布抵消失败，也不能宣布成功"
+   ]
+  },
+  {
+   "case": "E_fifty_cm_relocated",
+   "question": "换到 50 cm 后重标定，采集与模型都合格、但没有三点验证，能不能自动装",
+   "inputs": {
+    "segments": [
+     "side16_seg_0.npz",
+     "side16_seg_1.npz",
+     "side16_seg_2.npz",
+     "side16_seg_3.npz"
+    ],
+    "lags": [
+     128,
+     128,
+     128,
+     128
+    ],
+    "model": "2026-10-24_side/for_b_side/model_512_side.json"
+   },
+   "status": "INCONCLUSIVE",
+   "cause": "DATA_INSUFFICIENT",
+   "capture_statuses": [
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "excitation_snr_db": [
+    9.65,
+    6.21,
+    9.28,
+    9.3
+   ],
+   "expected_peak_tap": 128,
+   "fit_status": "DEPLOYABLE_FIT",
+   "fit_metrics": {
+    "L1": 3.0836925506591797,
+    "peak_tap": 128,
+    "peak_tap_delta": 0
+   },
+   "reasons": [
+    "采集合格、模型可部署都不等于抵消有效；没有三点验证数据就不自动安装"
+   ],
+   "blocked_at": "three_point"
+  }
+ ]
+}
