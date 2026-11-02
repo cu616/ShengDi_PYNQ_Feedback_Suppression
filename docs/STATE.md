@@ -258,6 +258,9 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
 - **A 线 2026-11-02 交接**：硬件层与适配层已冻结并通过验收（`shengdi-recal-7bd365b-0b09ef6-final.zip`，sha256 `4be5083a…`；板上 `deployment_ready=true`、`missing=[]`、`--adapter-check` 的 `compatibility_issues=[]` 且 `CLOSED_VERIFICATION bit_exact=True`）；已安装 `/opt/shengdi/current`。
 - **阻塞演示的未解决项**：①产品服务三次卡死 PS（其中一次仅 `systemctl restart`，排除并发因素）；②上电后 codec AUX 默认 `0x00` 导致启动身份校验失败，需 `board/audio_replay/fix_aux_boot.sh` 临时绕过；③CAL 失败后须重启服务才能重试；④`quiet=2s / speech=2.5s` 时序偏紧。详见 [a-line-handover.md](ref/a-line-handover.md)。
 - 协作习惯（含路径给全、需人声先说清、服务运行时禁并发 PYNQ 等硬性要求）：[ai-collaboration-habits.md](ref/ai-collaboration-habits.md)。
+- **2026-11-02 A 线离线复核（未操板）**：上电 AUX 失败已可离线确定性复现；构造时写一次 AUX 即可让
+  10 个身份字段全过，但会改 `helper_sha256`（C 钉了 4 处），**A 侧单独改包一定启动不了**，必须与 C 同轮重冻。
+  见 [aux-boot-2026-11-02](../report/verification/audio-replay/aux-boot-2026-11-02/README.md)。
 - 最近 A 记录：空闲，部署在 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`。本轮仅整理电脑文件，未连接板卡；实时在线/占用状态由 A 与现场再次核实。
 - v2 回退位置：`/home/xilinx/jupyter_notebooks/base/audio/audio_live`。本轮未覆盖、删除或部署任何板卡文件。
 - 操作前核对场景、整套版本与现场值守；A 为唯一操板者。电脑工作区的“空闲”文字不是实时锁。

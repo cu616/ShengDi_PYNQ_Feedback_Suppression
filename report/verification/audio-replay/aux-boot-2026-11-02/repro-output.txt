@@ -1,0 +1,32 @@
+﻿hw_api.py sha256           : 784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be
+config expected helper_sha : 784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be
+  -> helper_sha256 is the hash of hw_api.py itself, so any edit to it changes this pin
+config expected aux_db     : 0.0 (raw 5/5)
+
+--- A. frozen code, codec at power-on 0x00 ---
+  codec 0x400B/0x400D      : 0x00 / 0x00
+  get_aux_gain_db()        : {"ok": false, "aux_gain_db": null, "raw_left": 0, "raw_right": 0, "settable": [0.0, 6.0]}
+  identity.aux_db          : None
+  identity.gain_q12        : 0
+  C _identity()            : 硬件身份混搭或配置不符:aux_db
+
+--- B. same code + AUX written once before the first identity read ---
+  codec 0x400B/0x400D      : 0x05 / 0x05
+  get_aux_gain_db()        : {"ok": true, "aux_gain_db": 0.0, "raw_left": 5, "raw_right": 5, "settable": [0.0, 6.0]}
+  identity.aux_db          : 0.0
+  identity.gain_q12        : 0
+  C _identity()            : PASS
+
+--- C. patched hw_api (constructor writes AUX), codec 0x00 ---
+  codec 0x400B/0x400D      : 0x05 / 0x05
+  get_aux_gain_db()        : {"ok": true, "recognized": true, "aux_gain_db": 0.0, "aux_db_left": 0.0, "aux_db_right": 0.0, "raw_left": 5, "raw_right": 5, "unmapped_codes": [], "power_on_like": false, "settable": [0.0, 6.0]}
+  identity.aux_db          : 0.0
+  identity.gain_q12        : 0
+  C _identity()            : 硬件身份混搭或配置不符:helper_sha256
+  patched get_aux_gain_db  : null for code 0x00 (None = not a gain, honest)
+
+RESULT  A reproduces the field failure : 硬件身份混搭或配置不符:aux_db
+RESULT  B passes every identity field  : PASS
+RESULT  C (the actual patch) passes    : 硬件身份混搭或配置不符:helper_sha256
+pins of the current hw_api hash             : product-config.json x1, product-manifest.json x3
+  -> editing hw_api.py changes all of them; C must re-pin the same round as the refreeze

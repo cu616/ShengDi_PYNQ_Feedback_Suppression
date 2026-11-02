@@ -49,6 +49,12 @@
 - A 侧：`to_db()` 如实处理未知值；`create_product` 构造时先写一次 AUX；
 - C 侧：首次身份校验前先 `set_aux_gain_db`，或豁免未初始化状态。
 
+**2026-11-02 离线复现（未上板，模型化 codec）**：可确定性复现；补丁写一次 AUX 后 10 个身份字段
+**全部通过**，但**不能单独发**——`identity()['helper_sha256']` 就是 `hw_api.py` 自己的 sha256，
+C 把它钉在 `product-config.json`（1 处）与 `product-manifest.json`（3 处）里，补丁修好 `aux_db` 后
+紧接着报 `helper_sha256` 不符。所以"只冻一次"必须同一轮包含：A 的 `hw_api.py` + C 的 4 处 pin + 整包重建。
+证据与补丁：[aux-boot-2026-11-02](../../report/verification/audio-replay/aux-boot-2026-11-02/README.md)。
+
 ### 3. CAL 失败后必须重启服务才能重试
 
 失败态下按 BTN0 无反应，现场像"按键坏了"。已请 C 允许失败后直接重按 CAL。

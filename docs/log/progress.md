@@ -1,4 +1,16 @@
-## 2026-10-31 重标定第二次尝试（多音）　A　未到判据即被保护拦下：模型系数放大 48 倍，发现缺"预测余量"闸
+## 2026-11-02 上电 AUX 失败的离线复现与补丁验证　A　未操板：补丁有效但单独发不了，必须与 C 同轮重冻
+
+- 给接手会话的交接文档已就位（`docs/ref/a-line-handover.md`、`docs/ref/ai-collaboration-habits.md`）。
+- 离线复现（模型化 codec，I2C 原语换成内存寄存器表）：codec 上电 `0x400B/0x400D=0x00` 时
+  `get_aux_gain_db()` 回 `aux_db=None`，C 的 `_identity()` 第一项即报 `硬件身份混搭或配置不符:aux_db`，
+  与现场三次现象一致。把 `set_aux_gain_db(0.0)` 放在第一次读身份之前，**10 个身份字段全部通过**。
+- 新结论（决定"只冻一次"的范围）：`identity()['helper_sha256']` 是 `hw_api.py` 自身的 sha256，
+  被 C 钉在 `product-config.json` ×1 与 `product-manifest.json` ×3。补丁修好 `aux_db` 后立刻报
+  `helper_sha256` 不符——所以 A 侧改包必须与 C 改这 4 处 pin、重建整包同一轮完成。
+- 补丁（未合入）四处：`get_aux_gain_db` 如实报未知编码、构造时写一次 AUX、`capabilities` 暴露
+  `aux_init`、模块头注改成 I/O 位流事实（原文仍写 `bit 2113a454`、"没有按键和 LED"）。证据：
+  [aux-boot-2026-11-02](../../report/verification/audio-replay/aux-boot-2026-11-02/README.md)。
+- 未做：未连板（`192.168.2.99:22` 从本机不可达）、未改冻结包、未碰 `src/feedback/` 与 C 的脚本。
 
 ## 2026-11-02 A 线交接（会话结束）
 
@@ -13,6 +25,7 @@
   CAL 失败后必须重启服务才能重试；时序 `quiet=2s / speech=2.5s` 偏紧。
 - 交接文档：`docs/ref/a-line-handover.md`、`docs/ref/ai-collaboration-habits.md`。
 
+## 2026-10-31 重标定第二次尝试（多音）　A　未到判据即被保护拦下：模型系数放大 48 倍，发现缺"预测余量"闸
 
 - 白噪在 322 Hz 相干仅 0.374（3–8 kHz 有 0.73），故换成 bin 对齐 1/3 倍频程多音 + 322 Hz 线。
 - 结果：`runtime saturation guard` 在第 115 帧停声，三臂一臂都没完成 → 候选被拒。
