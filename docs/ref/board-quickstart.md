@@ -61,3 +61,16 @@
 2. 采集只保留**最后 0.34 秒**，所以说话要**说到最后**，不能提前停；
 3. 单次扩声最长 **61.44 秒**，到点会自动停；
 4. 说话**靠近麦克风会削顶**（硬件会直接停声保护，灯变四个全亮）——把讲距保持在 35 cm 左右。
+
+## 七、一条铁律（2026-11-02 踩过）
+
+**shengdi-product.service 在跑的时候，不要再从 SSH 跑任何碰硬件的脚本。**
+
+服务独占 FPGA；另开一个 PYNQ 会话（下载 overlay、读写 /dev/mem）会和服务抢同一个设备，
+实测会把 PS 卡死到 **LED 全灭 + SSH 不通**，只能断电恢复。
+
+- 只想看状态：读 ~/.local/state/shengdi/status.json（纯文件，安全）；
+- 要跑硬件脚本：先 sudo systemctl stop shengdi-product.service，跑完再 start；
+- 现场标定**全程用物理按键**（CAL/START/STOP + SW0），不需要 SSH。
+
+脚本里的判据见 oard/audio_replay/hw_guard.sh 的 hardware_allowed。
