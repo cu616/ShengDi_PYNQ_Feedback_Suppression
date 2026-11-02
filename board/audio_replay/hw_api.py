@@ -336,7 +336,7 @@ class ProductHardware:
         return np.rint(x * 32767.0).astype(np.int16)
 
     def _capture(self, seconds, tag='cap', gain_db=-8.0, bypass=False, direct_only=True, zero=True,
-                 source=None):
+                 source=None, cancel_event=None):
         import numpy as np
         path = self._new_capture_path(tag)
         path.unlink(missing_ok=True)
@@ -347,7 +347,8 @@ class ProductHardware:
             np.zeros(16000, np.int16) if source is None else source,
             bypass=bypass, zero_coeff=zero, gain_db=gain_db, seconds=seconds,
             hp_volume=self.hp_volume, speaker_confirmed=True, local_capture_confirmed=True,
-            direct_only=direct_only, reuse_overlay=False, restore_stock=False)
+            direct_only=direct_only, reuse_overlay=False, restore_stock=False,
+            before_start=lambda: not (cancel_event is not None and cancel_event.is_set()))
         cap = np.load(str(path))
         meta = self._meta(cap)
         self._scene_frames += int(len(cap['microphone']))
@@ -494,12 +495,17 @@ class ProductHardware:
                   'scene_id': request.get('scene_id'), 'op': op, 'ok': False,
                   'status': 'error'}
         if op == 'prepare':
+            # C (5939ee5 review): a pre-cancelled prepare must not reach the driver at all.
+            if cancel_event is not None and cancel_event.is_set():
+                self.mute()
+                result.update({'status': 'error', 'reason': 'cancelled', 'never_armed_again': True})
+                return result
             self._scene = request.get('scene_id')
             self._scene_frames = 0
             self._prepared = False
             self._ensure_mmio()
             self._board.set_aux_gain_db(self.aux_db)
-            self._capture(0.4, tag='prepare')
+            self._capture(0.4, tag='prepare', cancel_event=cancel_event)
             self._prepared = True
             result.update({'ok': True, 'status': 'completed', 'prepared': True,
                            'identity': self.identity()})
