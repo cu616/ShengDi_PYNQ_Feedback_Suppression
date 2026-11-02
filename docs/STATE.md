@@ -43,7 +43,7 @@
 **最后动作**：2026-11-02固定A 5939ee5重新冻结，B仍0b09ef6。原版A五条路径training/validation/input/install/run预取消及初始化取消检查通过；C已有维护链路离线通过，7项受影响软件检查通过，两个scene真实B子进程完整模拟接入通过，首scene运行ended。按用户要求开放adapter_check_allowed，并将新ZIP放仓库根目录；C未操板。
 **当前卡点**：仅prepare遗漏取消传播。父类prepare/_capture不接Event或before_start，预置取消仍进入driver、初始化中取消仍继续；12个定向用例只有prepare两项未通过。deployment_ready=false、field_trial_allowed=false，维护明确开放；不沿用旧install/运行缺口或泛化integration not approved，不向B派活。
 
-- [12项取消边界/维护链路](../report/verification/recal-product-v1/a593-runtime-check.json)、[7项受影响软件检查](../report/verification/recal-product-v1/a593-software.json)、[两个scene原版A/真实B模拟接入](../report/verification/recal-product-v1/a593-entry-review.json)、[实际新载荷](../report/verification/recal-product-v1/a593-assets.json)、[维护权限v5](contracts/recal-runtime-v5.md)、[板卡维护命令](ref/recal-product.md#a在板卡执行维护自检)。
+- [12项取消边界/维护链路](../report/verification/recal-product-v1/a593-runtime-check.json)、[7项受影响软件检查](../report/verification/recal-product-v1/a593-software.json)、[两个scene原版A/真实B模拟接入](../report/verification/recal-product-v1/a593-entry-review.json)、[根目录新包与冻结入口核验](../report/verification/recal-product-v1/a593-package-check.json)、[实际新载荷](../report/verification/recal-product-v1/a593-assets.json)、[维护权限v5](contracts/recal-runtime-v5.md)、[板卡维护命令](ref/recal-product.md#a在板卡执行维护自检)。
 - 新包固定hw_api=9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9、driver=0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4，原清单8载荷逐项吻合；含原manifest自身共9文件，未按口头数量编造额外条目。
 - A已实测旧ZIP完整部署并被旧权限正确拒绝；新包放根目录shengdi-recal-5939ee5-0b09ef6-maintenance.zip供人工转交，不私换包内文件、不自动入Git。B数值口径、当前模型事务和普通用户入口不变，维护按所选模型真实fixture创建硬件，不默认沿用旧fixture。
 - 真实C正式入口、现场拟合、两布局/模式/停止完整窗口与可归因抵消/ASG仍待A执行；已有有效现场数据保留，不因字段格式重采。

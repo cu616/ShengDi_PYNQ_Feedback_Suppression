@@ -197,3 +197,6 @@ fetch取得A593，C本地pull/rebase已对齐。原版代码已透传training/va
 12个原版方法+模拟驱动初始化检查：五条路径各两项均阻止开声；父类prepare预取消仍调用driver，初始化取消仍无回调，真实存在既有取消要求的遗漏。按用户授权开启维护，但不将正式deployment_ready伪写true；只保留prepare具体missing，移除已关闭的install/运行缺口和泛化未批准提示，field-trial关闭。
 
 C现有adapter_check短链路成功；维护模型若fixture改变，C main应从已核SHA模型取fixture_id再创建对象，新增一行并在既有原版A工厂测试中用不同fixture验证，7项通过。另真实B子进程、原版A工厂、模拟硬件叶子完整走两scene，首个ready/run/ended，第二个重新拟合ready。未改A/B源、未操作板卡、不重复无关75项。
+
+
+新包在仓库根目录，35载荷加product-manifest共36文件，source=e6adcf2、SHA见a593-package-check.json，附同名.zip.sha256且两者被定向ignore。独立解压全部载荷、原A8项清单、B原字节、文档链接核验通过。直接加载冻结包C main，配原版A factory和模拟底层叶子，显式不同fixture的当前模型，--adapter-check exit0、compatibility_issues为空、没有eligible pointer；--check identity_ok=true/deployment_ready=false且只列prepare缺口。默认/受控现场仍在硬件导入前拒绝，实际板卡未由C操作。C未把A预期的deployment_ready=true伪写成实测通过。

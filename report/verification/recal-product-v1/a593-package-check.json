@@ -1,0 +1,460 @@
+{
+  "a_commit": "5939ee5",
+  "b_commit": "0b09ef6",
+  "source_commit": "e6adcf2d21d24c577f9189c59539e3e78cb2a448",
+  "source_tree_clean": true,
+  "package": "shengdi-recal-5939ee5-0b09ef6-maintenance.zip",
+  "package_bytes": 390195,
+  "package_sha256": "6bce22ebdbdfe5ef7ca1263ed1b111360860b75ae2dd1c8c8b35a7c24df533ef",
+  "manifest_sha256": "eb542ab74647e66b36447443d565a4b9bcc369e5769223419c8b7cd1cb40a98d",
+  "payload_count": 35,
+  "total_zip_files": 36,
+  "all_payload_hashes_match": true,
+  "A_helper_and_driver_exact": true,
+  "B_source_exact": true,
+  "original_A_manifest_retained": true,
+  "document_link_errors": [],
+  "independent_extraction": true,
+  "commands": [
+    {
+      "name": "package check",
+      "exit_code": 2,
+      "output": "{\"identity_ok\": true, \"deployment_ready\": false, \"missing\": [\"hardware: prepare still ignores cancel_event and its inherited _capture omits before_start; pre-cancelled preparation still enters the driver\"]}\n"
+    },
+    {
+      "name": "regular startup blocked",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED physical adapters not ready: hardware: prepare still ignores cancel_event and its inherited _capture omits before_start; pre-cancelled preparation still enters the driver\n"
+    },
+    {
+      "name": "field trial blocked",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED field trial not enabled for this exact source package\n"
+    }
+  ],
+  "frozen_cli_maintenance": {
+    "exit_code": 0,
+    "stdout": "{\"success\": true, \"receipt\": \"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\a593-frozen-cli-maintenance\\\\adapter-check.json\", \"compatibility_issues\": []}\n",
+    "receipt": {
+      "contract": "recal-product-v1",
+      "scene_id": "explicit-maintenance-current-layout",
+      "scope": "maintenance API chain; not recalibration acceptance",
+      "algorithm_identity": {
+        "contract": "recal-product-v1",
+        "version": "recal-algorithm-2026-11-01.1",
+        "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+        "dependencies": [
+          "numpy"
+        ],
+        "python": ">=3.8",
+        "taps": 512,
+        "lag_first": 1,
+        "strategy": {
+          "attempts": [
+            {
+              "training": {
+                "excitation": "white_noise",
+                "rms_dbfs": -22.0,
+                "frames": 16384,
+                "segments": 6,
+                "peak_cap": 0.8,
+                "seed": 4242
+              },
+              "validation": {
+                "excitation": "white_noise",
+                "rms_dbfs": -22.0,
+                "frames": 16384,
+                "segments": 2,
+                "peak_cap": 0.8,
+                "seed": 4242
+              }
+            },
+            {
+              "training": {
+                "excitation": "white_noise",
+                "rms_dbfs": -19.3,
+                "frames": 16384,
+                "segments": 6,
+                "peak_cap": 0.8,
+                "seed": 4242
+              },
+              "validation": {
+                "excitation": "white_noise",
+                "rms_dbfs": -19.3,
+                "frames": 16384,
+                "segments": 2,
+                "peak_cap": 0.8,
+                "seed": 4242
+              }
+            },
+            {
+              "training": {
+                "excitation": "white_noise",
+                "rms_dbfs": -16.5,
+                "frames": 16384,
+                "segments": 6,
+                "peak_cap": 0.8,
+                "seed": 4242
+              },
+              "validation": {
+                "excitation": "white_noise",
+                "rms_dbfs": -16.5,
+                "frames": 16384,
+                "segments": 2,
+                "peak_cap": 0.8,
+                "seed": 4242
+              }
+            }
+          ],
+          "max_attempts": 3,
+          "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+          "exit_reasons": {
+            "valid_pass": "PASS",
+            "retry": "RETRY_NEXT_LEVEL",
+            "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+            "model_rejected": "MODEL_UNQUALIFIED"
+          }
+        },
+        "thresholds": {
+          "min_valid_frames": 4096,
+          "near_full_scale": 0.999,
+          "min_excitation_snr_db": 0.0,
+          "min_gated_coherence": 0.3,
+          "coherence_floor": 0.8,
+          "sparse_line_db": 20.0,
+          "band_hz": [
+            150.0,
+            10000.0
+          ],
+          "speech_min_rms_dbfs": -55.0,
+          "speech_min_peak": 0.003,
+          "l1_max": 4.0,
+          "l1_over_max_range": [
+            25.0,
+            80.0
+          ],
+          "peak_tap_tolerance": 4,
+          "validate_band_hz": [
+            300.0,
+            460.0
+          ],
+          "validate_band_reduction_min_db": 0.5,
+          "validate_full_reduction_min_db": 0.0,
+          "min_validation_captures": 2
+        },
+        "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+        "not_asg": true
+      },
+      "steps": [
+        {
+          "name": "mute",
+          "request": {},
+          "reply": {
+            "ok": true,
+            "contract": "recal-product-v1",
+            "muted": true,
+            "gain_q12_kept": 1631,
+            "led_kept": 0,
+            "effective_mode": "muted"
+          }
+        },
+        {
+          "name": "capabilities",
+          "request": {},
+          "reply": {
+            "ok": true,
+            "contract": "recal-product-v1",
+            "buttons": true,
+            "indicator": true,
+            "nonintrusive_events": true,
+            "abort_mutes": true,
+            "prepared_capture": true,
+            "prepared_capture_evidence": "cue and speech window come from ONE driver call: the overlay download, codec init and source handshake all finish before the cue plays. Verified on hardware 2026-11-01: input_ready with cue_end_frame=21969 and valid_first_frame=21969 in capture fw-020624/1/input/00. Separately, a plain capture still re-downloads the bitstream; that path is not what this flag claims.",
+            "bounded_run": true,
+            "mode_readback": true,
+            "led_legend": {
+              "0000": "idle / muted",
+              "0001": "recalibration in progress",
+              "0010": "speak now (cue played)",
+              "0100": "quiet please (measuring floor)",
+              "1000": "ready / running with a valid model",
+              "1111": "error or protected"
+            },
+            "button_legend": {
+              "BTN0": "long press (>=1.0 s): start recalibration",
+              "BTN1": "short press: start / stop amplification",
+              "BTN2": "short press: confirm the room is quiet",
+              "BTN3": "short press: abort and mute"
+            },
+            "allowed_gain_q12": [
+              1631,
+              2303,
+              3254,
+              4096
+            ],
+            "max_run_frames": 3000000,
+            "max_run_seconds": 61.44
+          }
+        },
+        {
+          "name": "prepare",
+          "request": {
+            "contract": "recal-product-v1",
+            "request_id": "b0adb25923db4ef7a249b45be84ad440",
+            "scene_id": "explicit-maintenance-current-layout",
+            "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance",
+            "op": "prepare"
+          },
+          "reply": {
+            "contract": "recal-product-v1",
+            "request_id": "b0adb25923db4ef7a249b45be84ad440",
+            "scene_id": "explicit-maintenance-current-layout",
+            "op": "prepare",
+            "ok": true,
+            "status": "completed",
+            "prepared": true,
+            "identity": {
+              "aux_db": 0.0,
+              "aux_raw_left": 5,
+              "aux_raw_right": 5,
+              "hp_volume": 40,
+              "gain_q12": 0,
+              "sample_rate_hz": 48828.125,
+              "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+              "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+              "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+              "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+            }
+          }
+        },
+        {
+          "name": "training",
+          "request": {
+            "contract": "recal-product-v1",
+            "request_id": "3ef0f5f896c84e018f7c32595cbb62cd",
+            "scene_id": "explicit-maintenance-current-layout",
+            "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance",
+            "op": "training",
+            "plan": {
+              "seed": 4242,
+              "validation_seed": 4243,
+              "level_dbfs": -22.0,
+              "captures": [
+                {
+                  "capture_id": "explicit-maintenance-current-layout-training-0",
+                  "level_dbfs": -22.0,
+                  "direct_only": true,
+                  "zero_coeff": true
+                }
+              ]
+            }
+          },
+          "reply": {
+            "contract": "recal-product-v1",
+            "request_id": "3ef0f5f896c84e018f7c32595cbb62cd",
+            "scene_id": "explicit-maintenance-current-layout",
+            "op": "training",
+            "ok": true,
+            "status": "completed",
+            "level_accepted_dbfs": -22.0,
+            "captures": [
+              {
+                "capture_id": "explicit-maintenance-current-layout/1/training/00",
+                "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance\\explicit-maintenance-current-layout_1_training_00.npz",
+                "sha256": "29d7fba55a4ed8d41f6b4033065f0ce7d6f9951616c7039577be628cb5280d20",
+                "first_frame": 4,
+                "valid_frames": 16382,
+                "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+                "seed": 4242,
+                "level_dbfs": -22.0,
+                "ok": true,
+                "bit22": 0,
+                "content_kind": "onboard_excitation"
+              }
+            ],
+            "source_sha256": [
+              "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5"
+            ],
+            "identity": {
+              "aux_db": 0.0,
+              "aux_raw_left": 5,
+              "aux_raw_right": 5,
+              "hp_volume": 40,
+              "gain_q12": 0,
+              "sample_rate_hz": 48828.125,
+              "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+              "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+              "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+              "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+            }
+          }
+        },
+        {
+          "name": "install",
+          "request": {
+            "contract": "recal-product-v1",
+            "request_id": "a440b094d922479196d7d1f90d9539ff",
+            "scene_id": "explicit-maintenance-current-layout",
+            "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance",
+            "op": "install",
+            "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance\\current-model.json",
+            "run_gain_q12": 1631
+          },
+          "reply": {
+            "contract": "recal-product-v1",
+            "request_id": "a440b094d922479196d7d1f90d9539ff",
+            "scene_id": "explicit-maintenance-current-layout",
+            "op": "install",
+            "ok": true,
+            "status": "completed",
+            "reason": null,
+            "model_sha256": "dfff5553e052cebb6f366ac0101a02e14315d4462be81240036b92792c89c44d",
+            "source_model_sha256": "2c8ea8da86a338f69bf9a0adb1ce383d535ed242a9c96a344443dc8adbfd6ad4",
+            "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+            "reported_coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+            "loaded_count": 512,
+            "taps": 512,
+            "applies_at": "immediately",
+            "run_gain_q12": 1631,
+            "identity": {
+              "aux_db": 0.0,
+              "aux_raw_left": 5,
+              "aux_raw_right": 5,
+              "hp_volume": 40,
+              "gain_q12": 1631,
+              "sample_rate_hz": 48828.125,
+              "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+              "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+              "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+              "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+            }
+          }
+        },
+        {
+          "name": "run",
+          "request": {
+            "contract": "recal-product-v1",
+            "request_id": "8ea9b4596f214e0299ed2f85f2d41da5",
+            "scene_id": "explicit-maintenance-current-layout",
+            "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance",
+            "op": "run",
+            "seconds": 3.0,
+            "gain_q12": 1631,
+            "bypass": false,
+            "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance\\current-model.json",
+            "model_sha256": "dfff5553e052cebb6f366ac0101a02e14315d4462be81240036b92792c89c44d",
+            "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927"
+          },
+          "reply": {
+            "contract": "recal-product-v1",
+            "request_id": "8ea9b4596f214e0299ed2f85f2d41da5",
+            "scene_id": "explicit-maintenance-current-layout",
+            "op": "run",
+            "ok": true,
+            "status": "completed",
+            "effective_mode": "muted",
+            "audio_frames": 16384,
+            "requested_seconds": 3.0,
+            "elapsed_seconds": 0.336,
+            "wall_seconds": 0.016,
+            "note": "elapsed_seconds is the captured window, not the requested run length; the run itself played requested_seconds",
+            "model_sha256": "dfff5553e052cebb6f366ac0101a02e14315d4462be81240036b92792c89c44d",
+            "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+            "capture_id": "explicit-maintenance-current-layout/1/run/00",
+            "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance\\explicit-maintenance-current-layout_1_run_00.npz",
+            "identity": {
+              "aux_db": 0.0,
+              "aux_raw_left": 5,
+              "aux_raw_right": 5,
+              "hp_volume": 40,
+              "gain_q12": 1631,
+              "sample_rate_hz": 48828.125,
+              "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+              "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+              "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+              "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+            }
+          }
+        },
+        {
+          "name": "abort",
+          "request": {},
+          "reply": {
+            "ok": true,
+            "contract": "recal-product-v1",
+            "muted": true,
+            "quiescent": true,
+            "elapsed_ms": 0.0,
+            "effective_mode": "muted"
+          }
+        }
+      ],
+      "compatibility_issues": [],
+      "success": true,
+      "selected_model": {
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance\\current-model.json",
+        "sha256": "2c8ea8da86a338f69bf9a0adb1ce383d535ed242a9c96a344443dc8adbfd6ad4",
+        "provenance": "operator_supplied_current_model"
+      },
+      "capture_valid_frames": [
+        16382
+      ],
+      "verified_run_timing": {
+        "contract": "recal-product-v1",
+        "request_id": "8ea9b4596f214e0299ed2f85f2d41da5",
+        "scene_id": "explicit-maintenance-current-layout",
+        "op": "run",
+        "ok": true,
+        "status": "completed",
+        "effective_mode": "muted",
+        "audio_frames": 16384,
+        "requested_seconds": 3.0,
+        "elapsed_seconds": 0.336,
+        "wall_seconds": 0.016,
+        "note": "elapsed_seconds is the captured window, not the requested run length; the run itself played requested_seconds",
+        "model_sha256": "dfff5553e052cebb6f366ac0101a02e14315d4462be81240036b92792c89c44d",
+        "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+        "capture_id": "explicit-maintenance-current-layout/1/run/00",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\a593-frozen-cli-maintenance\\explicit-maintenance-current-layout_1_run_00.npz",
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 1631,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9"
+        },
+        "capture_sha256": "52797c150396303ed779bb7c3401be1eeaf864fa8e9bfacb8387dba69df255f4",
+        "capture_elapsed_seconds": 0.33554432,
+        "audio_elapsed_seconds": 2.99999232,
+        "completed_frames": 146484,
+        "timing_source": "driver.completed_frames",
+        "metadata": {
+          "first_frame": 130100,
+          "frames": 16384,
+          "completed_frames": 146484,
+          "stop_reason": "completed",
+          "capture_status": 1,
+          "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+          "model_sha256": "dfff5553e052cebb6f366ac0101a02e14315d4462be81240036b92792c89c44d",
+          "sample_rate_hz": 48828.125
+        }
+      }
+    },
+    "fixture_matches_selected_model": true,
+    "eligible_model_pointer_not_created": true,
+    "scope": "real frozen C main + original A factory; simulated MMIO/codec/driver leaf; no physical board"
+  },
+  "adapter_check_allowed": true,
+  "deployment_ready": false,
+  "field_trial_allowed": false,
+  "missing": [
+    "hardware: prepare still ignores cancel_event and its inherited _capture omits before_start; pre-cancelled preparation still enters the driver"
+  ],
+  "board_operations": 0,
+  "checksum_file": "shengdi-recal-5939ee5-0b09ef6-maintenance.zip.sha256"
+}

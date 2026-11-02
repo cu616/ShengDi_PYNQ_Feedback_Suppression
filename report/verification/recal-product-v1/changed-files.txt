@@ -130,3 +130,21 @@ report/verification/recal-product-v1/changed-files.txt
 scripts/assemble_experiment.py
 sim/feedback/test_recal_closeout.py
 sim/feedback/test_recal_runtime.py
+
+# 2026-11-02 A593原字节重冻结、维护开放与prepare遗漏
+.gitignore
+board/audio_replay/recal_product.py
+docs/STATE.md
+docs/contracts/README.md
+docs/contracts/recal-runtime-v5.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/a593-assets.json
+report/verification/recal-product-v1/a593-entry-review.json
+report/verification/recal-product-v1/a593-package-check.json
+report/verification/recal-product-v1/a593-runtime-check.json
+report/verification/recal-product-v1/a593-software.json
+report/verification/recal-product-v1/changed-files.txt
+scripts/assemble_experiment.py
+sim/feedback/test_recal_frozen.py
