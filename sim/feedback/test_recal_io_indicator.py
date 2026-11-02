@@ -42,7 +42,7 @@ class IOIndicatorTests(unittest.TestCase):
 
     def test_150_second_budget_allows_six_capture_elapsed_time(self):
         policy=frozen_policy(b);self.assertEqual(policy['io_timeout_seconds'],150)
-        self.assertEqual(policy['compute_timeout_seconds'],30)
+        self.assertEqual(policy['compute_timeout_seconds'],150)
         app,hw,clock,release=self.training_wait(policy['io_timeout_seconds'])
         clock['now']=6*8.6;app.tick()
         self.assertEqual(app.state,'capturing');self.assertIsNone(app.outcome)

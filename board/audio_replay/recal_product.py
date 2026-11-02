@@ -121,7 +121,7 @@ class Calculator:
                     '--algorithm-worker',self.module,str(request_path),str(reply_path),str(self.module_dir)],stdout=log,stderr=log)
             finally: log.close()
             process=self.process
-        deadline=time.monotonic()+float(request.get('compute_timeout_seconds',120))
+        deadline=time.monotonic()+float(request.get('compute_timeout_seconds',150))
         while process.poll() is None:
             if cancel.wait(.02) or time.monotonic()>deadline:
                 process.terminate();process.wait(timeout=2)
@@ -152,6 +152,7 @@ class Product:
         self.input_records=[]
         self.capture_history=[]
         self.hardware_receipts=[]
+        self.protection_history=[]
         self.algorithm_receipts=[];self.cause=None
         self.job_deadline=None
         self.gain_scope='prepare' if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') else 'runtime'
@@ -235,6 +236,7 @@ class Product:
             bundle=self.bundle,run=self.run_result,listening=self.listening,events=self.events,
             candidate=self.candidate,capture_history=self.capture_history,
             hardware_receipts=self.hardware_receipts,
+            protection_history=self.protection_history,
             algorithm_receipts=self.algorithm_receipts,cause=self.cause,
             validation_kind=self.cfg.get('validation_kind'),input_ready=self.input_ready,
             input_armed_at=self.input_armed_at,
@@ -319,6 +321,7 @@ class Product:
                 self.input_records=[]
                 self.capture_history=[];self.events=[];self.listening=[]
                 self.hardware_receipts=[]
+                self.protection_history=[]
                 self.algorithm_receipts=[];self.cause=None
                 self.input_ready=None;self.input_armed_at=None
                 self.speech_retries=0
@@ -343,7 +346,7 @@ class Product:
         if kind=='hw' and not self.hw_idle.is_set():raise Failure('hardware_error','旧硬件调用尚未返回')
         if kind=='hw':self.hw_idle.clear()
         epoch=self.epoch;cancel=self.cancel;self.pending=(kind,request)
-        self.job_deadline=self.clock()+float(self.cfg.get('io_timeout_seconds',150) if kind=='hw' else self.cfg.get('compute_timeout_seconds',120))+1
+        self.job_deadline=self.clock()+float(self.cfg.get('io_timeout_seconds',150) if kind=='hw' else self.cfg.get('compute_timeout_seconds',150))+1
         if kind=='hw' and request.get('op')=='run': self.job_deadline+=float(request['seconds'])
         def worker():
             try: value=function(request,cancel);error=None
@@ -373,7 +376,7 @@ class Product:
             input=self.training if phase=='input' and self.cfg.get('runtime_profile')=='b-heldout-v1' else self.input_records,
             model_path=self.candidate['path'] if self.candidate else None,
             model_sha256=self.candidate['sha256'] if self.candidate else None,
-            compute_timeout_seconds=self.cfg.get('compute_timeout_seconds',120),attempts_total=len(self.cfg['attempts']))
+            compute_timeout_seconds=self.cfg.get('compute_timeout_seconds',150),attempts_total=len(self.cfg['attempts']))
         if self.cfg.get('algorithm_identity'): request['algorithm_identity']=self.cfg['algorithm_identity']
         self._submit('algorithm',request,self.calculator.evaluate)
 
@@ -558,6 +561,19 @@ class Product:
         if self.clock()-self.input_armed_at>=duration+float(self.cfg.get('cue_indicator_guard_seconds',.1)):
             self._state('speaking')
 
+    def _protection_snapshot(self, poll, action):
+        # Keep the adapter's actual fields. Older adapters omit the raw word; never
+        # reconstruct it from decoded flags and present that reconstruction as a read.
+        request=self.pending[1] if self.pending else {}
+        record=dict(time_monotonic=self.clock(),state=self.state,scene_id=self.scene,
+            request_id=request.get('request_id'),op=request.get('op'),phase=request.get('phase'),
+            effective_mode=poll.get('effective_mode'),hardware_idle=self.hw_idle.is_set(),
+            capture_status=poll.get('capture_status'),control_word=poll.get('control_word'),
+            raw_status_available=poll.get('capture_status') is not None,
+            protection=poll.get('protection',{}),saturation=poll.get('saturation',{}),
+            input_clip=poll.get('input_clip'),action=action)
+        self.protection_history.append(record)
+
     def tick(self):
         try:
             poll=self.hw.poll()
@@ -588,7 +604,17 @@ class Product:
                 return
             if self.pending and self.clock()>self.job_deadline: raise Failure('hardware_error','阶段超时，已停止')
             if poll.get('protected'):
-                raise Failure('input_overload' if poll.get('input_clip') else 'protected','硬件保护停声')
+                # A's baseline updates AFTER decoding an idle poll. A late sticky
+                # bit can therefore appear once after a finished capture. Only a
+                # muted, fully drained idle state may retain it as history and
+                # accept START; any active/pending hardware protection still stops.
+                idle=(self.state in ('uncalibrated','ready','ended') and self.pending is None
+                      and self.hw_idle.is_set() and poll.get('effective_mode')=='muted')
+                self._protection_snapshot(poll,'idle_latch_recorded' if idle else 'abort')
+                if not idle:
+                    clipped=poll.get('input_clip') or poll.get('protection',{}).get('input_clip_seen')
+                    raise Failure('input_overload' if clipped else 'protected','硬件保护停声')
+                self.checkpoint()
             if self.state=='running':
                 self.gain_scope='run' if poll.get('effective_mode')=='muted' else 'runtime'
             self._identity(poll['identity'])

@@ -4,16 +4,18 @@
 
 C维护安装包内唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
-## 本轮慢采集与灯光复核包（io150）
+## 本轮闸门与 START 复核包（guard150）
 
-仓库根目录交付shengdi-recal-8799f40b-0b09ef6-io150-final.zip及同名.zip.sha256；沿用A8799和B0b09ef6原字节。io_timeout_seconds=150，计算预算仍30秒、单次扩声仍30秒。A实测每段墙钟约8.6秒，六训练约51.6秒；旧30秒时限会在回包前失败，numeric=PASS仅代表此前数值步骤，不代表完整验收。
+电脑仓库根目录交付 shengdi-recal-7ae449af-0b09ef6-guard150-final.zip 及同名 .zip.sha256。新包采用 A 已发布测试副本原字节：下载期间的 MMIO 读闸、驱动调用期间 AUX 缓存、run 不提前 arm；hw_api.py SHA 为 7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08。包内 hardware-provenance.json 绑定 A 的补丁提交与结果 SHA；不执行其验证 shell、不携带验证脚本。B 仍是 0b09ef6 原字节。
+
+I/O 与计算预算均 150 秒，单次扩声音频仍 30 秒。A 的 ARM 拟合约 70 秒，不能再用旧 30 秒计算预算。静音且硬件任务已全部结束时，历史粘滞保护留证后继续接收 START；活动保护仍先停声。具体范围和日志字段见 [v9](../contracts/recal-runtime-v9.md)。
 
 [阶段时限与提示v8](../contracts/recal-runtime-v8.md)区分安静0100/正在采集0101。嵌入input会在看到实际armed后等待包内21969帧提示音及0.1秒尾声，再进入讲话0010；初始化时间不计入这次等待。当前A支持armed安全写灯，已封装启用；其他适配仍保留indicator_deferred并记录原因，不盲写受保护控制寄存器。若LD3受实际旁路影响亮起，标定阶段按LD0–LD2辨认阶段。
 
-本轮仅复核慢采集时限与灯光；overlay复用、已报告PS服务卡死未修复，正式演示仍待整机稳定性通过。维护前停旧service/Notebook，只允许A一个硬件操作者。新包解压到板卡/home/xilinx/shengdi-install/recal-io150/：
+本轮复核冷启动、CAL→ready→START→30秒结束和重复流程；不再尝试 overlay 复用。下载时按键观察可能晚约 0.9 秒，端到端未测，不宣称所有阶段实体 BTN3 ≤200 ms。正式演示与整机稳定性仍需新包实机结果。维护前停旧 service/Notebook，只允许 A 一个硬件操作者；不要另开 PYNQ 会话。新包解压到板卡 /home/xilinx/shengdi-install/recal-guard150/：
 
 ```bash
-BASE=/home/xilinx/shengdi-install/recal-io150
+BASE=/home/xilinx/shengdi-install/recal-guard150
 sudo bash "$BASE/recal_entry.sh" --check
 sudo bash "$BASE/recal_entry.sh" \
   --adapter-check \
@@ -22,9 +24,20 @@ sudo bash "$BASE/recal_entry.sh" \
   --state-dir /home/xilinx/.local/state/shengdi
 ```
 
-A在既定独占窗口安装复核时使用sudo bash /home/xilinx/shengdi-install/recal-io150/product-install.sh；安装器及service行为未改。三连音结束后持续讲话至安静灯，0010同步提示讲话；0100保持安静等待，0101表示训练/验证采样中（可能持续约一分钟）。任意阶段BTN3停止不等待150秒，普通失败仍可长按BTN0新scene重来。
+A 在既定独占窗口安装复核时使用 sudo bash /home/xilinx/shengdi-install/recal-guard150/product-install.sh；安装器及 service 行为未改。断电重启应静音待标定，不先写 AUX。长按 BTN0 ≥1秒重标定；三连音结束后持续讲话至安静灯，0010 提示讲话，0100 等待安静，0101 训练/验证采样；计算可能再需约70秒。0110 就绪后按 BTN1 扩声，SW0 切换由 LD3 显示，BTN3 停止；30秒自然结束后回就绪灯。普通失败可长按 BTN0 新 scene 重来，身份混搭/无法静音仍锁定。按键检测与 abort 调用耗时分别记，不用旧9.8ms冒充端到端响应。
 
-回包目标：/home/xilinx/shengdi-install/recal-product-return-io150.zip，仍用同一recal_entry.sh --state-dir /home/xilinx/.local/state/shengdi --export <目标>；清单与隐私规则不变。下方旧包保留原SHA，不手换文件，以本节路径为本轮准。
+维护模型固定为包内 bootstrap-model.json，SHA=6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8；只用于静音初始化/适配检查，不是现场通过模型。正式流程自动拟合并安装本轮模型；文件路径与 SHA 见 status.json 的 bundle，不手选旧模型。
+
+结束后停止服务，再用同一包入口导出一次：
+
+```bash
+sudo systemctl stop shengdi-product.service
+sudo bash /home/xilinx/shengdi-install/recal-guard150/recal_entry.sh \
+  --state-dir /home/xilinx/.local/state/shengdi \
+  --export /home/xilinx/shengdi-install/recal-product-return-guard150.zip
+```
+
+回包包含 return-manifest.json、summary.json、results/<scene>.json、算法收据、训练/验证原件、已安装模型及已有 maintenance/adapter-check.json；具体名称以 return-manifest.json 为准。protection_history 随 results 留证。人声 PCM、原片、授权书不自动导出。下方均为历史交付，旧 SHA 保留，不手换包内文件；以本节路径为准。
 
 ## 本轮上电与CAL复核包（A b1826610 / 功能31eef5a1）
 

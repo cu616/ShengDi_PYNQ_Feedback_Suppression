@@ -27,9 +27,9 @@ A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、�
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：已提交 io150 包：I/O 阶段预算 150 秒，计算/运行仍各 30 秒；安静/采集/讲话提示分离，AUX 在 prepare 后核验，普通失败允许确认静音后重新 CAL。离线核验不能替代现场稳定性。
-**当前卡点**：已报告的 PS 服务卡死/overlay 复用问题仍待解决；按用户最新分工由 A/C 协同收尾，不给 B 增加新算法任务。
-入口：[产品操作单](ref/recal-product.md)；证据：[软件验证](../report/verification/recal-product-v1/io150-software.json)、[包核验](../report/verification/recal-product-v1/io150-package-check.json)。
+**最后动作**：已同步 main 并修正计算预算为150秒；活动保护仍停声，已静音且硬件任务全部退出时的粘滞位留证后接收START。70项相关软件检查通过；采用A已发布六处补丁组出的原测试副本字节，未改A/B源码。
+**当前卡点**：新整包待A独占复核冷启动、CAL到ready、START扩声30秒和重复流程；下载闸门期间按键观察可能延迟约0.9秒，端到端未测，不能宣称全阶段≤200ms。overlay复用路线按A对照结果停止，不再将其列为修法。
+入口：[产品操作单](ref/recal-product.md)；证据：[软件验证](../report/verification/recal-product-v1/guard150-software.json)、[A真板对照](../report/verification/audio-replay/guard-2026-11-02/README.md)。A完成过完整CAL与硬件层运行的证据保留；此处不把新C整包实机验收提前报通过。
 C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
 
 ## 已验证 / 未验证

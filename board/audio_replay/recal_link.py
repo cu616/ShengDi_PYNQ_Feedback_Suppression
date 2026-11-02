@@ -13,7 +13,7 @@ def frozen_policy(algorithm):
     return dict(runtime_profile='b-frozen-v1',algorithm_module='recal_algorithm',
         algorithm_identity=identity,attempts=copy.deepcopy(algorithm.ATTEMPTS),
         validation_kind='heldout_prediction',input_mode='prepared',cue=True,
-        compute_timeout_seconds=30,io_timeout_seconds=150,quiet_seconds=4,run_seconds=30,
+        compute_timeout_seconds=150,io_timeout_seconds=150,quiet_seconds=4,run_seconds=30,
         indicator_encoding='led4',phase_gain_q12={k:[0,1631] for k in (
             'prepare','cue','input','training','validation','install','run')})
 
