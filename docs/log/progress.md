@@ -1,3 +1,9 @@
+## 2026-11-02 C 复核A新arm基线并恢复整包验收放行
+
+- 从A=e6379ef取得0cabfc17原件，根目录/v3-io一致，九项运行时和原manifest逐字节复制；冻结器不再重放旧补丁，不改A/B源码。
+- 独立执行A寄存器替身序列，新运行同一fault报告恢复；预取消不读/不改基线，五处before_start及缓存原始字标记检查通过。相关73项软件检查通过，结果见[原件复核](../../report/verification/recal-product-v1/guard150-0cab-assets.json)、[软件验证](../../report/verification/recal-product-v1/guard150-0cab-software.json)。
+- v9同步原件来源和漏报修复事实；旧blocked ZIP仍阻断，只有新0cab整包恢复安装/维护检查放行，单次运行与B判据不变。约0.9秒按键空窗保留为未验收限制；未操板。
+
 ## 2026-11-02 C 冻结guard150禁止安装复核包
 
 - 根目录生成明确标记blocked的完整review ZIP；全部40个文件及四处helper钉值独立核对，A其余运行时与B算法原字节不变，C实际产品入口正确，包内文档链接完整。
