@@ -113,6 +113,7 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         '../contracts/recal-runtime-v6.md','FINAL-RUNTIME.md').replace(
         '../contracts/recal-runtime-v7.md','BOOT-RECOVERY.md').replace(
         '../contracts/recal-runtime-v8.md','IO-INDICATOR.md').replace(
+        '../contracts/recal-runtime-v9.md','GUARD-RUNTIME.md').replace(
         '../contracts/recalibration-algorithm-v1.md','ALGORITHM.md')
     # Historical evidence belongs to the source repository, outside this install whitelist.
     import re

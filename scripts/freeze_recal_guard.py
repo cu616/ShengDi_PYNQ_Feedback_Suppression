@@ -72,6 +72,8 @@ def stage(destination):
     meta=dict(contract='recal-product-v1',kind='hardware',source_commit=A,source_derivation=provenance,
         field_approved=True,adapter_check_allowed=True,field_trial_allowed=False,
         hashes=hashes,expected_identity=identity,allowed_gain_q12=contract['gain_sets']['run_gain_q12'],
+        capabilities={k:True for k in ('buttons','indicator','nonintrusive_events','abort_mutes',
+                                      'prepared_capture','bounded_run','mode_readback')},
         allowed_calibration_gain_q12=[0],diagnostic_model='bootstrap-model.json',blockers=[],
         upstream_blockers=contract.get('blockers',[]),
         approval_scope='A-supervised integration validation; not formal demonstration or 200ms button latency acceptance',
