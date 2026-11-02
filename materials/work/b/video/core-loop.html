@@ -53,7 +53,7 @@
          处理器框     770–1150 × 228–408
          扬声器框     1350–1490 × 234–406
   -->
-  <g id="scene" transform="translate(0,30)">
+  <g id="scene" transform="translate(147,30)">
     <!-- 说话的人 -->
     <g id="person" transform="translate(180,320)">
       <circle cx="0" cy="-14" r="34" fill="#cfd6de"/>
@@ -107,15 +107,15 @@
            560,700   控制点2：决定"从哪个方向进终点"，这里是正下方，所以最后垂直上升
            560,444   终点：麦克风支架底端，箭头朝上
          想改弯度就改这两个控制点；想让起终点换个位置就改 M 和最后一个点。 -->
-    <path id="fbPath" d="M1430,490 C1560,640 560,700 560,490" fill="none"
+    <path id="fbPath" d="M1430,470 C1450,640 560,640 560,470" fill="none"
           stroke="#e8833a" stroke-width="7" stroke-linecap="round" stroke-dasharray="18 14"/>
-    <text id="fbLbl" x="960" y="742" transform="translate(0,-60)" text-anchor="middle" class="lbl" fill="#c96a1e">扬声器声音回传到麦克风 = 反馈</text>
+    <text id="fbLbl" x="853" y="742" transform="translate(0,-60)" text-anchor="middle" class="lbl" fill="#c96a1e">扬声器声音回传到麦克风 = 反馈</text>
 
     <!-- 预测支路，同样是 M 起点 + C 两个控制点 + 终点
          M 1420,232  从扬声器上方出发
          C 1330,152 / 1120,140  往左上拱
          1052,224    落在处理器框顶部，箭头向下 -->
-    <path id="predPath" d="M1420,232 C1330,152 1120,140 1052,224" fill="none"
+    <path id="predPath" d="M1420,240 C1330,152 1120,152 1052,240" fill="none"
           stroke="#2e9e6b" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
     <text id="predLbl" x="1258" y="145" text-anchor="middle" class="lbl" fill="#237a52">预测回传分量</text>
 
@@ -124,7 +124,7 @@
   </g>
 
   <!-- 信号说明条 -->
-  <g id="signals">
+  <g id="signals" transform="translate(147,0)">
     <g id="rowMic" transform="translate(170,860)">
       <text x="-92" y="8" class="lbl">麦克风</text>
       <rect x="20" y="-26" width="560" height="52" rx="8" fill="#eef2f6"/>
