@@ -1,5 +1,7 @@
 # C 产品软件与统一入口
 
+日常开发统一在独立克隆的 main 提交推送，按 [WORKFLOW §9](../WORKFLOW.md#9-提交与拉取让人只按回车) 同步；A/B/C 旧分支仅保留历史。
+
 本轮按队长2026-11-01新任务执行；技术现状读 [STATE](../STATE.md)，人工转发消息优先，不恢复REQUESTS派活。
 
 C拥有产品状态机、常驻入口源码recal_product_entry.sh（安装包内仍为recal_entry.sh）、配置/模型事务、提示编排、现有assemble_experiment的产品打包分支和回包复核。A提供hw_api硬件适配并唯一操板；B提供纯数值evaluate、拟合/独立验证及有界策略。文件边界和输入输出见 [recal-product-v1](../contracts/recal-product-v1.md)。C不替A/B重写实现。

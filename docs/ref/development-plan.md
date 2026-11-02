@@ -8,7 +8,7 @@
 
 ## 跨设备获取本轮材料
 
-共享仓库：[cu616/ShengDi_PYNQ_Feedback_Suppression](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression)，本轮交付分支为 **A**。这是私有仓库，接收设备须使用已获仓库权限的 GitHub 账号。交付提交号由本轮最终消息给出；需严格复现时用该提交号替换下面的 origin/A。
+共享仓库：[cu616/ShengDi_PYNQ_Feedback_Suppression](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression)，2026-11-02 起日常交付分支为 **main**。这是私有仓库，接收设备须使用已获仓库权限的 GitHub 账号。交付提交号由本轮最终消息给出；需严格复现时用该提交号替换下面的 origin/main。
 
 所有仓库内路径均相对该设备的仓库根目录，不要求存在队长电脑的 D 盘路径、_a_work 或相同用户名。GitHub 提供文件，人工转发提供任务；不要把“已推送”误认为队友已经接收。
 
@@ -16,9 +16,9 @@
 
 ```sh
 git fetch origin
-git show origin/A:docs/STATE.md
-git show origin/A:docs/ref/development-plan.md
-git show origin/A:report/analysis/2026-10-24-situation-and-limits.md
+git show origin/main:docs/STATE.md
+git show origin/main:docs/ref/development-plan.md
+git show origin/main:report/analysis/2026-10-24-situation-and-limits.md
 ```
 
 也可在 GitHub 选择 A 分支直接阅读。没有克隆的设备可在一个新的空目录执行：

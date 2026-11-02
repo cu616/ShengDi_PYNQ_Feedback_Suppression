@@ -7,7 +7,7 @@
 
 版本：2026-10-30。目标成片 **2分45秒**，为片头/片尾调整留15秒。
 平台硬限制来自用户提交页：MP4、AVC/H.264、≤3分钟、≤300MB。
-作品名称与简介沿用已确认表述；全部技术结论以 [最新 A 分支 STATE](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/A/docs/STATE.md) 及 C 确认的具体证据为准。
+作品名称与简介沿用已确认表述；全部技术结论以 [main 的 STATE](https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/main/docs/STATE.md) 及 C 确认的具体证据为准。
 
 ## 1. 讲一件什么事
 

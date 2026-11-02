@@ -234,15 +234,28 @@ A 对现场事实负责，B 对算法与预测负责，C 对测量与复算负�
 ### 每次会话固定顺序
 
 ```text
-git pull --rebase            # 先拉，避免把自己的提交顶到别人后面
+git switch main             # 仅在自己的干净克隆；脏目录/旧分支迁移见下文
+git pull --ff-only origin main # 开工先同步，不在含他人修改的目录直接拉取
 python scripts/brief.py      # 看已记录进度；任务消息另看用户本次转发
 ...干活...
 python scripts/check_docs.py # 文档 0 错误才提交
 python -m unittest discover -s sim/feedback -p "test_*.py"   # 动了代码才需要
 git add <自己改的文件>        # 不要 git add -A，避免把别人的半成品带进去
 git commit -m "[B] 一句话"
-git push
+git fetch origin
+git rebase origin/main      # 仅重放本人尚未推送的提交；冲突停下协调
+# 若同步引入相关改动，重跑受影响检查
+git push origin main        # 非快进拒绝则重新同步；严禁强推
 ```
+
+### 从旧分支/旧工作树转到 main
+
+先 `git status --short` 与 `git fetch origin`，确认本线已推送提交在 main 历史中。
+干净独立克隆可切 main 并 `git pull --ff-only origin main`；未提交工作先明确归属并保存，
+未被 main 包含的提交单独列出后集成，不用 reset/clean 强行对齐。
+如果本地 main 落后且有大量旧资料，或 main 已被另一 worktree 占用，保留原目录，
+优先新建一个干净 main 克隆；不要用 `--ignore-other-worktrees` 绕过占用。
+每人只 stage 自己列明的文件；STATE 只改本线段，公共文件由指定责任人维护。
 
 ### 检查命令的退出码陷阱
 
@@ -261,13 +274,14 @@ python -m unittest discover -s sim/feedback -p "test_*.py" > /tmp/t.txt 2>&1 \
 
 ### 常设授权（2026-10-20 由账号 R-Coralis 确认，三条线通用）
 
-- **AI 可以自动提交并推送**，不需要每次问人。前提：先 `git pull --rebase`，
+- **AI 可以自动提交并推送 main**，不需要每次问人。前提：先按上面的同步步骤取得最新 main，
   跑过 `check_docs.py`（动了代码再跑测试），并显式列出要提交的文件。
-- **各线推自己的分支，`main` 由队长合并。** 分支名按线取：A → `A`，B → `B`，C → `C`。
-  队长明确要求"提交到自己的分支，方便管理"（2026-10-20）。分支内 AI 全自动，
-  不建短期特性分支、不走 PR；**不要自己往 `main` 推**。
+- **2026-11-02 队长明确改为共同维护 `main`，覆盖 2026-10-20 的分支限制。**
+  三人在各自独立克隆工作，直接提交并推送 main，不再等待队长逐线合并，也不强制 PR。
+  A/B/C 分支和已有提交保留历史，不删除。角色仍决定文件所有权，不同时改同一文件。
+  跨人共用同一物理目录时只允许一个写入者；推送是同步代码，不等于自动部署板卡或验收通过。
 - **唯一例外：规则类改动**（`AGENTS.md`、本文件、`docs/contracts/` 的语义变更）要单独成一个
-  提交、标题加 `[规则]`，并告知队长优先合并——否则队友读到旧规则，会按错的方式干活。
+  提交、标题加 `[规则]`，推到 main 后由用户转发提交号，提醒队友同步后开工。
 - **必须停下来问人的情况**（这几条不能自动处理）：出现冲突且不属于
   `progress.md` 的自动合并；需要删除别人的文件；需要 `--force`；
   测试或 check_docs 失败但原因不明；要改契约的语义。
@@ -294,7 +308,7 @@ python -m unittest discover -s sim/feedback -p "test_*.py" > /tmp/t.txt 2>&1 \
 |---|---|---|
 | `docs/log/progress.md` | 高（每次都在顶部加） | 已在 `.gitattributes` 里设 `merge=union`，git 自动保留双方条目，不需人介入。**已实测**：正文不同则两条都完整保留；正文逐字相同会被去重，所以条目要写具体内容 |
 | `docs/STATE.md` | 中（三段相邻） | 出现冲突停下问；不能只凭日期较新就覆盖另一条线的结论 |
-| 代码 / 契约 | 低 | 各线在自己分支上写，本来就不撞；合并到 `main` 时由队长处理 |
+| 代码 / 契约 | 取决于文件重叠 | 维持原职责；同步 main 出现冲突时列出具体差异请队长决定，不整文件覆盖 |
 
 `merge=union` 只对 `progress.md` 生效，**不要**给 `STATE.md` 加——它是覆盖式的，
 union 会把旧段落和新段落拼在一起，那正是我们花力气消灭的东西。
