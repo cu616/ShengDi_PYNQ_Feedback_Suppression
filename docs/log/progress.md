@@ -1,3 +1,10 @@
+## 2026-11-02 C 接入固定6900增益/8秒演示配置（接口变更v10）
+
+- 按A人工转发授权固定runtime gain=6900，不放宽为允许集合任取；硬件配置允许集加入6900，阶段身份同步0/6900、准备阶段保留旧批准档，训练/验证计划不变。
+- 单次START改8秒；初始化零模型的维护接口链路独立保持−8 dB/3秒并写入收据，避免维护步骤先进入高增益旁路；运行模型仍须当前CAL通过。
+- [v10](../contracts/recal-runtime-v10.md)与操作单记录旁路很响/驱动饱和保护、器件长期余量未评估、0.9秒按键空窗及ASG口径。产品保护后仍需重新CAL，不照抄A直接入口的重新起跑语义。
+- 相关46项[软件检查](../../report/verification/recal-product-v1/demo45-software.json)通过；A/B运行时未改、未操板。授权来源与原件见[冻结记录](../../report/verification/recal-product-v1/demo45-assets.json)。
+
 ## 2026-11-02 B 交付线迁到 main，海报改为纯文字替换
 
 - main 从 ff1c5b3 快进到 132a5dd（落后 497 个提交）；本线只有 271361c 一个提交不在 main，按 cherry-pick 集成，不做 reset/clean。切分支前把 core-loop.html 的手动微调 stash 并另存备份，main 稳定后 pop，干净应用。
