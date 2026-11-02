@@ -1,0 +1,31 @@
+{
+  "scope": "actual frozen A poll; software register values only; no board",
+  "idle": {
+    "protected": true,
+    "protection": {
+      "fault": 1
+    }
+  },
+  "after_reset": {
+    "protected": false,
+    "protection": {}
+  },
+  "new_fault_in_run": {
+    "protected": false,
+    "protection": {}
+  },
+  "baseline": 262144,
+  "helper_sha256": "7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08",
+  "A_source_commit": "dd0825065462a8433bde2ffaff120798ae73ca2f",
+  "expected_new_runtime_fault_protected": true,
+  "observed_new_runtime_fault_protected": false,
+  "installation_blocked": true,
+  "hardware_operations": 0,
+  "sequence": [
+    "create_product without audio I/O",
+    "override register read leaves and identity only",
+    "idle capture_status=0x00040000, control=1631<<16; poll",
+    "set _current_op='run', control armed, capture_status=0; poll",
+    "capture_status=0x00040000 again; poll returns protected=false"
+  ]
+}

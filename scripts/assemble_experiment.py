@@ -144,6 +144,10 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         'recal-runtime-v8.md','IO-INDICATOR.md').replace('../ref/recal-product.md','OPERATIONS.md').replace(
         '../../report/verification/audio-replay/guard-2026-11-02/README.md',
         'https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/dd0825065462a8433bde2ffaff120798ae73ca2f/report/verification/audio-replay/guard-2026-11-02/README.md'),encoding='utf-8')
+    guard=out/'GUARD-RUNTIME.md'
+    guard.write_text(guard.read_text(encoding='utf-8').replace(
+        '../../report/verification/recal-product-v1/guard150-baseline-probe.json',
+        'https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/main/report/verification/recal-product-v1/guard150-baseline-probe.json'),encoding='utf-8')
     payloads=[p for p in out.rglob('*') if p.is_file() and '__pycache__' not in p.parts
               and p.suffix not in ('.pyc','.pyo')]
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation and not review and not missing,

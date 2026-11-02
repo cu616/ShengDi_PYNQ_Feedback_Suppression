@@ -61,20 +61,22 @@ def stage(destination):
         patch_sha256=sha(script),patch_edits=len(edits),result_helper_sha256=GUARDED,
         exact_A_reported_bytes=True,B_commit=subprocess.check_output(['git','rev-parse',B],cwd=ROOT).decode().strip(),
         adopted=['MMIO read gate during Overlay construction','AUX cache during driver call','driver owns arm; remove pre-arm'],
-        raw_poll_status_exposed=False,
+        raw_poll_status_exposed=False,protection_baseline_verified=False,
         limitations=['button observation may be delayed about 0.9 seconds during download; not measured end-to-end',
                      'AUX cache not independently isolated on hardware; fresh identity checked after driver return',
-                     'new C package still needs START/30-second run and repeat CAL on hardware'],
+                     'new C package still needs START/30-second run and repeat CAL on hardware',
+                     'reproduced software fault: idle baseline hides the same fault in a later capture; installation blocked'],
         no_board_access=True)
     (hardware/'hardware-provenance.json').write_text(json.dumps(provenance,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     hashes['hardware-provenance.json']=sha((hardware/'hardware-provenance.json').read_bytes())
     identity=dict(contract['expected_identity'],helper_sha256=GUARDED,gain_q12=1631)
     meta=dict(contract='recal-product-v1',kind='hardware',source_commit=A,source_derivation=provenance,
-        field_approved=True,adapter_check_allowed=True,field_trial_allowed=False,
+        field_approved=True,adapter_check_allowed=False,field_trial_allowed=False,
         hashes=hashes,expected_identity=identity,allowed_gain_q12=contract['gain_sets']['run_gain_q12'],
         capabilities={k:True for k in ('buttons','indicator','nonintrusive_events','abort_mutes',
                                       'prepared_capture','bounded_run','mode_readback')},
-        allowed_calibration_gain_q12=[0],diagnostic_model='bootstrap-model.json',blockers=[],
+        allowed_calibration_gain_q12=[0],diagnostic_model='bootstrap-model.json',
+        blockers=['A protection baseline retains an idle fault across a new capture; a repeated runtime fault is hidden'],
         upstream_blockers=contract.get('blockers',[]),
         approval_scope='A-supervised integration validation; not formal demonstration or 200ms button latency acceptance',
         config=dict(hp_volume=40,aux_db=0.,input_mode='embedded',speech_seconds=2.5,

@@ -232,3 +232,4 @@ report/ai-records/recal-product-v1.md
 report/verification/recal-product-v1/changed-files.txt
 report/verification/recal-product-v1/guard150-software.json
 report/verification/recal-product-v1/guard150-package-check.json
+report/verification/recal-product-v1/guard150-baseline-probe.json

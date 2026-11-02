@@ -272,3 +272,6 @@ compute及缺省预算改150。虚拟70秒拟合在旧30失败、新150可完成
 A三处修法采用其仓库full_cal_guard3.sh中已发布六处字符串替换，不执行shell。以A冻结8799原件生成的helper严格等于其报告7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08；C只写打包器和候选暂存，不改A/B源文件。MMIO闸约0.9秒按键空窗、AUX缓存未独立隔离上板验证以及新整包START待验证，均保留为实机边界。B原版0b09ef6与位流/驱动不变，不把无保护当作抑制收益。
 
 首次候选组包被打包器正确拒绝：C归一化硬件元数据漏带capabilities，报input capture is not prepared。补齐与原A已验证接口一致的七项能力，并修正包内v9链接映射；预检整包生成通过，--check返回identity_ok/deployment_ready=true、missing=[]。失败暂存保留，未作为交付ZIP。
+
+
+独立探测又发现原A保护基线会跨运行掩盖同一fault：真实冻结poll+模拟状态输入，空闲bit18=1后baseline=262144；_current_op=run，状态0后再bit18=1，protected仍false。这不是新的真板观察，不据此否认A已完成的CAL与直接扩声；它是候选保护逻辑的确定漏报。C不能修改A底层，也不让已知漏报的包继续标deployment_ready。归一化A元数据追加blocker、adapter_check_allowed=false，改交禁止安装的review包，普通入口、安装器和维护链路都必须拒绝。原预检包保存在staging，未交付。已给用户一条可原样转A的消息，请A在新装载且取消检查通过后的before_start建立本轮基线，并返回原始状态字/缓存标记；这次转发是实际新增阻塞，不给B追加工作。

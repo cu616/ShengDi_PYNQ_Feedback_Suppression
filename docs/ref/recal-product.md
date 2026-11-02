@@ -4,15 +4,17 @@
 
 C维护安装包内唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
-## 本轮闸门与 START 复核包（guard150）
+## 本轮 C 软件与阻断复核包（guard150 review）
 
-电脑仓库根目录交付 shengdi-recal-7ae449af-0b09ef6-guard150-final.zip 及同名 .zip.sha256。新包采用 A 已发布测试副本原字节：下载期间的 MMIO 读闸、驱动调用期间 AUX 缓存、run 不提前 arm；hw_api.py SHA 为 7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08。包内 hardware-provenance.json 绑定 A 的补丁提交与结果 SHA；不执行其验证 shell、不携带验证脚本。B 仍是 0b09ef6 原字节。
+电脑仓库根目录交付 shengdi-recal-7ae449af-0b09ef6-guard150-blocked-final.zip 及同名 .zip.sha256，**仅供文件复核，不安装、不上板运行**。采用 A 已发布测试副本原字节：下载期间的 MMIO 读闸、驱动调用期间 AUX 缓存、run 不提前 arm；hw_api.py SHA 为 7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08。包内 hardware-provenance.json 绑定 A 的补丁提交与结果 SHA；不执行其验证 shell、不携带验证脚本。B 仍是 0b09ef6 原字节。
+
+独立[探测](../../report/verification/recal-product-v1/guard150-baseline-probe.json)发现 A 基线跨运行保留旧 fault，可能漏报本轮同一 fault；C 不跨线修改。此包 identity_ok=true、deployment_ready=false、adapter_check_allowed=false，missing 明列这一阻塞；--check 退出2，安装/常驻/维护调用均被拒绝。A 修正后 C 再按新 SHA 发可安装整包，不能手换本包文件。
 
 I/O 与计算预算均 150 秒，单次扩声音频仍 30 秒。A 的 ARM 拟合约 70 秒，不能再用旧 30 秒计算预算。静音且硬件任务已全部结束时，历史粘滞保护留证后继续接收 START；活动保护仍先停声。具体范围和日志字段见 [v9](../contracts/recal-runtime-v9.md)。
 
 [阶段时限与提示v8](../contracts/recal-runtime-v8.md)区分安静0100/正在采集0101。嵌入input会在看到实际armed后等待包内21969帧提示音及0.1秒尾声，再进入讲话0010；初始化时间不计入这次等待。当前A支持armed安全写灯，已封装启用；其他适配仍保留indicator_deferred并记录原因，不盲写受保护控制寄存器。若LD3受实际旁路影响亮起，标定阶段按LD0–LD2辨认阶段。
 
-本轮复核冷启动、CAL→ready→START→30秒结束和重复流程；不再尝试 overlay 复用。下载时按键观察可能晚约 0.9 秒，端到端未测，不宣称所有阶段实体 BTN3 ≤200 ms。正式演示与整机稳定性仍需新包实机结果。维护前停旧 service/Notebook，只允许 A 一个硬件操作者；不要另开 PYNQ 会话。新包解压到板卡 /home/xilinx/shengdi-install/recal-guard150/：
+以下是修复后可安装包的预备操作，**本 review 包不执行**。后续复核冷启动、CAL→ready→START→30秒结束和重复流程；不再尝试 overlay 复用。下载时按键观察可能晚约 0.9 秒，端到端未测，不宣称所有阶段实体 BTN3 ≤200 ms。维护前停旧 service/Notebook，只允许 A 一个硬件操作者；不要另开 PYNQ 会话。获放行的新包将解压到板卡 /home/xilinx/shengdi-install/recal-guard150/：
 
 ```bash
 BASE=/home/xilinx/shengdi-install/recal-guard150

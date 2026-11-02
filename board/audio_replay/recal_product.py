@@ -570,6 +570,8 @@ class Product:
             effective_mode=poll.get('effective_mode'),hardware_idle=self.hw_idle.is_set(),
             capture_status=poll.get('capture_status'),control_word=poll.get('control_word'),
             raw_status_available=poll.get('capture_status') is not None,
+            capture_status_cached=poll.get('capture_status_cached',poll.get('mmio_held')),
+            control_word_cached=poll.get('control_word_cached',poll.get('mmio_held')),
             protection=poll.get('protection',{}),saturation=poll.get('saturation',{}),
             input_clip=poll.get('input_clip'),action=action)
         self.protection_history.append(record)
