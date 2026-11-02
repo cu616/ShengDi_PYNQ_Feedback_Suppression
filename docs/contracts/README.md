@@ -8,6 +8,7 @@
 
 | 契约 | 覆盖什么 | 生产方 | 消费方 | 状态 |
 |---|---|---|---|---|
+| [recal-runtime-v8.md](recal-runtime-v8.md) | 150秒I/O阶段预算与安静/采集/讲话实体提示 | C | A / C | 软件验证，待现场复核 |
 | [recal-runtime-v7.md](recal-runtime-v7.md) | 上电AUX初始化门槛、失败长按CAL恢复及原件目录 | C / A | A / C | 两侧已交，待上板复核 |
 | [recal-runtime-v6.md](recal-runtime-v6.md) | 最终冻结、固定维护模型和按包身份导出的单一回包 | C | A / C | 冻结交付 |
 | [recal-runtime-v5.md](recal-runtime-v5.md) | 用户授权的维护自检开放范围与当前模型身份 | C | A / C | 维护开放，正式流程按门槛 |
