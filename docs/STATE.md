@@ -27,9 +27,9 @@ A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、�
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：已按用户最终确认切换独立5786（+3.0 dB）/8秒演示配置，唯一参数来源A=c254124报告§十七；允许集不含6900，运行身份保持单值5786，标定0增益、维护−8 dB/3秒。A九项运行时和B算法保持原字节，普通30秒profile不变；旧6900候选不交付。
+**最后动作**：已按用户最终确认切换独立5786（+3.0 dB）/8秒演示配置，唯一参数来源A=c254124报告§十七；允许集不含6900，运行身份保持单值5786，标定0增益、维护−8 dB/3秒。A九项运行时和B算法保持原字节，普通30秒profile不变；旧6900候选不交付。47项相关软件检查及新包41文件/入口/配置/回包核验通过，冻结C+A/真实B子进程与模拟叶子完成两scene，安装和运行回读5786、训练/验证0。
 **当前卡点**：新产品包待A值守现场核验，不把直接入口20秒/3.49秒记录当作本包通过。旁路边界±0.1不可复现、声压/热安全、约0.9秒按键空窗及一次install bit_exact=False（15872帧全不匹配、次轮恢复）均未验收；旧5秒边界/ASG估计不外推。
-入口：[产品操作单](ref/recal-product.md)、[最终演示约定](contracts/recal-runtime-v11.md)；证据：[软件验证](../report/verification/recal-product-v1/demo30-software.json)、[冻结原件与授权](../report/verification/recal-product-v1/demo30-assets.json)、[A现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。C本轮未操板，不改驱动饱和保护策略。
+入口：[产品操作单](ref/recal-product.md)、[最终演示约定](contracts/recal-runtime-v11.md)；证据：[软件验证](../report/verification/recal-product-v1/demo30-software.json)、[冻结原件与授权](../report/verification/recal-product-v1/demo30-assets.json)、[最终整包核验](../report/verification/recal-product-v1/demo30-package-check.json)、[A现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。C本轮未操板，不改驱动饱和保护策略。
 C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
 
 ## 已验证 / 未验证
