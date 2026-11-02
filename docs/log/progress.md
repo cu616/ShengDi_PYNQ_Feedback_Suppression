@@ -2,7 +2,7 @@
 
 ## 2026-11-02 C 按8799原件重建冷启动/CAL复核包
 
-首次fetch远端A仍996bd38，随后取得用户确认的新b1826610（功能31eef5a1），根/v3 helper及原manifest逐项吻合8799完整SHA；原契约已同步新helper/driver并移除失效阻塞，保留PS卡死及CAL待板复核两项。C从统一源生成配置/清单四处身份，连同81b冷启动/显式CAL恢复和quiet4重建，未手改旧ZIP、未改B阈值或service文件。新包仅A看守复核，正式演示仍受PS稳定性阻塞。[原件核对](../../report/verification/recal-product-v1/bootfix-8799-assets.json)、[准确路径](../ref/recal-product.md#本轮上电与cal复核包a-b1826610--功能31eef5a1)。
+首次fetch远端A仍996bd38，随后取得用户确认的新b1826610（功能31eef5a1），根/v3 helper及原manifest逐项吻合8799完整SHA；原契约已同步新helper/driver并移除失效阻塞，保留PS卡死及CAL待板复核两项。C从统一源生成配置/清单四处身份，连同81b冷启动/显式CAL恢复和quiet4重建，未手改旧ZIP、未改B阈值或service文件。6fd55d1干净源码重建根目录整包，独立解压四处钉值/全部载荷/文档/导入后再次验包均通过；原版新A+冻结C+真实B子进程配模拟冷I2C与独占文件，三次无声重说路径各异、失败后新CAL到ready通过。新包仅A看守复核，正式演示仍受PS稳定性阻塞。[原件核对](../../report/verification/recal-product-v1/bootfix-8799-assets.json)、[准确路径](../ref/recal-product.md#本轮上电与cal复核包a-b1826610--功能31eef5a1)。
 
 
 ## 2026-11-02 C 修上电AUX门槛与失败CAL恢复

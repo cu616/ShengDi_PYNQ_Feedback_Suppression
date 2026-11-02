@@ -186,3 +186,14 @@ report/verification/recal-product-v1/changed-files.txt
 scripts/assemble_experiment.py
 sim/feedback/test_recal_boot_retry.py
 sim/feedback/test_recal_product.py
+
+# 2026-11-02 8799整包身份重钉与冷启动CAL复核
+docs/STATE.md
+docs/contracts/README.md
+docs/contracts/recal-runtime-v7.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/bootfix-8799-assets.json
+report/verification/recal-product-v1/bootfix-8799-package-check.json
+report/verification/recal-product-v1/changed-files.txt

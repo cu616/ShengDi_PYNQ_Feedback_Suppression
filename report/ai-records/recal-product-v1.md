@@ -240,3 +240,8 @@ C选择只延后三个AUX配置字段，静音/代码/位流/算法与其余部�
 用户转发A目录绑定完成：hw_api完整SHA8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0，两副本相同，manifest/contract新helper与driver同步；要求重钉product-config1处/product-manifest3处，整包放根目录、给包名SHA。说明service PS卡死本轮未动，正式演示等待。C首次fetch仅996旧件，询问后用户确认已推b1826610ab5071ebb33789612adc64ed07f2692e（功能31eef5a165dd7ada3b9d0cd45ab869fff9c5911a），再次fetch取得正确原件；未用给旧文件改哈希的方式假造身份。
 
 新原件、根/v3字节、9项运行时、A契约新helper/driver核对；A契约仍有两条真实阻塞（PS卡死未定位、CAL新恢复待板），C原样保留契约文件及upstream_blockers，复核包scope不是正式演示批准。初始本地校验脚本误假定blockers清空，看到实际剩余两条后修正脚本：区分已去除的旧阻塞与仍真实存在的限制；不把service标为已修。C47项软件结果继续有效，C代码本轮不变，仅重建A字节与配置/文档。
+
+
+最终源冻结6fd55d1；整包四处身份分别cfg.expected_identity.helper、manifest.hashes.hw_api、manifest.adapters.hardware.hashes.hw_api及其expected_identity.helper，全为8799完整值，实际文件SHA相同。独立解压verify/--check exit0、静音冷AUX0、真实B输入三次有限重说产生三条不同路径（模拟真实exclusive创建）、最终data_insufficient不锁死、新CAL重新prepare/拟合/验证到ready均通过；导入后的缓存不影响再次verify。C没改运行时代码，复用47项既有通过结果，补本次新A原件整包验证。模型bootstrap SHA不变，quiet4/speech2.5按实值封装。新service.unit与上版逐字节相同，PS卡死未修、正式演示未通过，A上游两项阻塞和原契约均保留。
+
+新ZIP及同名SHA放仓库根目录，不入Git；本轮包SHA和完整核验见bootfix-8799-package-check.json，旧包未覆盖。仅推C，交A一次装包复核AUX延后校验/CAL重试，不自动操板、不要求重复已有有效数据。
