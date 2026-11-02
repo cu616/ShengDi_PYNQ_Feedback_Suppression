@@ -963,6 +963,9 @@ class ProductHardwareV2(ProductHardware):
         # load through the real driver, then read back what the PL says it received
         scene = request.get('scene_id')
         cap_path, cid = self._capture_path(scene, 'install', 0)
+        # C (a280-entry-review): while the install check runs the loop must stay open-loop at zero gain;
+        # the selected runtime gain is restored only after the coefficient readback has been accepted.
+        self._write_control(gain_q12=0, arm=False, bypass=False, allow_armed=True)
         if self._cancelled(request.get('cancel_event')):
             return self._cancel_result(request, 'install')
         self._driver().replay_trial(str(cap_path), self.fixture, str(self.model_path),
