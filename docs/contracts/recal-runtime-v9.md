@@ -1,6 +1,6 @@
 # C 计算时限与 START 保护留证 v9
 
-状态：软件验证；新整包待 A 实机复核。
+状态：C 软件验证；A 保护基线漏报已复现，候选阻断安装。
 生产方：C；消费方：A / C；B 的数值判据和 A 的寄存器语义不变。
 最后变更：2026-11-02；继承 [v8](recal-runtime-v8.md) 的提示与有界流程。
 
@@ -22,6 +22,12 @@ C 只将 A 在 [真板证据](../../report/verification/audio-replay/guard-2026-
 
 三项为下载时 MMIO 读闸、驱动调用期间 AUX 缓存、移除 run 预 arm。调用结束后仍需新鲜的 AUX 回读；缓存不能成为免检理由。overlay 复用不启用。
 
-闸门期间按键观察可能延迟约 0.9 秒，端到端未实测；不能沿用“所有时刻 BTN3 ≤200 ms”的验收结论。A 的 abort 调用耗时与实体按键检测延迟分开记录。此包可供 A 独占复核，deployment_ready 表示包与接口检查放行，不表示正式演示、停止延迟或整机稳定性已验收。
+闸门期间按键观察可能延迟约 0.9 秒，端到端未实测；不能沿用“所有时刻 BTN3 ≤200 ms”的验收结论。A 的 abort 调用耗时与实体按键检测延迟分开记录。后续获放行包的 deployment_ready 也只表示包与接口检查放行，不表示正式演示、停止延迟或整机稳定性已验收；本候选的阻断见下。
+
+## 独立核验发现的放行阻塞
+
+冻结 A poll 的寄存器模拟已复现：空闲 fault=1 被记入 baseline，随后新运行状态清零、再次 fault=1，protected 仍为 false。证据见 [基线探测](../../report/verification/recal-product-v1/guard150-baseline-probe.json)。C 不能跨线替 A 修改基线；A 需在新下载/装载完成且通过取消检查、即将实际 arm 时建立本轮保护基线，并返回原始状态字与缓存标记。
+
+收到修正版之前，7ae449af 候选只有 review 包：deployment_ready=false，adapter_check_allowed=false，常驻入口与安装器均拒绝启动。不得把前文描述的目标行为当作该候选已获放行。此门槛只阻断新包，既有 A 真板成功记录保留。
 
 操作与单一导出路径见 [操作单](../ref/recal-product.md)。
