@@ -1,0 +1,17 @@
+{
+  "template_sha256": "d15a2aa186f600cb9c234bffd9deff0c4e9b05c569643d8a81d536f66f424f0c",
+  "source_snapshot": "87ff28c011806f5e5fcf86b741c8f4caa55c7f5e",
+  "docx": "shengdi-technical-report-review.docx",
+  "preserved_package_parts": 22,
+  "unexpected_changes": [],
+  "new_package_parts": [
+    "word/media/image2.png",
+    "word/media/image3.png",
+    "word/media/image4.png",
+    "word/media/image5.png",
+    "word/media/image6.png",
+    "word/media/image7.png"
+  ],
+  "figures": 6,
+  "photos_missing": 3
+}

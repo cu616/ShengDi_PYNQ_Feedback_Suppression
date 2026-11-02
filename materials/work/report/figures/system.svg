@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650">
+<rect width="100%" height="100%" fill="white"/>
+<text x="700" y="45.8" font-family="Microsoft YaHei, sans-serif" font-size="35" font-weight="700" text-anchor="middle" fill="#222533">音频主路与场景标定</text>
+<rect x="30" y="185" width="210" height="132" fill="#f3f5f7" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="135.0" y="234.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">麦克风</text>
+<text x="135.0" y="277.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">讲话 + 回传声</text>
+<rect x="295" y="185" width="215" height="132" fill="#f3f5f7" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="402.5" y="234.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">Codec ADC</text>
+<text x="402.5" y="277.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">模拟 → PCM</text>
+<rect x="565" y="185" width="260" height="132" fill="#f2eaf4" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="695.0" y="234.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">FPGA 实时处理</text>
+<text x="695.0" y="277.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">预测 · 相减 · 增益</text>
+<rect x="880" y="185" width="215" height="132" fill="#f3f5f7" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="987.5" y="234.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">Codec DAC</text>
+<text x="987.5" y="277.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">PCM → 模拟</text>
+<rect x="1150" y="185" width="220" height="132" fill="#f3f5f7" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="1260.0" y="234.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">有源音箱</text>
+<text x="1260.0" y="277.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">输出到听众</text>
+<polyline points="240.0,250.0 295.0,250.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="295.0,250.0 281.49329346470984,256.52448301166845 281.49329346470984,243.47551698833155" fill="#222533"/>
+<polyline points="510.0,250.0 565.0,250.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="565.0,250.0 551.4932934647098,256.52448301166845 551.4932934647098,243.47551698833155" fill="#222533"/>
+<polyline points="825.0,250.0 880.0,250.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="880.0,250.0 866.4932934647098,256.52448301166845 866.4932934647098,243.47551698833155" fill="#222533"/>
+<polyline points="1095.0,250.0 1150.0,250.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="1150.0,250.0 1136.49329346471,256.52448301166845 1136.49329346471,243.47551698833155" fill="#222533"/>
+<polyline points="1260.0,317.0 1260.0,408.0 135.0,408.0 135.0,317.0" fill="none" stroke="#176f78" stroke-width="3"/>
+<polygon points="135.0,317.0 141.52448301166845,330.50670653529016 128.47551698833155,330.50670653529016" fill="#176f78"/>
+<text x="700" y="444.64" font-family="Microsoft YaHei, sans-serif" font-size="28" font-weight="400" text-anchor="middle" fill="#176f78">声学反馈 H：音箱播放声重新进入麦克风</text>
+<rect x="385" y="505" width="630" height="120" fill="#e8f3f2" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="700.0" y="554.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">ARM 处理器与 PYNQ</text>
+<text x="700.0" y="597.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">采集编排 · 模型求解 · 独立验证 · 版本管理</text>
+<polyline points="695.0,505.0 695.0,317.0" fill="none" stroke="#64206e" stroke-width="3" stroke-dasharray="10 7"/>
+<polygon points="695.0,317.0 701.5244830116685,330.50670653529016 688.4755169883315,330.50670653529016" fill="#64206e"/>
+<text x="705" y="367.0" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" text-anchor="start" fill="#64206e">系数 / 控制</text>
+<text x="700" y="111.52" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="400" text-anchor="middle" fill="#626875">实际播放字同时作为 FIR 的反馈预测参考</text>
+</svg>

@@ -1,9 +1,17 @@
+## 2026-11-03 队长完成官方模板报告审阅稿
+
+- 依据 main 87ff28c 的代码与现场记录整理官方五部分技术报告，生成 Word/PDF 及六张 SVG/PNG，保留模板页眉、页码与章节格式。
+- PDF 共 14 页，逐页渲染检查；三张实物照片按用户反馈留待拍摄，最新判据的整机验证与历史结果分开表述。未改工程代码、未操板。
+- 交付与再生成入口：[报告说明](../../materials/work/report/README.md)。
+
 ## 2026-11-02 A 真板跑通演示链路并代实施判据变更
 
 - 真板完整链路首次走通：冷启动不写 AUX 进待标定；CAL alid_pass（L1 2.170、峰位 126 = 实测延迟 126、300–460 Hz 带内抑制中位 +4.63 dB）；BTN1 进 running 并听到扩声；SW0 在同一运行内拨上即起振。
 - 逐点二分：旁路边界 +2.1 dB（同点先稳后炸，只能报 ±0.1）、抵消边界 +5.0 稳 / +5.5 失稳，ASG 约 3.2 dB（2.9–3.4，5 秒与 20 秒两个窗口）；演示点 +3.0 dB，现场 SW0 切换后 3.49 秒被饱和保护停声。静音下 +3.0/+2.5/+2.0 dB 各跑满 60 秒（2929687 帧、零饱和），证明环路本身可稳 60 秒，60 秒失败由讲话电平推满导致。
-- 按队长授权就地改包：un_seconds 8→60（重算 product-config.json 清单哈希），装到板上验证 --check 通过；包身份变为 33fad35b…，不在 C 交付链。
-- 代实施 B 的判据提案（待 B 追认）：主判据改为 max|conv(h,ref)| < 0.30、L1_MAX 4.0→8.0 兜底、去掉 REJECT_SCALE 重试；算法版本升至 ecal-algorithm-2026-11-02.1。用板上真实 data 验证：原被拒的三组模型（L1 4.455/4.467/4.339，max|conv| 0.1241/0.1714/0.2301）全部 DEPLOYABLE_FIT。包 shengdi-recal-0cabfc17-0b09ef6-demo60-pred-peak-amod.zip，zip sha256 823e8787b684bf756b296007e0382eab54bd65707247e35b5f949ffe1a72bd4。
+- 按队长授权就地改包：
+un_seconds 8→60（重算 product-config.json 清单哈希），装到板上验证 --check 通过；包身份变为 33fad35b…，不在 C 交付链。
+- 代实施 B 的判据提案（待 B 追认）：主判据改为 max|conv(h,ref)| < 0.30、L1_MAX 4.0→8.0 兜底、去掉 REJECT_SCALE 重试；算法版本升至 
+ecal-algorithm-2026-11-02.1。用板上真实 data 验证：原被拒的三组模型（L1 4.455/4.467/4.339，max|conv| 0.1241/0.1714/0.2301）全部 DEPLOYABLE_FIT。包 shengdi-recal-0cabfc17-0b09ef6-demo60-pred-peak-amod.zip，zip sha256 823e8787b684bf756b296007e0382eab54bd65707247e35b5f949ffe1a72bd4。
 - 未验收：换电源后路径与模型匹配性；正对摆位 60 秒连续扩声的输入余量（+3.0 dB 连续讲话 8.8 秒因 input_full_scale_seen 停声）；旁路边界复现性；声压/热安全；0.9 秒按键空窗；一次 install it_exact=False 未复现。证据：[演示协议](../../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。
 ## 2026-11-02 C 交付最终5786/8秒演示整包
 
