@@ -27,9 +27,9 @@ A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、�
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：按A新现场授权组装独立6900（标称+4.5 dB）/8秒演示配置，运行身份保持单值6900，标定继续开环0增益；维护零模型自检单独保留−8 dB/3秒。46项相关软件检查通过，A九项运行时与B算法保持原字节。原候选已通过41文件与完整软件流程；推送前同步A新时长证据后重冻结，旧候选不交付。A报告的冷启动/CAL/实际扩声及直接入口短段/拨码证据保留。
-**当前卡点**：推送前A新增8b26afa明确撤回6900并改为5786（+3.0 dB），与用户本轮转发的6900要求直接冲突；已向用户请求最终工作点确认，暂不交付新ZIP。原件/入口/8秒时限/维护低档验证可复用；不把旧5秒观察、A直接入口或ASG估计外推成新产品验收，0.9秒按键空窗仍未实测。
-入口：[产品操作单](ref/recal-product.md)、[固定演示约定](contracts/recal-runtime-v10.md)；证据：[软件验证](../report/verification/recal-product-v1/demo45-software.json)、[冻结原件与授权](../report/verification/recal-product-v1/demo45-assets.json)、[演示整包核验](../report/verification/recal-product-v1/demo45-package-check.json)、[A现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。C本轮未操板，普通30秒包与旧blocked包各保留原身份。
+**最后动作**：已按用户最终确认切换独立5786（+3.0 dB）/8秒演示配置，唯一参数来源A=c254124报告§十七；允许集不含6900，运行身份保持单值5786，标定0增益、维护−8 dB/3秒。A九项运行时和B算法保持原字节，普通30秒profile不变；旧6900候选不交付。
+**当前卡点**：新产品包待A值守现场核验，不把直接入口20秒/3.49秒记录当作本包通过。旁路边界±0.1不可复现、声压/热安全、约0.9秒按键空窗及一次install bit_exact=False（15872帧全不匹配、次轮恢复）均未验收；旧5秒边界/ASG估计不外推。
+入口：[产品操作单](ref/recal-product.md)、[最终演示约定](contracts/recal-runtime-v11.md)；证据：[软件验证](../report/verification/recal-product-v1/demo30-software.json)、[冻结原件与授权](../report/verification/recal-product-v1/demo30-assets.json)、[A现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。C本轮未操板，不改驱动饱和保护策略。
 C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
 
 ## 已验证 / 未验证

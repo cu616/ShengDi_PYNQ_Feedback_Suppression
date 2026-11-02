@@ -27,15 +27,19 @@ class DemoTests(unittest.TestCase):
     def test_package_passes_gain_to_factory_and_keeps_open_loop_plan(self):
         out,cfg=self.demo();manifest=json.loads((out/'product-manifest.json').read_text())
         self.assertTrue(manifest['deployment_ready']);self.assertEqual(manifest['missing'],[])
-        self.assertEqual(cfg['allowed_gain_q12'],[1631,2303,3254,4096,6900])
-        self.assertEqual(cfg['expected_identity']['gain_q12'],6900)
+        self.assertEqual(cfg['allowed_gain_q12'],[1631,2303,3254,4096,5786])
+        self.assertEqual(cfg['expected_identity']['gain_q12'],5786)
+        self.assertNotIn(6900,cfg['allowed_gain_q12'])
+        auth=manifest['adapters']['hardware']['demo_authorization']
+        self.assertEqual(auth['source_commit'],'c254124b73f9318029552ccb8618323c588ea23d')
+        self.assertTrue(any('15872' in item for item in auth['limitations']))
         self.assertEqual(cfg['run_seconds'],8)
         self.assertEqual(cfg['maintenance_gain_q12'],1631)
         self.assertEqual(cfg['io_timeout_seconds'],150);self.assertEqual(cfg['compute_timeout_seconds'],150)
-        self.assertEqual(cfg['phase_gain_q12']['prepare'],[0,1631,2303,3254,4096,6900])
+        self.assertEqual(cfg['phase_gain_q12']['prepare'],[0,1631,2303,3254,4096,5786])
         self.assertNotIn('runtime',cfg['phase_gain_q12'])
         for op in ('training','validation','install','run'):
-            self.assertEqual(cfg['phase_gain_q12'][op],[0,6900])
+            self.assertEqual(cfg['phase_gain_q12'][op],[0,5786])
         for attempt in cfg['capture_plans']:
             for phase in ('training','validation'):
                 for cap in attempt[phase]['captures']:
@@ -43,9 +47,9 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(manifest['hashes']['hw_api.py'],freeze.HELPER)
         self.assertEqual((out/'hw_api.py').read_bytes(),freeze.blob(freeze.A,'board/audio_replay/v3-io/hw_api.py'))
 
-    def test_single_6900_eight_second_run_and_other_runtime_gain_rejected(self):
-        cfg=sample_config();cfg['expected_identity']['gain_q12']=6900
-        cfg.update(run_seconds=8,phase_gain_q12={op:[0,6900] for op in (
+    def test_single_5786_eight_second_run_and_other_runtime_gain_rejected(self):
+        cfg=sample_config();cfg['expected_identity']['gain_q12']=5786
+        cfg.update(run_seconds=8,phase_gain_q12={op:[0,5786] for op in (
             'prepare','cue','input','training','validation','install','run')})
         hw=Board(cfg);original=hw.perform;runs=[]
         def perform(req,cancel):
@@ -55,7 +59,7 @@ class DemoTests(unittest.TestCase):
                         effective_mode='muted',elapsed_seconds=req['seconds'],**hw.installed)
         hw.perform=perform;app,_,_=self.app(cfg,hw);self.ready(app)
         app.event('start');self.until(app,lambda:app.state=='ended')
-        self.assertEqual([(r['gain_q12'],r['seconds']) for r in runs],[(6900,8)])
+        self.assertEqual([(r['gain_q12'],r['seconds']) for r in runs],[(5786,8)])
         app.tick();self.assertEqual(len(runs),1)
         # A lower gain in the maintenance allowlist is still an identity error at START.
         hw.identity['gain_q12']=4096;app.event('start')
@@ -65,14 +69,22 @@ class DemoTests(unittest.TestCase):
         stage=self.folder/'ordinary';freeze.stage(stage)
         meta=json.loads((stage/'a/product-adapter.json').read_text())
         self.assertEqual(meta['expected_identity']['gain_q12'],1631)
-        self.assertNotIn(6900,meta['allowed_gain_q12'])
+        self.assertNotIn(5786,meta['allowed_gain_q12'])
         self.assertNotIn('run_seconds',meta['config'])
         self.assertNotIn('demo_authorization',meta)
 
+    def test_withdrawn_6900_is_rejected_at_start(self):
+        cfg=sample_config();cfg['expected_identity']['gain_q12']=5786
+        cfg.update(run_seconds=8,phase_gain_q12={op:[0,5786] for op in (
+            'prepare','cue','input','training','validation','install','run')})
+        app,hw,_=self.app(cfg);self.ready(app)
+        hw.identity['gain_q12']=6900;app.event('start')
+        self.assertEqual(app.outcome,'hardware_error');self.assertNotIn('run',hw.calls)
+
     def test_bootstrap_maintenance_does_not_use_high_demo_gain(self):
         import hashlib
-        cfg=sample_config();cfg['expected_identity']['gain_q12']=6900
-        cfg.update(allowed_gain_q12=[1631,2303,3254,4096,6900],maintenance_gain_q12=1631)
+        cfg=sample_config();cfg['expected_identity']['gain_q12']=5786
+        cfg.update(allowed_gain_q12=[1631,2303,3254,4096,5786],maintenance_gain_q12=1631)
         model=self.folder/'bootstrap.json';model.write_text('{"fixture_id":"maintenance"}')
         digest=hashlib.sha256(model.read_bytes()).hexdigest();calls=[]
         class Hardware:

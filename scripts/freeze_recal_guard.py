@@ -12,9 +12,8 @@ ROOT=Path(__file__).resolve().parents[1]
 A='e6379ef331762b3162542d6325a644f5b34934da'
 B='0b09ef6'
 HELPER='0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5'
-DEMO_EVIDENCE='eb881fe405fcafbf8b0e35cc8356de3213520366'
-DEMO_DURATION_REVIEW='daad1dc330a9f1069cffc23da6353492bd7118c2'
-DEMO_GAIN=6900
+DEMO_EVIDENCE='c254124b73f9318029552ccb8618323c588ea23d'
+DEMO_GAIN=5786
 DEMO_SECONDS=8
 
 
@@ -82,13 +81,13 @@ def stage(destination, demo=False):
         evidence_path='report/verification/audio-replay/demo-protocol-2026-11-02/README.md'
         meta['demo_authorization']=dict(source_commit=DEMO_EVIDENCE,evidence_path=evidence_path,
             evidence_sha256=sha(blob(DEMO_EVIDENCE,evidence_path)),gain_q12=DEMO_GAIN,run_seconds=DEMO_SECONDS,
-            duration_review_commit=DEMO_DURATION_REVIEW,
-            duration_review_sha256=sha(blob(DEMO_DURATION_REVIEW,evidence_path)),
-            duration_review='A later recommends +4.0 dB after 20-second tests; this explicit user-requested profile remains 6900/8s, not sustained-stability acceptance',
+            authoritative_section='十七; final 5786 selected explicitly by user, eight-second product run',
             runtime_gain_identity='single fixed value, not membership in the maintenance allowed set',
             limitations=['bypass at this gain can howl loudly and stop by driver saturation protection, not software limiting',
                          'long-term loudspeaker headroom and safety not evaluated',
                          'about 0.9 seconds button observation gap remains unmeasured',
+                         'bypass boundary +/-0.1 dB was not repeatable',
+                         'one install capture was bit_exact=False for all 15872 frames; next same-condition round recovered; not reproduced or resolved',
                          'A direct-entry evidence does not validate this product package or a new layout/model'])
     (hardware/'product-adapter.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     b=blob(B,'board/audio_replay/recal_algorithm.py');digest=sha(b)
@@ -103,5 +102,5 @@ def stage(destination, demo=False):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--stage',required=True)
-    parser.add_argument('--demo',action='store_true',help='A-authorized fixed 6900 gain, eight-second demo only')
+    parser.add_argument('--demo',action='store_true',help='A-authorized fixed 5786 gain, eight-second demo only')
     args=parser.parse_args();print(json.dumps(stage(args.stage,args.demo),ensure_ascii=False))
