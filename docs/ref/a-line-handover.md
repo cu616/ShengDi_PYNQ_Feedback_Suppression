@@ -74,6 +74,15 @@ C 本轮（81b47e3）未处理该项，**在此之前不做正式演示**。
 `product-adapter.json` 已改到新哈希 `8799f40b…`。证据：
 [run-dir-fix-2026-11-02](../../report/verification/audio-replay/run-dir-fix-2026-11-02/README.md)。
 
+### 7. 新包已到（`io150`），离线核验通过，等上板
+
+`shengdi-recal-8799f40b-0b09ef6-io150-final.zip`，sha256
+`a91db61e40756887beee7bec88903e8f991868c81245e93017857d28b0f758b5`。37 个受管文件哈希全对上，
+6 处 pin 全指向 `8799f40b…`；A/B 字节未改。C 的两处修复（AUX 延后比较、普通失败可重按 CAL）
+已在包内代码核对到了。**下一步就是装 + 上板三项复核**：断电重启后不跑 `fix_aux_boot.sh` 能否进待标定、
+失败后 BTN0 重按能否新建 scene、两次重说是否落到两个目录。板子不可达时这一步做不了。
+证据：[package-io150-2026-11-02](../../report/verification/audio-replay/package-io150-2026-11-02/README.md)。
+
 ## 四、现场操作要点（踩过的坑）
 
 1. **`shengdi-product.service` 运行时禁止另开 PYNQ 会话**（会抢设备卡死 PS）。判据见 `board/audio_replay/hw_guard.sh`。只读 `status.json` 是安全的（需 sudo）。

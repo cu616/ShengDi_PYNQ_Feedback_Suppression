@@ -1,3 +1,22 @@
+## 2026-11-02 新包 io150 离线核验　A　包自洽、pin 全对、A/B 字节未改；仍未上板
+
+- 收到 `shengdi-recal-8799f40b-0b09ef6-io150-final.zip`（sha256
+  `a91db61e40756887beee7bec88903e8f991868c81245e93017857d28b0f758b5`，373119 字节，38 个文件），
+  同时 fetch 到 `origin/C` = `cdcaa56242a84a296b32daf8e8972436197fbfca`，与 C 报的一致。
+- 字节核验：`product-manifest.json` 覆盖的 37 个文件逐个重算全对；A 的 `manifest.json` 8 项全对；
+  `hw_api.py` 与 `helper_sha256` 的 6 处引用全部 = `8799f40b…`；除自引用的 `product-manifest.json`
+  外无未覆盖文件。位流/hwh/驱动/`replay_tools`/B 的算法与上一包逐字节相同，A 侧只有 `hw_api.py` 变。
+- 代码层确认（不是只听转述）：包内 `recal_product.py` 有 `AUX_IDENTITY`、`defer_aux`、
+  `configuration_ready`，AUX 在 prepare 成功回读后才比；按键分支 `if self.fatal: return`，
+  普通失败不置 fatal 所以能重按 CAL；`quiet=4 / speech=2.5 / input_mode=embedded` 已核对。
+- `upstream-product-adapter.json` 与 A 的 `docs/contracts/product-adapter.json` 语义完全相同
+  （逐键 `==` 为真），仅序列化字节数不同。
+- 包内 `source_commit` 记的是 `98663a4d5ce3d035d0ed68273d0e3bb5139f8277`（`origin/C` 的父提交），
+  不是包提交 `cdcaa56…`；按"包子集提交"理解，不是缺陷。
+- **未做**：未安装、未上板（`192.168.2.99:22` 不可达）、未跑 `--check`/`--adapter-check`。
+  C 明说 overlay 复用与 PS 卡死仍未修。证据：
+  [package-io150-2026-11-02](../../report/verification/audio-replay/package-io150-2026-11-02/README.md)。
+
 ## 2026-11-02 按 C=81b47e3 同步 run_dir 一行　A　两副本同哈希，helper_sha256 变了，等 C 同轮重钉
 
 - C 回复：采用方案 2（AUX 配置比较延后到 prepare 成功回读，代码/位流身份仍严格检查），

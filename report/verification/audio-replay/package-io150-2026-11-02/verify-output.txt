@@ -1,0 +1,35 @@
+﻿archive: 38 files, 4839733 bytes
+source_commit recorded: 98663a4d5ce3d035d0ed68273d0e3bb5139f8277
+
+1 product-manifest hashes              files=37  bad=0  missing=0  PASS
+2 hardware adapter hashes              files=11  bad=0  missing=0  PASS
+3 A's manifest.json                    files=8   bad=0  missing=0  PASS
+4 uncovered files (self-manifest allowed) 0  PASS
+
+5 pins
+  archive hw_api.py                                    8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0  OK
+  manifest.json hashes.hw_api.py                       8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0  OK
+  product-manifest hashes.hw_api.py                    8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0  OK
+  adapters.hardware.hashes.hw_api.py                   8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0  OK
+  adapters.hardware.expected_identity.helper_sha256    8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0  OK
+  product-config expected_identity.helper_sha256       8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0  OK
+
+6 delta vs previous package (7bd365b)
+  changed  OPERATIONS.md                      C-owned     c1d1b09699bacbcc -> ec126336cfb53168
+  changed  hw_api.py                          A-owned     784acc6ba96ea598 -> 8799f40b6d9f7ecb
+  changed  manifest.json                      C-owned     8685371764f4d9ee -> 8d81ab458c733770
+  changed  product-config.json                C-owned     efa0e3d801e334fc -> 96aefd7d8c4c6c6b
+  changed  product-manifest.json              C-owned     8d3a23830bccbde1 -> 6d428d9e136792cb
+  changed  product-policy.json                C-owned     b92cd36d93d8e967 -> d7c5bf669e17f41e
+  changed  recal_link.py                      C-owned     2b4c7d304041b0b6 -> 353bb84cda1e3875
+  changed  recal_product.py                   C-owned     01339b6092c4dfdb -> 7a72f71ab6d5d27c
+  added    BOOT-RECOVERY.md
+  added    IO-INDICATOR.md
+  added    upstream-product-adapter.json
+  A-owned files changed: ['hw_api.py']
+
+  A package entries unchanged vs their manifest: 7/7
+
+7 upstream-product-adapter.json == A docs/contracts copy: NO (differs: 3247 vs 3311 bytes)
+
+VERDICT PASS

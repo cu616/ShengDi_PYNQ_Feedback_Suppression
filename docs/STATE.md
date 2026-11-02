@@ -263,6 +263,14 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
   ④时序 `quiet=4 s` 已改，`speech=2.5 s` 保留（源 RAM 装不下 4 秒计划）。
   详见 [a-line-handover.md](ref/a-line-handover.md)。
 - 协作习惯（含路径给全、需人声先说清、服务运行时禁并发 PYNQ 等硬性要求）：[ai-collaboration-habits.md](ref/ai-collaboration-habits.md)。
+- **2026-11-02 新包已收到并离线核验通过（未上板）**：`shengdi-recal-8799f40b-0b09ef6-io150-final.zip`，
+  sha256 `a91db61e40756887beee7bec88903e8f991868c81245e93017857d28b0f758b5`，38 个文件；
+  `product-manifest.json` 覆盖的 37 个哈希逐个对上，`hw_api.py` 与 `helper_sha256` 的 6 处引用全部指向
+  `8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0`；A/B 字节未改（A 侧只有 `hw_api.py` 变）。
+  代码层已确认 C 的 AUX 延后比较（`configuration_ready` + `defer_aux`）与普通失败可重按 CAL 都在包内，
+  `quiet=4`、`speech=2.5` 也在 `product-config.json` 中。**仍未修：overlay 复用、PS 卡死；板子不可达，
+  所以装机和三项上板复核都还没做。** 证据
+  [package-io150-2026-11-02](../report/verification/audio-replay/package-io150-2026-11-02/README.md)。
 - **2026-11-02 A 线本轮唯一代码改动（未上板）**：按 C=81b47e3 在 `ProductHardwareV2.perform` 分派前补
   `self.run_dir = request.get('run_dir') or self.run_dir`。旧代码只有 `_run_plan` 赋值，`input`+`cue`
   的自动重说、`install`、`run` 都沿用上一次目录，第二次写同一个 NPZ 时独占创建失败。
