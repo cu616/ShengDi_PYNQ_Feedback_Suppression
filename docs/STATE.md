@@ -43,7 +43,7 @@
 **最后动作**：2026-11-02按A最终指令固定7bd365b（功能b6107bc）九项运行时原字节，B仍0b09ef6；prepare补齐后12项预取消/初始化取消全部通过，维护链路通过，软件/载荷阻塞清空。最终包按正常product模式生成deployment_ready=true、missing=[]、adapter_check_allowed=true；根目录ZIP供人工转交，不包A验证脚本，C未操板。
 **当前卡点**：无代码/交付阻塞。A按既定一次窗口执行最终包实机部署、两布局真人完整重标定/扩声/拨码/停止并导出单一回包，C据同一回包独立复核；不再向A/B追加取件或格式要求。真人/现场拟合/可归因抵消与ASG尚不因软件冻结而宣称通过。
 
-- [九项实际载荷/固定模型](../report/verification/recal-product-v1/final-assets.json)、[12项取消边界与维护](../report/verification/recal-product-v1/final-runtime-check.json)、[最终模型/回包协议](contracts/recal-runtime-v6.md)、[同一窗口准确命令](ref/recal-product.md)。
+- [最终ZIP/模型/冻结入口/回包核验](../report/verification/recal-product-v1/final-package-check.json)、[42项软件及3项打包回归](../report/verification/recal-product-v1/final-software.json)、[九项实际载荷/固定模型](../report/verification/recal-product-v1/final-assets.json)、[12项取消边界与维护](../report/verification/recal-product-v1/final-runtime-check.json)、[最终模型/回包协议](contracts/recal-runtime-v6.md)、[同一窗口准确命令](ref/recal-product.md)。
 - A已转发真实板预取消prepare被拒、C官方维护入口sudo+bootstrap success=true/compatibility_issues=[]；归属A实物证据。C只做离线/模拟验证，不改A/B实现，不操作板卡。
 - 固定bootstrap-model.json仅维护/静音初始化，SHA见操作单；普通用户按CAL后自动拟合、验证及装载本scene模型。current路径/模型SHA随每轮保存并随回包交付，不手选模型。
 - 常驻root权限与A实测sudo环境一致；一个回包包含本包scene、非人声原件、两份模型及维护JSON；旧包原件留板，人声PCM不回传，ZIP不入Git。

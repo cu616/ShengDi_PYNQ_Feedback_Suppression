@@ -2,7 +2,7 @@
 
 ## 2026-11-02 C 最终冻结A7bd功能b610并清空阻塞
 
-按A最终指令只取八项运行时及原manifest九文件，逐SHA核验且与功能提交b610相同；不包验证脚本。12项取消边界全部通过，原版A工厂维护链路通过；最终正常product冻结开放部署及维护，B判据原字节不变。接口v6固定bootstrap维护模型、本轮CAL自动生成正式模型和单一回包清单；按A sudo实测将C常驻服务运行身份固定root，导出仅绑定当前包scene/计算回执并包含维护JSON。C自行完成冻结核验，不再索取A/B字段或重采原件，未操板。[固定载荷与模型](../../report/verification/recal-product-v1/final-assets.json)、[全部取消检查](../../report/verification/recal-product-v1/final-runtime-check.json)、[v6](../contracts/recal-runtime-v6.md)、[一次窗口命令](../ref/recal-product.md)。
+按A最终指令只取八项运行时及原manifest九文件，逐SHA核验且与功能提交b610相同；不包验证脚本。12项取消边界全部通过，原版A工厂维护链路通过；2137949干净源码最终正常product冻结开放部署及维护，B判据原字节不变。42项软件/3项打包回归、139文档检查通过；34载荷/35文件最终ZIP独立解压后check与维护exit0，两个scene完整模拟、实际模式切换/30秒帧结束及单回包身份/文件SHA通过。接口v6固定bootstrap维护模型、本轮CAL自动生成正式模型和单一回包清单；按A sudo实测将C常驻服务运行身份固定root，导出仅绑定当前包scene/计算回执并包含维护JSON。C自行完成冻结核验，不再索取A/B字段或重采原件，未操板。[固定载荷与模型](../../report/verification/recal-product-v1/final-assets.json)、[全部取消检查](../../report/verification/recal-product-v1/final-runtime-check.json)、[v6](../contracts/recal-runtime-v6.md)、[一次窗口命令](../ref/recal-product.md)。
 
 
 ## 2026-11-02 C 按A593原字节重冻结并开放维护自检

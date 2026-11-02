@@ -148,3 +148,23 @@ report/verification/recal-product-v1/a593-software.json
 report/verification/recal-product-v1/changed-files.txt
 scripts/assemble_experiment.py
 sim/feedback/test_recal_frozen.py
+
+# 2026-11-02 A7bd功能b610最终冻结与单一回包
+.gitignore
+board/audio_replay/recal_product.py
+board/audio_replay/shengdi-product.service
+docs/STATE.md
+docs/contracts/README.md
+docs/contracts/recal-runtime-v6.md
+docs/lines/c-measurement.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/changed-files.txt
+report/verification/recal-product-v1/final-assets.json
+report/verification/recal-product-v1/final-package-check.json
+report/verification/recal-product-v1/final-runtime-check.json
+report/verification/recal-product-v1/final-software.json
+scripts/assemble_experiment.py
+sim/feedback/test_recal_product.py
+sim/feedback/test_recal_runtime.py

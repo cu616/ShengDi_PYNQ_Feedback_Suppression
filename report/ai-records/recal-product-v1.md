@@ -214,3 +214,8 @@ C最终统一模型约定：bootstrap零模型用于维护/静音初始化（固
 
 
 最终冻结独立解压校验中，--check/维护/两scene流程先通过，--export再次verify时因__pycache__/recal_algorithm.cpython-312.pyc发生身份不符。发现打包器导入B后把自动缓存也算进载荷；这是C打包缺陷，不是A缺件。C排除manifest与ZIP中的__pycache__/pyc/pyo，旧失败ZIP移入ignored staging保留，追加既有真实适配审阅包的防缓存断言。针对打包的3项回归全部通过（2.311秒），未重复无关全套；随后重新冻结相同A/B原字节并重新进行独立包验证，无A/B往返。
+
+
+最终正常--product（非review）冻结source=2137949。独立解压：九项A运行时字节、B原版SHA、全部载荷、包内文档链接、无验证脚本/缓存均通过；--check exit0/identity_ok=true/deployment_ready=true/missing=[]，adapter_check_allowed=true。冻结C main配原版A factory/模拟硬件叶子 --adapter-check exit0/compatibility_issues=[]。同一冻结Product+真实B子进程两scene重标定成功，首个记录cancel/bypass及30秒实际帧结束；--export回包两scene、16原激励、4模型、10算法JSON和1维护JSON，全部SHA及身份通过，不含人声PCM。A真实板完整窗口尚未由C执行，交最终包后由A按既定步骤完成。
+
+根目录最终ZIP与同名SHA已生成，完整摘要/固定模型SHA/回包清单见final-package-check.json和操作单。只推C；不合main、不改A/B冻结件、不再向A/B追加留言任务。已按用户要求给出模型文件名/SHA及准确--export目标路径。
