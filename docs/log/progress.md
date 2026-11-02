@@ -1,3 +1,9 @@
+## 2026-11-02 C 交付0cab非blocked整包
+
+- 从干净提交冻结新包，A九项运行时和原manifest、B算法逐字节核对，四处helper钉值一致；40文件SHA与包内链接全通过，check返回identity_ok/deployment_ready=true、missing=[]，adapter-check开放。
+- 冻结入口在模拟I2C/MMIO/driver叶子、真实B子进程下完成维护链路、上电AUX=0后CAL、ready中粘滞fault加BTN1、运行抵消/旁路切换、30秒实际帧计数口径结束，再次CAL新scene；不是新包真板验收。
+- 单一导出回包包含2个scene、16份训练/验证原件、4份模型和维护回执，各项SHA复核，排除人声PCM。完整包名、SHA、冻结源及回包清单见[独立核验](../../report/verification/recal-product-v1/guard150-0cab-package-check.json)。ZIP和同名SHA仅放本地根目录，不入Git；A按已约定四条验收，不新增B工作。
+
 ## 2026-11-02 C 复核A新arm基线并恢复整包验收放行
 
 - 从A=e6379ef取得0cabfc17原件，根目录/v3-io一致，九项运行时和原manifest逐字节复制；冻结器不再重放旧补丁，不改A/B源码。

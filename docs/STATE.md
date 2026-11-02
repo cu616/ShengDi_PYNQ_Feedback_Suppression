@@ -27,9 +27,9 @@ A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、�
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：已核对A=e6379ef的0cabfc17原件，九项运行时直接取Git字节；独立复跑新arm基线、预取消和MMIO缓存标记，73项相关软件检查通过。C保护历史保留原始状态字、基线和缓存标记；计算/I/O均150秒、运行30秒，旧blocked包保持不放行。
+**最后动作**：已核对A=e6379ef的0cabfc17原件，九项运行时直接取Git字节；独立复跑新arm基线、预取消和MMIO缓存标记，73项相关软件检查通过。C保护历史保留原始状态字、基线和缓存标记；计算/I/O均150秒、运行30秒，旧blocked包保持不放行。新0cab整包独立解压核验40文件、四钉值、check与维护入口通过；模拟硬件/真实B子进程完成两scene和导出回包。
 **当前卡点**：新0cab整包交A独占完成冷启动、完整CAL、BTN1扩声30秒及重复CAL/START真板验收；本轮C未操板，不能提前报整机验收通过。约0.9秒下载期按键观察空窗仍未实测，不属于本轮改动；overlay复用不启用。
-入口：[产品操作单](ref/recal-product.md)；证据：[73项软件验证](../report/verification/recal-product-v1/guard150-0cab-software.json)、[原件与基线复核](../report/verification/recal-product-v1/guard150-0cab-assets.json)、[A真板对照](../report/verification/audio-replay/guard-2026-11-02/README.md)。既有A真板成功记录保留，新C整包仍按上述四项验收。
+入口：[产品操作单](ref/recal-product.md)；证据：[73项软件验证](../report/verification/recal-product-v1/guard150-0cab-software.json)、[原件与基线复核](../report/verification/recal-product-v1/guard150-0cab-assets.json)、[整包核验](../report/verification/recal-product-v1/guard150-0cab-package-check.json)、[A真板对照](../report/verification/audio-replay/guard-2026-11-02/README.md)。既有A真板成功记录保留，新C整包仍按上述四项验收。
 C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
 
 ## 已验证 / 未验证

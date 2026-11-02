@@ -1,0 +1,399 @@
+{
+  "A_source_commit": "e6379ef331762b3162542d6325a644f5b34934da",
+  "B_source_commit": "0b09ef60b603690f7f4872c8f1527d341ce1f6d6",
+  "source_commit": "ffe8d10a3f762e4c033c0bb462bfd7185b1e3ac5",
+  "source_tree_clean": true,
+  "package": "shengdi-recal-0cabfc17-0b09ef6-guard150-final.zip",
+  "package_sha256": "45cbd0469437b6e22e5bf6c5d6a032120d7024b822050408ee8086648f1b58a9",
+  "package_bytes": 379217,
+  "payload_count": 39,
+  "total_zip_files": 40,
+  "all_payload_hashes_match": true,
+  "four_pins": [
+    "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+    "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+    "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+    "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5"
+  ],
+  "A_runtime_files_exact": 9,
+  "A_manifest_original_bytes": true,
+  "A_validation_scripts_packaged": false,
+  "B_source_exact": true,
+  "document_link_errors": [],
+  "check": {
+    "exit_code": 0,
+    "stdout": "{\"identity_ok\": true, \"deployment_ready\": true, \"missing\": []}\n"
+  },
+  "deployment_ready": true,
+  "missing": [],
+  "adapter_check_allowed": true,
+  "io_timeout_seconds": 150,
+  "compute_timeout_seconds": 150,
+  "run_seconds": 30,
+  "diagnostic_model": {
+    "filename": "bootstrap-model.json",
+    "sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8",
+    "scope": "zero maintenance/bootstrap only"
+  },
+  "frozen_cli_maintenance": {
+    "exit_code": 0,
+    "stdout": "{\"success\": true, \"receipt\": \"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\guard150-0cab-window\\\\adapter-check.json\", \"compatibility_issues\": []}\n",
+    "success": true,
+    "compatibility_issues": []
+  },
+  "frozen_product_window": {
+    "scope": "exact frozen A + C with real B subprocesses; simulated I2C/MMIO/driver leaves, not physical board",
+    "cold": {
+      "state": "uncalibrated",
+      "configuration_ready": false,
+      "identity": {
+        "aux_db": null,
+        "aux_raw_left": 0,
+        "aux_raw_right": 0,
+        "hp_volume": 40,
+        "gain_q12": 1631,
+        "sample_rate_hz": 48828.125,
+        "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+        "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+        "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+        "helper_sha256": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5"
+      }
+    },
+    "first_scene": "7c3918b8b0c8438cba8f1bea4acd13eb",
+    "first_state": "ended",
+    "observed_modes": [
+      "cancel",
+      "bypass"
+    ],
+    "audio_elapsed_seconds": 29.99998464,
+    "completed_frames": 1464843,
+    "protection_history": [
+      {
+        "time_monotonic": 39310.625,
+        "state": "ready",
+        "scene_id": "7c3918b8b0c8438cba8f1bea4acd13eb",
+        "request_id": null,
+        "op": null,
+        "phase": null,
+        "effective_mode": "muted",
+        "hardware_idle": true,
+        "capture_status": 262144,
+        "control_word": 106889240,
+        "protect_baseline": 262144,
+        "raw_status_available": true,
+        "capture_status_cached": false,
+        "control_word_cached": false,
+        "protection": {
+          "fault": 1
+        },
+        "saturation": {
+          "residual_clip_pre_gain": 0,
+          "prediction_saturations": 0,
+          "gain_saturations": 0
+        },
+        "input_clip": null,
+        "action": "idle_latch_recorded"
+      }
+    ],
+    "second_scene": "e996d63214f1433f94f761a591ee7103",
+    "second_calibration_passed": true,
+    "B_phases": [
+      "input",
+      "fit",
+      "validate"
+    ],
+    "first_model_sha256": "26fe400d8dea2f314d70370457e74f5ff2a0f063dc95a093b416b04550bd9afe",
+    "second_model_sha256": "032a695f9a20d2370e2a45bd493c2982c2a3b5a216a31b6ecccada6300ac1a8a",
+    "actual_AUX_writes": [
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ]
+    ]
+  },
+  "export": {
+    "exit_code": 0,
+    "identity_ok": true,
+    "layout_count": 2,
+    "inventory_all_hashes_match": true,
+    "categories": {
+      "results": 2,
+      "algorithm": 10,
+      "captures": 16,
+      "models": 4,
+      "maintenance": 1
+    },
+    "files": [
+      "algorithm/053cdad06c8f43cf90d0d6dea9edd948-reply.json",
+      "algorithm/053cdad06c8f43cf90d0d6dea9edd948-request.json",
+      "algorithm/2249074259554c178ce3417d8d8b4e0e-reply.json",
+      "algorithm/3a24e20f7fab48b59a89f451e0d41ac8-reply.json",
+      "algorithm/3a24e20f7fab48b59a89f451e0d41ac8-request.json",
+      "algorithm/79d8a44df5ae4e69919bfe23eb4f848c-reply.json",
+      "algorithm/79d8a44df5ae4e69919bfe23eb4f848c-request.json",
+      "algorithm/a962e6c8ece843c48b4e471481388f6d-reply.json",
+      "algorithm/e4a854e6291445afbe49c25660ae49d1-reply.json",
+      "algorithm/e4a854e6291445afbe49c25660ae49d1-request.json",
+      "captures/runs/7c3918b8b0c8438cba8f1bea4acd13eb/io/44d20518d7314e2fa743cc30e3f4dfad/7c3918b8b0c8438cba8f1bea4acd13eb_1_training_00.npz",
+      "captures/runs/7c3918b8b0c8438cba8f1bea4acd13eb/io/44d20518d7314e2fa743cc30e3f4dfad/7c3918b8b0c8438cba8f1bea4acd13eb_1_training_01.npz",
+      "captures/runs/7c3918b8b0c8438cba8f1bea4acd13eb/io/44d20518d7314e2fa743cc30e3f4dfad/7c3918b8b0c8438cba8f1bea4acd13eb_1_training_02.npz",
+      "captures/runs/7c3918b8b0c8438cba8f1bea4acd13eb/io/44d20518d7314e2fa743cc30e3f4dfad/7c3918b8b0c8438cba8f1bea4acd13eb_1_training_03.npz",
+      "captures/runs/7c3918b8b0c8438cba8f1bea4acd13eb/io/44d20518d7314e2fa743cc30e3f4dfad/7c3918b8b0c8438cba8f1bea4acd13eb_1_training_04.npz",
+      "captures/runs/7c3918b8b0c8438cba8f1bea4acd13eb/io/44d20518d7314e2fa743cc30e3f4dfad/7c3918b8b0c8438cba8f1bea4acd13eb_1_training_05.npz",
+      "captures/runs/7c3918b8b0c8438cba8f1bea4acd13eb/io/ca5883ca278442c18aa2423f1c213eda/7c3918b8b0c8438cba8f1bea4acd13eb_1_validation_00.npz",
+      "captures/runs/7c3918b8b0c8438cba8f1bea4acd13eb/io/ca5883ca278442c18aa2423f1c213eda/7c3918b8b0c8438cba8f1bea4acd13eb_1_validation_01.npz",
+      "captures/runs/e996d63214f1433f94f761a591ee7103/io/c7c474619f4647ee8bc62947de25ccec/e996d63214f1433f94f761a591ee7103_1_training_00.npz",
+      "captures/runs/e996d63214f1433f94f761a591ee7103/io/c7c474619f4647ee8bc62947de25ccec/e996d63214f1433f94f761a591ee7103_1_training_01.npz",
+      "captures/runs/e996d63214f1433f94f761a591ee7103/io/c7c474619f4647ee8bc62947de25ccec/e996d63214f1433f94f761a591ee7103_1_training_02.npz",
+      "captures/runs/e996d63214f1433f94f761a591ee7103/io/c7c474619f4647ee8bc62947de25ccec/e996d63214f1433f94f761a591ee7103_1_training_03.npz",
+      "captures/runs/e996d63214f1433f94f761a591ee7103/io/c7c474619f4647ee8bc62947de25ccec/e996d63214f1433f94f761a591ee7103_1_training_04.npz",
+      "captures/runs/e996d63214f1433f94f761a591ee7103/io/c7c474619f4647ee8bc62947de25ccec/e996d63214f1433f94f761a591ee7103_1_training_05.npz",
+      "captures/runs/e996d63214f1433f94f761a591ee7103/io/eb65fce99936454880982e68f3c8f04e/e996d63214f1433f94f761a591ee7103_1_validation_00.npz",
+      "captures/runs/e996d63214f1433f94f761a591ee7103/io/eb65fce99936454880982e68f3c8f04e/e996d63214f1433f94f761a591ee7103_1_validation_01.npz",
+      "maintenance/adapter-check.json",
+      "models/7c3918b8b0c8438cba8f1bea4acd13eb/26fe400d8dea2f314d70370457e74f5ff2a0f063dc95a093b416b04550bd9afe/model.json",
+      "models/7c3918b8b0c8438cba8f1bea4acd13eb/799ffdf1b21005ec23e00fc900cdd0f49986dd101280d40b963207d788cfe11a/candidate_model.json",
+      "models/e996d63214f1433f94f761a591ee7103/032a695f9a20d2370e2a45bd493c2982c2a3b5a216a31b6ecccada6300ac1a8a/model.json",
+      "models/e996d63214f1433f94f761a591ee7103/2c5c7892cf4babdfc6c1d6632c4ff6cc348db2a6cc512c2847c29958770c6c74/candidate_model.json",
+      "results/7c3918b8b0c8438cba8f1bea4acd13eb.json",
+      "results/e996d63214f1433f94f761a591ee7103.json",
+      "return-manifest.json",
+      "summary.json"
+    ],
+    "human_PCM_exported": false,
+    "example_return_sha256": "2d21b2a6fb9617161706c4c058eec74336ebc6a48aab6955eb815acb1be82e21",
+    "scope": "software-generated return; actual A return pending"
+  },
+  "installer_executed": false,
+  "board_operations": 0,
+  "formal_demonstration_accepted": false,
+  "limitation": "about 0.9 seconds button observation gap during Overlay reload remains unmeasured on hardware"
+}
