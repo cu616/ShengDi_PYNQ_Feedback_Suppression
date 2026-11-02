@@ -8,6 +8,7 @@
 
 | 契约 | 覆盖什么 | 生产方 | 消费方 | 状态 |
 |---|---|---|---|---|
+| [recal-runtime-v6.md](recal-runtime-v6.md) | 最终冻结、固定维护模型和按包身份导出的单一回包 | C | A / C | 冻结交付 |
 | [recal-runtime-v5.md](recal-runtime-v5.md) | 用户授权的维护自检开放范围与当前模型身份 | C | A / C | 维护开放，正式流程按门槛 |
 | [recal-runtime-v4.md](recal-runtime-v4.md) | 场景绑定模型事务、完整运行帧数和静音启动零模型 | C / A | A / C | 软件接入验证 |
 | [recal-runtime-v3.md](recal-runtime-v3.md) | B冻结身份/直接evaluate、原件接入及同入口维护链路 | C / A / B | A / B / C | 实现待验证 |
