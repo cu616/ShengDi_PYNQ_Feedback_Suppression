@@ -341,6 +341,11 @@ def replay_trial(output_path, fixture_id, model_path, source_pcm16, bypass=False
         # startup transient. This moves no threshold and relaxes nothing: the arm point moves, the
         # protection stays exactly as strict as before.
         time.sleep(CODEC_SETTLE_SECONDS)
+        # Cancellation boundary (C 26685ac): the product may cancel during initialisation, before this
+        # call unmutes and arms. Check right here, after the last unmute and immediately before the arm
+        # write, so a cancelled request can never leave the loop armed.
+        if before_start is not None and not before_start():
+            raise RuntimeError("cancelled_before_start")
         start = time.monotonic()
         control.write(0, 1 | (int(bypass) << 1) | (gain_q12 << 16))
         armed = True

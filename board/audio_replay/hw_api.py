@@ -838,7 +838,8 @@ class ProductHardwareV2(ProductHardware):
                         zero_coeff=True, gain_db=0.0, seconds=(len(src) + 2) / 48828.125 + 1e-6,
                         hp_volume=self.hp_volume, speaker_confirmed=True,
                         local_capture_confirmed=True, direct_only=True,
-                        reuse_overlay=False, restore_stock=False)
+                        reuse_overlay=False, restore_stock=False,
+                        before_start=lambda: not self._cancelled(cancel_event))
                 except Exception as exc:
                     ok_all = False
                     caps.append({'capture_id': cid, 'ok': False, 'error': repr(exc)[:140]})
@@ -884,7 +885,8 @@ class ProductHardwareV2(ProductHardware):
         self._driver().replay_trial(
             str(path), self.fixture, str(self.model_path), src, bypass=False, zero_coeff=True,
             gain_db=0.0, seconds=seconds + 1e-6, hp_volume=self.hp_volume, speaker_confirmed=True,
-            local_capture_confirmed=True, direct_only=True, reuse_overlay=False, restore_stock=False)
+            local_capture_confirmed=True, direct_only=True, reuse_overlay=False, restore_stock=False,
+            before_start=lambda: not self._cancelled(cancel_event))
         meta = self._meta(np.load(str(path)))
         cue_end = len(cue)
         self._input_ready = {'request_id': request.get('request_id'), 'scene_id': scene,
@@ -918,12 +920,12 @@ class ProductHardwareV2(ProductHardware):
         if op == 'input' and request.get('cue'):
             return self._cue_input(request, cancel_event)
         if op == 'install':
-            return self._install(request)
+            return self._install(request, cancel_event)
         if op == 'run':
             return self._run_v2(request, cancel_event)
         return super().perform(request, cancel_event)
 
-    def _install(self, request):
+    def _install(self, request, cancel_event=None):
         import hashlib
         import json as _json
         import numpy as np
@@ -966,14 +968,15 @@ class ProductHardwareV2(ProductHardware):
         # C (a280-entry-review): while the install check runs the loop must stay open-loop at zero gain;
         # the selected runtime gain is restored only after the coefficient readback has been accepted.
         self._write_control(gain_q12=0, arm=False, bypass=False, allow_armed=True)
-        if self._cancelled(request.get('cancel_event')):
+        if self._cancelled(cancel_event):
             return self._cancel_result(request, 'install')
         self._driver().replay_trial(str(cap_path), self.fixture, str(self.model_path),
                                     self._make_stimulus(seed=1, level_dbfs=-30.0),
                                     bypass=False, zero_coeff=False, gain_db=0.0,
                                     seconds=self.WINDOW_SECONDS + 1e-6, hp_volume=self.hp_volume,
                                     speaker_confirmed=True, local_capture_confirmed=True,
-                                    direct_only=True, reuse_overlay=False, restore_stock=False)
+                                    direct_only=True, reuse_overlay=False, restore_stock=False,
+                                    before_start=lambda: not self._cancelled(cancel_event))
         meta = self._meta(np.load(str(cap_path)))
         reported = meta.get('coefficients_sha256')
         loaded_count = meta.get('loaded_count')
@@ -1018,7 +1021,8 @@ class ProductHardwareV2(ProductHardware):
                                         gain_db=20 * math.log10(max(q12, 1) / 4096.0),
                                         seconds=seconds, hp_volume=self.hp_volume,
                                         speaker_confirmed=True, local_capture_confirmed=True,
-                                        direct_only=False, reuse_overlay=False, restore_stock=False)
+                                        direct_only=False, reuse_overlay=False, restore_stock=False,
+                                        before_start=lambda: not self._cancelled(cancel_event))
             meta = self._meta(np.load(str(cap_path)))
         finally:
             wall = time.monotonic() - wall0
