@@ -386,3 +386,28 @@ package_manifest_sha256 = 33fad35ba987cc3d74c793a5436cb302bd64581036883812f10c84
 
 **身份已变**：板上不再是 C 交付的那个包（原 manifest 1390e8b…）。本改动仅为效率优先的临时验证，
 正式交付仍需 C 出 60 秒官方包后覆盖安装，以恢复交付链。
+## 二十二、2026-11-02 判据变更（A 代改，待 B 追认）：L1 门限改为预测峰值门限
+
+B 已书面提案、A 按提案实施，**算法归属仍是 B**，本改动需 B 追认后由 C 重钉正式版本。
+
+改动（ecal_algorithm.py，版本 `recal-algorithm-2026-11-01.1` → `recal-algorithm-2026-11-02.1`）：
+
+1. 主判据：`max|conv(h, ref)| < 0.30`（`PRED_PEAK_MAX`），在 _phase_fit 里用本轮训练 reference 卷积
+   拟合出的 h 求得，随 metrics 记录为 `pred_peak`；
+2. `L1_MAX` 4.0 → **8.0**，退化为兜底上限；
+3. 去掉 `REJECT_SCALE` 的重试：线性最小二乘里 h 与激励电平无关，实测三次 attempt 的 L1 为
+   4.455 / 4.467 / 4.339，提电平不改 L1，重试纯烧约 2 分钟；判失败即 `model_rejected`。
+
+离线验证（板上真实数据，系数经 `q20_sha256` 校验，正是此前被拒的三组）：
+
+| attempt | 激励 rms | L1 | max\|conv\| | 新判定 |
+|---|---|---|---|---|
+| 0 | −22.0 dBFS | 4.454829 | 0.1241（−18.1 dBFS） | **DEPLOYABLE_FIT** |
+| 1 | −19.3 dBFS | 4.466863 | 0.1714（−15.3 dBFS） | **DEPLOYABLE_FIT** |
+| 2 | −16.5 dBFS | 4.338940 | 0.2301（−12.8 dBFS） | **DEPLOYABLE_FIT** |
+
+包（A 临时重建，含 60 秒时长）：`shengdi-recal-0cabfc17-0b09ef6-demo60-pred-peak-amod.zip`，
+zip sha256 `b823e8787b684bf756b296007e0382eab54bd65707247e35b5f949ffe1a72bd4`，41 文件、
+清单 40 哈希全匹配；`recal_algorithm.py` sha256 `3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77`；
+`product-config.json` 与 `product-manifest.json` 的 `algorithm_identity` 已同步为新模块 `identity()` 的返回值。
+板上已解压到 `/home/xilinx/shengdi-install/recal-demo60-predpeak`，**尚未安装**（当时板卡正被现场使用）。
