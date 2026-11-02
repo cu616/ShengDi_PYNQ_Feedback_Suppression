@@ -1,0 +1,16 @@
+{
+  "a_commit": "5939ee5",
+  "b_commit": "0b09ef6",
+  "scope": "only existing affected frozen-entry software checks; A cancellation checks recorded separately",
+  "tests_run": 7,
+  "success": true,
+  "stdout": "test_A_factory_chain_through_C_main_with_fake_leaf_IO (test_recal_frozen.FrozenTests.test_A_factory_chain_through_C_main_with_fake_leaf_IO) ... ok\ntest_B_attempts_are_unmodified_and_real_dispatch_binds_identity (test_recal_frozen.FrozenTests.test_B_attempts_are_unmodified_and_real_dispatch_binds_identity) ... ok\ntest_algorithm_worker_refuses_mixed_hash_before_evaluation (test_recal_frozen.FrozenTests.test_algorithm_worker_refuses_mixed_hash_before_evaluation) ... ok\ntest_current_model_hash_mismatch_is_rejected_before_hardware_import (test_recal_frozen.FrozenTests.test_current_model_hash_mismatch_is_rejected_before_hardware_import) ... ok\ntest_external_original_is_ingested_without_changing_bytes (test_recal_frozen.FrozenTests.test_external_original_is_ingested_without_changing_bytes) ... ok\ntest_pending_install_never_commits_current_model (test_recal_frozen.FrozenTests.test_pending_install_never_commits_current_model) ... ok\ntest_speech_retry_does_not_raise_excitation_level_and_is_bounded (test_recal_frozen.FrozenTests.test_speech_retry_does_not_raise_excitation_level_and_is_bounded) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 6.115s\n\nOK\n",
+  "failures": [],
+  "errors": [],
+  "source_sha256": {
+    "board/audio_replay/recal_product.py": "8359e26ca48781aca826c2007e24a533b1a81f5c64ac62eca4ae38ce4455189a",
+    "board/audio_replay/recal_link.py": "2b4c7d304041b0b69d7a8802c8b09ea865c48f7bf0d7d90887ff7f12eaa9dac5",
+    "sim/feedback/test_recal_frozen.py": "2cd2ecd7deb006c53614babfc8e064ef7c7cd759ec59a17063dda74f79f3c079"
+  },
+  "board_operations": 0
+}

@@ -12,6 +12,163 @@ import subprocess
 import sys
 import zipfile
 
+
+def assemble_product(out, hardware=None, algorithm=None, review=False):
+    """C product white-list; never copies a stale C driver or executes hardware."""
+    import importlib.util
+    out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
+    origin=ROOT/'board/audio_replay'
+    names=['recal_entry.sh','recal_product.py','recal_policy_consumer.py','recal_runtime.py','recal_link.py','product-install.sh','shengdi-product.service']
+    # Source names differ after integration; the installed C entry stays unchanged.
+    for name in names:
+        source_name = "recal_product_entry.sh" if name == "recal_entry.sh" else name
+        shutil.copyfile(origin/source_name,out/name)
+    # B's numeric library is copied byte-for-byte; the C bridge adds no thresholds.
+    (out/'feedback').mkdir()
+    for name in ('__init__.py','recal_policy.py','excitation.py'):
+        shutil.copyfile(ROOT/'src/feedback'/name,out/'feedback'/name)
+    adapters={};missing=[]
+    for kind,folder in [('hardware',hardware),('algorithm',algorithm)]:
+        if folder is None:
+            missing.append(kind+': v1 adapter and approved policy not delivered');continue
+        folder=Path(folder).resolve()
+        meta=json.loads((folder/'product-adapter.json').read_text(encoding='utf-8'))
+        if meta.get('contract')!='recal-product-v1' or meta.get('kind')!=kind or (not review and meta.get('field_approved') is not True):
+            raise ValueError('adapter contract/approval missing: '+kind)
+        for name,digest in meta['hashes'].items():
+            relative=Path(name)
+            if relative.is_absolute() or '..' in relative.parts: raise ValueError('unsafe adapter path')
+            source=(folder/relative).resolve()
+            if folder not in source.parents or hashlib.sha256(source.read_bytes()).hexdigest()!=digest:
+                raise ValueError('adapter identity mismatch: '+name)
+            target=out/relative
+            if target.exists() and target.read_bytes()!=source.read_bytes(): raise ValueError('adapter owner collision: '+name)
+            target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
+        adapters[kind]=meta
+    if not (out/'residual_tools.py').is_file(): shutil.copyfile(origin/'residual_tools.py',out/'residual_tools.py')
+    if review and len(adapters)!=2: raise ValueError('review requires both exact adapters; no real/mock mixture')
+    simulation=bool(missing)
+    if simulation:
+        # No partial real/mock mixture is runnable. The demo always uses two mocks.
+        shutil.copyfile(origin/'recal_mock.py',out/'recal_mock.py')
+        spec=importlib.util.spec_from_file_location('product_fixture_config',origin/'recal_mock.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);config=module.sample_config()
+    else:
+        if adapters['algorithm'].get('algorithm_contract')=='recalibration-algorithm-v1':
+            sys.path.insert(0,str(ROOT/'src'))
+            from recal_runtime import product_policy
+            spec=importlib.util.spec_from_file_location('frozen_package_algorithm',out/'recal_algorithm.py')
+            algorithm=importlib.util.module_from_spec(spec);spec.loader.exec_module(algorithm)
+            if callable(getattr(algorithm,'identity',None)):
+                from recal_link import frozen_policy,capture_plans
+                policy=frozen_policy(algorithm);policy['capture_plans']=capture_plans(policy['attempts'])
+            else: policy=product_policy()
+            (out/'product-policy.json').write_text(json.dumps(policy,indent=2),encoding='utf-8')
+        required=['hw_api.py','recal_algorithm.py','product-policy.json','physical-controls.json']
+        if any(not (out/name).is_file() for name in required): raise ValueError('incomplete real adapter package')
+        config=json.loads((out/'product-policy.json').read_text(encoding='utf-8'))
+        config.update(simulation=False,hardware_module='hw_api',
+                      expected_identity=adapters['hardware']['expected_identity'])
+        config.setdefault('algorithm_module','recal_algorithm')
+        config.update(adapters['hardware'].get('config',{}))
+        if config.get('bootstrap_model'):
+            if config['bootstrap_model']!='bootstrap-model.json':raise ValueError('unsupported bootstrap path')
+            bootstrap=dict(fixture_id='bootstrap-muted',taps=512,lag_first=1,
+                coefficient_format='signed24_fraction20',training_source='board',
+                hp_volume=config['expected_identity']['hp_volume'],
+                sample_rate_hz=config['expected_identity']['sample_rate_hz'],
+                coefficients_q20=[0]*512,coefficients=[0.0]*512,bias=0.0,
+                bootstrap_only=True,eligible=False,
+                provenance='generated zero coefficients for muted open-loop initialization; no measured model')
+            (out/config['bootstrap_model']).write_text(json.dumps(bootstrap,indent=2)+'\n',encoding='utf-8')
+        allowed=adapters['hardware'].get('allowed_gain_q12',[])
+        gains=[g for values in config.get('phase_gain_q12',{}).values() for g in values]
+        calibration=adapters['hardware'].get('allowed_calibration_gain_q12',[])
+        if config.get('bootstrap_model'):
+            # mute preserves the previous approved gain; prepare changes it to open-loop zero.
+            config['phase_gain_q12']['prepare']=sorted(set(allowed+calibration))
+        if (config['expected_identity']['gain_q12'] not in allowed
+                or any(type(g) is not int or g not in allowed+calibration for g in gains)):
+            if not review: raise ValueError('B phase gain policy exceeds A approved gains')
+            missing.append('hardware: calibration gain approval missing')
+        caps=adapters['hardware'].get('capabilities',{})
+        ready=(caps.get('cue_input_ready_event') is True if config.get('input_mode')=='cue_input'
+               else caps.get('prepared_capture') is True)
+        if not ready: missing.append('hardware: input capture is not prepared before speech prompt')
+        for kind,meta in adapters.items():
+            missing.extend(kind+': '+v for v in meta.get('blockers',[]))
+            if meta.get('field_approved') is not True: missing.append(kind+': integration not approved')
+        if missing and not review:
+            raise ValueError('product adapter blockers: '+','.join(missing))
+        if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') and config.get('compute_timeout_seconds',0)<15:
+            raise ValueError('fit timeout must be at least 15 seconds')
+    (out/'product-config.json').write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    operations=(ROOT/'docs/ref/recal-product.md').read_text(encoding='utf-8').replace(
+        '../contracts/recal-product-v1.md','INTERFACE.md').replace(
+        '../contracts/recal-policy-consumer-v1.md','POLICY-CONSUMER.md').replace(
+        '../contracts/recal-runtime-v2.md','RUNTIME.md').replace(
+        '../contracts/recal-runtime-v3.md','FROZEN-RUNTIME.md').replace(
+        '../contracts/recal-runtime-v4.md','INSTALL-RUNTIME.md').replace(
+        '../contracts/recal-runtime-v5.md','MAINTENANCE-RUNTIME.md').replace(
+        '../contracts/recal-runtime-v6.md','FINAL-RUNTIME.md').replace(
+        '../contracts/recal-runtime-v7.md','BOOT-RECOVERY.md').replace(
+        '../contracts/recal-runtime-v8.md','IO-INDICATOR.md').replace(
+        '../contracts/recalibration-algorithm-v1.md','ALGORITHM.md')
+    # Historical evidence belongs to the source repository, outside this install whitelist.
+    import re
+    operations=re.sub(r'\[([^\]]+)\]\(\.\./\.\./report/[^)]+\)',r'\1（见源码仓库report目录）',operations)
+    (out/'OPERATIONS.md').write_text(operations,encoding='utf-8')
+    (out/'INTERFACE.md').write_text((ROOT/'docs/contracts/recal-product-v1.md').read_text(encoding='utf-8').replace(
+        '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'POLICY.md').write_bytes((ROOT/'docs/contracts/recalibration-policy-v1.md').read_bytes())
+    (out/'POLICY-CONSUMER.md').write_text((ROOT/'docs/contracts/recal-policy-consumer-v1.md').read_text(encoding='utf-8').replace(
+        'recal-product-v1.md','INTERFACE.md').replace('recalibration-policy-v1.md','POLICY.md').replace(
+        '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v2.md').read_text(encoding='utf-8').replace(
+        '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'ALGORITHM.md').write_bytes((ROOT/'docs/contracts/recalibration-algorithm-v1.md').read_bytes())
+    (out/'FROZEN-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v3.md').read_text(encoding='utf-8').replace(
+        '../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'INSTALL-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v4.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v3.md','FROZEN-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'MAINTENANCE-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v5.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v4.md','INSTALL-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'FINAL-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v6.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v5.md','MAINTENANCE-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'BOOT-RECOVERY.md').write_text((ROOT/'docs/contracts/recal-runtime-v7.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v6.md','FINAL-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'IO-INDICATOR.md').write_text((ROOT/'docs/contracts/recal-runtime-v8.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v7.md','BOOT-RECOVERY.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    payloads=[p for p in out.rglob('*') if p.is_file() and '__pycache__' not in p.parts
+              and p.suffix not in ('.pyc','.pyo')]
+    manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation and not review and not missing,
+        missing=missing,adapters=adapters,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
+        algorithm_identity=config.get('algorithm_identity'),
+        adapter_check_allowed=bool(adapters.get('hardware',{}).get('adapter_check_allowed')),
+        field_trial_allowed=bool(adapters.get('hardware',{}).get('field_trial_allowed')),
+        diagnostic_model=adapters.get('hardware',{}).get('diagnostic_model'),
+        source_tree_clean=not bool(subprocess.check_output(['git','status','--porcelain','--',
+            'board/audio_replay/recal_product.py','board/audio_replay/recal_mock.py','board/audio_replay/recal_product_entry.sh',
+            'board/audio_replay/recal_policy_consumer.py',
+            'board/audio_replay/recal_runtime.py','board/audio_replay/recal_algorithm.py',
+            'board/audio_replay/recal_link.py',
+            'board/audio_replay/product-install.sh','board/audio_replay/shengdi-product.service',
+            'src/feedback/recal_policy.py','src/feedback/excitation.py',
+            'scripts/assemble_experiment.py','docs/ref/recal-product.md','docs/contracts/recal-product-v1.md',
+            'docs/contracts/recalibration-policy-v1.md','docs/contracts/recal-policy-consumer-v1.md',
+            'docs/contracts/recal-runtime-v2.md','docs/contracts/recal-runtime-v3.md',
+            'docs/contracts/recal-runtime-v4.md','docs/contracts/recal-runtime-v5.md','docs/contracts/recal-runtime-v6.md',
+            'docs/contracts/recal-runtime-v7.md',
+            'docs/contracts/recal-runtime-v8.md',
+            'docs/contracts/recalibration-algorithm-v1.md'],cwd=ROOT).strip()),
+        hashes={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in payloads})
+    (out/'product-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    with zipfile.ZipFile(out.with_suffix('.zip'),'x',zipfile.ZIP_DEFLATED) as z:
+        for path in sorted(payloads+[out/'product-manifest.json']):
+            z.write(path,path.relative_to(out))
+    return dict(status='software_simulation_only' if simulation else
+                'integration_review_blocked' if review else 'adapters_bound_pending_field_acceptance',missing=missing)
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'board/audio_replay'))
 from experiment import PLAN
@@ -567,10 +724,16 @@ if __name__=='__main__':
     p.add_argument('--baseline-first',action='store_true')
     p.add_argument('--candidate-commit')
     p.add_argument('--repair-binding',type=Path)
+    p.add_argument('--product',action='store_true')
+    p.add_argument('--product-hardware',type=Path)
+    p.add_argument('--product-algorithm',type=Path)
+    p.add_argument('--product-review',action='store_true')
     p.add_argument('--r4-b-handoff',action='store_true')
     p.add_argument('--model',type=Path)
     a=p.parse_args()
-    if a.layout_prepared:
+    if a.product:
+        m=assemble_product(a.output,a.product_hardware,a.product_algorithm,review=a.product_review)
+    elif a.layout_prepared:
         m=assemble_layout(a.output,a.candidate_commit,a.repair_binding,a.baseline_first)
     elif a.r4_b_handoff:
         m=assemble_r4_b_handoff(a.output)

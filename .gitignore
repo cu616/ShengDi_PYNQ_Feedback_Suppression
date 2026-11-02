@@ -23,3 +23,7 @@ venv/
 /build/work/
 .vscode/
 .idea/
+/shengdi-recal-*-maintenance.zip
+/shengdi-recal-*-maintenance.zip.sha256
+/shengdi-recal-*-final.zip
+/shengdi-recal-*-final.zip.sha256

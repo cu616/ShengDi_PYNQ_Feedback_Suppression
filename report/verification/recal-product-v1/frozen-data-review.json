@@ -1,0 +1,456 @@
+{
+  "scope": "independent read-only review of existing A source files; no new board operation; not ASG",
+  "a_source_commit": "a3f516f",
+  "algorithm_identity": {
+    "contract": "recal-product-v1",
+    "version": "recal-algorithm-2026-11-01",
+    "file_sha256": "282ee58136b8bccc523e9be60083717f58d628a78525db85f27742477111a1ed",
+    "dependencies": [
+      "numpy"
+    ],
+    "python": ">=3.8",
+    "taps": 512,
+    "lag_first": 1,
+    "strategy": {
+      "attempts": [
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -22.0,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -19.3,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -19.3,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        },
+        {
+          "training": {
+            "excitation": "white_noise",
+            "rms_dbfs": -16.5,
+            "frames": 16384,
+            "segments": 6,
+            "peak_cap": 0.8,
+            "seed": 4242
+          },
+          "validation": {
+            "excitation": "white_noise",
+            "rms_dbfs": -16.5,
+            "frames": 16384,
+            "segments": 2,
+            "peak_cap": 0.8,
+            "seed": 4242
+          }
+        }
+      ],
+      "max_attempts": 3,
+      "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+      "exit_reasons": {
+        "valid_pass": "PASS",
+        "retry": "RETRY_NEXT_LEVEL",
+        "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+        "model_rejected": "MODEL_UNQUALIFIED"
+      }
+    },
+    "thresholds": {
+      "min_valid_frames": 4096,
+      "near_full_scale": 0.999,
+      "min_excitation_snr_db": 0.0,
+      "min_gated_coherence": 0.3,
+      "coherence_floor": 0.8,
+      "sparse_line_db": 20.0,
+      "band_hz": [
+        150.0,
+        10000.0
+      ],
+      "speech_min_rms_dbfs": -55.0,
+      "speech_min_peak": 0.003,
+      "l1_max": 4.0,
+      "l1_over_max_range": [
+        25.0,
+        80.0
+      ],
+      "peak_tap_tolerance": 4,
+      "validate_band_hz": [
+        300.0,
+        460.0
+      ],
+      "validate_band_reduction_min_db": 0.5,
+      "validate_full_reduction_min_db": 0.0,
+      "min_validation_captures": 2
+    },
+    "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+    "not_asg": true
+  },
+  "rows": [
+    {
+      "file": "train_00.npz",
+      "sha256": "205c705bb371a6b7568c5c43689633f6a2da00f419bc426ed0cf5a78779f7207",
+      "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+      "source_hash_in_metadata": null,
+      "source_hash_matches_metadata": null,
+      "source_frames": 16386,
+      "capture_frames": 16384,
+      "first_frame": 4,
+      "valid_source_frames": 16382,
+      "mic_rms_dbfs": -26.822443380341795,
+      "bit22": false
+    },
+    {
+      "file": "train_01.npz",
+      "sha256": "55195254c5ef59a01c91a73efb0c49aa5d83a6bfe68424de4a8d09aa5766c273",
+      "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+      "source_hash_in_metadata": null,
+      "source_hash_matches_metadata": null,
+      "source_frames": 16386,
+      "capture_frames": 16384,
+      "first_frame": 4,
+      "valid_source_frames": 16382,
+      "mic_rms_dbfs": -38.229776650931704,
+      "bit22": false
+    },
+    {
+      "file": "train_02.npz",
+      "sha256": "dc55aa2bf6d28ec79ebcf43ab627638e19f19b159ca54c18642206501db5f947",
+      "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+      "source_hash_in_metadata": null,
+      "source_hash_matches_metadata": null,
+      "source_frames": 16386,
+      "capture_frames": 16384,
+      "first_frame": 4,
+      "valid_source_frames": 16382,
+      "mic_rms_dbfs": -38.074167681773886,
+      "bit22": false
+    },
+    {
+      "file": "train_03.npz",
+      "sha256": "161f70caeba1a5bfaaa8ba1769f90cb5ff176b139300ff19b5ea229d19c4ee38",
+      "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+      "source_hash_in_metadata": null,
+      "source_hash_matches_metadata": null,
+      "source_frames": 16386,
+      "capture_frames": 16384,
+      "first_frame": 4,
+      "valid_source_frames": 16382,
+      "mic_rms_dbfs": -37.84884035080332,
+      "bit22": false
+    },
+    {
+      "file": "train_04.npz",
+      "sha256": "d3feebe26dd7f9038b29bdd1069613e3c88be8a49245349b9918059839c4343b",
+      "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+      "source_hash_in_metadata": null,
+      "source_hash_matches_metadata": null,
+      "source_frames": 16386,
+      "capture_frames": 16384,
+      "first_frame": 4,
+      "valid_source_frames": 16382,
+      "mic_rms_dbfs": -37.84602537282498,
+      "bit22": false
+    },
+    {
+      "file": "train_05.npz",
+      "sha256": "5c81aae933324a2bc2f4beb5ddb90dcaac1b76dda478f7c6b8007637d7c668e5",
+      "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+      "source_hash_in_metadata": null,
+      "source_hash_matches_metadata": null,
+      "source_frames": 16386,
+      "capture_frames": 16384,
+      "first_frame": 4,
+      "valid_source_frames": 16382,
+      "mic_rms_dbfs": -36.16570782494787,
+      "bit22": false
+    },
+    {
+      "file": "valid_00.npz",
+      "sha256": "650a12972f202b6bce15078d5fae9c090431088f2ea460519be473b990707c95",
+      "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+      "source_hash_in_metadata": null,
+      "source_hash_matches_metadata": null,
+      "source_frames": 16386,
+      "capture_frames": 16384,
+      "first_frame": 4,
+      "valid_source_frames": 16382,
+      "mic_rms_dbfs": -35.7631992159324,
+      "bit22": false
+    },
+    {
+      "file": "valid_01.npz",
+      "sha256": "d5fb46fd8bf28d63c50bc227435694eb579f82ce58102ba9bce467858a7daf04",
+      "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+      "source_hash_in_metadata": null,
+      "source_hash_matches_metadata": null,
+      "source_frames": 16386,
+      "capture_frames": 16384,
+      "first_frame": 4,
+      "valid_source_frames": 16382,
+      "mic_rms_dbfs": -37.65607230859467,
+      "bit22": false
+    }
+  ],
+  "training_count": 6,
+  "validation_count": 2,
+  "shared_training_validation_sources": [
+    "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5"
+  ],
+  "fit_reply": {
+    "contract": "recal-product-v1",
+    "request_id": "existing-fit",
+    "scene_id": "existing-A-window",
+    "decision": "data_insufficient",
+    "reason": "training 捕获不合格：麦克风功率里只有 -6.7 dB 能被参考解释（< 0.0）：激励没进来，或不是这一路参考",
+    "evidence": {
+      "capture_id": "train_00",
+      "status": "REJECT_EXCITATION",
+      "metrics": {
+        "frames": 16384,
+        "sample_rate_hz": 48828.125,
+        "taps": 512,
+        "valid_frames": 16384,
+        "fullscale": {
+          "reference_near": 0,
+          "microphone_near": 0,
+          "bit22": 0
+        },
+        "ref_rms_dbfs": -22.00286230851863,
+        "mic_rms_dbfs": -26.822443380341795,
+        "mic_over_ref_db": -4.8195810718231655,
+        "ref_vs_source_db": 0.0,
+        "ref_vs_source_corr": 1.0,
+        "spectral_spread_db": 6.111035514540461,
+        "coherence_median": 0.5272058665994495,
+        "coherence_gated_ratio": 0.18280871670702178,
+        "excitation_snr_db": -6.720418504096969
+      }
+    }
+  },
+  "training_qualification": [
+    {
+      "capture_id": "train_00",
+      "ok": false,
+      "status": "REJECT_EXCITATION",
+      "reasons": [
+        "麦克风功率里只有 -6.7 dB 能被参考解释（< 0.0）：激励没进来，或不是这一路参考"
+      ],
+      "metrics": {
+        "frames": 16384,
+        "sample_rate_hz": 48828.125,
+        "taps": 512,
+        "valid_frames": 16384,
+        "fullscale": {
+          "reference_near": 0,
+          "microphone_near": 0,
+          "bit22": 0
+        },
+        "ref_rms_dbfs": -22.00286230851863,
+        "mic_rms_dbfs": -26.822443380341795,
+        "mic_over_ref_db": -4.8195810718231655,
+        "ref_vs_source_db": 0.0,
+        "ref_vs_source_corr": 1.0,
+        "spectral_spread_db": 6.111035514540461,
+        "coherence_median": 0.5272058665994495,
+        "coherence_gated_ratio": 0.18280871670702178,
+        "excitation_snr_db": -6.720418504096969
+      }
+    },
+    {
+      "capture_id": "train_01",
+      "ok": true,
+      "status": "OK",
+      "reasons": [],
+      "metrics": {
+        "frames": 16384,
+        "sample_rate_hz": 48828.125,
+        "taps": 512,
+        "valid_frames": 16384,
+        "fullscale": {
+          "reference_near": 0,
+          "microphone_near": 0,
+          "bit22": 0
+        },
+        "ref_rms_dbfs": -22.00286230851863,
+        "mic_rms_dbfs": -38.229776650931704,
+        "mic_over_ref_db": -16.226914342413075,
+        "ref_vs_source_db": 0.0,
+        "ref_vs_source_corr": 1.0,
+        "spectral_spread_db": 6.111035514540461,
+        "coherence_median": 0.7325848361005909,
+        "coherence_gated_ratio": 0.3644067796610169,
+        "excitation_snr_db": 3.9830658325964037
+      }
+    },
+    {
+      "capture_id": "train_02",
+      "ok": true,
+      "status": "OK",
+      "reasons": [],
+      "metrics": {
+        "frames": 16384,
+        "sample_rate_hz": 48828.125,
+        "taps": 512,
+        "valid_frames": 16384,
+        "fullscale": {
+          "reference_near": 0,
+          "microphone_near": 0,
+          "bit22": 0
+        },
+        "ref_rms_dbfs": -22.00286230851863,
+        "mic_rms_dbfs": -38.074167681773886,
+        "mic_over_ref_db": -16.071305373255257,
+        "ref_vs_source_db": 0.0,
+        "ref_vs_source_corr": 1.0,
+        "spectral_spread_db": 6.111035514540461,
+        "coherence_median": 0.7258549326153162,
+        "coherence_gated_ratio": 0.35714285714285715,
+        "excitation_snr_db": 3.4876798096309454
+      }
+    },
+    {
+      "capture_id": "train_03",
+      "ok": true,
+      "status": "OK",
+      "reasons": [],
+      "metrics": {
+        "frames": 16384,
+        "sample_rate_hz": 48828.125,
+        "taps": 512,
+        "valid_frames": 16384,
+        "fullscale": {
+          "reference_near": 0,
+          "microphone_near": 0,
+          "bit22": 0
+        },
+        "ref_rms_dbfs": -22.00286230851863,
+        "mic_rms_dbfs": -37.84884035080332,
+        "mic_over_ref_db": -15.845978042284692,
+        "ref_vs_source_db": 0.0,
+        "ref_vs_source_corr": 1.0,
+        "spectral_spread_db": 6.111035514540461,
+        "coherence_median": 0.7231070225802264,
+        "coherence_gated_ratio": 0.35108958837772397,
+        "excitation_snr_db": 3.9526005025576345
+      }
+    },
+    {
+      "capture_id": "train_04",
+      "ok": true,
+      "status": "OK",
+      "reasons": [],
+      "metrics": {
+        "frames": 16384,
+        "sample_rate_hz": 48828.125,
+        "taps": 512,
+        "valid_frames": 16384,
+        "fullscale": {
+          "reference_near": 0,
+          "microphone_near": 0,
+          "bit22": 0
+        },
+        "ref_rms_dbfs": -22.00286230851863,
+        "mic_rms_dbfs": -37.84602537282498,
+        "mic_over_ref_db": -15.843163064306353,
+        "ref_vs_source_db": 0.0,
+        "ref_vs_source_corr": 1.0,
+        "spectral_spread_db": 6.111035514540461,
+        "coherence_median": 0.7381440554269284,
+        "coherence_gated_ratio": 0.4043583535108959,
+        "excitation_snr_db": 4.482288197449426
+      }
+    },
+    {
+      "capture_id": "train_05",
+      "ok": true,
+      "status": "OK",
+      "reasons": [],
+      "metrics": {
+        "frames": 16384,
+        "sample_rate_hz": 48828.125,
+        "taps": 512,
+        "valid_frames": 16384,
+        "fullscale": {
+          "reference_near": 0,
+          "microphone_near": 0,
+          "bit22": 0
+        },
+        "ref_rms_dbfs": -22.00286230851863,
+        "mic_rms_dbfs": -36.16570782494787,
+        "mic_over_ref_db": -14.162845516429243,
+        "ref_vs_source_db": 0.0,
+        "ref_vs_source_corr": 1.0,
+        "spectral_spread_db": 6.111035514540461,
+        "coherence_median": 0.7046065631407776,
+        "coherence_gated_ratio": 0.3559322033898305,
+        "excitation_snr_db": 0.6521237931865032
+      }
+    }
+  ],
+  "exclude_first_control": {
+    "scope": "retrospective diagnostic only; not acceptance and not automatic outlier removal",
+    "reply": {
+      "contract": "recal-product-v1",
+      "request_id": "retrospective-steady-control",
+      "scene_id": "existing-A-window",
+      "decision": "valid_pass",
+      "reason": "拟合后判据：L1 1.788、峰位 130 与实测延迟 130 一致",
+      "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\frozen-data-review\\candidate_model.json",
+      "model_sha256": "b568bb9b13a603fb8c21827075398e77708ca19cc07e976eb50e7d39982a1d03",
+      "evidence": {
+        "not_asg": true,
+        "metrics": {
+          "taps": 512,
+          "L1": 1.7884349822998047,
+          "max_abs": 0.03509807586669922,
+          "L1_over_max": 50.955356900252696,
+          "peak_tap": 130,
+          "q20_sha256": "b7450acda5bb4661e5bf79bb57dec09c5d27711ca5a6f5a84969aab7283fe802",
+          "hardware_cycles": 1539,
+          "memory_ms": 10.48576,
+          "expected_peak_tap": 130,
+          "peak_tap_delta": 0,
+          "equation_rows": 79350,
+          "integer_lags": [
+            130,
+            130,
+            129,
+            130,
+            130
+          ]
+        }
+      }
+    }
+  },
+  "validation_reply": {
+    "contract": "recal-product-v1",
+    "request_id": "existing-validate",
+    "scene_id": "existing-A-window",
+    "decision": "data_insufficient",
+    "reason": "验证集与训练集重叠（capture_id []，source_sha256 ['valid_00']）：不是独立验证"
+  },
+  "frame_acceptance_scope": "B code result recorded; 16382-versus-contract-16384 remains B's explicit domain decision; no padding or deletion",
+  "board_operations": 0
+}

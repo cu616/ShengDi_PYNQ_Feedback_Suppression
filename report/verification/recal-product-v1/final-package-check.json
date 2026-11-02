@@ -1,0 +1,119 @@
+{
+  "a_commit": "7bd365b",
+  "a_functional_commit": "b6107bc",
+  "b_commit": "0b09ef6",
+  "source_commit": "21379492b9863436a790c0186672e2e1cfa8cc75",
+  "source_tree_clean": true,
+  "package": "shengdi-recal-7bd365b-0b09ef6-final.zip",
+  "package_sha256": "4be5083a345d798d214bc1d830b932d421d30cc4049220601a972b23447aa71d",
+  "package_bytes": 364842,
+  "payload_count": 34,
+  "total_zip_files": 35,
+  "all_payload_hashes_match": true,
+  "A_runtime_files_exact": 9,
+  "A_validation_scripts_packaged": false,
+  "B_source_exact": true,
+  "document_link_errors": [],
+  "check": {
+    "exit_code": 0,
+    "stdout": "{\"identity_ok\": true, \"deployment_ready\": true, \"missing\": []}\n"
+  },
+  "deployment_ready": true,
+  "missing": [],
+  "adapter_check_allowed": true,
+  "diagnostic_model": {
+    "filename": "bootstrap-model.json",
+    "sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8",
+    "scope": "zero maintenance/bootstrap only"
+  },
+  "frozen_cli_maintenance": {
+    "exit_code": 0,
+    "stdout": "{\"success\": true, \"receipt\": \"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\final-frozen-window-v2\\\\adapter-check.json\", \"compatibility_issues\": []}\n",
+    "success": true,
+    "compatibility_issues": []
+  },
+  "frozen_product_window": {
+    "scope": "unmodified frozen A factory + C Product + real B subprocesses with simulated MMIO/codec/driver leaf; not physical board",
+    "boot_muted": true,
+    "first_scene": "50938b0ed78e4ee0b9be3672eda11467",
+    "first_state": "ended",
+    "observed_modes": [
+      "cancel",
+      "bypass"
+    ],
+    "audio_elapsed_seconds": 29.99998464,
+    "second_scene": "8721b86b1adc48c7be97c3f7a92a1918",
+    "second_calibration_passed": true,
+    "B_phases": [
+      "input",
+      "fit",
+      "validate"
+    ],
+    "first_model_sha256": "a097efef10725989bc2f7ed0c25f47a297dd8603c58143619b19bd3d0af60293",
+    "second_model_sha256": "f8ceb4fcbce2112a4f76d51e400f29da0e7a054ddd137f7acf70eb3cff2923bb",
+    "actual_source_model_sha256": [
+      "682337c4feb8a620659ef165d7aa643a25f352a00ef7b774b4d403953879daff",
+      "cb67bbf79a3d9fbb0073ff5b96a6f81769fdf89f8bed7258a82aef91cb4deff5"
+    ]
+  },
+  "export": {
+    "exit_code": 0,
+    "identity_ok": true,
+    "layout_count": 2,
+    "inventory_all_hashes_match": true,
+    "categories": {
+      "results": 2,
+      "algorithm": 10,
+      "captures": 16,
+      "models": 4,
+      "maintenance": 1
+    },
+    "files": [
+      "algorithm/155ab46a19f04bf29bb0dd7b0a0861fb-reply.json",
+      "algorithm/155ab46a19f04bf29bb0dd7b0a0861fb-request.json",
+      "algorithm/94b829e0984a4dc5a5506f21efd5ff40-reply.json",
+      "algorithm/94b829e0984a4dc5a5506f21efd5ff40-request.json",
+      "algorithm/a2b00f60e41b4984bf1461ec95cb75f0-reply.json",
+      "algorithm/a2b00f60e41b4984bf1461ec95cb75f0-request.json",
+      "algorithm/ddb52f444dd64a67861e5bb7f6ef8201-reply.json",
+      "algorithm/f5386f72874245ff89a455853c0edeb8-reply.json",
+      "algorithm/f5386f72874245ff89a455853c0edeb8-request.json",
+      "algorithm/f80f44c04f7544d08720143307f228c5-reply.json",
+      "captures/runs/50938b0ed78e4ee0b9be3672eda11467/io/0b594f596c9a4a11954d314d2bdb6060/50938b0ed78e4ee0b9be3672eda11467_1_validation_00.npz",
+      "captures/runs/50938b0ed78e4ee0b9be3672eda11467/io/0b594f596c9a4a11954d314d2bdb6060/50938b0ed78e4ee0b9be3672eda11467_1_validation_01.npz",
+      "captures/runs/50938b0ed78e4ee0b9be3672eda11467/io/c83b7be86f97496e9e16b04d2b5e273b/50938b0ed78e4ee0b9be3672eda11467_1_training_00.npz",
+      "captures/runs/50938b0ed78e4ee0b9be3672eda11467/io/c83b7be86f97496e9e16b04d2b5e273b/50938b0ed78e4ee0b9be3672eda11467_1_training_01.npz",
+      "captures/runs/50938b0ed78e4ee0b9be3672eda11467/io/c83b7be86f97496e9e16b04d2b5e273b/50938b0ed78e4ee0b9be3672eda11467_1_training_02.npz",
+      "captures/runs/50938b0ed78e4ee0b9be3672eda11467/io/c83b7be86f97496e9e16b04d2b5e273b/50938b0ed78e4ee0b9be3672eda11467_1_training_03.npz",
+      "captures/runs/50938b0ed78e4ee0b9be3672eda11467/io/c83b7be86f97496e9e16b04d2b5e273b/50938b0ed78e4ee0b9be3672eda11467_1_training_04.npz",
+      "captures/runs/50938b0ed78e4ee0b9be3672eda11467/io/c83b7be86f97496e9e16b04d2b5e273b/50938b0ed78e4ee0b9be3672eda11467_1_training_05.npz",
+      "captures/runs/8721b86b1adc48c7be97c3f7a92a1918/io/3a566f7f1a0a43239cebb41dd319553d/8721b86b1adc48c7be97c3f7a92a1918_1_training_00.npz",
+      "captures/runs/8721b86b1adc48c7be97c3f7a92a1918/io/3a566f7f1a0a43239cebb41dd319553d/8721b86b1adc48c7be97c3f7a92a1918_1_training_01.npz",
+      "captures/runs/8721b86b1adc48c7be97c3f7a92a1918/io/3a566f7f1a0a43239cebb41dd319553d/8721b86b1adc48c7be97c3f7a92a1918_1_training_02.npz",
+      "captures/runs/8721b86b1adc48c7be97c3f7a92a1918/io/3a566f7f1a0a43239cebb41dd319553d/8721b86b1adc48c7be97c3f7a92a1918_1_training_03.npz",
+      "captures/runs/8721b86b1adc48c7be97c3f7a92a1918/io/3a566f7f1a0a43239cebb41dd319553d/8721b86b1adc48c7be97c3f7a92a1918_1_training_04.npz",
+      "captures/runs/8721b86b1adc48c7be97c3f7a92a1918/io/3a566f7f1a0a43239cebb41dd319553d/8721b86b1adc48c7be97c3f7a92a1918_1_training_05.npz",
+      "captures/runs/8721b86b1adc48c7be97c3f7a92a1918/io/b256d3789e054592b8aecef4c77e39a4/8721b86b1adc48c7be97c3f7a92a1918_1_validation_00.npz",
+      "captures/runs/8721b86b1adc48c7be97c3f7a92a1918/io/b256d3789e054592b8aecef4c77e39a4/8721b86b1adc48c7be97c3f7a92a1918_1_validation_01.npz",
+      "maintenance/adapter-check.json",
+      "models/50938b0ed78e4ee0b9be3672eda11467/682337c4feb8a620659ef165d7aa643a25f352a00ef7b774b4d403953879daff/candidate_model.json",
+      "models/50938b0ed78e4ee0b9be3672eda11467/a097efef10725989bc2f7ed0c25f47a297dd8603c58143619b19bd3d0af60293/model.json",
+      "models/8721b86b1adc48c7be97c3f7a92a1918/cb67bbf79a3d9fbb0073ff5b96a6f81769fdf89f8bed7258a82aef91cb4deff5/candidate_model.json",
+      "models/8721b86b1adc48c7be97c3f7a92a1918/f8ceb4fcbce2112a4f76d51e400f29da0e7a054ddd137f7acf70eb3cff2923bb/model.json",
+      "results/50938b0ed78e4ee0b9be3672eda11467.json",
+      "results/8721b86b1adc48c7be97c3f7a92a1918.json",
+      "return-manifest.json",
+      "summary.json"
+    ],
+    "human_PCM_exported": false,
+    "example_return_sha256": "9f8a5f7b5b0e03ad718c851f6a2200377961e652cc33d1dc4374b88b7d8bdffe",
+    "scope": "software-generated verification return; actual A return still pending"
+  },
+  "runtime_user": "root, matching A sudo validation",
+  "board_operations": 0,
+  "prior_verification": {
+    "issue": "assembler included mutable Python bytecode in payload hashes; re-import invalidated the old archive",
+    "fixed": "exclude __pycache__ and pyc/pyo from both manifest and ZIP; no A/B edits",
+    "failed_archive_preserved": "materials/staging/tmp/final-cache-verification-failed.zip"
+  }
+}

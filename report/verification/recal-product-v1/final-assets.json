@@ -1,0 +1,33 @@
+{
+  "a_commit": "7bd365b",
+  "a_functional_commit": "b6107bc",
+  "b_commit": "0b09ef6",
+  "runtime_payloads": {
+    "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+    "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+    "hw_api.py": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be",
+    "replay_trial_repair.py": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+    "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+    "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+    "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+    "manifest.json": "8685371764f4d9ee73c1cca9e13f1ac39a49619fa77140cb43999ad437ed0935"
+  },
+  "runtime_file_count": 9,
+  "all_A_runtime_bytes_match_final_freeze": true,
+  "A_validation_scripts_packaged": false,
+  "B_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+  "adapter_check_allowed": true,
+  "blockers": [],
+  "diagnostic_model": {
+    "filename": "bootstrap-model.json",
+    "sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8",
+    "scope": "zero initialization and maintenance only; human window uses the current-scene model generated after CAL"
+  },
+  "A_board_report": {
+    "pre_cancel_prepare": "cancelled/never_armed_again=true",
+    "official_adapter_check": "success=true compatibility_issues=[]",
+    "scope": "user-forwarded A board evidence; C did not operate the board"
+  },
+  "board_operations": 0
+}

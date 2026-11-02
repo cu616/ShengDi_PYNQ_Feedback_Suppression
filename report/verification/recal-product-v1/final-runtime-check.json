@@ -1,0 +1,670 @@
+{
+  "a_commit": "7bd365b",
+  "hw_api_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be",
+  "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+  "scope": "unmodified A factory/perform and C maintenance chain; simulated MMIO/codec/driver leaf; no board operations",
+  "cancellation_probes": [
+    {
+      "op": "prepare",
+      "timing": "pre-cancelled",
+      "driver_calls": [],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "pre-cancelled-prepare",
+        "scene_id": "cancel-test",
+        "op": "prepare",
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled",
+        "never_armed_again": true
+      },
+      "error": null,
+      "prevented": true
+    },
+    {
+      "op": "training",
+      "timing": "pre-cancelled",
+      "driver_calls": [],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "pre-cancelled-training",
+        "scene_id": "cancel-test",
+        "op": "training",
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled",
+        "never_armed_again": true,
+        "captures": []
+      },
+      "error": null,
+      "prevented": true
+    },
+    {
+      "op": "validation",
+      "timing": "pre-cancelled",
+      "driver_calls": [],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "pre-cancelled-validation",
+        "scene_id": "cancel-test",
+        "op": "validation",
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled",
+        "never_armed_again": true,
+        "captures": []
+      },
+      "error": null,
+      "prevented": true
+    },
+    {
+      "op": "input",
+      "timing": "pre-cancelled",
+      "driver_calls": [],
+      "reply": {
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled"
+      },
+      "error": null,
+      "prevented": true
+    },
+    {
+      "op": "install",
+      "timing": "pre-cancelled",
+      "driver_calls": [],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "pre-cancelled-install",
+        "scene_id": "cancel-test",
+        "op": "install",
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled",
+        "never_armed_again": true
+      },
+      "error": null,
+      "prevented": true
+    },
+    {
+      "op": "run",
+      "timing": "pre-cancelled",
+      "driver_calls": [],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "pre-cancelled-run",
+        "scene_id": "cancel-test",
+        "op": "run",
+        "ok": false,
+        "status": "error",
+        "reason": "cancelled",
+        "never_armed_again": true
+      },
+      "error": null,
+      "prevented": true
+    },
+    {
+      "op": "prepare",
+      "timing": "during-driver-initialization",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\during-driver-initialization\\prepare\\prepare_1793587609632.npz",
+          "fixture": "room_v1_20261026b",
+          "seconds": 0.4,
+          "direct_only": true,
+          "has_before_start": true
+        }
+      ],
+      "reply": {},
+      "error": "RuntimeError('cancelled before start')",
+      "prevented": true
+    },
+    {
+      "op": "training",
+      "timing": "during-driver-initialization",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\during-driver-initialization\\training\\cancel-test_1_training_00.npz",
+          "fixture": "room_v1_20261026b",
+          "seconds": 0.33562724,
+          "direct_only": true,
+          "has_before_start": true
+        }
+      ],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "during-driver-initialization-training",
+        "scene_id": "cancel-test",
+        "op": "training",
+        "ok": false,
+        "status": "error",
+        "level_accepted_dbfs": null,
+        "captures": [
+          {
+            "capture_id": "cancel-test/1/training/00",
+            "ok": false,
+            "error": "RuntimeError('cancelled before start')"
+          }
+        ],
+        "source_sha256": [],
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 1631,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+        }
+      },
+      "error": null,
+      "prevented": true
+    },
+    {
+      "op": "validation",
+      "timing": "during-driver-initialization",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\during-driver-initialization\\validation\\cancel-test_1_validation_00.npz",
+          "fixture": "room_v1_20261026b",
+          "seconds": 0.33562724,
+          "direct_only": true,
+          "has_before_start": true
+        }
+      ],
+      "reply": {
+        "contract": "recal-product-v1",
+        "request_id": "during-driver-initialization-validation",
+        "scene_id": "cancel-test",
+        "op": "validation",
+        "ok": false,
+        "status": "error",
+        "level_accepted_dbfs": null,
+        "captures": [
+          {
+            "capture_id": "cancel-test/1/validation/00",
+            "ok": false,
+            "error": "RuntimeError('cancelled before start')"
+          }
+        ],
+        "source_sha256": [],
+        "identity": {
+          "aux_db": 0.0,
+          "aux_raw_left": 5,
+          "aux_raw_right": 5,
+          "hp_volume": 40,
+          "gain_q12": 1631,
+          "sample_rate_hz": 48828.125,
+          "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+          "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+          "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+          "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+        }
+      },
+      "error": null,
+      "prevented": true
+    },
+    {
+      "op": "input",
+      "timing": "during-driver-initialization",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\during-driver-initialization\\input\\cancel-test_1_input_00.npz",
+          "fixture": "room_v1_20261026b",
+          "seconds": 2.500001,
+          "direct_only": true,
+          "has_before_start": true
+        }
+      ],
+      "reply": {},
+      "error": "RuntimeError('cancelled before start')",
+      "prevented": true
+    },
+    {
+      "op": "install",
+      "timing": "during-driver-initialization",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\during-driver-initialization\\install\\cancel-test_1_install_00.npz",
+          "fixture": "cancel-test",
+          "seconds": 0.33562724,
+          "direct_only": true,
+          "has_before_start": true
+        }
+      ],
+      "reply": {},
+      "error": "RuntimeError('cancelled before start')",
+      "prevented": true
+    },
+    {
+      "op": "run",
+      "timing": "during-driver-initialization",
+      "driver_calls": [
+        {
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\during-driver-initialization\\run\\cancel-test_1_run_00.npz",
+          "fixture": "room_v1_20261026b",
+          "seconds": 2.5,
+          "direct_only": false,
+          "has_before_start": true
+        }
+      ],
+      "reply": {},
+      "error": "RuntimeError('cancelled before start')",
+      "prevented": true
+    }
+  ],
+  "maintenance": {
+    "contract": "recal-product-v1",
+    "scene_id": "room_v1_20261026b",
+    "scope": "maintenance API chain; not recalibration acceptance",
+    "algorithm_identity": {
+      "contract": "recal-product-v1",
+      "version": "recal-algorithm-2026-11-01.1",
+      "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+      "dependencies": [
+        "numpy"
+      ],
+      "python": ">=3.8",
+      "taps": 512,
+      "lag_first": 1,
+      "strategy": {
+        "attempts": [
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          }
+        ],
+        "max_attempts": 3,
+        "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+        "exit_reasons": {
+          "valid_pass": "PASS",
+          "retry": "RETRY_NEXT_LEVEL",
+          "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+          "model_rejected": "MODEL_UNQUALIFIED"
+        }
+      },
+      "thresholds": {
+        "min_valid_frames": 4096,
+        "near_full_scale": 0.999,
+        "min_excitation_snr_db": 0.0,
+        "min_gated_coherence": 0.3,
+        "coherence_floor": 0.8,
+        "sparse_line_db": 20.0,
+        "band_hz": [
+          150.0,
+          10000.0
+        ],
+        "speech_min_rms_dbfs": -55.0,
+        "speech_min_peak": 0.003,
+        "l1_max": 4.0,
+        "l1_over_max_range": [
+          25.0,
+          80.0
+        ],
+        "peak_tap_tolerance": 4,
+        "validate_band_hz": [
+          300.0,
+          460.0
+        ],
+        "validate_band_reduction_min_db": 0.5,
+        "validate_full_reduction_min_db": 0.0,
+        "min_validation_captures": 2
+      },
+      "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+      "not_asg": true
+    },
+    "steps": [
+      {
+        "name": "mute",
+        "request": {},
+        "reply": {
+          "ok": true,
+          "contract": "recal-product-v1",
+          "muted": true,
+          "gain_q12_kept": 1631,
+          "led_kept": 0,
+          "effective_mode": "muted"
+        }
+      },
+      {
+        "name": "capabilities",
+        "request": {},
+        "reply": {
+          "ok": true,
+          "contract": "recal-product-v1",
+          "buttons": true,
+          "indicator": true,
+          "nonintrusive_events": true,
+          "abort_mutes": true,
+          "prepared_capture": true,
+          "prepared_capture_evidence": "cue and speech window come from ONE driver call: the overlay download, codec init and source handshake all finish before the cue plays. Verified on hardware 2026-11-01: input_ready with cue_end_frame=21969 and valid_first_frame=21969 in capture fw-020624/1/input/00. Separately, a plain capture still re-downloads the bitstream; that path is not what this flag claims.",
+          "bounded_run": true,
+          "mode_readback": true,
+          "led_legend": {
+            "0000": "idle / muted",
+            "0001": "recalibration in progress",
+            "0010": "speak now (cue played)",
+            "0100": "quiet please (measuring floor)",
+            "1000": "ready / running with a valid model",
+            "1111": "error or protected"
+          },
+          "button_legend": {
+            "BTN0": "long press (>=1.0 s): start recalibration",
+            "BTN1": "short press: start / stop amplification",
+            "BTN2": "short press: confirm the room is quiet",
+            "BTN3": "short press: abort and mute"
+          },
+          "allowed_gain_q12": [
+            1631,
+            2303,
+            3254,
+            4096
+          ],
+          "max_run_frames": 3000000,
+          "max_run_seconds": 61.44
+        }
+      },
+      {
+        "name": "prepare",
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "f52f0e2b8ada44239402e2a79d04fb6c",
+          "scene_id": "room_v1_20261026b",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\maintenance",
+          "op": "prepare"
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "f52f0e2b8ada44239402e2a79d04fb6c",
+          "scene_id": "room_v1_20261026b",
+          "op": "prepare",
+          "ok": true,
+          "status": "completed",
+          "prepared": true,
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+          }
+        }
+      },
+      {
+        "name": "training",
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "9e1898958e4041a995722d93b396d075",
+          "scene_id": "room_v1_20261026b",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\maintenance",
+          "op": "training",
+          "plan": {
+            "seed": 4242,
+            "validation_seed": 4243,
+            "level_dbfs": -22.0,
+            "captures": [
+              {
+                "capture_id": "room_v1_20261026b-training-0",
+                "level_dbfs": -22.0,
+                "direct_only": true,
+                "zero_coeff": true
+              }
+            ]
+          }
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "9e1898958e4041a995722d93b396d075",
+          "scene_id": "room_v1_20261026b",
+          "op": "training",
+          "ok": true,
+          "status": "completed",
+          "level_accepted_dbfs": -22.0,
+          "captures": [
+            {
+              "capture_id": "room_v1_20261026b/1/training/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\maintenance\\room_v1_20261026b_1_training_00.npz",
+              "sha256": "0afc5c1477c56de9a2b2d3dfc32ae1a5c4da10857b356e0e7d3db43c83ea9a9e",
+              "first_frame": 4,
+              "valid_frames": 16382,
+              "source_sha256": "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5",
+              "seed": 4242,
+              "level_dbfs": -22.0,
+              "ok": true,
+              "bit22": 0,
+              "content_kind": "onboard_excitation"
+            }
+          ],
+          "source_sha256": [
+            "7d41541bdf55b3064e1e9f73140661f5f2b9c3330033f5b9b5eede1eb7db40c5"
+          ],
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 0,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+          }
+        }
+      },
+      {
+        "name": "install",
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "82e83265fd7b45a0a051063d5f96f206",
+          "scene_id": "room_v1_20261026b",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\maintenance",
+          "op": "install",
+          "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\initial-model.json",
+          "run_gain_q12": 1631
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "82e83265fd7b45a0a051063d5f96f206",
+          "scene_id": "room_v1_20261026b",
+          "op": "install",
+          "ok": true,
+          "status": "completed",
+          "reason": null,
+          "model_sha256": "ff902057e17961b25232175aa1980437d9b6c6093255cccf38dad6eeaf8224e8",
+          "source_model_sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+          "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+          "reported_coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+          "loaded_count": 512,
+          "taps": 512,
+          "applies_at": "immediately",
+          "run_gain_q12": 1631,
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 1631,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+          }
+        }
+      },
+      {
+        "name": "run",
+        "request": {
+          "contract": "recal-product-v1",
+          "request_id": "43fd515121774c59a3f15087b991eb33",
+          "scene_id": "room_v1_20261026b",
+          "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\maintenance",
+          "op": "run",
+          "seconds": 3.0,
+          "gain_q12": 1631,
+          "bypass": false,
+          "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\initial-model.json",
+          "model_sha256": "ff902057e17961b25232175aa1980437d9b6c6093255cccf38dad6eeaf8224e8",
+          "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927"
+        },
+        "reply": {
+          "contract": "recal-product-v1",
+          "request_id": "43fd515121774c59a3f15087b991eb33",
+          "scene_id": "room_v1_20261026b",
+          "op": "run",
+          "ok": true,
+          "status": "completed",
+          "effective_mode": "muted",
+          "audio_frames": 16384,
+          "requested_seconds": 3.0,
+          "elapsed_seconds": 0.336,
+          "wall_seconds": 0.016,
+          "note": "elapsed_seconds is the captured window, not the requested run length; the run itself played requested_seconds",
+          "model_sha256": "ff902057e17961b25232175aa1980437d9b6c6093255cccf38dad6eeaf8224e8",
+          "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+          "capture_id": "room_v1_20261026b/1/run/00",
+          "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\maintenance\\room_v1_20261026b_1_run_00.npz",
+          "identity": {
+            "aux_db": 0.0,
+            "aux_raw_left": 5,
+            "aux_raw_right": 5,
+            "hp_volume": 40,
+            "gain_q12": 1631,
+            "sample_rate_hz": 48828.125,
+            "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+            "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+            "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+            "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+          }
+        }
+      },
+      {
+        "name": "abort",
+        "request": {},
+        "reply": {
+          "ok": true,
+          "contract": "recal-product-v1",
+          "muted": true,
+          "quiescent": true,
+          "elapsed_ms": 0.0,
+          "effective_mode": "muted"
+        }
+      }
+    ],
+    "compatibility_issues": [],
+    "success": true,
+    "selected_model": {
+      "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\initial-model.json",
+      "sha256": "01c9102af5e010e5d40fe01edb54f38b1c34f09b4690a936f17a88cb8e235c23",
+      "provenance": "frozen_package_model"
+    },
+    "capture_valid_frames": [
+      16382
+    ],
+    "verified_run_timing": {
+      "contract": "recal-product-v1",
+      "request_id": "43fd515121774c59a3f15087b991eb33",
+      "scene_id": "room_v1_20261026b",
+      "op": "run",
+      "ok": true,
+      "status": "completed",
+      "effective_mode": "muted",
+      "audio_frames": 16384,
+      "requested_seconds": 3.0,
+      "elapsed_seconds": 0.336,
+      "wall_seconds": 0.016,
+      "note": "elapsed_seconds is the captured window, not the requested run length; the run itself played requested_seconds",
+      "model_sha256": "ff902057e17961b25232175aa1980437d9b6c6093255cccf38dad6eeaf8224e8",
+      "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+      "capture_id": "room_v1_20261026b/1/run/00",
+      "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\final-cancel-checks\\maintenance\\room_v1_20261026b_1_run_00.npz",
+      "identity": {
+        "aux_db": 0.0,
+        "aux_raw_left": 5,
+        "aux_raw_right": 5,
+        "hp_volume": 40,
+        "gain_q12": 1631,
+        "sample_rate_hz": 48828.125,
+        "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+        "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+        "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+        "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+      },
+      "capture_sha256": "93fd8da69b62b80a989a5f7d29456bc411bbbf205dd4ffcfe5290c4fadce6cee",
+      "capture_elapsed_seconds": 0.33554432,
+      "audio_elapsed_seconds": 2.99999232,
+      "completed_frames": 146484,
+      "timing_source": "driver.completed_frames",
+      "metadata": {
+        "first_frame": 130100,
+        "frames": 16384,
+        "completed_frames": 146484,
+        "stop_reason": "completed",
+        "capture_status": 1,
+        "coefficients_sha256": "6118e85df7d9765bd5ae93fc204a32301135666b188bcc0fcf61e1447f6e8927",
+        "model_sha256": "ff902057e17961b25232175aa1980437d9b6c6093255cccf38dad6eeaf8224e8",
+        "sample_rate_hz": 48828.125
+      }
+    }
+  },
+  "board_operations": 0
+}

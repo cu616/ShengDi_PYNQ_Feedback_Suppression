@@ -1,3 +1,11 @@
+## 2026-11-02 队长集成 A/B/C 与入口冲突取舍
+
+- 用户要求合并三线到 main；冲突确认时明确选择“保留 A 的旧入口，其他按建议”。
+- 集成来源及当前任务统一见 [STATE](../STATE.md)。保留 B 视频方案，合同索引保留三方有效条目，状态按责任线重整；A 的旧 `recal_entry.sh` 原字节保留。
+- C 的启动脚本原字节保存在 `recal_product_entry.sh`，打包仍映射成包内 `recal_entry.sh`；运行参数/协议不变。操作区别见 [产品说明](../ref/recal-product.md)。新增打包回归防止错装 A 旧脚本。
+- 首次全量 506 项遇到 29 个错误，已定位其中历史 sprint 测试仍引用归档前位流路径；改读 archive 中原件，不制造占位位流，不改变算法或声学判据。复跑 506 项中 488 项直接通过，18 项为 Windows 解码/沙箱 os.replace 问题，保持断言、统一 UTF-8 并在正常权限下复跑 18/18 通过；入口定向 24/24，文档 0 错误/0 警告。详见 [本轮集成验证](../../report/verification/recal-product-v1/main-integration-2026-11-02.json)。
+- 未部署、未操板；根目录旧 main 的未提交内容及原 A/B/C 工作区保持原样。
+
 ## 2026-11-02 新包 io150 离线核验　A　包自洽、pin 全对、A/B 字节未改；仍未上板
 
 - 收到 `shengdi-recal-8799f40b-0b09ef6-io150-final.zip`（sha256
@@ -750,6 +758,63 @@ eplay_trial）。
 - 箱体起振点：旁路 −24、抵消 −13.5 仍起振，**512 没有改善**（ASG 仍约 10.8 dB）。
   证据：[512 报告](../../report/verification/audio-replay/2026-10-22-512-taps.md)。
 # 项目进度（时间线，只追加）
+
+## 2026-11-02 C 延长慢采集阶段预算并区分实体提示
+
+据用户真板训练6×8.6秒超io30，C改io150、保留compute/run30。接口v8分开quiet0100/capturing0101；定位旧embedded没有speaking转换，按现有实际arm回读和哈希绑定的21969帧cue+0.1秒尾声亮0010，当前A安全armed写灯启用，其他适配deferred保护保留。64项受影响C软件检查与141文档检查通过；98663a4干净源码冻结新ZIP，独立解压及全部哈希通过，原版A/冻结C/真实B子进程配模拟MMIO与虚拟6×8.6秒训练完整到ready，观测到0010/0100/0101，未因阶段时限中止。纯AST执行A的cue生成函数取帧数，无导入硬件/操板；A/B原件未改，overlay复用/PS稳定性问题仍保留。[绑定来源](../../report/verification/recal-product-v1/io150-assets.json)、[v8](../contracts/recal-runtime-v8.md)、[新包路径](../ref/recal-product.md#本轮慢采集与灯光复核包io150)。
+
+
+## 2026-11-02 C 按8799原件重建冷启动/CAL复核包
+
+首次fetch远端A仍996bd38，随后取得用户确认的新b1826610（功能31eef5a1），根/v3 helper及原manifest逐项吻合8799完整SHA；原契约已同步新helper/driver并移除失效阻塞，保留PS卡死及CAL待板复核两项。C从统一源生成配置/清单四处身份，连同81b冷启动/显式CAL恢复和quiet4重建，未手改旧ZIP、未改B阈值或service文件。6fd55d1干净源码重建根目录整包，独立解压四处钉值/全部载荷/文档/导入后再次验包均通过；原版新A+冻结C+真实B子进程配模拟冷I2C与独占文件，三次无声重说路径各异、失败后新CAL到ready通过。新包仅A看守复核，正式演示仍受PS稳定性阻塞。[原件核对](../../report/verification/recal-product-v1/bootfix-8799-assets.json)、[准确路径](../ref/recal-product.md#本轮上电与cal复核包a-b1826610--功能31eef5a1)。
+
+
+## 2026-11-02 C 修上电AUX门槛与失败CAL恢复
+
+据A真板断电默认0x00/aux_db失败，C选择prepare后核AUX，仅提前严格核代码/位流等身份，新增configuration_ready状态；普通场景失败安全abort后可长按BTN0新scene，不再因B HARDWARE_ERROR永久屏蔽CAL，身份混搭/无法停声锁定保留。quiet改4，speech因131072源RAM保留2.5。47项受影响软件检查及140文档检查通过；原版A实际getter/setter+prepare配模拟I2C和真实B完整到ready，无构造预写/人工步骤。另原版A两次input撞独占NPZ，隔离仅绑定request.run_dir后两次成功，给A这一处必要单行同步，未改A源码。[冷启动](../../report/verification/recal-product-v1/boot-cold-original-a.json)、[路径复现](../../report/verification/recal-product-v1/boot-retry-path-audit.json)、[接口v7](../contracts/recal-runtime-v7.md)、[说明](../ref/recal-product.md#上电与重试修复c源码a-5b0648c)。
+
+
+## 2026-11-02 C 最终冻结A7bd功能b610并清空阻塞
+
+按A最终指令只取八项运行时及原manifest九文件，逐SHA核验且与功能提交b610相同；不包验证脚本。12项取消边界全部通过，原版A工厂维护链路通过；2137949干净源码最终正常product冻结开放部署及维护，B判据原字节不变。42项软件/3项打包回归、139文档检查通过；34载荷/35文件最终ZIP独立解压后check与维护exit0，两个scene完整模拟、实际模式切换/30秒帧结束及单回包身份/文件SHA通过。接口v6固定bootstrap维护模型、本轮CAL自动生成正式模型和单一回包清单；按A sudo实测将C常驻服务运行身份固定root，导出仅绑定当前包scene/计算回执并包含维护JSON。C自行完成冻结核验，不再索取A/B字段或重采原件，未操板。[固定载荷与模型](../../report/verification/recal-product-v1/final-assets.json)、[全部取消检查](../../report/verification/recal-product-v1/final-runtime-check.json)、[v6](../contracts/recal-runtime-v6.md)、[一次窗口命令](../ref/recal-product.md)。
+
+
+## 2026-11-02 C 按A593原字节重冻结并开放维护自检
+
+用户要求新包adapter_check_allowed=true并放仓库根目录；A旧包部署/校验回执按现场反馈保存。核A八项载荷与原manifest，新的driver/helper身份同步，B原字节不动。12项预取消/初始化取消定向检查关闭五条路径的旧阻塞，仅父类prepare两项仍失败；维护链路通过，7项既有受影响检查通过，两个scene真实B完整模拟接入通过。e6adcf2干净源码冻结根目录35载荷/36文件新包，独立解压逐SHA与文档链接通过，冻结C main+原版A工厂的模拟维护自检exit0；adapter_check_allowed=true，正式缺口仅prepare。接口变更v5按用户授权把维护开放与正式部署门槛分开；C维护创建对象使用显式当前模型fixture。只向A提供prepare这一处必要修正，B无新增请求，未操板。[原版方法检查](../../report/verification/recal-product-v1/a593-runtime-check.json)、[软件](../../report/verification/recal-product-v1/a593-software.json)、[新载荷](../../report/verification/recal-product-v1/a593-assets.json)、[维护v5](../contracts/recal-runtime-v5.md)、[准确命令](../ref/recal-product.md#a在板卡执行维护自检)。
+
+
+## 2026-11-02 C 接通A280原版工厂与B完整数值流程
+
+接口变更v4：C接收source_model_sha256/scene绑定副本，逐项核验内容及Q20后原子提交；从原NPZ completed_frames区分完整运行与16384帧环窗；封装不可成为有效模型的静音启动零模型，四灯图例保留LD3实际模式。A原版工厂+C状态机+B子进程仅替换硬件叶子，连续两个scene均ready，首个运行ended；75项受影响软件检查及137文档检查通过。5230e0c干净源码冻结33载荷审阅ZIP，独立解压、A/B字节、零模型格式、B worker、包内链接及三种启动门槛核验通过；原链接失败包另名保留。复现预取消install仍进入driver，以及初始化中取消缺少before_start；只向A请求这一取消边界修正，B无新增任务。A现场消息与C离线结果分别归档，未操板。[入口与停止证据](../../report/verification/recal-product-v1/a280-entry-review.json)、[固定载荷](../../report/verification/recal-product-v1/a280-assets.json)、[v4](../contracts/recal-runtime-v4.md)、[操作单](../ref/recal-product.md)。
+
+
+## 2026-11-01 C 收口A22/B.1重组与必要阻塞复现
+
+按用户“仅真实需要改动才留言”收束，接B 0b09ef6原字节与A22描述；72项受影响检查通过，B正负移位/少段验证修正确认，同一原件结论保持采集资格/独立性拒收。C吸收旧调用晚返回、隔离文件与嵌入提示窗格式，未让硬件端隐式重扫档。A原版training/input私有名错误、install JSON解析及后续gain/count问题、预取消仍调用driver经隔离叶子I/O复现；run墙钟/音频口径由源码及A既有30秒回执核实；诊断补丁未入候选。ff9e5c8干净源码冻结31载荷本地审阅包，独立解压/源SHA/B worker/文档核验通过，默认/维护/现场均在导入硬件前拒绝。只给A必要4项，不追加B任务，未操板。[A复现](../../report/verification/recal-product-v1/a22-runtime-audit.json)、[72项](../../report/verification/recal-product-v1/closeout-software.json)、[包核验](../../report/verification/recal-product-v1/closeout-package-check.json)、[同一数据](../../report/verification/recal-product-v1/closeout-data-review.json)、[收口说明](../ref/recal-product.md#本轮收口a-22c88bb--b-0b09ef6)。
+
+
+## 2026-11-01 C 接A a3f516f与B冻结身份并复核现有原件
+
+接口变更：交冻结接入v3，直接调用B 2ccf746 identity/evaluate，ATTEMPTS原样及30秒预算，包/每轮/计算回包绑定版本SHA。同一入口加A维护检查与显式当前模型SHA；原版A factory经C main调用、底层叶子I/O替换验证，105项相关软件通过。固定A根/发布3549及8项manifest；接双哈希/applies_at，次捕获生效未获回读不提交current。只读复算已有八段16382帧，全训练拒收/验证同源；去首段5段仅诊断fit通过，不升格验收。1505a17干净源码冻结30载荷本地包，解压哈希/文档/B身份worker通过；维护参数可用，默认普通流程保留prepared_capture阻塞，C未操板。另归档A后续真人30秒回执的来源与听感范围，不混源码。[接口](../contracts/recal-runtime-v3.md)、[105项](../../report/verification/recal-product-v1/frozen-integration.json)、[包核验](../../report/verification/recal-product-v1/frozen-package-check.json)、[现有数据](../../report/verification/recal-product-v1/frozen-data-review.json)、[A/B操作](../ref/recal-product.md#c给ab的一次性交接)。
+
+
+## 2026-11-01 C 对接A整机适配与B真实evaluate
+
+接口变更：C交整机扩展v2，允许A实施原子cue_input，以匹配的ready事件约束讲话提示；保留prepared_capture缺项阻塞。接入B 0bdf7fa原字节，自带30秒时限和三档6/2段源计划；区分讲话健康与激励资格，保存独立预测口径，补两验证段拒收。95项软件检查通过，真实B子进程配模拟采集到ready；A原包8/8但hw_api根/包分裂、六段计划变单段、安装hash混填经离线调用确认，B负延迟对齐已复现。90a96ac干净源码冻结27项载荷审阅包，独立解压/身份核对/B worker通过，真实和混合模拟启动均退出2。不改A/B实现、不操板、不要求重跑有效原件。[接口](../contracts/recal-runtime-v2.md)、[95项](../../report/verification/recal-product-v1/runtime-integration.json)、[包核验](../../report/verification/recal-product-v1/runtime-package-check.json)、[交付审计](../../report/verification/recal-product-v1/a-b-delivery-audit.json)、[一次性交接](../ref/recal-product.md#c给ab的一次性交接)。
+
+
+## 2026-11-01 C 承接B判定库与三项确认
+
+接口变更：新增recal-policy-consumer-v1扩展，B契约按edfa698原样引入。C显式要求三点及采集/拟合齐全，绑定本轮estimate_lag与训练原件；四类cause分别停声/无法评价/拒收，原回执留存，有限激励重试只匹配预封装下一档。B的0 dB SNR与30%门控阈值未改。相关67项软件检查通过，B七文件原字节一致；8份已存B输出只做字段映射，D3为构造样例，未声称新实测或原PCM重算。175e469干净源码冻结新版本地ZIP，独立解压入口/回包/B库导入通过，实体模式仍拒绝。另只读确认A=31882e0已提供灯键实测，未再沿用旧缺I/O结论。实体适配/拟合包装与统一现场验收仍待交付，未操板。[消费接口](../contracts/recal-policy-consumer-v1.md)、[检查回执](../../report/verification/recal-product-v1/b-policy-integration.json)、[包身份](../../report/verification/recal-product-v1/policy-package-check.json)、[操作说明](../ref/recal-product.md)。
+
+## 2026-11-01 C 交常驻重标定产品软件v1
+
+核对main=f378262缺实体I/O及即时停止能力后，先交最小接口和A/B/C文件边界，使用模拟硬件与固定算法返回独立开发。实现唯一recal_entry、显式状态机、可终止B子进程、配置身份绑定、独立验证后原子模型安装、真实单次结束与多布局单回包；复用assembler与Q20检查，不改A/B实现。21项软件用例、Bash语法、独立解压模拟到ready及启动拒绝/回包核验通过；首次文件句柄/路径失败、阶段增益与坏提示窗纠错保留。真实适配/灯键/服务安装及两布局现场未执行，安装包不标实物就绪。[接口](../contracts/recal-product-v1.md)、[操作](../ref/recal-product.md)、[机器回执](../../report/verification/recal-product-v1/package-check.json)、[任务与纠错](../../report/ai-records/recal-product-v1.md)。
+
+## 2026-10-30 C 修正集成树五项历史验收失败
+
+取得5c43d62并原样复现delivery四项/tail一项失败，确认两项源钉值属于be3200e r1，不重钉为现行字节。2e7c205改测试指向SHA固定的原ZIP解压根并保持五项哈希校验，源篡改仍D2拒绝；registry不再钉总数或旧文件哈希，旧默认缺项仍拒绝、不改生产选择。C及集成副本定向20/20，v3载荷10/10，C文档126份零错误；正式集成目录文档与全379由A按原计划执行。认可C三栏metric与A现行README入口，未改硬件/模型或操板。[证据](../../materials/work/c/integration-review-5c43d62.json)、[历史作用域](../ref/cold-start-reproduction.md#在后续集成树中复核历史r1)。
 
 ## 2026-10-30 C 查明系统代理差异并成功推送
 

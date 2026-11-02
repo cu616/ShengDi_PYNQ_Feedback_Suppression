@@ -1,0 +1,77 @@
+{
+  "contract": "recal-product-v1",
+  "runtime_profile": "b-heldout-v1",
+  "source_commit": "90a96ac3567ae95aaffe08c415cd49581a214671",
+  "source_tree_clean": true,
+  "package": "materials\\final\\shengdi-recal-runtime-v2-review.zip",
+  "package_sha256": "2d7e83418fb951824d5e96d627c9530fd058f6bdfbd97e62541d88774a6389c2",
+  "package_bytes": 341258,
+  "manifest_sha256": "416cf9dee0937b1fa3d7b8dd114d44d28e9d68d19522a999ac5d89a3266cadf4",
+  "payload_count": 27,
+  "all_payload_hashes_match": true,
+  "deployment_ready": false,
+  "simulation": false,
+  "independent_extraction": true,
+  "document_link_errors": [],
+  "commands": [
+    {
+      "name": "check blocked",
+      "exit_code": 2,
+      "output": "{\"identity_ok\": true, \"deployment_ready\": false, \"missing\": [\"hardware: calibration gain approval missing\", \"hardware: input capture is not prepared before speech prompt\", \"hardware: prepared_capture false; atomic cue_input readiness not implemented\", \"hardware: v3-io manifest still refers to older hw_api 2f253; root f617 selected explicitly\", \"hardware: training plan ignored: received six segments but returned one 3-second capture\", \"hardware: capture source is fixed 16000 zeros, not B white-noise recipe\", \"hardware: capture paths ignore request.run_dir\", \"hardware: calibration gain zero approval and mute-preserves-gain semantics pending\", \"hardware: install model_sha256 currently contains Q20 hash rather than model file SHA\", \"hardware: armed indicate writes control; requires guard and independent actual mode indication\", \"hardware: running poll lacks actual installed model/Q20 hashes; run elapsed includes initialization\", \"hardware: abort quiescent needs proof that an in-flight driver cannot re-arm after cancellation\", \"hardware: integration not approved\", \"algorithm: mixed per-capture current lags can cause negative alignment shift; B correction pending\", \"algorithm: integration not approved\"]}\n"
+    },
+    {
+      "name": "physical launch blocked",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED physical adapters not ready: hardware: calibration gain approval missing,hardware: input capture is not prepared before speech prompt,hardware: prepared_capture false; atomic cue_input readiness not implemented,hardware: v3-io manifest still refers to older hw_api 2f253; root f617 selected explicitly,hardware: training plan ignored: received six segments but returned one 3-second capture,hardware: capture source is fixed 16000 zeros, not B white-noise recipe,hardware: capture paths ignore request.run_dir,hardware: calibration gain zero approval and mute-preserves-gain semantics pending,hardware: install model_sha256 currently contains Q20 hash rather than model file SHA,hardware: armed indicate writes control; requires guard and independent actual mode indication,hardware: running poll lacks actual installed model/Q20 hashes; run elapsed includes initialization,hardware: abort quiescent needs proof that an in-flight driver cannot re-arm after cancellation,hardware: integration not approved,algorithm: mixed per-capture current lags can cause negative alignment shift; B correction pending,algorithm: integration not approved\n"
+    },
+    {
+      "name": "simulation cannot start a real-adapter review",
+      "exit_code": 2,
+      "output": "PRODUCT_STOPPED simulation/physical package mismatch\n"
+    }
+  ],
+  "standalone_B_worker": {
+    "exit_code": 0,
+    "reply": {
+      "contract": "recal-product-v1",
+      "request_id": "offline",
+      "scene_id": "software-only",
+      "decision": "data_insufficient",
+      "cause": "DATA_INSUFFICIENT",
+      "reason": "独立验证少于B规定的两段"
+    }
+  },
+  "selected_A_hardware_sha256": {
+    "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+    "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+    "hw_api.py": "f61749729f554a95c4e9ce3a172a7ecaeb887ea4ae3eeab061f33dec12f3cb15",
+    "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "replay_trial_repair.py": "22851d322e7c527a8903d367139924b2d780f98814f3ab1af3bd1f07bbf6efbb",
+    "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+    "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+    "physical-controls.json": "f1a0c33a8c969b71f188cb12d0f3672662e9d3b09a3580c7fc46ae38927e13d3"
+  },
+  "b_source_sha256": {
+    "recal_algorithm.py": "a3ca28b210f48ff8fbaad72e626f161c1942769fef92af77f981f3a54e0bdf0b"
+  },
+  "blockers": [
+    "hardware: calibration gain approval missing",
+    "hardware: input capture is not prepared before speech prompt",
+    "hardware: prepared_capture false; atomic cue_input readiness not implemented",
+    "hardware: v3-io manifest still refers to older hw_api 2f253; root f617 selected explicitly",
+    "hardware: training plan ignored: received six segments but returned one 3-second capture",
+    "hardware: capture source is fixed 16000 zeros, not B white-noise recipe",
+    "hardware: capture paths ignore request.run_dir",
+    "hardware: calibration gain zero approval and mute-preserves-gain semantics pending",
+    "hardware: install model_sha256 currently contains Q20 hash rather than model file SHA",
+    "hardware: armed indicate writes control; requires guard and independent actual mode indication",
+    "hardware: running poll lacks actual installed model/Q20 hashes; run elapsed includes initialization",
+    "hardware: abort quiescent needs proof that an in-flight driver cannot re-arm after cancellation",
+    "hardware: integration not approved",
+    "algorithm: mixed per-capture current lags can cause negative alignment shift; B correction pending",
+    "algorithm: integration not approved"
+  ],
+  "board_operations": 0,
+  "scope": "review-only exact A/B integration; no hardware imports/operations and no physical acceptance"
+}

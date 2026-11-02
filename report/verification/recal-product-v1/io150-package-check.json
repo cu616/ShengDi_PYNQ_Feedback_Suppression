@@ -1,0 +1,247 @@
+{
+  "package": "shengdi-recal-8799f40b-0b09ef6-io150-final.zip",
+  "package_sha256": "a91db61e40756887beee7bec88903e8f991868c81245e93017857d28b0f758b5",
+  "package_bytes": 373119,
+  "source_commit": "98663a4d5ce3d035d0ed68273d0e3bb5139f8277",
+  "A_source_commit": "b1826610ab5071ebb33789612adc64ed07f2692e",
+  "four_pins": [
+    "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0",
+    "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0",
+    "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0",
+    "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0"
+  ],
+  "helper_sha256": "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0",
+  "all_payload_hashes_match": true,
+  "payload_count": 37,
+  "total_zip_files": 38,
+  "check_exit": 0,
+  "deployment_ready": true,
+  "missing": [],
+  "adapter_check_allowed": true,
+  "cold": {
+    "state": "uncalibrated",
+    "configuration_ready": false,
+    "identity": {
+      "aux_db": null,
+      "aux_raw_left": 0,
+      "aux_raw_right": 0,
+      "hp_volume": 40,
+      "gain_q12": 1631,
+      "sample_rate_hz": 48828.125,
+      "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+      "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+      "helper_sha256": "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0"
+    }
+  },
+  "missed_speech": {
+    "scene_id": "dddacf7f2cda456a8171c0e8fc5b5ef6",
+    "state": "inconclusive",
+    "outcome": "data_insufficient",
+    "fatal": false,
+    "speech_retries": 2
+  },
+  "unique_speech_capture_paths": [
+    "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\io150-8799-cold-state\\runs\\dddacf7f2cda456a8171c0e8fc5b5ef6\\io\\e9603b0938ea42548d23ea786a6656dd\\dddacf7f2cda456a8171c0e8fc5b5ef6_1_input_00.npz",
+    "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\io150-8799-cold-state\\runs\\dddacf7f2cda456a8171c0e8fc5b5ef6\\io\\7a6310461a134a75bcf3d73acb7eef8e\\dddacf7f2cda456a8171c0e8fc5b5ef6_1_input_00.npz",
+    "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\io150-8799-cold-state\\runs\\dddacf7f2cda456a8171c0e8fc5b5ef6\\io\\6b8303878a774c7fb8ae8e11d7ab49ed\\dddacf7f2cda456a8171c0e8fc5b5ef6_1_input_00.npz"
+  ],
+  "recovered": {
+    "scene_id": "5cb38a1fd9f94822be6a9646e6284636",
+    "state": "ready",
+    "configuration_ready": true,
+    "identity": {
+      "aux_db": 0.0,
+      "aux_raw_left": 5,
+      "aux_raw_right": 5,
+      "hp_volume": 40,
+      "gain_q12": 1631,
+      "sample_rate_hz": 48828.125,
+      "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+      "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+      "helper_sha256": "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0"
+    },
+    "speech_retries": 0,
+    "B_phases": [
+      "input",
+      "fit",
+      "validate"
+    ]
+  },
+  "actual_AUX_writes": [
+    [
+      "0x401c",
+      0
+    ],
+    [
+      "0x401e",
+      0
+    ],
+    [
+      "0x4023",
+      229
+    ],
+    [
+      "0x4024",
+      229
+    ],
+    [
+      "0x401c",
+      0
+    ],
+    [
+      "0x401e",
+      0
+    ],
+    [
+      "0x4023",
+      229
+    ],
+    [
+      "0x4024",
+      229
+    ],
+    [
+      "0x400b",
+      5
+    ],
+    [
+      "0x400d",
+      5
+    ],
+    [
+      "0x400b",
+      5
+    ],
+    [
+      "0x400d",
+      5
+    ],
+    [
+      "0x400b",
+      5
+    ],
+    [
+      "0x400d",
+      5
+    ],
+    [
+      "0x401c",
+      0
+    ],
+    [
+      "0x401e",
+      0
+    ],
+    [
+      "0x4023",
+      229
+    ],
+    [
+      "0x4024",
+      229
+    ],
+    [
+      "0x401c",
+      0
+    ],
+    [
+      "0x401e",
+      0
+    ],
+    [
+      "0x4023",
+      229
+    ],
+    [
+      "0x4024",
+      229
+    ],
+    [
+      "0x400b",
+      5
+    ],
+    [
+      "0x400d",
+      5
+    ],
+    [
+      "0x400b",
+      5
+    ],
+    [
+      "0x400d",
+      5
+    ],
+    [
+      "0x400b",
+      5
+    ],
+    [
+      "0x400d",
+      5
+    ],
+    [
+      "0x401c",
+      0
+    ],
+    [
+      "0x401e",
+      0
+    ],
+    [
+      "0x4023",
+      229
+    ],
+    [
+      "0x4024",
+      229
+    ],
+    [
+      "0x401c",
+      0
+    ],
+    [
+      "0x401e",
+      0
+    ],
+    [
+      "0x4023",
+      229
+    ],
+    [
+      "0x4024",
+      229
+    ]
+  ],
+  "bootstrap_model": {
+    "filename": "bootstrap-model.json",
+    "sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8"
+  },
+  "quiet_seconds": 4,
+  "speech_seconds": 2.5,
+  "io_timeout_seconds": 150,
+  "compute_timeout_seconds": 30,
+  "run_seconds": 30,
+  "simulated_training_wall_seconds": 51.6,
+  "observed_LED_masks": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    15
+  ],
+  "service_PS_hang_fixed": false,
+  "overlay_reuse_fixed": false,
+  "formal_demonstration_accepted": false,
+  "scope": "frozen C + exact A helper + real B subprocess; simulated I2C/MMIO/driver leaf with exclusive capture files; no physical board",
+  "board_operations": 0,
+  "document_link_errors": [],
+  "embedded_cue_frames": 21969,
+  "cue_indicator_guard_seconds": 0.1,
+  "indicator_armed_safe": true,
+  "service_unit_byte_identical_to_previous": true
+}

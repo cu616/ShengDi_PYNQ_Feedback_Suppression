@@ -1,0 +1,84 @@
+{
+  "contract": "recal-product-v1",
+  "consumer_contract": "recal-policy-consumer-v1",
+  "b_contract": "recalibration-policy-v1",
+  "source_commit": "175e469dbcf5673a7ccd90ec2cf81e764f1e9642",
+  "source_tree_clean": true,
+  "package": "materials\\final\\shengdi-recal-product-v1-policy.zip",
+  "package_sha256": "bc48ed610354dd3883eaa395c0cd429954afbdff8466b3cecdeb3c209a84737c",
+  "package_bytes": 50681,
+  "manifest_sha256": "e0ee8f585ba5cd5a90487e3a59429fea561eece8af5a7c1dbf4d7e047a0c30b2",
+  "payload_count": 15,
+  "simulation_only": true,
+  "deployment_ready": false,
+  "missing": [
+    "hardware: v1 adapter and approved policy not delivered",
+    "algorithm: v1 adapter and approved policy not delivered"
+  ],
+  "independent_extraction": true,
+  "document_link_errors": [],
+  "checks": [
+    {
+      "name": "physical check stays blocked",
+      "args": [
+        "--check"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "output": "{\"identity_ok\": true, \"deployment_ready\": false, \"missing\": [\"hardware: v1 adapter and approved policy not delivered\", \"algorithm: v1 adapter and approved policy not delivered\"]}\n"
+    },
+    {
+      "name": "physical audio stays blocked",
+      "args": [],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "output": "PRODUCT_STOPPED physical adapters not ready: hardware: v1 adapter and approved policy not delivered,algorithm: v1 adapter and approved policy not delivered\n"
+    },
+    {
+      "name": "full subprocess simulation to ready",
+      "args": [
+        "--simulate",
+        "--once",
+        "--state-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-policy-smoke"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "{\"state\": \"ready\", \"outcome\": \"valid_pass\", \"reason\": \"独立验证与安装通过\"}\n"
+    },
+    {
+      "name": "single return export",
+      "args": [
+        "--state-dir",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-policy-smoke",
+        "--export",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-policy-return.zip"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "{\"path\": \"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\recal-product-v1-policy-return.zip\", \"sha256\": \"7c9f25af911f936186e140402783953a4d4721318c9668a17638f30b329e8e2e\", \"records\": 1}\n"
+    },
+    {
+      "name": "return identity audit",
+      "args": [
+        "--review-return",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-policy-return.zip"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "output": "{\"identity_ok\": true, \"issues\": [], \"layouts\": [{\"scene_id\": \"e4b6354787d042728d569b22bd10e5ef\", \"state\": \"cancelled\", \"outcome\": \"user_cancelled\", \"observed_modes\": [], \"numeric_validation\": {\"contract\": \"recal-product-v1\", \"request_id\": \"30919a84a8ae4a819f4dd6470b0df039\", \"scene_id\": \"e4b6354787d042728d569b22bd10e5ef\", \"decision\": \"valid_pass\", \"reason\": \"SYNTHETIC fixed algorithm result; not measured benefit\", \"model_sha256\": \"43931be7c5dbea0409be9dae0bbdf4f73643746934918608c62f2b028a51bb59\", \"validation_ids\": [\"e4b6354787d042728d569b22bd10e5ef-validation-0\"], \"qualifies_cancellation\": true, \"evidence\": {\"kind\": \"synthetic fixed decision, not hardware\"}}, \"listening\": [], \"raw_paths_retained\": [\"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\recal-product-v1-policy-smoke\\\\runs\\\\e4b6354787d042728d569b22bd10e5ef\\\\training0.json\", \"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\recal-product-v1-policy-smoke\\\\runs\\\\e4b6354787d042728d569b22bd10e5ef\\\\validation0.json\"]}], \"layout_count\": 1, \"scope\": \"independent return identity/scope audit; numerical re-analysis uses included originals with the frozen B interface\", \"effect_pass_inferred\": false, \"hardware_operations\": 0}\n"
+    }
+  ],
+  "standalone_B_import_and_missing_three_point": {
+    "passed": true,
+    "output": "DATA_INSUFFICIENT\n"
+  },
+  "board_operations": 0,
+  "scope": "software simulation and identity checks only; actual product adapters/fitting wrapper and physical two-layout acceptance remain unexecuted",
+  "shutdown_note": "--once reports ready before normal shutdown stop; subsequent export records the explicit stop and does not infer acoustic success"
+}

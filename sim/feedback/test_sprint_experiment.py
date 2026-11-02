@@ -128,7 +128,7 @@ class SprintTests(unittest.TestCase):
         (base/'eq.json').write_text('{"type":"identity"}')
         import shutil
         for name in ('audio_replay.bit','audio_replay.hwh'):
-            shutil.copy2(ROOT/'board/audio_replay'/name,base/name)
+            shutil.copy2(ROOT/'board/audio_replay/archive'/name,base/name)
         manifest=dict(source_commits={'C':'test'},workflow=workflow,coefficients_sha256=qhash(np.zeros(512,dtype=int)),
                       hashes={name:sha(base/name) for name in ('audio_replay.bit','audio_replay.hwh','model.json')})
         from sprint_selftest import SoftwareContinuousRunner

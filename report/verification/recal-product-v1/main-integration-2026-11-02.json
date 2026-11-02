@@ -1,0 +1,140 @@
+{
+  "date": "2026-11-02",
+  "scope": "local software integration; no board access, no deployment",
+  "sources": {
+    "main": "12a549134eaa45de17b6dfceae1b960050d6c0c6",
+    "A": "cd766204be941845a8091b1a541adafe3383f003",
+    "B": "9ffb280f275eaf7e91eaab37a0cc87e8b190dfe0",
+    "C": "cdcaa56242a84a296b32daf8e8972436197fbfca"
+  },
+  "user_resolution": "retain A legacy recal_entry.sh; integrate B video and owner state; retain all C product content under separate source entry",
+  "entries": {
+    "board/audio_replay/recal_entry.sh": "73e01ba6320ed40c584264213d89963d2a5a5ed364d1a3a16153007df322e5c0",
+    "board/audio_replay/recal_product_entry.sh": "e320fcc49417f6cfe5eaa86bdc691f5180b3b8f7fab821ef8485b49cf10b0130"
+  },
+  "initial_run": {
+    "tests": 506,
+    "errors": 29,
+    "note": "pre-fix run; archive path and Windows execution environment needed correction; no full trace retained"
+  },
+  "full_run": {
+    "tests": 506,
+    "failures": [
+      [
+        "test_run_deadline_includes_requested_audio_time (test_recal_runtime.RuntimeTests.test_run_deadline_includes_requested_audio_time)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_recal_runtime.py\", line 142, in test_run_deadline_includes_requested_audio_time\n    app,hw,_=self.app();self.ready(app);app.cfg['run_seconds']=60\n                        ^^^^^^^^^^^^^^^\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_recal_product.py\", line 52, in ready\n    app.event('recalibrate');self.until(app,lambda:app.state=='ready')\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_recal_product.py\", line 49, in until\n    self.fail((app.state,app.outcome,app.reason))\nAssertionError: ('failed', 'hardware_error', \"[WinError 5] 拒绝访问。: 'D:\\\\\\\\OCadence_Project\\\\\\\\Flushbonading_FPGA_Contest\\\\\\\\_a_work\\\\\\\\wt-main-closeout\\\\\\\\tmp\\\\\\\\tmp2ybs6mre\\\\\\\\0\\\\\\\\runs\\\\\\\\b6e4423f3d624d4fb3479e55a009572e\\\\\\\\result.json.tmp' -> 'D:\\\\\\\\OCadence_Project\\\\\\\\Flushbonading_FPGA_Contest\\\\\\\\_a_work\\\\\\\\wt-main-closeout\\\\\\\\tmp\\\\\\\\tmp2ybs6mre\\\\\\\\0\\\\\\\\runs\\\\\\\\b6e4423f3d624d4fb3479e55a009572e\\\\\\\\result.json'\")\n"
+      ]
+    ],
+    "errors": [
+      [
+        "test_frozen_model_drift_is_rejected (test_r4_waveform.CliVerdictTest.test_frozen_model_drift_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 326, in test_frozen_model_drift_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_missing_explicit_summary_is_rejected (test_r4_waveform.CliVerdictTest.test_missing_explicit_summary_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 384, in test_missing_explicit_summary_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_missing_sixty_second_file_is_rejected (test_r4_waveform.CliVerdictTest.test_missing_sixty_second_file_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 316, in test_missing_sixty_second_file_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_model_lag_first_drift_is_rejected (test_r4_waveform.CliVerdictTest.test_model_lag_first_drift_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 356, in test_model_lag_first_drift_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_positive_pack_passes (test_r4_waveform.CliVerdictTest.test_positive_pack_passes)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 290, in test_positive_pack_passes\n    self.assertEqual(proc.returncode, 0, proc.stdout[-1200:] + proc.stderr[-400:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_prediction_off_by_one_is_rejected (test_r4_waveform.CliVerdictTest.test_prediction_off_by_one_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 305, in test_prediction_off_by_one_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_summary_arm_swap_is_rejected (test_r4_waveform.CliVerdictTest.test_summary_arm_swap_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 377, in test_summary_arm_swap_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_summary_capture_identity_is_rejected (test_r4_waveform.CliVerdictTest.test_summary_capture_identity_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 366, in test_summary_capture_identity_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_summary_difference_is_rejected (test_r4_waveform.CliVerdictTest.test_summary_difference_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 336, in test_summary_difference_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_used_file_unlisted_is_rejected (test_r4_waveform.CliVerdictTest.test_used_file_unlisted_is_rejected)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_r4_waveform.py\", line 346, in test_used_file_unlisted_is_rejected\n    self.assertEqual(proc.returncode, 2, proc.stdout[-1200:])\n                                         ~~~~~~~~~~~^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_missing_field_exits_2 (test_residual_overflow_tool.FailureExitTest.test_missing_field_exits_2)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_residual_overflow_tool.py\", line 370, in test_missing_field_exits_2\n    self.assertIn(\"缺必需字段\", proc.stdout)\n  File \"C:\\Users\\lbc\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\unittest\\case.py\", line 1137, in assertIn\n    if member not in container:\n       ^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: argument of type 'NoneType' is not iterable\n"
+      ],
+      [
+        "test_missing_file_exits_2 (test_residual_overflow_tool.FailureExitTest.test_missing_file_exits_2)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_residual_overflow_tool.py\", line 359, in test_missing_file_exits_2\n    self.assertIn(\"FAILED\", proc.stdout)\n  File \"C:\\Users\\lbc\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\unittest\\case.py\", line 1137, in assertIn\n    if member not in container:\n       ^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: argument of type 'NoneType' is not iterable\n"
+      ],
+      [
+        "test_broken_manifest_blocks_full_cli (test_screening_controls.CliInputGateTest.test_broken_manifest_blocks_full_cli)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_screening_controls.py\", line 327, in test_broken_manifest_blocks_full_cli\n    self.assert_blocked(_run(d, self.root / \"out\"), n_unverified=4)\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_screening_controls.py\", line 313, in assert_blocked\n    self.assertEqual(proc.returncode, 2, proc.stdout[-800:] + proc.stderr[-400:])\n                                         ~~~~~~~~~~~^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_complete_manifest_passes_preflight (test_screening_controls.CliInputGateTest.test_complete_manifest_passes_preflight)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_screening_controls.py\", line 345, in test_complete_manifest_passes_preflight\n    self.assertEqual(proc.returncode, 0, proc.stdout[-800:] + proc.stderr[-400:])\n                                         ~~~~~~~~~~~^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_manifest_omitting_one_segment_blocks_full_cli (test_screening_controls.CliInputGateTest.test_manifest_omitting_one_segment_blocks_full_cli)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_screening_controls.py\", line 332, in test_manifest_omitting_one_segment_blocks_full_cli\n    self.assert_blocked(_run(d, self.root / \"out\"), n_unverified=1)\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_screening_controls.py\", line 313, in assert_blocked\n    self.assertEqual(proc.returncode, 2, proc.stdout[-800:] + proc.stderr[-400:])\n                                         ~~~~~~~~~~~^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_missing_manifest_blocks_full_cli (test_screening_controls.CliInputGateTest.test_missing_manifest_blocks_full_cli)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_screening_controls.py\", line 323, in test_missing_manifest_blocks_full_cli\n    self.assert_blocked(_run(d, self.root / \"out\"), n_unverified=4)\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_screening_controls.py\", line 313, in assert_blocked\n    self.assertEqual(proc.returncode, 2, proc.stdout[-800:] + proc.stderr[-400:])\n                                         ~~~~~~~~~~~^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ],
+      [
+        "test_wrong_hash_blocks_full_cli (test_screening_controls.CliInputGateTest.test_wrong_hash_blocks_full_cli)",
+        "Traceback (most recent call last):\n  File \"D:\\OCadence_Project\\Flushbonading_FPGA_Contest\\_a_work\\wt-main-closeout\\sim\\feedback\\test_screening_controls.py\", line 337, in test_wrong_hash_blocks_full_cli\n    self.assertEqual(proc.returncode, 2, proc.stdout[-800:])\n                                         ~~~~~~~~~~~^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n"
+      ]
+    ],
+    "skipped": [],
+    "seconds": 398.27667117118835,
+    "passed": false
+  },
+  "environment_retest": {
+    "tests": 18,
+    "test_ids": [
+      "test_r4_waveform.CliVerdictTest.test_frozen_model_drift_is_rejected",
+      "test_r4_waveform.CliVerdictTest.test_missing_explicit_summary_is_rejected",
+      "test_r4_waveform.CliVerdictTest.test_missing_sixty_second_file_is_rejected",
+      "test_r4_waveform.CliVerdictTest.test_model_lag_first_drift_is_rejected",
+      "test_r4_waveform.CliVerdictTest.test_positive_pack_passes",
+      "test_r4_waveform.CliVerdictTest.test_prediction_off_by_one_is_rejected",
+      "test_r4_waveform.CliVerdictTest.test_summary_arm_swap_is_rejected",
+      "test_r4_waveform.CliVerdictTest.test_summary_capture_identity_is_rejected",
+      "test_r4_waveform.CliVerdictTest.test_summary_difference_is_rejected",
+      "test_r4_waveform.CliVerdictTest.test_used_file_unlisted_is_rejected",
+      "test_residual_overflow_tool.FailureExitTest.test_missing_field_exits_2",
+      "test_residual_overflow_tool.FailureExitTest.test_missing_file_exits_2",
+      "test_screening_controls.CliInputGateTest.test_broken_manifest_blocks_full_cli",
+      "test_screening_controls.CliInputGateTest.test_complete_manifest_passes_preflight",
+      "test_screening_controls.CliInputGateTest.test_manifest_omitting_one_segment_blocks_full_cli",
+      "test_screening_controls.CliInputGateTest.test_missing_manifest_blocks_full_cli",
+      "test_screening_controls.CliInputGateTest.test_wrong_hash_blocks_full_cli",
+      "test_recal_runtime.RuntimeTests.test_run_deadline_includes_requested_audio_time"
+    ],
+    "errors": [],
+    "failures": [],
+    "passed": true,
+    "seconds": 9.003812551498413,
+    "environment": "PYTHONUTF8=1; outside filesystem sandbox (os.replace permission)"
+  },
+  "packaging_regression": {
+    "tests": 24,
+    "passed": true
+  },
+  "docs_check": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "v3_io_manifest_files_verified": 8,
+  "conclusion": "506 tests covered: 488 passed in full run, remaining 18 passed unchanged under UTF-8 and normal os.replace permissions; not an all-green single full invocation"
+}

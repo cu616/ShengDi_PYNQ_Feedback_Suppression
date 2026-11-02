@@ -1,0 +1,82 @@
+{
+  "simulation": true,
+  "validation_request": {
+    "contract": "recal-product-v1",
+    "request_id": "d38c29bcfc7f4a69bb848b1450f4397e",
+    "scene_id": "0b8a8fbb395a4dec9c264c37a136fdae",
+    "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-smoke\\runs\\0b8a8fbb395a4dec9c264c37a136fdae",
+    "identity": {
+      "aux_db": 0.0,
+      "aux_raw_left": 5,
+      "aux_raw_right": 5,
+      "hp_volume": 40,
+      "gain_q12": 1631,
+      "sample_rate_hz": 48828.125,
+      "driver_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "bit_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "hwh_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "helper_sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "attempt": 0,
+    "plan": {
+      "training": {
+        "signal": "synthetic training"
+      },
+      "validation": {
+        "signal": "independent synthetic validation"
+      }
+    },
+    "phase": "validate",
+    "training": [
+      {
+        "capture_id": "0b8a8fbb395a4dec9c264c37a136fdae-training-0",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-smoke\\runs\\0b8a8fbb395a4dec9c264c37a136fdae\\training0.json",
+        "sha256": "42c9eed5b33c45a01c9591e5e7068b7c3a7065be61d258850a74b2d31be63238",
+        "first_frame": 1200,
+        "end_frame": 2400,
+        "content_kind": "software_fixture",
+        "source_sha256": "ac2d50983b5190778b40ea8a67609c81f8a0c16dd31de86d90d019156b93e505"
+      }
+    ],
+    "validation": [
+      {
+        "capture_id": "0b8a8fbb395a4dec9c264c37a136fdae-validation-0",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-smoke\\runs\\0b8a8fbb395a4dec9c264c37a136fdae\\validation0.json",
+        "sha256": "a49a1412feef33c9f5b890ebbf803257bd54aa2ae114ffd7540c5b88d89836d9",
+        "first_frame": 1200,
+        "end_frame": 2400,
+        "content_kind": "software_fixture",
+        "source_sha256": "b8ebd62634b71cbd7db0fa32da283c2c2b42c9bb286a8ffc3ff1859a637ad33c"
+      }
+    ],
+    "input": [
+      {
+        "capture_id": "0b8a8fbb395a4dec9c264c37a136fdae-input-0",
+        "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-smoke\\runs\\0b8a8fbb395a4dec9c264c37a136fdae\\input0.json",
+        "sha256": "8bf02136f5ac7906b05dd060aaf61b7e444b4819dff6f8b57f713edda7c4a6ec",
+        "first_frame": 1200,
+        "end_frame": 2400,
+        "content_kind": "human_private",
+        "source_sha256": "485af0a64ce759fefc29576f2f1125c38b941fe61b4f532c6270d21a07c8742b"
+      }
+    ],
+    "model_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\recal-product-v1-final-smoke\\runs\\0b8a8fbb395a4dec9c264c37a136fdae\\synthetic-model.json",
+    "model_sha256": "e1cd659e6f5cbe0c19e0187a1546b554adc74f01a7c54b62d22c1e5cf45bb94c",
+    "compute_timeout_seconds": 3
+  },
+  "validation_reply": {
+    "contract": "recal-product-v1",
+    "request_id": "d38c29bcfc7f4a69bb848b1450f4397e",
+    "scene_id": "0b8a8fbb395a4dec9c264c37a136fdae",
+    "decision": "valid_pass",
+    "reason": "SYNTHETIC fixed algorithm result; not measured benefit",
+    "model_sha256": "e1cd659e6f5cbe0c19e0187a1546b554adc74f01a7c54b62d22c1e5cf45bb94c",
+    "validation_ids": [
+      "0b8a8fbb395a4dec9c264c37a136fdae-validation-0"
+    ],
+    "qualifies_cancellation": true,
+    "evidence": {
+      "kind": "synthetic fixed decision, not hardware"
+    }
+  }
+}

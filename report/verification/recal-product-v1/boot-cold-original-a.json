@@ -1,0 +1,223 @@
+{
+  "a_commit": "5b0648c",
+  "scope": "original A AUX getter/setter and prepare, C Product, real B subprocess; simulated I2C/MMIO/driver leaf only",
+  "initial": {
+    "contract": "recal-product-v1",
+    "simulation": false,
+    "scene_id": "795fe8259e934d2f9d21b28426b06832",
+    "package_manifest_sha256": null,
+    "runtime_identity": {
+      "aux_db": 0.0,
+      "aux_raw_left": 5,
+      "aux_raw_right": 5,
+      "hp_volume": 40,
+      "gain_q12": 1631,
+      "sample_rate_hz": 48828.125,
+      "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+      "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be",
+      "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728"
+    },
+    "gain_scope": "prepare",
+    "configuration_ready": false,
+    "state": "uncalibrated",
+    "outcome": null,
+    "reason": "",
+    "identity": {
+      "aux_db": null,
+      "aux_raw_left": 0,
+      "aux_raw_right": 0,
+      "hp_volume": 40,
+      "gain_q12": 1631,
+      "sample_rate_hz": 48828.125,
+      "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+      "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+      "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+    },
+    "effective_mode": "muted",
+    "attempt": 0,
+    "training": [],
+    "validation": [],
+    "bundle": null,
+    "run": null,
+    "listening": [],
+    "events": [
+      {
+        "state": "uncalibrated",
+        "effective_mode": "muted",
+        "time_monotonic": 21562.718
+      }
+    ],
+    "candidate": null,
+    "capture_history": [],
+    "hardware_receipts": [],
+    "algorithm_receipts": [],
+    "cause": null,
+    "validation_kind": "heldout_prediction",
+    "input_ready": null,
+    "algorithm_identity": {
+      "contract": "recal-product-v1",
+      "version": "recal-algorithm-2026-11-01.1",
+      "file_sha256": "489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417",
+      "dependencies": [
+        "numpy"
+      ],
+      "python": ">=3.8",
+      "taps": 512,
+      "lag_first": 1,
+      "strategy": {
+        "attempts": [
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -22.0,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -19.3,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          },
+          {
+            "training": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 6,
+              "peak_cap": 0.8,
+              "seed": 4242
+            },
+            "validation": {
+              "excitation": "white_noise",
+              "rms_dbfs": -16.5,
+              "frames": 16384,
+              "segments": 2,
+              "peak_cap": 0.8,
+              "seed": 4242
+            }
+          }
+        ],
+        "max_attempts": 3,
+        "validation_source": "independent open-loop captures; capture_id and source_sha256 must not overlap training",
+        "exit_reasons": {
+          "valid_pass": "PASS",
+          "retry": "RETRY_NEXT_LEVEL",
+          "data_insufficient": "DATA_OR_MEASUREMENT_INSUFFICIENT",
+          "model_rejected": "MODEL_UNQUALIFIED"
+        }
+      },
+      "thresholds": {
+        "min_valid_frames": 4096,
+        "near_full_scale": 0.999,
+        "min_excitation_snr_db": 0.0,
+        "min_gated_coherence": 0.3,
+        "coherence_floor": 0.8,
+        "sparse_line_db": 20.0,
+        "band_hz": [
+          150.0,
+          10000.0
+        ],
+        "speech_min_rms_dbfs": -55.0,
+        "speech_min_peak": 0.003,
+        "l1_max": 4.0,
+        "l1_over_max_range": [
+          25.0,
+          80.0
+        ],
+        "peak_tap_tolerance": 4,
+        "validate_band_hz": [
+          300.0,
+          460.0
+        ],
+        "validate_band_reduction_min_db": 0.5,
+        "validate_full_reduction_min_db": 0.0,
+        "min_validation_captures": 2
+      },
+      "meaning": "prediction residuals on independent captures; not MSG/ASG, not listening",
+      "not_asg": true
+    },
+    "speech_retries": 0,
+    "numeric_exit_reason": null,
+    "hardware_draining": false,
+    "field_trial": false,
+    "indicator_deferred": false,
+    "waveform_policy": "PCM stays on board; file paths and original hashes retained",
+    "hardware_error_latched": false
+  },
+  "result": {
+    "state": "ready",
+    "configuration_ready": true,
+    "identity": {
+      "aux_db": 0.0,
+      "aux_raw_left": 5,
+      "aux_raw_right": 5,
+      "hp_volume": 40,
+      "gain_q12": 1631,
+      "sample_rate_hz": 48828.125,
+      "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+      "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+      "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+    },
+    "B_phases": [
+      "input",
+      "fit",
+      "validate"
+    ]
+  },
+  "AUX_writes": [
+    {
+      "register": "0x400b",
+      "value": 5
+    },
+    {
+      "register": "0x400d",
+      "value": 5
+    },
+    {
+      "register": "0x400b",
+      "value": 5
+    },
+    {
+      "register": "0x400d",
+      "value": 5
+    },
+    {
+      "register": "0x400b",
+      "value": 5
+    },
+    {
+      "register": "0x400d",
+      "value": 5
+    }
+  ],
+  "constructor_AUX_write_required": false,
+  "manual_boot_step_required": false,
+  "board_operations": 0
+}
