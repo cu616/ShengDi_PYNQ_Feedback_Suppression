@@ -63,41 +63,41 @@
 
     <!-- 麦克风 -->
     <g id="mic" transform="translate(560,320)">
-      <rect x="-26" y="-52" width="52" height="104" rx="26" fill="#1f2933"/>
-      <path d="M-44,10 L-44,30 A44,44 0 0,0 44,30 L44,10" fill="none" stroke="#1f2933" stroke-width="7" stroke-linecap="round"/>
-      <line x1="0" y1="74" x2="0" y2="118" stroke="#1f2933" stroke-width="7" stroke-linecap="round"/>
-      <text x="50" y="160" text-anchor="end" class="lbl">麦克风</text>
+      <rect x="-22" y="-58" width="44" height="88" rx="22" fill="#1f2933"/>
+      <path d="M-38,-6 L-38,14 A38,38 0 0,0 38,14 L38,-6" fill="none" stroke="#1f2933" stroke-width="7" stroke-linecap="round"/>
+      <line x1="0" y1="52" x2="0" y2="86" stroke="#1f2933" stroke-width="7" stroke-linecap="round"/>
+      <text x="50" y="126" text-anchor="end" class="lbl">麦克风</text>
     </g>
 
     <!-- 处理器 -->
     <g id="proc" transform="translate(960,320)">
-      <rect x="-190" y="-92" width="380" height="180" rx="16" fill="#ffffff" stroke="#c9d1da" stroke-width="3"/>
-      <text x="0" y="-50" text-anchor="middle" class="k" font-weight="600">反馈预测与相减</text>
-      <text x="0" y="-6" text-anchor="middle" class="small" id="procA">用实际播放信号 u[n] 预测回传</text>
-      <text x="0" y="34" text-anchor="middle" class="small" id="procB">麦克风信号 − 预测 = 残差</text>
+      <rect x="-190" y="-58" width="380" height="144" rx="16" fill="#ffffff" stroke="#c9d1da" stroke-width="3"/>
+      <text x="0" y="-30" text-anchor="middle" class="k" font-weight="600">反馈预测与相减</text>
+      <text x="0" y="8" text-anchor="middle" class="small" id="procA">用实际播放信号 u[n] 预测回传</text>
+      <text x="0" y="44" text-anchor="middle" class="small" id="procB">麦克风信号 − 预测 = 残差</text>
       <text x="0" y="126" text-anchor="middle" class="lbl">FPGA（PL 侧）</text>
     </g>
 
     <!-- 扬声器 -->
     <g id="spk" transform="translate(1420,320)">
-      <rect x="-70" y="-86" width="140" height="172" rx="12" fill="#e6ebf0" stroke="#c9d1da" stroke-width="3"/>
-      <circle cx="0" cy="-32" r="30" fill="#1f2933" opacity="0.85"/>
-      <circle cx="0" cy="56" r="20" fill="#1f2933" opacity="0.55"/>
+      <rect x="-70" y="-58" width="140" height="144" rx="12" fill="#e6ebf0" stroke="#c9d1da" stroke-width="3"/>
+      <circle cx="0" cy="-14" r="28" fill="#1f2933" opacity="0.85"/>
+      <circle cx="0" cy="52" r="18" fill="#1f2933" opacity="0.55"/>
       <text x="0" y="126" text-anchor="middle" class="lbl">扬声器</text>
     </g>
 
     <!-- 人 → 麦：有用语音（终点贴话筒头左缘 508） -->
-    <path id="voicePath" d="M222,320 L504,320" fill="none"
+    <path id="voicePath" d="M222,334 L504,334" fill="none"
           stroke="#2f7ed8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
     <text id="voiceLbl" x="368" y="296" transform="translate(-15,2)" text-anchor="middle" class="lbl" fill="#2f7ed8">有用语音</text>
 
     <!-- 麦 → 处理器（起点贴话筒头右缘 612，终点贴框左缘 770） -->
-    <path id="micToProc" transform="translate(-3,0)" d="M616,320 L766,320" fill="none"
+    <path id="micToProc" transform="translate(-3,0)" d="M616,334 L766,334" fill="none"
           stroke="#2f7ed8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
     <text id="micToProcLbl" x="692" y="296" text-anchor="middle" class="small">麦克风信号</text>
 
     <!-- 处理器 → 扬声器（起点贴框右缘 1150，终点贴扬声器左缘 1350） -->
-    <path id="procToSpk" d="M1154,320 L1346,320" fill="none"
+    <path id="procToSpk" d="M1154,334 L1346,334" fill="none"
           stroke="#2f7ed8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
     <text id="outLbl" x="1250" y="296" text-anchor="middle" class="small">输出</text>
 
@@ -107,7 +107,7 @@
            560,700   控制点2：决定"从哪个方向进终点"，这里是正下方，所以最后垂直上升
            560,444   终点：麦克风支架底端，箭头朝上
          想改弯度就改这两个控制点；想让起终点换个位置就改 M 和最后一个点。 -->
-    <path id="fbPath" d="M1400,490 C1560,640 560,700 560,490" fill="none"
+    <path id="fbPath" d="M1430,490 C1560,640 560,700 560,490" fill="none"
           stroke="#e8833a" stroke-width="7" stroke-linecap="round" stroke-dasharray="18 14"/>
     <text id="fbLbl" x="960" y="742" transform="translate(0,-60)" text-anchor="middle" class="lbl" fill="#c96a1e">扬声器声音回传到麦克风 = 反馈</text>
 
