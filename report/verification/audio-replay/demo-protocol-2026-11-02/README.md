@@ -411,3 +411,17 @@ zip sha256 `b823e8787b684bf756b296007e0382eab54bd65707247e35b5f949ffe1a72bd4`，
 清单 40 哈希全匹配；`recal_algorithm.py` sha256 `3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77`；
 `product-config.json` 与 `product-manifest.json` 的 `algorithm_identity` 已同步为新模块 `identity()` 的返回值。
 板上已解压到 `/home/xilinx/shengdi-install/recal-demo60-predpeak`，**尚未安装**（当时板卡正被现场使用）。
+
+### 22.1 已装板（2026-11-02）
+
+判据修正包安装成功：
+
+- /opt/shengdi/current → /opt/shengdi/releases/db1b7d97226cbe7b
+- package_manifest_sha256 = db1b7d97226cbe7b…，un_seconds = 60，增益 5786
+- 算法版本 ecal-algorithm-2026-11-02.1，ecal_algorithm.py sha256
+  3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77（与包内 lgorithm_identity.file_sha256 一致）
+- --check = {identity_ok: true, deployment_ready: true, missing: []}
+- 安装后 state = uncalibrated、hardware_error_latched = false
+
+**未做**：新判据在产品链路下的实测标定（需现场按 CAL）、换电源后路径与模型匹配性、正对摆位 60 秒连续扩声输入余量。
+**交付链**：该包为 A 临时重建，正式交付仍须 C 按 B 追认后的版本重钉。
