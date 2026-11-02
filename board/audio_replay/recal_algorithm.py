@@ -32,7 +32,7 @@ from pathlib import Path
 import numpy as np
 
 CONTRACT = 'recal-product-v1'
-VERSION = 'recal-algorithm-2026-11-01.1'
+VERSION = 'recal-algorithm-2026-11-02.1'
 TAPS = 512
 LAG_FIRST = 1
 FS_DEFAULT = 48828.125
@@ -78,7 +78,13 @@ BAND_HZ = (150.0, 10000.0)
 SPEECH_MIN_RMS_DBFS = -55.0     # 正常讲话在麦克风端约 −30…−20 dBFS；−55 已是"没说话"
 SPEECH_MIN_PEAK = 0.003         # 约 −50 dBFS 峰值，用来抓全零/死通道
 
-L1_MAX = 4.0
+# 2026-11-02 判据变更（B 提案，A 代改待追认）：
+#   L1 = sum|h| 是预测信号的**最坏情况上界**，不是实际会发生的大小；拿它当门限等于按最坏情况拒收。
+#   实测：正对摆位被拒的三组模型（L1 4.454829 / 4.466863 / 4.338940），用真实 reference 卷积得
+#   max|conv(h,ref)| = 0.1241 / 0.1714 / 0.2301，离满幅还有 7.7 / 4.9 / 2.3 dB，物理上安全。
+#   主判据改为实际预测峰值 PRED_PEAK_MAX；L1 退化为兜底上限 L1_MAX。
+PRED_PEAK_MAX = 0.30        # 主判据：max|conv(h, ref)| < 0.30（约 -10.5 dBFS）
+L1_MAX = 8.0                # 兜底：防突发波形的极端情况
 L1_OVER_MAX_RANGE = (25.0, 80.0)
 PEAK_TAP_TOLERANCE = 4
 
@@ -462,13 +468,14 @@ def _phase_input(req):
 
 # ---------------------------------------------------------------- fit
 
-def _check_fit(q, fs, expected_peak_tap=None):
+def _check_fit(q, fs, expected_peak_tap=None, pred_peak=None):
     h = np.asarray(q, dtype=float) / (1 << 20)
     l1 = float(np.abs(h).sum())
     peak = float(np.abs(h).max())
     l1_over_max = l1 / peak if peak > 0 else float('inf')
     peak_tap = int(np.argmax(np.abs(h))) + LAG_FIRST
     metrics = {'taps': int(len(h)), 'L1': l1, 'max_abs': peak, 'L1_over_max': l1_over_max,
+               'pred_peak': pred_peak,
                'peak_tap': peak_tap, 'q20_sha256': _sha256_bytes(
                    np.asarray(q, dtype='<i4').tobytes()),
                'hardware_cycles': 3 * len(h) + 3,
@@ -487,9 +494,13 @@ def _check_fit(q, fs, expected_peak_tap=None):
             return False, 'REJECT_SHAPE', [
                 '抽头峰位 %d 与本轮实测延迟 %d 差 %+d 帧（> %d）：拟合的时间原点与本轮采集不一致'
                 % (peak_tap, int(expected_peak_tap), delta, PEAK_TAP_TOLERANCE)], metrics
+    if pred_peak is not None and pred_peak >= PRED_PEAK_MAX:
+        return False, 'REJECT_SCALE', [
+            '预测峰值 max|conv(h,ref)| = %.3f >= %.2f（%.1f dBFS）：模型会把预测信号推到接近满幅'
+            % (pred_peak, PRED_PEAK_MAX, 20.0 * np.log10(max(pred_peak, 1e-12)))], metrics
     if l1 > L1_MAX:
         shape_ok = L1_OVER_MAX_RANGE[0] <= l1_over_max <= L1_OVER_MAX_RANGE[1]
-        msg = 'L1 = %.3f > %.1f' % (l1, L1_MAX)
+        msg = 'L1 = %.3f > %.1f（兜底上限）' % (l1, L1_MAX)
         if shape_ok:
             return False, 'REJECT_SCALE', [msg + '；L1/max = %.1f 在历史范围内，属整体尺度偏大'
                                            % l1_over_max], metrics
@@ -542,14 +553,23 @@ def _phase_fit(req):
         return _reply(req, 'data_insufficient', '拟合方程数 %d 少于抽头数 %d' % (rows, TAPS))
     h = solve_ridge(G, b)
     q = quantize_q20(h)
-    ok, status, reasons, metrics = _check_fit(q, caps[0]['fs'], expected_peak_tap=expected)
+    # 主判据用的实际预测峰值：把拟合出的 h 卷积到本轮真实 reference 上，取最大值。
+    hq_fit = np.asarray(q, dtype=float) / (1 << 20)
+    pred_peak = 0.0
+    for ref_pair, _mic_pair in aligned:
+        ref_arr = np.asarray(ref_pair, dtype=float)
+        pred = np.convolve(hq_fit, ref_arr)[:len(ref_arr)]
+        if len(pred):
+            pred_peak = max(pred_peak, float(np.max(np.abs(pred))))
+    ok, status, reasons, metrics = _check_fit(
+        q, caps[0]['fs'], expected_peak_tap=expected, pred_peak=pred_peak)
     metrics.update(equation_rows=int(rows), integer_lags=[int(v) for v in lags],
                    alignment_shifts=[int(v) for v in shifts],
                    expected_peak_tap=expected)
     if not ok:
-        attempts_total = int(req.get('attempts_total') or 1)
-        if status == 'REJECT_SCALE' and int(req.get('attempt') or 0) + 1 < attempts_total:
-            return _reply(req, 'retry', reasons[0], evidence=metrics)
+        # 2026-11-02: 不再对 REJECT_SCALE 重试。线性最小二乘里 h 与激励电平无关，提高激励只改善
+        # SNR、不改变 L1 / 预测峰值；实测三次 attempt 的 L1 = 4.455 / 4.467 / 4.339，几乎不动，
+        # 重试纯属白烧约 2 分钟。判失败即返回，不再走 retry。
         return _reply(req, 'model_rejected', reasons[0], evidence=metrics)
 
     fs = float(caps[0]['fs'])
@@ -781,7 +801,8 @@ def identity():
             'min_gated_coherence': MIN_GATED_COHERENCE, 'coherence_floor': COHERENCE_FLOOR,
             'sparse_line_db': SPARSE_LINE_DB, 'band_hz': list(BAND_HZ),
             'speech_min_rms_dbfs': SPEECH_MIN_RMS_DBFS, 'speech_min_peak': SPEECH_MIN_PEAK,
-            'l1_max': L1_MAX, 'l1_over_max_range': list(L1_OVER_MAX_RANGE),
+            'l1_max': L1_MAX, 'pred_peak_max': PRED_PEAK_MAX,
+            'l1_over_max_range': list(L1_OVER_MAX_RANGE),
             'peak_tap_tolerance': PEAK_TAP_TOLERANCE,
             'validate_band_hz': list(BAND_LOW_HZ),
             'validate_band_reduction_min_db': BAND_REDUCTION_MIN_DB,
