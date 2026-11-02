@@ -1,0 +1,211 @@
+{
+  "a_commit": "5b0648c",
+  "hw_api_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be",
+  "scope": "original A methods with simulated driver leaf using the real exclusive-file creation rule",
+  "probes": [
+    {
+      "diagnostic_only": false,
+      "rows": [
+        {
+          "request": {
+            "contract": "recal-product-v1",
+            "op": "input",
+            "cue": true,
+            "seconds": 2.5,
+            "scene_id": "same-scene",
+            "request_id": "request1",
+            "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-False-1"
+          },
+          "reply": {
+            "contract": "recal-product-v1",
+            "request_id": "request1",
+            "scene_id": "same-scene",
+            "op": "input",
+            "ok": true,
+            "status": "completed",
+            "input_ready": {
+              "request_id": "request1",
+              "scene_id": "same-scene",
+              "capture_id": "same-scene/1/input/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\original\\same-scene_1_input_00.npz",
+              "sha256": "0662053c344e19a513f3b07621a8ad96337b3bafcd1b7b0b7c6a7df2c65d018b",
+              "cue_end_frame": 21969,
+              "valid_first_frame": 21969,
+              "end_frame": 16384,
+              "status": "completed"
+            },
+            "captures": [
+              {
+                "request_id": "request1",
+                "scene_id": "same-scene",
+                "capture_id": "same-scene/1/input/00",
+                "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\original\\same-scene_1_input_00.npz",
+                "sha256": "0662053c344e19a513f3b07621a8ad96337b3bafcd1b7b0b7c6a7df2c65d018b",
+                "cue_end_frame": 21969,
+                "valid_first_frame": 21969,
+                "end_frame": 16384,
+                "status": "completed"
+              }
+            ],
+            "valid_first_frame": 21969,
+            "identity": {
+              "aux_db": 0.0,
+              "aux_raw_left": 5,
+              "aux_raw_right": 5,
+              "hp_volume": 40,
+              "gain_q12": 0,
+              "sample_rate_hz": 48828.125,
+              "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+              "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+              "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+              "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+            }
+          },
+          "error": null
+        },
+        {
+          "request": {
+            "contract": "recal-product-v1",
+            "op": "input",
+            "cue": true,
+            "seconds": 2.5,
+            "scene_id": "same-scene",
+            "request_id": "request2",
+            "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-False-2"
+          },
+          "reply": {},
+          "error": "FileExistsError('same as real driver exclusive capture creation')"
+        }
+      ],
+      "driver_paths": [
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\original\\same-scene_1_input_00.npz"
+      ],
+      "diagnostic": null
+    },
+    {
+      "diagnostic_only": true,
+      "rows": [
+        {
+          "request": {
+            "contract": "recal-product-v1",
+            "op": "input",
+            "cue": true,
+            "seconds": 2.5,
+            "scene_id": "same-scene",
+            "request_id": "request1",
+            "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-True-1"
+          },
+          "reply": {
+            "contract": "recal-product-v1",
+            "request_id": "request1",
+            "scene_id": "same-scene",
+            "op": "input",
+            "ok": true,
+            "status": "completed",
+            "input_ready": {
+              "request_id": "request1",
+              "scene_id": "same-scene",
+              "capture_id": "same-scene/1/input/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-True-1\\same-scene_1_input_00.npz",
+              "sha256": "0662053c344e19a513f3b07621a8ad96337b3bafcd1b7b0b7c6a7df2c65d018b",
+              "cue_end_frame": 21969,
+              "valid_first_frame": 21969,
+              "end_frame": 16384,
+              "status": "completed"
+            },
+            "captures": [
+              {
+                "request_id": "request1",
+                "scene_id": "same-scene",
+                "capture_id": "same-scene/1/input/00",
+                "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-True-1\\same-scene_1_input_00.npz",
+                "sha256": "0662053c344e19a513f3b07621a8ad96337b3bafcd1b7b0b7c6a7df2c65d018b",
+                "cue_end_frame": 21969,
+                "valid_first_frame": 21969,
+                "end_frame": 16384,
+                "status": "completed"
+              }
+            ],
+            "valid_first_frame": 21969,
+            "identity": {
+              "aux_db": 0.0,
+              "aux_raw_left": 5,
+              "aux_raw_right": 5,
+              "hp_volume": 40,
+              "gain_q12": 0,
+              "sample_rate_hz": 48828.125,
+              "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+              "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+              "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+              "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+            }
+          },
+          "error": null
+        },
+        {
+          "request": {
+            "contract": "recal-product-v1",
+            "op": "input",
+            "cue": true,
+            "seconds": 2.5,
+            "scene_id": "same-scene",
+            "request_id": "request2",
+            "run_dir": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-True-2"
+          },
+          "reply": {
+            "contract": "recal-product-v1",
+            "request_id": "request2",
+            "scene_id": "same-scene",
+            "op": "input",
+            "ok": true,
+            "status": "completed",
+            "input_ready": {
+              "request_id": "request2",
+              "scene_id": "same-scene",
+              "capture_id": "same-scene/1/input/00",
+              "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-True-2\\same-scene_1_input_00.npz",
+              "sha256": "0662053c344e19a513f3b07621a8ad96337b3bafcd1b7b0b7c6a7df2c65d018b",
+              "cue_end_frame": 21969,
+              "valid_first_frame": 21969,
+              "end_frame": 32768,
+              "status": "completed"
+            },
+            "captures": [
+              {
+                "request_id": "request2",
+                "scene_id": "same-scene",
+                "capture_id": "same-scene/1/input/00",
+                "path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-True-2\\same-scene_1_input_00.npz",
+                "sha256": "0662053c344e19a513f3b07621a8ad96337b3bafcd1b7b0b7c6a7df2c65d018b",
+                "cue_end_frame": 21969,
+                "valid_first_frame": 21969,
+                "end_frame": 32768,
+                "status": "completed"
+              }
+            ],
+            "valid_first_frame": 21969,
+            "identity": {
+              "aux_db": 0.0,
+              "aux_raw_left": 5,
+              "aux_raw_right": 5,
+              "hp_volume": 40,
+              "gain_q12": 0,
+              "sample_rate_hz": 48828.125,
+              "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+              "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+              "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+              "helper_sha256": "784acc6ba96ea598d6f7d54522f6aafd7aee526787e0a19180024f480528a1be"
+            }
+          },
+          "error": null
+        }
+      ],
+      "driver_paths": [
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-True-1\\same-scene_1_input_00.npz",
+        "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\staging\\tmp\\speech-retry-path\\request-True-2\\same-scene_1_input_00.npz"
+      ],
+      "diagnostic": "bind self.run_dir from request at dispatch only; not written into A source or a candidate"
+    }
+  ],
+  "board_operations": 0
+}

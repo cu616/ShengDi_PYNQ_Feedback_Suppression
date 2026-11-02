@@ -226,7 +226,10 @@ class ProductTests(unittest.TestCase):
                 self.assertEqual(stored['algorithm_receipts'][-1]['reply']['cause'],cause)
                 self.assertEqual(stored['cause'],cause)
                 if cause=='HARDWARE_ERROR':
-                    count=len(hw.calls);app.event('recalibrate');self.assertEqual(len(hw.calls),count)
+                    self.assertFalse(app.fatal);old_scene=app.scene;calc.evaluate=original
+                    hw.events=[dict(kind='recalibrate',value='start')];app.tick()
+                    self.until(app,lambda:app.state=='ready')
+                    self.assertNotEqual(app.scene,old_scene)
 
     def test_partial_B_ready_decision_cannot_enable_candidate(self):
         calc=FixedCalculator();original=calc.evaluate

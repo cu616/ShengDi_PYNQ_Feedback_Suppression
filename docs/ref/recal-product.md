@@ -2,6 +2,16 @@
 
 C维护唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
+## 上电与重试修复（C源码，A 5b0648c）
+
+A报告断电后AUX寄存器0x00、旧包在prepare前比较aux_db而永久failed；手写0x05再重启可CAL。C采用[上电与恢复v7](../contracts/recal-runtime-v7.md)：静音待CAL期间先校代码/位流身份，AUX配置以prepare完成后的实际回读为准。configuration_ready=false标记尚未初始化；prepare回读不符仍拒绝讲话/激励，完成后持续严格校验。A已有prepare写AUX，不需增加create_product构造写入或人工开机脚本，也不能把0x00伪报为0dB。
+
+数据不足、模型拒收、普通采集/数值硬件错误在确认静音后可长按BTN0至少1秒重来：新scene、新计数、重新prepare，不恢复旧模型。短按仍忽略；无法确认静音/停止或代码身份混搭仍锁定。quiet_seconds已改4；speech_seconds保留2.5，因为4秒源需195310帧，当前RAM仅131072。2.5是包含提示音的总运行长，听完三连音后持续讲话到安静灯。
+
+另复现A原版input自动重说仍写同一NPZ，独占创建第二次报错。A本次仅需在ProductHardwareV2.perform分派前绑定self.run_dir = request.get('run_dir') or self.run_dir；C已提供唯一request.run_dir，无需删除/覆盖原件。模拟只加这一行便可连续两次保存不同路径，诊断补丁未进入A源码。
+
+下面4be5083a包保留原SHA，尚不含本轮C修复；不可手换包内文件。C源码验证完成后，只接A这一行及新manifest即可重冻，不向A/B索要额外字段或重采数据。
+
 ## 最终冻结（A 7bd365b / 功能 b6107bc / B 0b09ef6）
 
 仓库根目录交付shengdi-recal-7bd365b-0b09ef6-final.zip和同名.zip.sha256。A运行时仅含八个文件与原manifest.json共九项，全部原字节；不包test/field/no_listener/receipt/run_frozen验证脚本。B原版recal-algorithm-2026-11-01.1及ATTEMPTS不变。最终字段为identity_ok=true、deployment_ready=true、missing=[]、adapter_check_allowed=true；维护和普通用户共用recal_entry.sh。[最终冻结与回包v6](../contracts/recal-runtime-v6.md)是本包说明，v5中的A593限制仅对应历史包。

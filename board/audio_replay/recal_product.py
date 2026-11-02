@@ -20,6 +20,7 @@ from recal_link import ingest, adapter_check, installed_model, run_evidence
 CONTRACT = 'recal-product-v1'
 IDENTITY = ('aux_db','aux_raw_left','aux_raw_right','hp_volume','gain_q12','sample_rate_hz',
             'driver_sha256','bit_sha256','hwh_sha256','helper_sha256')
+AUX_IDENTITY = ('aux_db','aux_raw_left','aux_raw_right')
 CAPS = ('buttons','indicator','nonintrusive_events','abort_mutes','prepared_capture','bounded_run','mode_readback')
 PROMPTS = {
     'uncalibrated': ('white','slow/1','待标定：移动设备后按CAL'),
@@ -146,6 +147,7 @@ class Product:
         self.scene=uuid.uuid4().hex;self.run_dir=None;self.training=[];self.validation=[]
         self.bundle=None;self.candidate=None;self.attempt=0;self.cue_end=0;self.quiet_deadline=None
         self.state='uncalibrated';self.outcome=None;self.reason='';self.events=[];self.identity=None
+        self.configuration_ready=False
         self.listening=[];self.run_result=None;self.fatal=False
         self.input_records=[]
         self.capture_history=[]
@@ -193,26 +195,35 @@ class Product:
             self.fatal=True;raise Failure('hardware_error','硬件未确认静音，禁止启动')
         self.mode='muted'
 
-    def _identity(self, actual):
+    def _identity(self, actual, prepared=False):
         if any(k not in actual for k in IDENTITY): raise Failure('hardware_error','实际配置回读不完整')
+        # Before prepare, the codec may still contain power-on or previous-scene AUX values.
+        # Code/bitstream identities remain mandatory, and no capture/model may bypass prepare.
+        defer_aux=not self.configuration_ready and not prepared
         for key in IDENTITY:
             value=actual[key]
+            if defer_aux and key in AUX_IDENTITY:continue
             if key.endswith('sha256') and (not isinstance(value,str) or len(value)!=64 or any(c not in '0123456789abcdef' for c in value)):
+                self.fatal=True
                 raise Failure('hardware_error','硬件身份格式错误:'+key)
             if key=='gain_q12':
                 allowed=self.cfg.get('phase_gain_q12',{}).get(self.gain_scope,[self.cfg['expected_identity'][key]])
                 if type(value) is not int or value not in allowed:
                     raise Failure('hardware_error','阶段数字增益回读不符')
             elif key in self.cfg['expected_identity'] and value!=self.cfg['expected_identity'][key]:
+                if key.endswith('sha256'):self.fatal=True
                 raise Failure('hardware_error','硬件身份混搭或配置不符:'+key)
-        if self.identity is not None and any(actual[k]!=self.identity[k] for k in IDENTITY if k!='gain_q12'):
+        stable=[k for k in IDENTITY if k!='gain_q12' and (self.configuration_ready or k not in AUX_IDENTITY)]
+        if self.identity is not None and any(actual[k]!=self.identity[k] for k in stable):
             raise Failure('hardware_error','标定后配置发生变化，请重新标定')
         self.identity={k:actual[k] for k in IDENTITY}
+        if prepared:self.configuration_ready=True
 
     def checkpoint(self):
         status=dict(contract=CONTRACT,simulation=self.cfg.get('simulation',False),scene_id=self.scene,
             package_manifest_sha256=self.cfg.get('package_manifest_sha256'),
             runtime_identity=self.cfg['expected_identity'],gain_scope=self.gain_scope,
+            configuration_ready=self.configuration_ready,
             state=self.state,outcome=self.outcome,reason=self.reason,identity=self.identity,
             effective_mode=self.mode,attempt=self.attempt,training=self.training,validation=self.validation,
             bundle=self.bundle,run=self.run_result,listening=self.listening,events=self.events,
@@ -291,7 +302,7 @@ class Product:
                 if not self.hw_idle.is_set():
                     self.store.invalidate(self.scene,'recalibration_waiting_for_hardware')
                     self.queued_recalibrate=True;self.stop_target='cancelled';self._state('stopping');return
-                self.scene=uuid.uuid4().hex;self.identity=None
+                self.scene=uuid.uuid4().hex;self.identity=None;self.configuration_ready=False
                 self.store.invalidate(self.scene,'scene_changed')
                 self.gain_scope='prepare'
                 self._identity(self.hw.poll()['identity'])
@@ -381,7 +392,8 @@ class Product:
         self._envelope(req,reply)
         self.hardware_receipts.append(dict(request=req,reply=reply))
         self.checkpoint()  # Preserve protection/failure metadata before rejecting it.
-        self._identity(reply['identity'])
+        self._identity(reply['identity'],prepared=(req['op']=='prepare' and reply.get('ok') is True
+                                                  and reply.get('status')=='completed'))
         if reply.get('input_clip'): raise Failure('input_overload','输入过载，已保护停声')
         if reply.get('status')=='protected': raise Failure('protected','硬件保护停声')
         if reply.get('ok') is not True or reply.get('status')!='completed':
@@ -462,11 +474,13 @@ class Product:
         self.algorithm_receipts.append(dict(request=req,reply=reply));self.checkpoint()
         if self.cfg.get('algorithm_identity') and any(reply.get('algorithm_identity',{}).get(k)!=
             self.cfg['algorithm_identity'].get(k) for k in ('version','file_sha256')):
+            self.fatal=True
             raise Failure('hardware_error','计算回包的算法版本/文件身份混搭')
         following=self.cfg['attempts'][self.attempt+1] if self.attempt+1<len(self.cfg['attempts']) else {}
         decision,self.cause,reason=consume_reply(reply,req['phase'],
             next_excitation=following.get('training',{}).get('excitation'),attempt=self.attempt)
-        if self.cause=='HARDWARE_ERROR': self.fatal=True
+        # A runtime capture/algorithm error aborts this scene. A confirmed abort permits
+        # a fresh, explicitly requested CAL; permanent deployment/stop locks remain fatal.
         if not reply.get('reason'): raise Failure('model_rejected','数值判断缺少依据')
         if decision=='retry':
             if self.cfg.get('runtime_profile')=='b-frozen-v1' and req['phase']=='input':

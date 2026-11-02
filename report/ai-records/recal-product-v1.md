@@ -219,3 +219,17 @@ C最终统一模型约定：bootstrap零模型用于维护/静音初始化（固
 最终正常--product（非review）冻结source=2137949。独立解压：九项A运行时字节、B原版SHA、全部载荷、包内文档链接、无验证脚本/缓存均通过；--check exit0/identity_ok=true/deployment_ready=true/missing=[]，adapter_check_allowed=true。冻结C main配原版A factory/模拟硬件叶子 --adapter-check exit0/compatibility_issues=[]。同一冻结Product+真实B子进程两scene重标定成功，首个记录cancel/bypass及30秒实际帧结束；--export回包两scene、16原激励、4模型、10算法JSON和1维护JSON，全部SHA及身份通过，不含人声PCM。A真实板完整窗口尚未由C执行，交最终包后由A按既定步骤完成。
 
 根目录最终ZIP与同名SHA已生成，完整摘要/固定模型SHA/回包清单见final-package-check.json和操作单。只推C；不合main、不改A/B冻结件、不再向A/B追加留言任务。已按用户要求给出模型文件名/SHA及准确--export目标路径。
+
+
+## 2026-11-02 上电AUX、失败CAL与有限重说
+
+用户转发A真板反馈：断电后service active但四灯亮，status failed/hardware_error/aux_db；AUX 0x400B/0x400D=0x00，手写0x05后服务可CAL。A提三选一（C先写AUX、C未初始化豁免、人工开机脚本），拟构造预写/unknown映射；另CAL没跟上后不能重试，建议quiet/speech从2/2.5到4。A等方案后一次改完，避免反复。
+
+C选择只延后三个AUX配置字段，静音/代码/位流/算法与其余部署约束保持；成功prepare后完整严格回读，新scene重走门槛，configuration_ready入收据。A现有prepare会写AUX，所以无需新增构造I2C写或手工开机脚本；unknown/raw0如实保存，不伪报0dB。原版A getter/setter和prepare、C Product、真实B子进程在模拟I2C上电0x00下完整到ready，AUX写入均发生在prepare；未操板。
+
+普通数据/模型/采集失败确认abort后允许物理长按BTN0新scene重来，清空尝试/讲话重说，不自动启声；去掉B运行时HARDWARE_ERROR无条件fatal屏蔽CAL，身份混搭与失败mute/abort仍锁定。单项新5测试通过；保留原B cause/原因，不把重试等同模型通过。
+
+复查有限重说还定位到A input未取本次request.run_dir。按原A方法、模拟真实driver exclusive file创建规则，第二个同scene输入再次指向same-scene_1_input_00.npz并FileExistsError；隔离诊断仅在V2.perform绑定run_dir后两次路径分离并成功，未改A源码/候选。给A本轮这一行即可；没有因格式要求重采有效原件。quiet改4；speech4会需195310源帧而RAM上限131072，所以保留2.5（含cue总时长），不盲改使采集必失败、不新增B/RTL任务。
+
+
+最终本轮47项相关检查全部通过，140文档零错误/警告。仅C侧更改提交；A原始文件未修改、隔离run_dir诊断未进入候选。决定A同步一行目录绑定后再按新helper SHA统一冻结，旧4be5083a原包不替换文件；没有因C现场问题泛化向B派活或要求重采已有原件。

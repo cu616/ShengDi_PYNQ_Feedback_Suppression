@@ -1,5 +1,10 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-02 C 修上电AUX门槛与失败CAL恢复
+
+据A真板断电默认0x00/aux_db失败，C选择prepare后核AUX，仅提前严格核代码/位流等身份，新增configuration_ready状态；普通场景失败安全abort后可长按BTN0新scene，不再因B HARDWARE_ERROR永久屏蔽CAL，身份混搭/无法停声锁定保留。quiet改4，speech因131072源RAM保留2.5。47项受影响软件检查及140文档检查通过；原版A实际getter/setter+prepare配模拟I2C和真实B完整到ready，无构造预写/人工步骤。另原版A两次input撞独占NPZ，隔离仅绑定request.run_dir后两次成功，给A这一处必要单行同步，未改A源码。[冷启动](../../report/verification/recal-product-v1/boot-cold-original-a.json)、[路径复现](../../report/verification/recal-product-v1/boot-retry-path-audit.json)、[接口v7](../contracts/recal-runtime-v7.md)、[说明](../ref/recal-product.md#上电与重试修复c源码a-5b0648c)。
+
+
 ## 2026-11-02 C 最终冻结A7bd功能b610并清空阻塞
 
 按A最终指令只取八项运行时及原manifest九文件，逐SHA核验且与功能提交b610相同；不包验证脚本。12项取消边界全部通过，原版A工厂维护链路通过；2137949干净源码最终正常product冻结开放部署及维护，B判据原字节不变。42项软件/3项打包回归、139文档检查通过；34载荷/35文件最终ZIP独立解压后check与维护exit0，两个scene完整模拟、实际模式切换/30秒帧结束及单回包身份/文件SHA通过。接口v6固定bootstrap维护模型、本轮CAL自动生成正式模型和单一回包清单；按A sudo实测将C常驻服务运行身份固定root，导出仅绑定当前包scene/计算回执并包含维护JSON。C自行完成冻结核验，不再索取A/B字段或重采原件，未操板。[固定载荷与模型](../../report/verification/recal-product-v1/final-assets.json)、[全部取消检查](../../report/verification/recal-product-v1/final-runtime-check.json)、[v6](../contracts/recal-runtime-v6.md)、[一次窗口命令](../ref/recal-product.md)。

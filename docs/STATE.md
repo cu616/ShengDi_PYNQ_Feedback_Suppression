@@ -40,13 +40,13 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-02按A最终指令固定7bd365b（功能b6107bc）九项运行时原字节，B仍0b09ef6；prepare补齐后12项预取消/初始化取消全部通过，维护链路通过，软件/载荷阻塞清空。最终包按正常product模式生成deployment_ready=true、missing=[]、adapter_check_allowed=true；根目录ZIP供人工转交，不包A验证脚本，C未操板。
-**当前卡点**：无代码/交付阻塞。A按既定一次窗口执行最终包实机部署、两布局真人完整重标定/扩声/拨码/停止并导出单一回包，C据同一回包独立复核；不再向A/B追加取件或格式要求。真人/现场拟合/可归因抵消与ASG尚不因软件冻结而宣称通过。
+**最后动作**：2026-11-02接A 5b0648c真板反馈，C修上电AUX比较顺序与CAL恢复：只延后三个AUX配置字段至成功prepare回读，代码/位流身份仍先验；普通场景失败确认静音后长按BTN0重新建scene，保留身份混搭/无法停声锁定。quiet改4，speech保留2.5。原版A AUX getter/setter+prepare、C Product、真实B子进程在模拟冷I2C(0x00)下不经手写即可从待CAL到ready，C未操板。
+**当前卡点**：C改动已完成；A同一轮同步一行request.run_dir绑定后重冻结。当前A input忽略本次目录，有限重说第二次撞同一NPZ，被真实驱动独占创建规则拒绝；隔离诊断仅加绑定后两次独立保存均通过。采用C侧延后AUX校验，A不需新增构造写AUX或人工上电脚本，B不改。旧4be5083a包保留字节，不手换文件。
 
-- [最终ZIP/模型/冻结入口/回包核验](../report/verification/recal-product-v1/final-package-check.json)、[42项软件及3项打包回归](../report/verification/recal-product-v1/final-software.json)、[九项实际载荷/固定模型](../report/verification/recal-product-v1/final-assets.json)、[12项取消边界与维护](../report/verification/recal-product-v1/final-runtime-check.json)、[最终模型/回包协议](contracts/recal-runtime-v6.md)、[同一窗口准确命令](ref/recal-product.md)。
-- A已转发真实板预取消prepare被拒、C官方维护入口sudo+bootstrap success=true/compatibility_issues=[]；归属A实物证据。C只做离线/模拟验证，不改A/B实现，不操作板卡。
-- 固定bootstrap-model.json仅维护/静音初始化，SHA见操作单；普通用户按CAL后自动拟合、验证及装载本scene模型。current路径/模型SHA随每轮保存并随回包交付，不手选模型。
-- 常驻root权限与A实测sudo环境一致；一个回包包含本包scene、非人声原件、两份模型及维护JSON；旧包原件留板，人声PCM不回传，ZIP不入Git。
+- [47项软件检查](../report/verification/recal-product-v1/boot-recovery-software.json)、[冷启动原版A/B真实算法模拟](../report/verification/recal-product-v1/boot-cold-original-a.json)、[重说路径复现与隔离一行诊断](../report/verification/recal-product-v1/boot-retry-path-audit.json)、[上电/恢复接口v7](contracts/recal-runtime-v7.md)、[操作说明](ref/recal-product.md#上电与重试修复c源码a-5b0648c)。
+- A已上板验证旧最终包check/维护/安装service active，另报断电AUX默认与失败不可重试，均归A实物证据。C的冷启动/重试验证属于模拟硬件；没有把新修复冒报上板。
+- 新scene必须prepare后AUX=0/raw5,5才进入讲话/激励，失败不启用候选；当前模型仍需B独立验证及实际装载。用户只能显式长按CAL重来，程序不自动重启扩声。
+- 4秒speech会超过源RAM，未修改B判据、源坐标或RTL；安静4秒及原件目录修正与数值策略分开。已有有效现场数据不因格式重采，C只推本线。
 
 ## 已验证 / 未验证（只在这里写一次）
 
