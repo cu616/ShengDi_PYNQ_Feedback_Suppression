@@ -200,3 +200,14 @@ C现有adapter_check短链路成功；维护模型若fixture改变，C main应�
 
 
 新包在仓库根目录，35载荷加product-manifest共36文件，source=e6adcf2、SHA见a593-package-check.json，附同名.zip.sha256且两者被定向ignore。独立解压全部载荷、原A8项清单、B原字节、文档链接核验通过。直接加载冻结包C main，配原版A factory和模拟底层叶子，显式不同fixture的当前模型，--adapter-check exit0、compatibility_issues为空、没有eligible pointer；--check identity_ok=true/deployment_ready=false且只列prepare缺口。默认/受控现场仍在硬件导入前拒绝，实际板卡未由C操作。C未把A预期的deployment_ready=true伪写成实测通过。
+
+
+## 2026-11-02 最终冻结指令
+
+用户转发A最终冻结：功能最后变更b6107bc，最新7bd365b只多验证脚本；要求“一次冻结到底，不再有往返”，运行时八文件加manifest九项，其余验证脚本不打包。hw_api固定784acc6…、driver0dc80…，给出预取消prepare与真实板sudo+C官方--adapter-check+bootstrap成功实证。要求最终包放根目录、明确现场模型文件/SHA、准确--export路径与清单，deployment_ready=true/missing=[]/adapter_check_allowed=true。
+
+fetch/pull取得冻结对象，九项逐字节匹配用户清单且与b610相同。原版A方法用模拟MMIO/Codec/驱动叶子做12项预取消/初始化取消，全部阻止开声，prepare遗漏关闭；C维护链路通过。未改A/B或操板，不向A/B再派取件/代码任务。
+
+C最终统一模型约定：bootstrap零模型用于维护/静音初始化（固定SHA）；真正扩声必须本scene CAL重新拟合、独立验证、装载后eligible current，不能预填旧布局模型。最终--product不使用review参数，移除历史missing后正常生成就绪包；保留正常唯一入口，不开放另一个受控现场替代入口。
+
+按A已验证sudo运行环境，C常驻service改root，避免以不同硬件权限部署。单回包补维护JSON，并仅导出相同包身份scene/计算回执；旧原件仍留板，避免旧包数据使最终回包身份误报。根目录最终ZIP及SHA定向ignore，不入Git。A脚本均未打包；C使用既有软件测试和冻结包解压核验，实际整机现场仍由A在一次窗口记录。

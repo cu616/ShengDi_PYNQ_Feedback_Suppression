@@ -4,7 +4,7 @@ After=local-fs.target
 
 [Service]
 Type=simple
-User=xilinx
+User=root
 WorkingDirectory=/opt/shengdi/current
 ExecStart=/bin/bash /opt/shengdi/current/recal_entry.sh --state-dir /home/xilinx/.local/state/shengdi
 Restart=on-failure

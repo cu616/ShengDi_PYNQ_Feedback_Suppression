@@ -1,5 +1,10 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-02 C 最终冻结A7bd功能b610并清空阻塞
+
+按A最终指令只取八项运行时及原manifest九文件，逐SHA核验且与功能提交b610相同；不包验证脚本。12项取消边界全部通过，原版A工厂维护链路通过；最终正常product冻结开放部署及维护，B判据原字节不变。接口v6固定bootstrap维护模型、本轮CAL自动生成正式模型和单一回包清单；按A sudo实测将C常驻服务运行身份固定root，导出仅绑定当前包scene/计算回执并包含维护JSON。C自行完成冻结核验，不再索取A/B字段或重采原件，未操板。[固定载荷与模型](../../report/verification/recal-product-v1/final-assets.json)、[全部取消检查](../../report/verification/recal-product-v1/final-runtime-check.json)、[v6](../contracts/recal-runtime-v6.md)、[一次窗口命令](../ref/recal-product.md)。
+
+
 ## 2026-11-02 C 按A593原字节重冻结并开放维护自检
 
 用户要求新包adapter_check_allowed=true并放仓库根目录；A旧包部署/校验回执按现场反馈保存。核A八项载荷与原manifest，新的driver/helper身份同步，B原字节不动。12项预取消/初始化取消定向检查关闭五条路径的旧阻塞，仅父类prepare两项仍失败；维护链路通过，7项既有受影响检查通过，两个scene真实B完整模拟接入通过。e6adcf2干净源码冻结根目录35载荷/36文件新包，独立解压逐SHA与文档链接通过，冻结C main+原版A工厂的模拟维护自检exit0；adapter_check_allowed=true，正式缺口仅prepare。接口变更v5按用户授权把维护开放与正式部署门槛分开；C维护创建对象使用显式当前模型fixture。只向A提供prepare这一处必要修正，B无新增请求，未操板。[原版方法检查](../../report/verification/recal-product-v1/a593-runtime-check.json)、[软件](../../report/verification/recal-product-v1/a593-software.json)、[新载荷](../../report/verification/recal-product-v1/a593-assets.json)、[维护v5](../contracts/recal-runtime-v5.md)、[准确命令](../ref/recal-product.md#a在板卡执行维护自检)。

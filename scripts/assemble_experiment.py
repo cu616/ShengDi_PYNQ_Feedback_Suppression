@@ -107,6 +107,7 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         '../contracts/recal-runtime-v3.md','FROZEN-RUNTIME.md').replace(
         '../contracts/recal-runtime-v4.md','INSTALL-RUNTIME.md').replace(
         '../contracts/recal-runtime-v5.md','MAINTENANCE-RUNTIME.md').replace(
+        '../contracts/recal-runtime-v6.md','FINAL-RUNTIME.md').replace(
         '../contracts/recalibration-algorithm-v1.md','ALGORITHM.md')
     # Historical evidence belongs to the source repository, outside this install whitelist.
     import re
@@ -127,6 +128,8 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         'recal-runtime-v3.md','FROZEN-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     (out/'MAINTENANCE-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v5.md').read_text(encoding='utf-8').replace(
         'recal-runtime-v4.md','INSTALL-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'FINAL-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v6.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v5.md','MAINTENANCE-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation and not review and not missing,
         missing=missing,adapters=adapters,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
         algorithm_identity=config.get('algorithm_identity'),
@@ -138,11 +141,12 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
             'board/audio_replay/recal_policy_consumer.py',
             'board/audio_replay/recal_runtime.py','board/audio_replay/recal_algorithm.py',
             'board/audio_replay/recal_link.py',
+            'board/audio_replay/product-install.sh','board/audio_replay/shengdi-product.service',
             'src/feedback/recal_policy.py','src/feedback/excitation.py',
             'scripts/assemble_experiment.py','docs/ref/recal-product.md','docs/contracts/recal-product-v1.md',
             'docs/contracts/recalibration-policy-v1.md','docs/contracts/recal-policy-consumer-v1.md',
             'docs/contracts/recal-runtime-v2.md','docs/contracts/recal-runtime-v3.md',
-            'docs/contracts/recal-runtime-v4.md','docs/contracts/recal-runtime-v5.md',
+            'docs/contracts/recal-runtime-v4.md','docs/contracts/recal-runtime-v5.md','docs/contracts/recal-runtime-v6.md',
             'docs/contracts/recalibration-algorithm-v1.md'],cwd=ROOT).strip()),
         hashes={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()})
     (out/'product-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

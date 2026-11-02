@@ -264,6 +264,12 @@ class ProductTests(unittest.TestCase):
         app,hw,_=self.app(cfg);self.ready(app);first=app.scene
         app.event('start');self.until(app,lambda:hw.mode=='cancel');hw.mode='bypass';app.tick();app.event('stop')
         self.ready(app)
+        maintenance=dict(success=True,compatibility_issues=[],scope='maintenance only')
+        (app.root/'adapter-check.json').write_text(json.dumps(maintenance),encoding='utf-8')
+        older=app.root/'runs/older-package';older.mkdir()
+        (older/'result.json').write_text(json.dumps(dict(scene_id='older',package_manifest_sha256='b'*64)),encoding='utf-8')
+        compute=app.root/'compute';compute.mkdir(exist_ok=True)
+        (compute/'older-reply.json').write_text(json.dumps(dict(scene_id='older',decision='valid_pass')),encoding='utf-8')
         out=self.folder/'return.zip';export_return(app.root,out,'a'*64)
         result=review_return(out,'a'*64)
         self.assertTrue(result['identity_ok']);self.assertEqual(result['layout_count'],2)
@@ -276,6 +282,8 @@ class ProductTests(unittest.TestCase):
         with zipfile.ZipFile(out) as z:
             self.assertFalse(any('/input' in n for n in z.namelist()))
             self.assertTrue(any('/training' in n for n in z.namelist()))
+            self.assertEqual(json.loads(z.read('maintenance/adapter-check.json')),maintenance)
+            self.assertNotIn('algorithm/older-reply.json',z.namelist())
         with self.assertRaisesRegex(ValueError,'different product'): review_return(out,'b'*64)
 
 

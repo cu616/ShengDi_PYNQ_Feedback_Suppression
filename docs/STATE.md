@@ -40,13 +40,13 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-02固定A 5939ee5重新冻结，B仍0b09ef6。原版A五条路径training/validation/input/install/run预取消及初始化取消检查通过；C已有维护链路离线通过，7项受影响软件检查通过，两个scene真实B子进程完整模拟接入通过，首scene运行ended。按用户要求开放adapter_check_allowed，并将新ZIP放仓库根目录；C未操板。
-**当前卡点**：仅prepare遗漏取消传播。父类prepare/_capture不接Event或before_start，预置取消仍进入driver、初始化中取消仍继续；12个定向用例只有prepare两项未通过。deployment_ready=false、field_trial_allowed=false，维护明确开放；不沿用旧install/运行缺口或泛化integration not approved，不向B派活。
+**最后动作**：2026-11-02按A最终指令固定7bd365b（功能b6107bc）九项运行时原字节，B仍0b09ef6；prepare补齐后12项预取消/初始化取消全部通过，维护链路通过，软件/载荷阻塞清空。最终包按正常product模式生成deployment_ready=true、missing=[]、adapter_check_allowed=true；根目录ZIP供人工转交，不包A验证脚本，C未操板。
+**当前卡点**：无代码/交付阻塞。A按既定一次窗口执行最终包实机部署、两布局真人完整重标定/扩声/拨码/停止并导出单一回包，C据同一回包独立复核；不再向A/B追加取件或格式要求。真人/现场拟合/可归因抵消与ASG尚不因软件冻结而宣称通过。
 
-- [12项取消边界/维护链路](../report/verification/recal-product-v1/a593-runtime-check.json)、[7项受影响软件检查](../report/verification/recal-product-v1/a593-software.json)、[两个scene原版A/真实B模拟接入](../report/verification/recal-product-v1/a593-entry-review.json)、[根目录新包与冻结入口核验](../report/verification/recal-product-v1/a593-package-check.json)、[实际新载荷](../report/verification/recal-product-v1/a593-assets.json)、[维护权限v5](contracts/recal-runtime-v5.md)、[板卡维护命令](ref/recal-product.md#a在板卡执行维护自检)。
-- 新包固定hw_api=9cb48a0730b082023edc0f128d671d5ed64a8316a27f4ac9b84341f04b1bc6d9、driver=0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4，原清单8载荷逐项吻合；含原manifest自身共9文件，未按口头数量编造额外条目。
-- A已实测旧ZIP完整部署并被旧权限正确拒绝；新包放根目录shengdi-recal-5939ee5-0b09ef6-maintenance.zip供人工转交，不私换包内文件、不自动入Git。B数值口径、当前模型事务和普通用户入口不变，维护按所选模型真实fixture创建硬件，不默认沿用旧fixture。
-- 真实C正式入口、现场拟合、两布局/模式/停止完整窗口与可归因抵消/ASG仍待A执行；已有有效现场数据保留，不因字段格式重采。
+- [九项实际载荷/固定模型](../report/verification/recal-product-v1/final-assets.json)、[12项取消边界与维护](../report/verification/recal-product-v1/final-runtime-check.json)、[最终模型/回包协议](contracts/recal-runtime-v6.md)、[同一窗口准确命令](ref/recal-product.md)。
+- A已转发真实板预取消prepare被拒、C官方维护入口sudo+bootstrap success=true/compatibility_issues=[]；归属A实物证据。C只做离线/模拟验证，不改A/B实现，不操作板卡。
+- 固定bootstrap-model.json仅维护/静音初始化，SHA见操作单；普通用户按CAL后自动拟合、验证及装载本scene模型。current路径/模型SHA随每轮保存并随回包交付，不手选模型。
+- 常驻root权限与A实测sudo环境一致；一个回包包含本包scene、非人声原件、两份模型及维护JSON；旧包原件留板，人声PCM不回传，ZIP不入Git。
 
 ## 已验证 / 未验证（只在这里写一次）
 

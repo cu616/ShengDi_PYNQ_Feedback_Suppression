@@ -599,8 +599,12 @@ def export_return(state, output, package_sha256):
     state=Path(state).resolve();output=Path(output)
     if output.exists(): raise ValueError('return file already exists; preserve prior evidence')
     records=[];payload={};artifacts=[]
+    maintenance=state/'adapter-check.json'
+    if maintenance.is_file():payload['maintenance/adapter-check.json']=maintenance.read_bytes()
     for path in sorted((state/'runs').glob('*/result.json')):
-        record=json.loads(path.read_text(encoding='utf-8'));records.append(record)
+        record=json.loads(path.read_text(encoding='utf-8'))
+        if record.get('package_manifest_sha256')!=package_sha256:continue
+        records.append(record)
         payload['results/'+path.parent.name+'.json']=path.read_bytes()
         captures=[c for h in record.get('capture_history',[]) for c in h['captures']]
         captures+=record.get('training',[])+record.get('validation',[])
@@ -621,11 +625,12 @@ def export_return(state, output, package_sha256):
             if sha(source)!=model['sha256']: raise ValueError('candidate changed; original retained')
             name='models/'+path.parent.name+'/'+model['sha256']+'/'+source.name;payload[name]=source.read_bytes()
             artifacts.append(dict(original_path=str(source),payload_path=name,sha256=model['sha256']))
-    for path in sorted((state/'compute').glob('*-reply.json')):
-        payload['algorithm/'+path.name]=path.read_bytes()
-    for path in sorted((state/'compute').glob('*-request.json')):
-        request=json.loads(path.read_text(encoding='utf-8'))
-        if request.get('phase')!='input': payload['algorithm/'+path.name]=path.read_bytes()
+    scenes={r['scene_id'] for r in records}
+    for path in sorted((state/'compute').glob('*.json')):
+        message=json.loads(path.read_text(encoding='utf-8'))
+        if message.get('scene_id') not in scenes:continue
+        if path.name.endswith('-reply.json') or (path.name.endswith('-request.json') and message.get('phase')!='input'):
+            payload['algorithm/'+path.name]=path.read_bytes()
     summary=dict(contract=CONTRACT,package_manifest_sha256=package_sha256,records=records,artifacts=artifacts,
         scope='structured record and original non-speech captures; no ASG/effect pass inferred',
         private_policy='human input PCM omitted; unknown capture provenance omitted; originals remain on board')

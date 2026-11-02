@@ -6,7 +6,7 @@ C拥有产品状态机、唯一recal_entry.sh、配置/模型事务、提示编�
 
 B判定库由C的[消费层](../contracts/recal-policy-consumer-v1.md)承接；该层属于编排边界，不改B阈值/拟合语义。B库原样接入与字段测试不等于实际捕获解析/拟合包装器已交付；完整适配仍按同一evaluate边界封装。
 
-冻结产品以[整机接入v3](../contracts/recal-runtime-v3.md)为准：直接调用B identity/evaluate，ATTEMPTS原样取用；旧三点与v2消费者保留历史范围。同一recal_entry提供A维护检查参数，C只做离线叶子I/O替换验证；板卡仍由A独占。
+冻结产品以[最终冻结v6](../contracts/recal-runtime-v6.md)为准：直接调用B identity/evaluate，ATTEMPTS原样取用；旧三点与v2消费者保留历史范围。同一recal_entry提供A维护检查参数，C只做离线叶子I/O替换验证；板卡仍由A独占。
 
 目标是普通使用者移动设备后按实体CAL，按提示讲话/安静，看到明确结果，按START扩声，拨码切换并STOP；无需AI在线、改代码、选模型。启动静音，候选独立验证与实际安装身份一致后才生效；失败不恢复新场景旧模型。停止不等计算；单次结束真实报告，不拼段声称无限连续。
 
