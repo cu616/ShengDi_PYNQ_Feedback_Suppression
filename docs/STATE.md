@@ -255,6 +255,9 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
 
 ## 板卡占用
 
+- **A 线 2026-11-02 交接**：硬件层与适配层已冻结并通过验收（`shengdi-recal-7bd365b-0b09ef6-final.zip`，sha256 `4be5083a…`；板上 `deployment_ready=true`、`missing=[]`、`--adapter-check` 的 `compatibility_issues=[]` 且 `CLOSED_VERIFICATION bit_exact=True`）；已安装 `/opt/shengdi/current`。
+- **阻塞演示的未解决项**：①产品服务三次卡死 PS（其中一次仅 `systemctl restart`，排除并发因素）；②上电后 codec AUX 默认 `0x00` 导致启动身份校验失败，需 `board/audio_replay/fix_aux_boot.sh` 临时绕过；③CAL 失败后须重启服务才能重试；④`quiet=2s / speech=2.5s` 时序偏紧。详见 [a-line-handover.md](ref/a-line-handover.md)。
+- 协作习惯（含路径给全、需人声先说清、服务运行时禁并发 PYNQ 等硬性要求）：[ai-collaboration-habits.md](ref/ai-collaboration-habits.md)。
 - 最近 A 记录：空闲，部署在 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`。本轮仅整理电脑文件，未连接板卡；实时在线/占用状态由 A 与现场再次核实。
 - v2 回退位置：`/home/xilinx/jupyter_notebooks/base/audio/audio_live`。本轮未覆盖、删除或部署任何板卡文件。
 - 操作前核对场景、整套版本与现场值守；A 为唯一操板者。电脑工作区的“空闲”文字不是实时锁。
