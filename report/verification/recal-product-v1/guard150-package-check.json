@@ -1,0 +1,65 @@
+{
+  "package": "shengdi-recal-7ae449af-0b09ef6-guard150-blocked-final.zip",
+  "package_sha256": "6854654f71d39058f35c0b6dd8cce8823aca62aa55e8c04695fed0da0f632f72",
+  "package_bytes": 379278,
+  "source_commit": "4f8c27c8aacba140596c6273b9a7ab7900307ef2",
+  "source_tree_clean": true,
+  "payload_count": 39,
+  "total_zip_files": 40,
+  "all_payload_hashes_match": true,
+  "four_pins": [
+    "7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08",
+    "7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08",
+    "7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08",
+    "7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08"
+  ],
+  "A_helper_exact_reported_patch": true,
+  "A_other_runtime_bytes_unchanged": true,
+  "B_algorithm_unchanged": true,
+  "C_product_entry_preserved": true,
+  "A_validation_scripts_packaged": false,
+  "document_link_errors": [],
+  "io_timeout_seconds": 150,
+  "compute_timeout_seconds": 150,
+  "run_seconds": 30,
+  "identity_ok": true,
+  "deployment_ready": false,
+  "adapter_check_allowed": false,
+  "missing": [
+    "hardware: A protection baseline retains an idle fault across a new capture; a repeated runtime fault is hidden"
+  ],
+  "blocked_paths": {
+    "check": {
+      "exit": 2,
+      "stdout": "{\"identity_ok\": true, \"deployment_ready\": false, \"missing\": [\"hardware: A protection baseline retains an idle fault across a new capture; a repeated runtime fault is hidden\"]}\n",
+      "error": null
+    },
+    "daemon": {
+      "exit": 2,
+      "stdout": "",
+      "error": "physical adapters not ready: hardware: A protection baseline retains an idle fault across a new capture; a repeated runtime fault is hidden"
+    },
+    "adapter": {
+      "exit": 2,
+      "stdout": "",
+      "error": "maintenance adapter check not enabled for this package"
+    }
+  },
+  "hardware_factory_calls": 0,
+  "installer_check": "static: set -eu and --check precede mkdir; installer not executed",
+  "diagnostic_model": {
+    "filename": "bootstrap-model.json",
+    "sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8"
+  },
+  "export": {
+    "exit": 0,
+    "files": [
+      "summary.json",
+      "return-manifest.json"
+    ],
+    "records": 0,
+    "scope": "empty software state only; actual A return pending"
+  },
+  "board_operations": 0,
+  "formal_demonstration_accepted": false
+}

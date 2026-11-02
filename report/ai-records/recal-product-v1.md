@@ -275,3 +275,5 @@ A三处修法采用其仓库full_cal_guard3.sh中已发布六处字符串替换�
 
 
 独立探测又发现原A保护基线会跨运行掩盖同一fault：真实冻结poll+模拟状态输入，空闲bit18=1后baseline=262144；_current_op=run，状态0后再bit18=1，protected仍false。这不是新的真板观察，不据此否认A已完成的CAL与直接扩声；它是候选保护逻辑的确定漏报。C不能修改A底层，也不让已知漏报的包继续标deployment_ready。归一化A元数据追加blocker、adapter_check_allowed=false，改交禁止安装的review包，普通入口、安装器和维护链路都必须拒绝。原预检包保存在staging，未交付。已给用户一条可原样转A的消息，请A在新装载且取消检查通过后的before_start建立本轮基线，并返回原始状态字/缓存标记；这次转发是实际新增阻塞，不给B追加工作。
+
+最终review包40文件独立解压核验全部SHA、四钉值、入口和链接通过。--check退出2，identity_ok=true但deployment_ready=false；常驻与维护均在硬件对象构造前拒绝（factory调用0次）。installer仅静态确认set -eu及--check先于mkdir，未执行。空状态导出只验清单/隐私结构、0个scene，不冒报A现场回包。完整JSON见guard150-package-check.json；ZIP=shengdi-recal-7ae449af-0b09ef6-guard150-blocked-final.zip，SHA=6854654f71d39058f35c0b6dd8cce8823aca62aa55e8c04695fed0da0f632f72，冻结源=4f8c27c8aacba140596c6273b9a7ab7900307ef2。

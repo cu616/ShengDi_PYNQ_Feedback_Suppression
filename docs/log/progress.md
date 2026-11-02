@@ -1,3 +1,9 @@
+## 2026-11-02 C 冻结guard150禁止安装复核包
+
+- 根目录生成明确标记blocked的完整review ZIP；全部40个文件及四处helper钉值独立核对，A其余运行时与B算法原字节不变，C实际产品入口正确，包内文档链接完整。
+- --check返回identity_ok=true、deployment_ready=false；常驻与adapter-check均在构造硬件之前拒绝，硬件factory调用0次。安装器set -eu及首个--check的阻断顺序只做静态检查，未运行安装器。
+- 空状态--export生成两项清单并逐项验SHA，明确0个scene；未冒充A现场回包。详细身份、包SHA、模型SHA及拒绝输出见[包核验](../../report/verification/recal-product-v1/guard150-package-check.json)。原始包和SHA旁文件仅留本地，不入Git。
+
 ## 2026-11-02 C 独立复现跨运行保护基线漏报，阻断候选安装
 
 - 使用A原测试副本的真实poll函数，仅替换寄存器读取叶子，复现空闲fault→运行清零→同一fault再起却protected=false；[原始结果](../../report/verification/recal-product-v1/guard150-baseline-probe.json)保留输入序列、原件SHA与结果。
