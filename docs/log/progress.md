@@ -1,3 +1,22 @@
+## 2026-11-02 按 C=81b47e3 同步 run_dir 一行　A　两副本同哈希，helper_sha256 变了，等 C 同轮重钉
+
+- C 回复：采用方案 2（AUX 配置比较延后到 prepare 成功回读，代码/位流身份仍严格检查），
+  **A 不需要构造写 AUX，也不需要人工开机脚本**，未知值继续如实记录；普通失败在确认静音后
+  长按 BTN0 ≥1 s 即可新建 scene 重来（身份混搭、无法确认停声仍锁定）；`quiet_seconds` 改 4，
+  `speech_seconds` 保留 2.5（源 RAM 装不下 4 秒计划），B 判据不改。
+- 本轮 A 唯一代码改动：`ProductHardwareV2.perform` 分派前加
+  `self.run_dir = request.get('run_dir') or self.run_dir`（`hw_api.py` L927）。旧代码只有
+  `_run_plan` 赋值，`input`+`cue`（自动重说）/`install`/`run` 都沿用上一次目录，
+  第二次写同一个 NPZ 时独占创建失败。
+- 两副本（`board/audio_replay/hw_api.py` 与 `v3-io/hw_api.py`）逐字节相同，新哈希
+  `8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0`（原 `784acc6b…`）；
+  `v3-io/manifest.json` 与 `docs/contracts/product-adapter.json` 已同步，并修掉契约里过期的
+  `replay_trial_repair.py 22851d32 → 0dc80c23`、旧的 `prepared_capture` 未验证等四条 blockers。
+- 软件验证：同一探测脚本跑 git rev `4467906` 的旧文件与新版——旧版 3/3 沿用旧目录，
+  新版 3/3 取到请求目录；`_capture_path` 因目录不同才不撞名。未上板。
+  证据 [run-dir-fix-2026-11-02](../../report/verification/audio-replay/run-dir-fix-2026-11-02/README.md)。
+- 上一轮准备的"构造写 AUX"四处补丁作废（C 选了方案 2），报告保留并标注取代关系。
+
 ## 2026-11-02 上电 AUX 失败的离线复现与补丁验证　A　未操板：补丁有效但单独发不了，必须与 C 同轮重冻
 
 - 给接手会话的交接文档已就位（`docs/ref/a-line-handover.md`、`docs/ref/ai-collaboration-habits.md`）。

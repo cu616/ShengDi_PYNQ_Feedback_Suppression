@@ -22,9 +22,9 @@
 | C 官方入口检查 | `deployment_ready: true`、`missing: []`、`compatibility_issues: []` |
 | 最终包 | `shengdi-recal-7bd365b-0b09ef6-final.zip`，sha256 `4be5083a…`；已安装到 `/opt/shengdi/current` |
 
-## 三、未解决（按严重度）
+## 三、状态（2026-11-02 C 回复 81b47e3 之后）
 
-### 1. 产品服务会把 PS 卡死（最严重）
+### 1. 产品服务会把 PS 卡死（最严重，**仍未解决**）
 
 三次记录：
 
@@ -35,38 +35,44 @@
 | 3 | 仅 `systemctl restart` | 否 |
 
 第 3 次证明**不是并发导致**，是服务自身在硬件流程中挂住。恢复手段只有**断电**。
-已报 C，等其处理。
+C 本轮（81b47e3）未处理该项，**在此之前不做正式演示**。
 
-### 2. 上电后 AUX 寄存器为默认值 → 启动即失败
+### 2. 上电后 AUX 为默认值 → 启动即失败：**已由 C 侧解决，A 不需要改**
 
-- codec `0x400B/0x400D` 上电为 `0x00`；
-- `hw_api.Board.get_aux_gain_db()` 只映射 `5→0 dB`、`7→+6 dB`，`0x00` 返回 `None`；
-- 产品在 `prepare` 之前做身份校验 → `None != 0.0` → `hardware_error: aux_db` → 服务进失败态、**按键无反应**（四灯全亮）。
+- 现象（保留作背景）：codec `0x400B/0x400D` 上电为 `0x00`；`get_aux_gain_db()` 只映射 `5→0`、`7→+6`，
+  `0x00` 返回 `None`；产品在 `prepare` 之前做身份校验 → `None != 0.0` → `hardware_error: aux_db`、
+  服务进失败态、按键无反应（四灯全亮）。
+- **C 方案（81b47e3）**：AUX 配置比较**延后到 prepare 成功回读**；代码/位流身份仍严格检查；
+  未知值继续如实记录。
+- **A 不要做**：不新增构造写 AUX，不加人工开机脚本。`fix_aux_boot.sh` 只作旧包的应急手段，
+  新包上板后按新流程验证一次即可。
+- 仍然成立的坑：`identity()['helper_sha256']` 是 `hw_api.py` 自己的 sha256，C 钉在
+  `product-config.json`（1 处）与 `product-manifest.json`（3 处）。任何 `hw_api.py` 改动都必须与 C
+  同轮重钉——本轮 run_dir 修复正撞上这一条。
+- 证据：[aux-boot-2026-11-02](../../report/verification/audio-replay/aux-boot-2026-11-02/README.md)。
 
-**临时绕过**：`bash board/audio_replay/fix_aux_boot.sh`（停服务→写 `0x05`→启服务）。**每次断电都要跑。**
+### 3. CAL 失败后必须重启服务：**已由 C 侧放开（81b47e3），尚未上板复核**
 
-**根治（待做，需与 C 商定后一次改完）**：
-- A 侧：`to_db()` 如实处理未知值；`create_product` 构造时先写一次 AUX；
-- C 侧：首次身份校验前先 `set_aux_gain_db`，或豁免未初始化状态。
+普通失败在确认静音后，**长按 BTN0 ≥1 秒**即可新建 scene 重来；身份混搭、无法确认停声仍锁定。
+现场含义：失败后不用再重启服务，但"确认静音"这一步要等灯稳定再按。
 
-**2026-11-02 离线复现（未上板，模型化 codec）**：可确定性复现；补丁写一次 AUX 后 10 个身份字段
-**全部通过**，但**不能单独发**——`identity()['helper_sha256']` 就是 `hw_api.py` 自己的 sha256，
-C 把它钉在 `product-config.json`（1 处）与 `product-manifest.json`（3 处）里，补丁修好 `aux_db` 后
-紧接着报 `helper_sha256` 不符。所以"只冻一次"必须同一轮包含：A 的 `hw_api.py` + C 的 4 处 pin + 整包重建。
-证据与补丁：[aux-boot-2026-11-02](../../report/verification/audio-replay/aux-boot-2026-11-02/README.md)。
+### 4. 时序：**quiet 已改 4 s，speech 保留 2.5 s**
 
-### 3. CAL 失败后必须重启服务才能重试
-
-失败态下按 BTN0 无反应，现场像"按键坏了"。已请 C 允许失败后直接重按 CAL。
-
-### 4. 时序偏紧
-
-`quiet_seconds=2`、`speech_seconds=2.5`、`input_mode="embedded"`（**只有一次提示音**，讲话窗就是提示音之后那 2.5 秒）。现场人普遍反应不过来。已建议 C 调到 4/4。
+`quiet_seconds=4`（原 2）、`speech_seconds=2.5` 不变——C 的理由是当前源 RAM 装不下 4 秒计划。
+现场仍只有**一次提示音**，讲话窗就是 LD1 亮起之后那 2.5 秒，必须一直说到 LD1 灭。
 
 ### 5. 长时扩声做不到（产品语义，非缺陷）
 
 单次 `run_seconds=30`；硬件上限 `MAX_RUN_FRAMES=3,000,000`（61.44 s）；C 的契约禁止拼段续播。
 **若要长时间扩声**：RTL 常数 + 驱动循环条件 + C 的状态机语义，一天量级，需 C 同意。
+
+### 6. 本轮 A 侧唯一代码改动：run_dir 一行（已并入，待统一重冻）
+
+`ProductHardwareV2.perform` 分派前加 `self.run_dir = request.get('run_dir') or self.run_dir`。
+旧代码只有 `_run_plan` 赋值，`input`+`cue`（自动重说）、`install`、`run` 都沿用上一次目录，
+第二次写同一个 NPZ 时独占创建失败。源码与 `v3-io` 副本已同步，`manifest.json` 与
+`product-adapter.json` 已改到新哈希 `8799f40b…`。证据：
+[run-dir-fix-2026-11-02](../../report/verification/audio-replay/run-dir-fix-2026-11-02/README.md)。
 
 ## 四、现场操作要点（踩过的坑）
 

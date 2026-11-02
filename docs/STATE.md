@@ -256,11 +256,23 @@ v3 工程基线可以冻结：实时抵消主路、宽残差过增益、保护�
 ## 板卡占用
 
 - **A 线 2026-11-02 交接**：硬件层与适配层已冻结并通过验收（`shengdi-recal-7bd365b-0b09ef6-final.zip`，sha256 `4be5083a…`；板上 `deployment_ready=true`、`missing=[]`、`--adapter-check` 的 `compatibility_issues=[]` 且 `CLOSED_VERIFICATION bit_exact=True`）；已安装 `/opt/shengdi/current`。
-- **阻塞演示的未解决项**：①产品服务三次卡死 PS（其中一次仅 `systemctl restart`，排除并发因素）；②上电后 codec AUX 默认 `0x00` 导致启动身份校验失败，需 `board/audio_replay/fix_aux_boot.sh` 临时绕过；③CAL 失败后须重启服务才能重试；④`quiet=2s / speech=2.5s` 时序偏紧。详见 [a-line-handover.md](ref/a-line-handover.md)。
+- **阻塞演示的未解决项（2026-11-02 C=81b47e3 之后）**：只剩 ①——产品服务三次把 PS 卡死（其中一次仅
+  `systemctl restart`，排除并发因素），C 本轮未处理，恢复只能断电，**在此之前不做正式演示**。
+  ②上电 AUX 身份校验、③CAL 失败后须重启服务，已由 C 侧放开（AUX 比较延后到 prepare 回读；确认静音后
+  BTN0 长按 ≥1 s 新建 scene），A 不再需要构造写 AUX 或开机脚本，**两项都还没上板复核**。
+  ④时序 `quiet=4 s` 已改，`speech=2.5 s` 保留（源 RAM 装不下 4 秒计划）。
+  详见 [a-line-handover.md](ref/a-line-handover.md)。
 - 协作习惯（含路径给全、需人声先说清、服务运行时禁并发 PYNQ 等硬性要求）：[ai-collaboration-habits.md](ref/ai-collaboration-habits.md)。
-- **2026-11-02 A 线离线复核（未操板）**：上电 AUX 失败已可离线确定性复现；构造时写一次 AUX 即可让
-  10 个身份字段全过，但会改 `helper_sha256`（C 钉了 4 处），**A 侧单独改包一定启动不了**，必须与 C 同轮重冻。
-  见 [aux-boot-2026-11-02](../report/verification/audio-replay/aux-boot-2026-11-02/README.md)。
+- **2026-11-02 A 线本轮唯一代码改动（未上板）**：按 C=81b47e3 在 `ProductHardwareV2.perform` 分派前补
+  `self.run_dir = request.get('run_dir') or self.run_dir`。旧代码只有 `_run_plan` 赋值，`input`+`cue`
+  的自动重说、`install`、`run` 都沿用上一次目录，第二次写同一个 NPZ 时独占创建失败。
+  源码与 `v3-io` 副本同哈希 **`8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0`**
+  （原 `784acc6b…`），`v3-io/manifest.json` 与 `docs/contracts/product-adapter.json` 已同步；
+  顺带修掉 `product-adapter.json` 里过期的 `replay_trial_repair.py` 哈希（实为 `0dc80c23…`）。
+  **`helper_sha256` 因此变化，C 必须同轮重钉 4 处 + 重建整包。**
+  证据：[run-dir-fix-2026-11-02](../report/verification/audio-replay/run-dir-fix-2026-11-02/README.md)、
+  [aux-boot-2026-11-02](../report/verification/audio-replay/aux-boot-2026-11-02/README.md)（补丁方案已被 C 的
+  方案 2 取代，只留"上电 0x00 会失败"与"helper_sha 钉 4 处"两条结论）。
 - 最近 A 记录：空闲，部署在 `/home/xilinx/jupyter_notebooks/base/audio/audio_wide`。本轮仅整理电脑文件，未连接板卡；实时在线/占用状态由 A 与现场再次核实。
 - v2 回退位置：`/home/xilinx/jupyter_notebooks/base/audio/audio_live`。本轮未覆盖、删除或部署任何板卡文件。
 - 操作前核对场景、整套版本与现场值守；A 为唯一操板者。电脑工作区的“空闲”文字不是实时锁。

@@ -921,6 +921,10 @@ class ProductHardwareV2(ProductHardware):
     # ---- dispatch ----------------------------------------------------------------------
     def perform(self, request, cancel_event=None):
         op = request.get('op')
+        # C (81b47e3): every op must take the request's run_dir before dispatch. Only _run_plan used
+        # to, so an automatic resay retry (input+cue) kept writing into the previous run's directory
+        # and the second exclusive create failed. Set it once here instead of inside each op.
+        self.run_dir = request.get('run_dir') or self.run_dir
         if op in ('training', 'validation'):
             return self._run_plan(request, op, cancel_event)
         if op == 'input' and request.get('cue'):

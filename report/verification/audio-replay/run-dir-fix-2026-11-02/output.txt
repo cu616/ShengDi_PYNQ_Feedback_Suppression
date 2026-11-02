@@ -1,0 +1,20 @@
+﻿pre-fix  : C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\hw_api_pre_dispatch_fix.py (from 4467906)
+post-fix : D:\OCadence_Project\Flushbonading_FPGA_Contest\_a_work\wt-int\board\audio_replay\v3-io\hw_api.py
+
+--- BEFORE (frozen hw_api.py, 784acc6b) ---
+  module bytes : 55942
+  op input    self.run_dir=C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\previous-scene\1\input   -> STILL ON THE OLD ONE
+  op install  self.run_dir=C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\previous-scene\1\input   -> STILL ON THE OLD ONE
+  op run      self.run_dir=C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\previous-scene\1\input   -> STILL ON THE OLD ONE
+
+--- AFTER (this change) ---
+  module bytes : 56300
+  op input    self.run_dir=C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\resay-scene\2\input   -> took the request run_dir
+  op install  self.run_dir=C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\resay-scene\2\input   -> took the request run_dir
+  op run      self.run_dir=C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\resay-scene\2\input   -> took the request run_dir
+
+  _capture_path with stale run_dir   -> C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\previous-scene\1\input\scene-A_1_input_00.npz
+  _capture_path with request run_dir -> C:\Users\lbc\AppData\Local\Temp\dsh-ikZhuP\shengdi-run-dir\resay-scene\2\input\scene-A_1_input_00.npz
+
+RESULT before: 3/3 ops stay on the stale directory (input, install, run)
+RESULT after : 3/3 ops take the request directory

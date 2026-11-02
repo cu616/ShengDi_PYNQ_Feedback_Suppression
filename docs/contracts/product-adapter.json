@@ -5,9 +5,9 @@
     "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
     "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
     "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
-    "hw_api.py": "ca76421cb5d7d137f691de9222a906d4e8fbe6dbd2c470ed11ab13d2bc925281",
+    "hw_api.py": "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0",
     "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
-    "replay_trial_repair.py": "22851d322e7c527a8903d367139924b2d780f98814f3ab1af3bd1f07bbf6efbb",
+    "replay_trial_repair.py": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
     "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
     "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4"
   },
@@ -17,10 +17,10 @@
     "aux_raw_right": 5,
     "hp_volume": 40,
     "sample_rate_hz": 48828.125,
-    "driver_sha256": "22851d322e7c527a8903d367139924b2d780f98814f3ab1af3bd1f07bbf6efbb",
+    "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
     "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
     "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
-    "helper_sha256": "ca76421cb5d7d137f691de9222a906d4e8fbe6dbd2c470ed11ab13d2bc925281"
+    "helper_sha256": "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0"
   },
   "gain_sets": {
     "run_gain_q12": [
@@ -54,12 +54,11 @@
     "install verifies the load and reports model file SHA and Q20 coefficient SHA separately",
     "running poll carries model/Q20 identity",
     "mute stops sound only; configured gain and LED pattern are preserved",
-    "armed-write protection on control; LD3 independently shows bypass vs cancel"
+    "armed-write protection on control; LD3 independently shows bypass vs cancel",
+    "ProductHardwareV2.perform takes request.run_dir before dispatch (C 81b47e3): it used to be set only inside _run_plan, so an automatic resay retry (input+cue) rewrote the previous run directory and the second exclusive create failed. This makes the line below true for every op, not just training/validation - no interface change, no version bump."
   ],
   "blockers": [
-    "cue+input is implemented but not yet exercised on hardware with a talker",
-    "prepared_capture capability is still reported False: the mechanism now exists through the merged cue+input call, but it has not been verified on hardware, so the flag is not flipped",
-    "training/validation plan execution is implemented but not yet run on hardware",
-    "C formal entry has not called this object yet"
+    "产品服务在真板上三次把 PS 卡死（其中一次仅 systemctl restart，排除并发），恢复只能断电；未定位，已报 C",
+    "CAL 失败后的可重试由 C 81b47e3 放开（确认静音后用 BTN0 长按 ≥1 s 新建 scene）；尚未上板复核"
   ]
 }
