@@ -1,5 +1,10 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-02 C 按8799原件重建冷启动/CAL复核包
+
+首次fetch远端A仍996bd38，随后取得用户确认的新b1826610（功能31eef5a1），根/v3 helper及原manifest逐项吻合8799完整SHA；原契约已同步新helper/driver并移除失效阻塞，保留PS卡死及CAL待板复核两项。C从统一源生成配置/清单四处身份，连同81b冷启动/显式CAL恢复和quiet4重建，未手改旧ZIP、未改B阈值或service文件。新包仅A看守复核，正式演示仍受PS稳定性阻塞。[原件核对](../../report/verification/recal-product-v1/bootfix-8799-assets.json)、[准确路径](../ref/recal-product.md#本轮上电与cal复核包a-b1826610--功能31eef5a1)。
+
+
 ## 2026-11-02 C 修上电AUX门槛与失败CAL恢复
 
 据A真板断电默认0x00/aux_db失败，C选择prepare后核AUX，仅提前严格核代码/位流等身份，新增configuration_ready状态；普通场景失败安全abort后可长按BTN0新scene，不再因B HARDWARE_ERROR永久屏蔽CAL，身份混搭/无法停声锁定保留。quiet改4，speech因131072源RAM保留2.5。47项受影响软件检查及140文档检查通过；原版A实际getter/setter+prepare配模拟I2C和真实B完整到ready，无构造预写/人工步骤。另原版A两次input撞独占NPZ，隔离仅绑定request.run_dir后两次成功，给A这一处必要单行同步，未改A源码。[冷启动](../../report/verification/recal-product-v1/boot-cold-original-a.json)、[路径复现](../../report/verification/recal-product-v1/boot-retry-path-audit.json)、[接口v7](../contracts/recal-runtime-v7.md)、[说明](../ref/recal-product.md#上电与重试修复c源码a-5b0648c)。

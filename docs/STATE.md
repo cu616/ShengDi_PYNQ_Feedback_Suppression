@@ -40,13 +40,12 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-02接A 5b0648c真板反馈，C修上电AUX比较顺序与CAL恢复：只延后三个AUX配置字段至成功prepare回读，代码/位流身份仍先验；普通场景失败确认静音后长按BTN0重新建scene，保留身份混搭/无法停声锁定。quiet改4，speech保留2.5。原版A AUX getter/setter+prepare、C Product、真实B子进程在模拟冷I2C(0x00)下不经手写即可从待CAL到ready，C未操板。
-**当前卡点**：C改动已完成；A同一轮同步一行request.run_dir绑定后重冻结。当前A input忽略本次目录，有限重说第二次撞同一NPZ，被真实驱动独占创建规则拒绝；隔离诊断仅加绑定后两次独立保存均通过。采用C侧延后AUX校验，A不需新增构造写AUX或人工上电脚本，B不改。旧4be5083a包保留字节，不手换文件。
+**最后动作**：2026-11-02取A b1826610ab5071ebb33789612adc64ed07f2692e（功能31eef5a165dd7ada3b9d0cd45ab869fff9c5911a），原件hw_api=8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0，两副本/九项清单逐字节核对；C81b47e3冷启动AUX门槛、CAL恢复和quiet4一并重建整包，B不改。不手工改旧包，四处钉值由同一清单生成。
+**当前卡点**：代码/身份包用于A看守的AUX/CAL上板复核；PS在service中卡死仍未定位/未修复，正式演示未通过。A原始契约剩余两项阻塞原样保留，不把新包软件核验当成PS稳定性通过。C未操板，本轮不变更service文件或安装器。
 
-- [47项软件检查](../report/verification/recal-product-v1/boot-recovery-software.json)、[冷启动原版A/B真实算法模拟](../report/verification/recal-product-v1/boot-cold-original-a.json)、[重说路径复现与隔离一行诊断](../report/verification/recal-product-v1/boot-retry-path-audit.json)、[上电/恢复接口v7](contracts/recal-runtime-v7.md)、[操作说明](ref/recal-product.md#上电与重试修复c源码a-5b0648c)。
-- A已上板验证旧最终包check/维护/安装service active，另报断电AUX默认与失败不可重试，均归A实物证据。C的冷启动/重试验证属于模拟硬件；没有把新修复冒报上板。
-- 新scene必须prepare后AUX=0/raw5,5才进入讲话/激励，失败不启用候选；当前模型仍需B独立验证及实际装载。用户只能显式长按CAL重来，程序不自动重启扩声。
-- 4秒speech会超过源RAM，未修改B判据、源坐标或RTL；安静4秒及原件目录修正与数值策略分开。已有有效现场数据不因格式重采，C只推本线。
+- [新A原件/契约/已知限制](../report/verification/recal-product-v1/bootfix-8799-assets.json)、[47项C软件](../report/verification/recal-product-v1/boot-recovery-software.json)、[上电/恢复v7](contracts/recal-runtime-v7.md)、[新包准确路径](ref/recal-product.md#本轮上电与cal复核包a-b1826610--功能31eef5a1)。
+- A已同步request.run_dir，无新增构造写AUX/人工开机脚本；C在prepare后严格读回0dB/raw5,5，普通失败确认静音后可长按BTN0建立新scene，代码身份/无法停声仍锁定。quiet4/speech2.5，B原数值判据不变。
+- 新包在仓库根目录shengdi-recal-8799f40b-0b09ef6-bootfix-final.zip，ZIP不进Git；旧4be包与证据保留。上板后只按同一回包复核，不因格式重采有效现场数据，不操板、不推main或A/B。
 
 ## 已验证 / 未验证（只在这里写一次）
 

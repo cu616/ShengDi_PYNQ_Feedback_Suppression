@@ -2,15 +2,39 @@
 
 C维护唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
-## 上电与重试修复（C源码，A 5b0648c）
+## 本轮上电与CAL复核包（A b1826610 / 功能31eef5a1）
 
-A报告断电后AUX寄存器0x00、旧包在prepare前比较aux_db而永久failed；手写0x05再重启可CAL。C采用[上电与恢复v7](../contracts/recal-runtime-v7.md)：静音待CAL期间先校代码/位流身份，AUX配置以prepare完成后的实际回读为准。configuration_ready=false标记尚未初始化；prepare回读不符仍拒绝讲话/激励，完成后持续严格校验。A已有prepare写AUX，不需增加create_product构造写入或人工开机脚本，也不能把0x00伪报为0dB。
+仓库根目录交付shengdi-recal-8799f40b-0b09ef6-bootfix-final.zip及同名.zip.sha256。A根目录与v3-io的hw_api逐字节相同，SHA=8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0；C从原件重建product-config和product-manifest，四处身份钉值一致、所有载荷哈希重新计算。九项A运行时原字节，不包A验证脚本；B仍0b09ef6，未改判据。
 
-数据不足、模型拒收、普通采集/数值硬件错误在确认静音后可长按BTN0至少1秒重来：新scene、新计数、重新prepare，不恢复旧模型。短按仍忽略；无法确认静音/停止或代码身份混搭仍锁定。quiet_seconds已改4；speech_seconds保留2.5，因为4秒源需195310帧，当前RAM仅131072。2.5是包含提示音的总运行长，听完三连音后持续讲话到安静灯。
+C[上电/恢复v7](../contracts/recal-runtime-v7.md)已包含：静音待CAL先验代码/位流身份，AUX在prepare完成后严格回读；configuration_ready标初始化门槛，不再手写0x05或加构造写入。普通失败确认静音后长按BTN0至少1秒新建scene重来，身份混搭/无法停声仍锁定。A在perform分派前绑定本次run_dir，有限重说不会碰同一NPZ，原件不覆盖。quiet=4秒，speech=2.5秒（含cue），4秒源超131072帧RAM未采用。
 
-另复现A原版input自动重说仍写同一NPZ，独占创建第二次报错。A本次仅需在ProductHardwareV2.perform分派前绑定self.run_dir = request.get('run_dir') or self.run_dir；C已提供唯一request.run_dir，无需删除/覆盖原件。模拟只加这一行便可连续两次保存不同路径，诊断补丁未进入A源码。
+本包仅用于A看守下复核冷启动AUX和CAL重试。现有shengdi-product.service和安装器行为未改，已报告的PS卡死未定位/未修复，正式演示仍等待稳定性解决。上游原始product-adapter.json随包保留，其剩余阻塞也保留在清单upstream_blockers；check通过仅说明载荷/配置身份匹配，不表示PS稳定性验收。
 
-下面4be5083a包保留原SHA，尚不含本轮C修复；不可手换包内文件。C源码验证完成后，只接A这一行及新manifest即可重冻，不向A/B索要额外字段或重采数据。
+### 本包准确路径
+
+把ZIP传到板卡/home/xilinx/shengdi-install/，解压到/home/xilinx/shengdi-install/recal-8799/。维护检查前停止旧service/Notebook，只允许一个硬件操作者。下列命令使用包内固定bootstrap-model，SHA未变：
+
+```bash
+BASE=/home/xilinx/shengdi-install/recal-8799
+sudo bash "$BASE/recal_entry.sh" --check
+sudo bash "$BASE/recal_entry.sh" \
+  --adapter-check \
+  --model "$BASE/bootstrap-model.json" \
+  --model-sha256 6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8 \
+  --state-dir /home/xilinx/.local/state/shengdi
+```
+
+check应identity_ok=true/deployment_ready=true/missing=[]，维护参数已开放。A决定安装/复核时：sudo bash /home/xilinx/shengdi-install/recal-8799/product-install.sh；本轮不把service上板结果提前报通过。冷启动静音待标定，长按CAL后prepare配置AUX，未跟上讲话时按有限策略重说，最终数据不足可再长按CAL，无需重启服务；保持数据/模型事务约束。
+
+回包沿用相同目录清单，目标改为：
+
+```bash
+sudo bash /opt/shengdi/current/recal_entry.sh \
+  --state-dir /home/xilinx/.local/state/shengdi \
+  --export /home/xilinx/shengdi-install/recal-product-return-8799f40b.zip
+```
+
+下方7bd/4be包为历史交付，其旧SHA原样保留，不手换包内文件。模型与实体图例继续适用；本轮以上方recal-8799路径为准。
 
 ## 最终冻结（A 7bd365b / 功能 b6107bc / B 0b09ef6）
 

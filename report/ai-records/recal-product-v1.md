@@ -233,3 +233,10 @@ C选择只延后三个AUX配置字段，静音/代码/位流/算法与其余部�
 
 
 最终本轮47项相关检查全部通过，140文档零错误/警告。仅C侧更改提交；A原始文件未修改、隔离run_dir诊断未进入候选。决定A同步一行目录绑定后再按新helper SHA统一冻结，旧4be5083a原包不替换文件；没有因C现场问题泛化向B派活或要求重采已有原件。
+
+
+## 2026-11-02 8799整包重建
+
+用户转发A目录绑定完成：hw_api完整SHA8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0，两副本相同，manifest/contract新helper与driver同步；要求重钉product-config1处/product-manifest3处，整包放根目录、给包名SHA。说明service PS卡死本轮未动，正式演示等待。C首次fetch仅996旧件，询问后用户确认已推b1826610ab5071ebb33789612adc64ed07f2692e（功能31eef5a165dd7ada3b9d0cd45ab869fff9c5911a），再次fetch取得正确原件；未用给旧文件改哈希的方式假造身份。
+
+新原件、根/v3字节、9项运行时、A契约新helper/driver核对；A契约仍有两条真实阻塞（PS卡死未定位、CAL新恢复待板），C原样保留契约文件及upstream_blockers，复核包scope不是正式演示批准。初始本地校验脚本误假定blockers清空，看到实际剩余两条后修正脚本：区分已去除的旧阻塞与仍真实存在的限制；不把service标为已修。C47项软件结果继续有效，C代码本轮不变，仅重建A字节与配置/文档。
