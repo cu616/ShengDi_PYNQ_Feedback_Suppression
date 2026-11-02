@@ -26,6 +26,9 @@
     "evidence_sha256": "62191285a8658b6a7dc1a1d0661817196da471ddabfd4586df5bbab9a2937283",
     "gain_q12": 6900,
     "run_seconds": 8,
+    "duration_review_commit": "daad1dc330a9f1069cffc23da6353492bd7118c2",
+    "duration_review_sha256": "e26a01ad44b42a46955af3e3cd749138326780692f539c9c8573fde56efc0d1c",
+    "duration_review": "A later recommends +4.0 dB after 20-second tests; this explicit user-requested profile remains 6900/8s, not sustained-stability acceptance",
     "runtime_gain_identity": "single fixed value, not membership in the maintenance allowed set",
     "limitations": [
       "bypass at this gain can howl loudly and stop by driver saturation protection, not software limiting",

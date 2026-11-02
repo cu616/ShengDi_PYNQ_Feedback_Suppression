@@ -432,5 +432,8 @@
       "about 0.9 seconds button observation gap remains unmeasured",
       "A direct-entry evidence does not validate this product package or a new layout/model"
     ]
-  }
+  },
+  "superseded": true,
+  "not_for_delivery": true,
+  "superseded_reason": "main advanced with A duration review; source commit rebased and package being re-frozen; preserve this prior result as historical only"
 }
