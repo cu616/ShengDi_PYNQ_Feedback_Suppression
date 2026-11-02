@@ -40,12 +40,12 @@
 
 ### C 产品软件、统一入口与测评
 
-**最后动作**：2026-11-02取A b1826610ab5071ebb33789612adc64ed07f2692e（功能31eef5a165dd7ada3b9d0cd45ab869fff9c5911a），原件hw_api=8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0，两副本/九项清单逐字节核对；C81b47e3冷启动AUX门槛、CAL恢复和quiet4一并重建整包，B不改。不手工改旧包，四处钉值由同一清单生成。
-**当前卡点**：代码/身份包用于A看守的AUX/CAL上板复核；PS在service中卡死仍未定位/未修复，正式演示未通过。A原始契约剩余两项阻塞原样保留，不把新包软件核验当成PS稳定性通过。C未操板，本轮不变更service文件或安装器。
+**最后动作**：2026-11-02根据真板反馈训练6段约52秒、旧io30超时，将C硬件阶段预算改150秒（计算/扩声仍30）。分开quiet0100/capturing0101，训练与验证硬件采样均用capturing；A8799嵌入路径在实际arm回读后等提示音21969帧加0.1秒才亮speaking0010，补上旧embedded从未进入speaking的问题，保留不安全适配的deferred保护。A/B原字节不改。
+**当前卡点**：新包供A看守复核慢采集与灯光，overlay复用仍属A后续独立工作；已报告PS服务卡死未修复，正式演示未通过。延长软件时限不构成抑制效果或稳定性证明，C未操板，不要求重采已有有效数据。
 
-- [新ZIP/四处钉值/冷启动重试核验](../report/verification/recal-product-v1/bootfix-8799-package-check.json)、[新A原件/契约/已知限制](../report/verification/recal-product-v1/bootfix-8799-assets.json)、[47项C软件](../report/verification/recal-product-v1/boot-recovery-software.json)、[上电/恢复v7](contracts/recal-runtime-v7.md)、[新包准确路径](ref/recal-product.md#本轮上电与cal复核包a-b1826610--功能31eef5a1)。
-- A已同步request.run_dir，无新增构造写AUX/人工开机脚本；C在prepare后严格读回0dB/raw5,5，普通失败确认静音后可长按BTN0建立新scene，代码身份/无法停声仍锁定。quiet4/speech2.5，B原数值判据不变。
-- 新包在仓库根目录shengdi-recal-8799f40b-0b09ef6-bootfix-final.zip，ZIP不进Git；旧4be包与证据保留。上板后只按同一回包复核，不因格式重采有效现场数据，不操板、不推main或A/B。
+- [时序/提示绑定来源](../report/verification/recal-product-v1/io150-assets.json)、[v8](contracts/recal-runtime-v8.md)、[本轮包与操作](ref/recal-product.md#本轮慢采集与灯光复核包io150)。
+- 阶段等待150秒不阻碍STOP/保护，仍先abort并等旧调用收尾；CAL新scene、AUX prepare后严格回读、模型原子事务和B独立验收规则保留。
+- 当前新ZIP在根目录shengdi-recal-8799f40b-0b09ef6-io150-final.zip，旧包/原件保留；A helper仍8799完整哈希，B仍0b09ef6，不混入刚fetch的B其他版本。
 
 ## 已验证 / 未验证（只在这里写一次）
 

@@ -156,6 +156,7 @@ class Product:
         self.job_deadline=None
         self.gain_scope='prepare' if config.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') else 'runtime'
         self.caps={};self.input_ready=None;self.indicator_deferred=False
+        self.input_armed_at=None
         self.speech_retries=0
         self.hw_idle=threading.Event();self.hw_idle.set();self.stop_target=None;self.queued_recalibrate=False
         self.store.invalidate(self.scene,'boot_requires_calibration')
@@ -185,6 +186,11 @@ class Product:
                 raise Failure('model_rejected','缺少B批准的有界策略')
             if not 0<float(config['run_seconds'])<=60 or not 0<=float(config['quiet_seconds'])<=30:
                 raise Failure('model_rejected','时限策略无效')
+            frames=config.get('embedded_cue_frames')
+            if frames is not None and (type(frames) is not int or frames<=0
+                    or not 0<=float(config.get('cue_indicator_guard_seconds',.1))<=2
+                    or frames/float(config['expected_identity']['sample_rate_hz'])+float(config.get('cue_indicator_guard_seconds',.1))>=float(config.get('speech_seconds',2.5))):
+                raise Failure('hardware_error','嵌入提示音帧数或尾声等待配置无效')
             self._identity(self.hw.poll()['identity'])
             self._state('uncalibrated')
         except Exception as exc:
@@ -231,12 +237,14 @@ class Product:
             hardware_receipts=self.hardware_receipts,
             algorithm_receipts=self.algorithm_receipts,cause=self.cause,
             validation_kind=self.cfg.get('validation_kind'),input_ready=self.input_ready,
+            input_armed_at=self.input_armed_at,
             algorithm_identity=self.cfg.get('algorithm_identity'),speech_retries=self.speech_retries,
             numeric_exit_reason=self.cfg.get('algorithm_identity',{}).get('strategy',{}).get('exit_reasons',{}).get(
                 self.algorithm_receipts[-1]['reply'].get('decision') if self.algorithm_receipts else None),
             hardware_draining=not self.hw_idle.is_set(),
             field_trial=self.cfg.get('field_trial',False),
             indicator_deferred=self.indicator_deferred,
+            indicator_deferred_reason='armed_indicator_not_approved' if self.indicator_deferred else None,
             waveform_policy='PCM stays on board; file paths and original hashes retained',hardware_error_latched=self.fatal)
         write_json(self.root/'status.json',status)
         if self.run_dir: write_json(self.run_dir/'result.json',status)
@@ -258,7 +266,7 @@ class Product:
         if led4:
             pattern=({'uncalibrated':'0000','cancelled':'0000','speaking':'0010','quiet':'0100',
                 'input_capture':'0001','stopping':'0001',
-                'capturing':'0100','ready':'0110','running':'0001','ended':'0110',
+                'capturing':'0101','ready':'0110','running':'0001','ended':'0110',
                 'failed':'1111','protected':'1111','inconclusive':'1111'}).get(state,'0001')
         self.indicator_deferred=led4 and self.mode!='muted' and not self.cfg.get('indicator_armed_safe',False)
         if not self.indicator_deferred:
@@ -312,7 +320,7 @@ class Product:
                 self.capture_history=[];self.events=[];self.listening=[]
                 self.hardware_receipts=[]
                 self.algorithm_receipts=[];self.cause=None
-                self.input_ready=None
+                self.input_ready=None;self.input_armed_at=None
                 self.speech_retries=0
                 self.attempt=0;self.cue_end=0;self.outcome=None;self.reason='';self.run_result=None
                 self.cancel=threading.Event();self._state('preparing');self._hw('prepare',phase='input')
@@ -335,7 +343,7 @@ class Product:
         if kind=='hw' and not self.hw_idle.is_set():raise Failure('hardware_error','旧硬件调用尚未返回')
         if kind=='hw':self.hw_idle.clear()
         epoch=self.epoch;cancel=self.cancel;self.pending=(kind,request)
-        self.job_deadline=self.clock()+float(self.cfg.get('io_timeout_seconds',30) if kind=='hw' else self.cfg.get('compute_timeout_seconds',120))+1
+        self.job_deadline=self.clock()+float(self.cfg.get('io_timeout_seconds',150) if kind=='hw' else self.cfg.get('compute_timeout_seconds',120))+1
         if kind=='hw' and request.get('op')=='run': self.job_deadline+=float(request['seconds'])
         def worker():
             try: value=function(request,cancel);error=None
@@ -350,6 +358,7 @@ class Product:
             plan=self.cfg['attempts'][self.attempt],**extra)
 
     def _hw(self, op, **extra):
+        if op=='input' and extra.get('cue'):self.input_armed_at=None
         self.gain_scope=op;request=self._request(op=op,**extra)
         if op in ('training','validation') and self.cfg.get('capture_plans'):
             request['plan']=json.loads(json.dumps(self.cfg['capture_plans'][self.attempt][op]))
@@ -410,7 +419,7 @@ class Product:
             if phase=='input':
                 self._state('speaking');self._hw('input',not_before_frame=self.cue_end)
             else:
-                self._state('capturing' if phase=='training' else 'validating')
+                self._state('capturing')
                 self._hw(phase)
         elif op=='cue':
             if type(reply.get('end_frame')) is not int or type(reply.get('tail_frames')) is not int or reply['end_frame']<=0 or reply['tail_frames']<0:
@@ -486,7 +495,7 @@ class Product:
             if self.cfg.get('runtime_profile')=='b-frozen-v1' and req['phase']=='input':
                 if self.speech_retries>=len(self.cfg['attempts'])-1:
                     raise Failure('data_insufficient','讲话检查已达到有限重说次数')
-                self.speech_retries+=1;self.cue_end=0;self.input_ready=None
+                self.speech_retries+=1;self.cue_end=0;self.input_ready=None;self.input_armed_at=None
                 self._state('preparing');self._hw('prepare',phase='input');return
             if self.cfg.get('runtime_profile') in ('b-heldout-v1','b-frozen-v1') and req['phase'] not in ('input','fit'):
                 raise Failure('data_insufficient','此阶段不允许重试')
@@ -536,6 +545,19 @@ class Product:
             raise Failure('data_insufficient','讲话提示窗或尾声帧域无效')
         self.cue_end=end+tail;self.input_ready=dict(event);self._state('speaking')
 
+    def _embedded_speech_prompt(self, mode):
+        # A's input_ready receipt arrives after capture. Use the actual arm readback,
+        # then wait the hash-bound cue length and tail; initialization time is excluded.
+        if (self.state!='input_capture' or not self.pending or self.pending[0]!='hw'
+                or self.pending[1].get('op')!='input' or not self.pending[1].get('cue')
+                or self.cfg.get('input_mode')!='embedded' or mode not in ('cancel','bypass')):return
+        frames=self.cfg.get('embedded_cue_frames')
+        if type(frames) is not int or frames<=0:return
+        if self.input_armed_at is None:self.input_armed_at=self.clock()
+        duration=frames/float(self.cfg['expected_identity']['sample_rate_hz'])
+        if self.clock()-self.input_armed_at>=duration+float(self.cfg.get('cue_indicator_guard_seconds',.1)):
+            self._state('speaking')
+
     def tick(self):
         try:
             poll=self.hw.poll()
@@ -574,6 +596,7 @@ class Product:
             if mode not in ('muted','cancel','bypass'): raise Failure('hardware_error','实际模式未知')
             if mode!=self.mode:
                 self.mode=mode;self._state(self.state)
+            self._embedded_speech_prompt(mode)
             if self.state=='running' and self.bundle and any(poll.get(k)!=self.bundle[k] for k in ('model_sha256','coefficients_sha256')):
                 raise Failure('hardware_error','运行模型实际回读改变')
             for event in events:

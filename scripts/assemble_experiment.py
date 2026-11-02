@@ -109,6 +109,7 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         '../contracts/recal-runtime-v5.md','MAINTENANCE-RUNTIME.md').replace(
         '../contracts/recal-runtime-v6.md','FINAL-RUNTIME.md').replace(
         '../contracts/recal-runtime-v7.md','BOOT-RECOVERY.md').replace(
+        '../contracts/recal-runtime-v8.md','IO-INDICATOR.md').replace(
         '../contracts/recalibration-algorithm-v1.md','ALGORITHM.md')
     # Historical evidence belongs to the source repository, outside this install whitelist.
     import re
@@ -133,6 +134,8 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         'recal-runtime-v5.md','MAINTENANCE-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     (out/'BOOT-RECOVERY.md').write_text((ROOT/'docs/contracts/recal-runtime-v7.md').read_text(encoding='utf-8').replace(
         'recal-runtime-v6.md','FINAL-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
+    (out/'IO-INDICATOR.md').write_text((ROOT/'docs/contracts/recal-runtime-v8.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v7.md','BOOT-RECOVERY.md').replace('../ref/recal-product.md','OPERATIONS.md'),encoding='utf-8')
     payloads=[p for p in out.rglob('*') if p.is_file() and '__pycache__' not in p.parts
               and p.suffix not in ('.pyc','.pyo')]
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation and not review and not missing,
@@ -153,6 +156,7 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
             'docs/contracts/recal-runtime-v2.md','docs/contracts/recal-runtime-v3.md',
             'docs/contracts/recal-runtime-v4.md','docs/contracts/recal-runtime-v5.md','docs/contracts/recal-runtime-v6.md',
             'docs/contracts/recal-runtime-v7.md',
+            'docs/contracts/recal-runtime-v8.md',
             'docs/contracts/recalibration-algorithm-v1.md'],cwd=ROOT).strip()),
         hashes={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in payloads})
     (out/'product-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

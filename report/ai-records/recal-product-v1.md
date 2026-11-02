@@ -245,3 +245,12 @@ C选择只延后三个AUX配置字段，静音/代码/位流/算法与其余部�
 最终源冻结6fd55d1；整包四处身份分别cfg.expected_identity.helper、manifest.hashes.hw_api、manifest.adapters.hardware.hashes.hw_api及其expected_identity.helper，全为8799完整值，实际文件SHA相同。独立解压verify/--check exit0、静音冷AUX0、真实B输入三次有限重说产生三条不同路径（模拟真实exclusive创建）、最终data_insufficient不锁死、新CAL重新prepare/拟合/验证到ready均通过；导入后的缓存不影响再次verify。C没改运行时代码，复用47项既有通过结果，补本次新A原件整包验证。模型bootstrap SHA不变，quiet4/speech2.5按实值封装。新service.unit与上版逐字节相同，PS卡死未修、正式演示未通过，A上游两项阻塞和原契约均保留。
 
 新ZIP及同名SHA放仓库根目录，不入Git；本轮包SHA和完整核验见bootfix-8799-package-check.json，旧包未覆盖。仅推C，交A一次装包复核AUX延后校验/CAL重试，不自动操板、不要求重复已有有效数据。
+
+
+## 2026-11-02 io150与灯光
+
+用户真板CAL稳定失败“阶段超时，已停止”，training=0/numeric=PASS，指出A每次墙钟8.6秒、六训练约52秒>io30，要求阶段150验证，overlay复用另做；quiet/capturing同0100，speaking常不亮，建议区分。C仅改IO预算150，compute/run仍30，不扩音频时长或放宽B判据。
+
+复核发现A8799包已indicator_armed_safe=true，常不亮的另一个确定原因是embedded路径从input_capture直接到quiet，从未进入speaking。C不在调用开始就亮讲话灯（会落在overlay/codec初始化之前）；利用已有poll实际armed模式首次回读，等待从精确8799源纯AST计算的21969帧cue及0.1秒尾声再进入speaking0010。quiet0100、capture0101，训练/验证硬件段都标capturing；未知/不安全适配保留deferred防护及原因记录。未增加A接口或硬件读寄存器路径，未改A/B。
+
+新增定向4项先通过：虚拟52秒复现旧io30失败、新io150通过，长预算仍在200ms内调用模拟abort；初始化20秒仍不亮讲话灯，实际arm后cue未结束不亮，cue+guard后亮LD1且当前安全适配不defer。软件验证范围明确为模拟时钟/硬件，不冒报真板。后续完整受影响C检查和冻结包独立核验完成后交A本轮复核；PS服务卡死及overlay复用不声称已修。

@@ -1,0 +1,23 @@
+{
+  "a_commit": "b1826610ab5071ebb33789612adc64ed07f2692e",
+  "helper_sha256": "8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0",
+  "b_commit": "0b09ef6",
+  "A_B_payload_bytes_unchanged": true,
+  "embedded_cue_frames": 21969,
+  "cue_indicator_guard_seconds": 0.1,
+  "derivation": "evaluate only the hash-verified pure _cue_pcm AST method; no A module import, factory, MMIO or board access",
+  "indicator_armed_safe": true,
+  "io_timeout_seconds": 150,
+  "compute_timeout_seconds": 30,
+  "run_seconds": 30,
+  "user_board_observation": {
+    "per_capture_wall_seconds": 8.6,
+    "training_segments": 6,
+    "estimated_training_wall_seconds": 51.6,
+    "old_io_budget": 30,
+    "outcome": "stage timeout before training return; numeric PASS is not complete model acceptance"
+  },
+  "overlay_reuse_fixed": false,
+  "service_PS_hang_fixed": false,
+  "board_operations": 0
+}

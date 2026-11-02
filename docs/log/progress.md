@@ -1,5 +1,10 @@
 # 项目进度（时间线，只追加）
 
+## 2026-11-02 C 延长慢采集阶段预算并区分实体提示
+
+据用户真板训练6×8.6秒超io30，C改io150、保留compute/run30。接口v8分开quiet0100/capturing0101；定位旧embedded没有speaking转换，按现有实际arm回读和哈希绑定的21969帧cue+0.1秒尾声亮0010，当前A安全armed写灯启用，其他适配deferred保护保留。纯AST执行A的cue生成函数取帧数，无导入硬件/操板；A/B原件未改，overlay复用/PS稳定性问题仍保留。[绑定来源](../../report/verification/recal-product-v1/io150-assets.json)、[v8](../contracts/recal-runtime-v8.md)、[新包路径](../ref/recal-product.md#本轮慢采集与灯光复核包io150)。
+
+
 ## 2026-11-02 C 按8799原件重建冷启动/CAL复核包
 
 首次fetch远端A仍996bd38，随后取得用户确认的新b1826610（功能31eef5a1），根/v3 helper及原manifest逐项吻合8799完整SHA；原契约已同步新helper/driver并移除失效阻塞，保留PS卡死及CAL待板复核两项。C从统一源生成配置/清单四处身份，连同81b冷启动/显式CAL恢复和quiet4重建，未手改旧ZIP、未改B阈值或service文件。6fd55d1干净源码重建根目录整包，独立解压四处钉值/全部载荷/文档/导入后再次验包均通过；原版新A+冻结C+真实B子进程配模拟冷I2C与独占文件，三次无声重说路径各异、失败后新CAL到ready通过。新包仅A看守复核，正式演示仍受PS稳定性阻塞。[原件核对](../../report/verification/recal-product-v1/bootfix-8799-assets.json)、[准确路径](../ref/recal-product.md#本轮上电与cal复核包a-b1826610--功能31eef5a1)。

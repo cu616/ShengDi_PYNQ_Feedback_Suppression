@@ -2,6 +2,28 @@
 
 C维护唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
+## 本轮慢采集与灯光复核包（io150）
+
+仓库根目录交付shengdi-recal-8799f40b-0b09ef6-io150-final.zip及同名.zip.sha256；沿用A8799和B0b09ef6原字节。io_timeout_seconds=150，计算预算仍30秒、单次扩声仍30秒。A实测每段墙钟约8.6秒，六训练约51.6秒；旧30秒时限会在回包前失败，numeric=PASS仅代表此前数值步骤，不代表完整验收。
+
+[阶段时限与提示v8](../contracts/recal-runtime-v8.md)区分安静0100/正在采集0101。嵌入input会在看到实际armed后等待包内21969帧提示音及0.1秒尾声，再进入讲话0010；初始化时间不计入这次等待。当前A支持armed安全写灯，已封装启用；其他适配仍保留indicator_deferred并记录原因，不盲写受保护控制寄存器。若LD3受实际旁路影响亮起，标定阶段按LD0–LD2辨认阶段。
+
+本轮仅复核慢采集时限与灯光；overlay复用、已报告PS服务卡死未修复，正式演示仍待整机稳定性通过。维护前停旧service/Notebook，只允许A一个硬件操作者。新包解压到板卡/home/xilinx/shengdi-install/recal-io150/：
+
+```bash
+BASE=/home/xilinx/shengdi-install/recal-io150
+sudo bash "$BASE/recal_entry.sh" --check
+sudo bash "$BASE/recal_entry.sh" \
+  --adapter-check \
+  --model "$BASE/bootstrap-model.json" \
+  --model-sha256 6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8 \
+  --state-dir /home/xilinx/.local/state/shengdi
+```
+
+A在既定独占窗口安装复核时使用sudo bash /home/xilinx/shengdi-install/recal-io150/product-install.sh；安装器及service行为未改。三连音结束后持续讲话至安静灯，0010同步提示讲话；0100保持安静等待，0101表示训练/验证采样中（可能持续约一分钟）。任意阶段BTN3停止不等待150秒，普通失败仍可长按BTN0新scene重来。
+
+回包目标：/home/xilinx/shengdi-install/recal-product-return-io150.zip，仍用同一recal_entry.sh --state-dir /home/xilinx/.local/state/shengdi --export <目标>；清单与隐私规则不变。下方旧包保留原SHA，不手换文件，以本节路径为本轮准。
+
 ## 本轮上电与CAL复核包（A b1826610 / 功能31eef5a1）
 
 仓库根目录交付shengdi-recal-8799f40b-0b09ef6-bootfix-final.zip及同名.zip.sha256。A根目录与v3-io的hw_api逐字节相同，SHA=8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0；C从原件重建product-config和product-manifest，四处身份钉值一致、所有载荷哈希重新计算。九项A运行时原字节，不包A验证脚本；B仍0b09ef6，未改判据。
@@ -88,8 +110,9 @@ sudo bash /home/xilinx/shengdi-install/recal-final/product-install.sh
 |---|---|
 | 0000，全灭 | 待标定/已取消，移动设备后长按BTN0至少1秒 |
 | 0001，仅LD0 | 准备/计算/收尾，继续等待；进入讲话采集后仍先等三连音 |
-| 三连音结束 | 持续自然讲话，直到0100亮起；测量只保留最后约0.34秒，不能提前停 |
-| 0100，仅LD2 | 保持安静，系统可能播放测试声 |
+| 三连音结束 / 0010 | 听完三连音后持续自然讲话，LD1同步提示，直到0100亮起；测量只保留最后约0.34秒，不能提前停 |
+| 0100，仅LD2 | 等待环境安静，继续等待 |
+| 0101，LD0和LD2 | 训练或验证正在采集，继续保持安静 |
 | 0110，LD1和LD2 | 验收通过或上次运行结束，点BTN1开始一次扩声 |
 | 0001运行 / 1001运行 | LD0表示运行；LD3灭=实际抵消，亮=实际旁路 |
 | 1111，四灯亮 | 未通过/无法评价/保护，已经静音；先停止讲话，长按BTN0重试，反复相同则联系维护，不提高音量 |
