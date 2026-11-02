@@ -211,3 +211,6 @@ fetch/pull取得冻结对象，九项逐字节匹配用户清单且与b610相同
 C最终统一模型约定：bootstrap零模型用于维护/静音初始化（固定SHA）；真正扩声必须本scene CAL重新拟合、独立验证、装载后eligible current，不能预填旧布局模型。最终--product不使用review参数，移除历史missing后正常生成就绪包；保留正常唯一入口，不开放另一个受控现场替代入口。
 
 按A已验证sudo运行环境，C常驻service改root，避免以不同硬件权限部署。单回包补维护JSON，并仅导出相同包身份scene/计算回执；旧原件仍留板，避免旧包数据使最终回包身份误报。根目录最终ZIP及SHA定向ignore，不入Git。A脚本均未打包；C使用既有软件测试和冻结包解压核验，实际整机现场仍由A在一次窗口记录。
+
+
+最终冻结独立解压校验中，--check/维护/两scene流程先通过，--export再次verify时因__pycache__/recal_algorithm.cpython-312.pyc发生身份不符。发现打包器导入B后把自动缓存也算进载荷；这是C打包缺陷，不是A缺件。C排除manifest与ZIP中的__pycache__/pyc/pyo，旧失败ZIP移入ignored staging保留，追加既有真实适配审阅包的防缓存断言。针对打包的3项回归全部通过（2.311秒），未重复无关全套；随后重新冻结相同A/B原字节并重新进行独立包验证，无A/B往返。

@@ -189,6 +189,7 @@ class RuntimeTests(unittest.TestCase):
         manifest=json.loads((out/'product-manifest.json').read_text(encoding='utf-8'))
         self.assertEqual(result['status'],'integration_review_blocked')
         self.assertFalse(manifest['deployment_ready']);self.assertFalse(manifest['simulation'])
+        self.assertFalse(any('__pycache__' in name or name.endswith(('.pyc','.pyo')) for name in manifest['hashes']))
         self.assertEqual((out/'residual_tools.py').read_bytes(),(self.folder/'hardware/residual_tools.py').read_bytes())
         self.assertEqual((out/'recal_algorithm.py').read_bytes(),(ROOT/'board/audio_replay/recal_algorithm.py').read_bytes())
         bootstrap=json.loads((out/'bootstrap-model.json').read_text())
