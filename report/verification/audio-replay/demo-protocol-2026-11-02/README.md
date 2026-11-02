@@ -365,3 +365,24 @@ B 要求只用正对场景 62fc713fa5a74045a8d9fd424339d695 的训练 reference 
 REJECT_SCALE 的重试，实际只会用到 attempt 0 那组，**0.1241 / 余量 7.7 dB**。
 注意峰值随激励电平上升（−22 → −16.5 dBFS 时从 0.1241 涨到 0.2301），若将来提高激励电平，
 距 0.30 的余量会变小。
+## 二十一、2026-11-02 扩声延长到 60 秒：A 就地改包（临时，非 C 交付版）
+
+需求：扩声段从 8 秒延长到 60 秒。硬件上限 max_run_seconds = 61.44（3000000 帧，hw_api.py:468），
+60 秒合规，不涉及 RTL / 位流。
+
+C 交付包 shengdi-recal-0cabfc17-0b09ef6-demo30-8s-final.zip
+（zip sha256 23b8f64fddb895fd7d81b249aabd73c191490850d59969028acce2608ec2f59d）就地改动：
+
+- product-config.json：un_seconds 8 → 60（全文仅此一处）；
+- 重算 product-manifest.json 中该文件的 sha256；
+  旧  9c32e2028dbcdf6… → 新 678a6f78be9cf23e…；
+- 重新打包为 shengdi-recal-0cabfc17-0b09ef6-demo30-60s-amod.zip，
+  zip sha256  d9c2f26bf0f39ec6307df636dddfcbc20d4a21f9298f90b45ce09d53c5a70a6，41 个文件，
+  重建后清单 40 个哈希全部匹配。
+
+上板：--check = {identity_ok: true, deployment_ready: true, missing: []}，装到
+/opt/shengdi/releases/33fad35ba987cc3d，服务 active，state=uncalibrated，
+package_manifest_sha256 = 33fad35ba987cc3d74c793a5436cb302bd64581036883812f10c84a59c4a83a5。
+
+**身份已变**：板上不再是 C 交付的那个包（原 manifest 1390e8b…）。本改动仅为效率优先的临时验证，
+正式交付仍需 C 出 60 秒官方包后覆盖安装，以恢复交付链。
