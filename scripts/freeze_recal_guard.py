@@ -12,6 +12,9 @@ ROOT=Path(__file__).resolve().parents[1]
 A='e6379ef331762b3162542d6325a644f5b34934da'
 B='0b09ef6'
 HELPER='0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5'
+DEMO_EVIDENCE='eb881fe405fcafbf8b0e35cc8356de3213520366'
+DEMO_GAIN=6900
+DEMO_SECONDS=8
 
 
 def blob(ref,path):
@@ -21,7 +24,7 @@ def blob(ref,path):
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 
 
-def stage(destination):
+def stage(destination, demo=False):
     out=Path(destination).resolve();out.mkdir(parents=True,exist_ok=False)
     hardware=out/'a';hardware.mkdir();algorithm=out/'b';algorithm.mkdir()
     raw=blob(A,'board/audio_replay/v3-io/hw_api.py')
@@ -48,7 +51,7 @@ def stage(destination):
         protection_baseline_verification='software register substitutes; no board; see A probe_baseline.py and C test_recal_guard_payload.py',
         limitations=['button observation may be delayed about 0.9 seconds during download; not measured end-to-end',
                      'AUX cache not independently isolated on hardware; fresh identity checked after driver return',
-                     'new C package still needs cold boot, CAL, START/30-second run and repeat CAL on hardware'],
+                     'new C package still needs physical validation for its frozen operating point and duration'],
         no_board_access=True)
     (hardware/'hardware-provenance.json').write_text(json.dumps(provenance,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     hashes['hardware-provenance.json']=sha((hardware/'hardware-provenance.json').read_bytes())
@@ -65,6 +68,24 @@ def stage(destination):
         config=dict(hp_volume=40,aux_db=0.,input_mode='embedded',speech_seconds=2.5,
             request_capture_directories=True,indicator_armed_safe=True,bootstrap_model='bootstrap-model.json',
             install_readback_required=True,embedded_cue_frames=21969,cue_indicator_guard_seconds=.1))
+    if demo:
+        # A's explicit demonstration authorization changes configuration only.
+        # Runtime still checks ONE gain; open-loop requests remain at zero.
+        allowed=list(dict.fromkeys(meta['allowed_gain_q12']+[DEMO_GAIN]))
+        meta['allowed_gain_q12']=allowed
+        meta['expected_identity']['gain_q12']=DEMO_GAIN
+        meta['config'].update(allowed_gain_q12=allowed,run_seconds=DEMO_SECONDS,maintenance_gain_q12=1631,
+            phase_gain_q12={op:[0,DEMO_GAIN] for op in (
+                'prepare','cue','input','training','validation','install','run')})
+        meta['approval_scope']='A-supervised fixed-gain eight-second same-layout demo; not long-term equipment or product field acceptance'
+        evidence_path='report/verification/audio-replay/demo-protocol-2026-11-02/README.md'
+        meta['demo_authorization']=dict(source_commit=DEMO_EVIDENCE,evidence_path=evidence_path,
+            evidence_sha256=sha(blob(DEMO_EVIDENCE,evidence_path)),gain_q12=DEMO_GAIN,run_seconds=DEMO_SECONDS,
+            runtime_gain_identity='single fixed value, not membership in the maintenance allowed set',
+            limitations=['bypass at this gain can howl loudly and stop by driver saturation protection, not software limiting',
+                         'long-term loudspeaker headroom and safety not evaluated',
+                         'about 0.9 seconds button observation gap remains unmeasured',
+                         'A direct-entry evidence does not validate this product package or a new layout/model'])
     (hardware/'product-adapter.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     b=blob(B,'board/audio_replay/recal_algorithm.py');digest=sha(b)
     if digest!='489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417':
@@ -78,4 +99,5 @@ def stage(destination):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--stage',required=True)
-    args=parser.parse_args();print(json.dumps(stage(args.stage),ensure_ascii=False))
+    parser.add_argument('--demo',action='store_true',help='A-authorized fixed 6900 gain, eight-second demo only')
+    args=parser.parse_args();print(json.dumps(stage(args.stage,args.demo),ensure_ascii=False))

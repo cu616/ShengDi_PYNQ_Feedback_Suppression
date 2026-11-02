@@ -114,6 +114,7 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         '../contracts/recal-runtime-v7.md','BOOT-RECOVERY.md').replace(
         '../contracts/recal-runtime-v8.md','IO-INDICATOR.md').replace(
         '../contracts/recal-runtime-v9.md','GUARD-RUNTIME.md').replace(
+        '../contracts/recal-runtime-v10.md','DEMO-RUNTIME.md').replace(
         '../contracts/recalibration-algorithm-v1.md','ALGORITHM.md')
     # Historical evidence belongs to the source repository, outside this install whitelist.
     import re
@@ -148,6 +149,10 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
     guard.write_text(guard.read_text(encoding='utf-8').replace(
         '../../report/verification/recal-product-v1/guard150-baseline-probe.json',
         'https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/main/report/verification/recal-product-v1/guard150-baseline-probe.json'),encoding='utf-8')
+    (out/'DEMO-RUNTIME.md').write_text((ROOT/'docs/contracts/recal-runtime-v10.md').read_text(encoding='utf-8').replace(
+        'recal-runtime-v9.md','GUARD-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md').replace(
+        '../../report/verification/audio-replay/demo-protocol-2026-11-02/README.md',
+        'https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/eb881fe405fcafbf8b0e35cc8356de3213520366/report/verification/audio-replay/demo-protocol-2026-11-02/README.md'),encoding='utf-8')
     payloads=[p for p in out.rglob('*') if p.is_file() and '__pycache__' not in p.parts
               and p.suffix not in ('.pyc','.pyo')]
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation and not review and not missing,
@@ -170,6 +175,7 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
             'docs/contracts/recal-runtime-v7.md',
             'docs/contracts/recal-runtime-v8.md',
             'docs/contracts/recal-runtime-v9.md','scripts/freeze_recal_guard.py',
+            'docs/contracts/recal-runtime-v10.md',
             'docs/contracts/recalibration-algorithm-v1.md'],cwd=ROOT).strip()),
         hashes={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in payloads})
     (out/'product-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

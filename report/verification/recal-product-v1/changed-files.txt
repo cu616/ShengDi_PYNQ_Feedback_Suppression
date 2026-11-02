@@ -249,3 +249,19 @@ report/verification/recal-product-v1/changed-files.txt
 report/verification/recal-product-v1/guard150-0cab-software.json
 report/verification/recal-product-v1/guard150-0cab-assets.json
 report/verification/recal-product-v1/guard150-0cab-package-check.json
+
+# 2026-11-02 固定6900/8秒演示
+board/audio_replay/recal_link.py
+scripts/freeze_recal_guard.py
+scripts/assemble_experiment.py
+sim/feedback/test_recal_demo.py
+docs/contracts/README.md
+docs/contracts/recal-runtime-v10.md
+docs/STATE.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/changed-files.txt
+report/verification/recal-product-v1/demo45-software.json
+report/verification/recal-product-v1/demo45-assets.json
+report/verification/recal-product-v1/demo45-package-check.json

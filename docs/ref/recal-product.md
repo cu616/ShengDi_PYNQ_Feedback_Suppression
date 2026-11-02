@@ -4,6 +4,47 @@
 
 C维护安装包内唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
+## 固定+4.5 dB、8秒演示包
+
+电脑仓库根目录交付 shengdi-recal-0cabfc17-0b09ef6-demo45-8s-final.zip 与同名 .zip.sha256。唯一入口仍为包内 recal_entry.sh；安装器/service沿用原版本，不新增第二套正式入口。A九项运行时、B算法字节不变，helper仍为0cabfc17完整SHA；授权来源绑定A现场记录提交eb881fe。
+
+expected_identity.gain_q12固定6900，标称+4.5 dB；allowed_gain_q12为1631/2303/3254/4096/6900。旧档仅用于静音准备/维护，运行身份严格要求6900，不改成“允许集合任取”。训练/验证继续开环0增益；安装实际回读6900后才就绪。单次请求8秒，不循环、不拼段；io/compute仍150秒。具体阶段与证据范围见[演示约定v10](../contracts/recal-runtime-v10.md)。
+
+A的短段边界与SW0彩排是直接入口实测，尚未验证本产品包。旁路在此工作点可能很响并起振，由驱动饱和保护停声，不是软件限幅；音响长时间工作余量未评估。约0.9秒下载期按键观察空窗未实测。ASG只沿用A所报约2.5–5 dB量级，不报精确值；25 dB麦端电平差不写成ASG。只用于A值守、相同摆位/音量及有效本轮模型，不能外推到别的场景或长时间工作。
+
+### A首次安装与现场操作
+
+电脑把整ZIP传到板卡/home/xilinx/shengdi-install/，解压到/home/xilinx/shengdi-install/recal-demo45-8s/，保留feedback等子目录，不手换旧包文件。先停旧service、Notebook及其他PYNQ会话，只由A操板。以下维护检查会调用硬件：
+
+```bash
+BASE=/home/xilinx/shengdi-install/recal-demo45-8s
+sudo bash "$BASE/recal_entry.sh" --check
+sudo bash "$BASE/recal_entry.sh" --adapter-check \
+  --model "$BASE/bootstrap-model.json" \
+  --model-sha256 6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8 \
+  --state-dir /home/xilinx/.local/state/shengdi
+sudo bash "$BASE/product-install.sh"
+```
+
+维护自检固定maintenance_gain_q12=1631（−8 dB）、3秒，只检接口，不把零初始化模型带到高增益旁路；收据保存实际维护增益。它不是8秒演示验收。bootstrap-model.json只用于静音初始化/维护，不能充当通过的现场模型。新服务启动保持静音，需要本轮CAL；不自动复用旧包的scene资格。
+
+日常按键：SW0先拨下；长按BTN0≥1秒CAL，听三连音后持续讲话至安静灯；0100/0101时保持安静，计算可能再约70秒，0110就绪。按BTN1运行固定6900、最多8秒；需要展示拨码时先正常讲话2–3秒，再拨SW0上，给本次8秒窗留出观察时间。出现起振或异常立即BTN3停声，不等待时限或保护。LD3表示实际旁路，不能只看拨码外观。
+
+自然8秒结束且模型仍有效可再按START。**保护后拨回SW0不会自动重启，也不能直接沿用原模型资格**；按产品提示重新CAL，通过后才能START。沿用此失败出口，不把A直接入口“重新起跑”误写成产品已支持。变更布局/模拟音量后重新CAL，仍需判断这次演示是否适用。
+
+### 本次回包
+
+结束后先停止服务，仍由同一入口一次导出；旧回包不覆盖：
+
+```bash
+sudo systemctl stop shengdi-product.service
+sudo bash /home/xilinx/shengdi-install/recal-demo45-8s/recal_entry.sh \
+  --state-dir /home/xilinx/.local/state/shengdi \
+  --export /home/xilinx/shengdi-install/recal-product-return-demo45-8s.zip
+```
+
+包含return-manifest.json、summary.json、results、algorithm、captures、models及已有maintenance回执；不含人声PCM。结果分开记录自然8秒结束、保护提前结束、拨码实际模式和听感，不把保护/无保护直接等同抑制成功。下方为原30秒包操作，当前演示采用本节路径与8秒时限。
+
 ## 本轮可安装验收包（A 0cabfc17 / guard150）
 
 电脑仓库根目录交付 shengdi-recal-0cabfc17-0b09ef6-guard150-final.zip 及同名 .zip.sha256。九项 A 运行时直接取 e6379ef331762b3162542d6325a644f5b34934da 的 Git 原字节，含原 manifest.json；不套旧补丁、不包 A 验证脚本。hw_api.py SHA=0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5，B 仍为原版 0b09ef6。

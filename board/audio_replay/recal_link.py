@@ -142,6 +142,10 @@ def adapter_check(hardware, config, state, model, save, cancel=None):
     try:
         muted=record('mute',{},hardware.mute())
         if not muted.get('ok') or not muted.get('muted'): raise ValueError('initial mute not confirmed')
+        gain=config.get('maintenance_gain_q12',config['expected_identity']['gain_q12'])
+        if type(gain) is not int or gain not in config.get('allowed_gain_q12',[config['expected_identity']['gain_q12']]):
+            raise ValueError('maintenance gain is not approved')
+        receipt['maintenance_gain_q12']=gain
         caps=record('capabilities',{},hardware.capabilities())
         if caps.get('prepared_capture') is not True:
             receipt['compatibility_issues'].append('prepared_capture=false: ordinary speech workflow remains blocked')
@@ -150,13 +154,13 @@ def adapter_check(hardware, config, state, model, save, cancel=None):
             capture_id=scene+'-training-0',level_dbfs=-22.,direct_only=True,zero_coeff=True)])
         trained=perform('training',plan=plan)
         receipt['capture_valid_frames']=[x.get('valid_frames') for x in trained.get('captures',[])]
-        installed=perform('install',model_path=str(model),run_gain_q12=config['expected_identity']['gain_q12'])
+        installed=perform('install',model_path=str(model),run_gain_q12=gain)
         original_sha=hashlib.sha256(Path(model).read_bytes()).hexdigest()
         if installed.get('model_sha256')!=original_sha and installed.get('source_model_sha256')!=original_sha:
             raise ValueError('install returned a different model file hash')
         if installed.get('applies_at')=='next_capture':
             receipt['compatibility_issues'].append('install registered for next_capture; no eligible model pointer committed')
-        run=perform('run',seconds=3.,gain_q12=config['expected_identity']['gain_q12'],bypass=False,
+        run=perform('run',seconds=3.,gain_q12=gain,bypass=False,
                     model_path=str(model),model_sha256=installed['model_sha256'],
                     coefficients_sha256=installed['coefficients_sha256'])
         for key in ('model_sha256','coefficients_sha256'):
