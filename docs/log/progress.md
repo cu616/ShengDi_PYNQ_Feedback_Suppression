@@ -2,7 +2,7 @@
 
 ## 2026-11-02 C 延长慢采集阶段预算并区分实体提示
 
-据用户真板训练6×8.6秒超io30，C改io150、保留compute/run30。接口v8分开quiet0100/capturing0101；定位旧embedded没有speaking转换，按现有实际arm回读和哈希绑定的21969帧cue+0.1秒尾声亮0010，当前A安全armed写灯启用，其他适配deferred保护保留。纯AST执行A的cue生成函数取帧数，无导入硬件/操板；A/B原件未改，overlay复用/PS稳定性问题仍保留。[绑定来源](../../report/verification/recal-product-v1/io150-assets.json)、[v8](../contracts/recal-runtime-v8.md)、[新包路径](../ref/recal-product.md#本轮慢采集与灯光复核包io150)。
+据用户真板训练6×8.6秒超io30，C改io150、保留compute/run30。接口v8分开quiet0100/capturing0101；定位旧embedded没有speaking转换，按现有实际arm回读和哈希绑定的21969帧cue+0.1秒尾声亮0010，当前A安全armed写灯启用，其他适配deferred保护保留。64项受影响C软件检查与141文档检查通过；98663a4干净源码冻结新ZIP，独立解压及全部哈希通过，原版A/冻结C/真实B子进程配模拟MMIO与虚拟6×8.6秒训练完整到ready，观测到0010/0100/0101，未因阶段时限中止。纯AST执行A的cue生成函数取帧数，无导入硬件/操板；A/B原件未改，overlay复用/PS稳定性问题仍保留。[绑定来源](../../report/verification/recal-product-v1/io150-assets.json)、[v8](../contracts/recal-runtime-v8.md)、[新包路径](../ref/recal-product.md#本轮慢采集与灯光复核包io150)。
 
 
 ## 2026-11-02 C 按8799原件重建冷启动/CAL复核包

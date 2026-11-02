@@ -43,7 +43,7 @@
 **最后动作**：2026-11-02根据真板反馈训练6段约52秒、旧io30超时，将C硬件阶段预算改150秒（计算/扩声仍30）。分开quiet0100/capturing0101，训练与验证硬件采样均用capturing；A8799嵌入路径在实际arm回读后等提示音21969帧加0.1秒才亮speaking0010，补上旧embedded从未进入speaking的问题，保留不安全适配的deferred保护。A/B原字节不改。
 **当前卡点**：新包供A看守复核慢采集与灯光，overlay复用仍属A后续独立工作；已报告PS服务卡死未修复，正式演示未通过。延长软件时限不构成抑制效果或稳定性证明，C未操板，不要求重采已有有效数据。
 
-- [时序/提示绑定来源](../report/verification/recal-product-v1/io150-assets.json)、[v8](contracts/recal-runtime-v8.md)、[本轮包与操作](ref/recal-product.md#本轮慢采集与灯光复核包io150)。
+- [64项软件检查](../report/verification/recal-product-v1/io150-software.json)、[冻结整包/虚拟51.6秒/实体提示核验](../report/verification/recal-product-v1/io150-package-check.json)、[时序/提示绑定来源](../report/verification/recal-product-v1/io150-assets.json)、[v8](contracts/recal-runtime-v8.md)、[本轮包与操作](ref/recal-product.md#本轮慢采集与灯光复核包io150)。
 - 阶段等待150秒不阻碍STOP/保护，仍先abort并等旧调用收尾；CAL新scene、AUX prepare后严格回读、模型原子事务和B独立验收规则保留。
 - 当前新ZIP在根目录shengdi-recal-8799f40b-0b09ef6-io150-final.zip，旧包/原件保留；A helper仍8799完整哈希，B仍0b09ef6，不混入刚fetch的B其他版本。
 

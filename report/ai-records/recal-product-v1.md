@@ -254,3 +254,8 @@ C选择只延后三个AUX配置字段，静音/代码/位流/算法与其余部�
 复核发现A8799包已indicator_armed_safe=true，常不亮的另一个确定原因是embedded路径从input_capture直接到quiet，从未进入speaking。C不在调用开始就亮讲话灯（会落在overlay/codec初始化之前）；利用已有poll实际armed模式首次回读，等待从精确8799源纯AST计算的21969帧cue及0.1秒尾声再进入speaking0010。quiet0100、capture0101，训练/验证硬件段都标capturing；未知/不安全适配保留deferred防护及原因记录。未增加A接口或硬件读寄存器路径，未改A/B。
 
 新增定向4项先通过：虚拟52秒复现旧io30失败、新io150通过，长预算仍在200ms内调用模拟abort；初始化20秒仍不亮讲话灯，实际arm后cue未结束不亮，cue+guard后亮LD1且当前安全适配不defer。软件验证范围明确为模拟时钟/硬件，不冒报真板。后续完整受影响C检查和冻结包独立核验完成后交A本轮复核；PS服务卡死及overlay复用不声称已修。
+
+
+本轮完整相关64项通过，141文档零错误/警告。源98663a4冻结io150新包，四处A helper身份仍8799、A/B文件原字节不变；新JSON io150/compute30/run30/quiet4/speech2.5/cue21969+guard0.1/safe indicator均实查。独立解压后以冻结C、原版A和真实B子进程，模拟硬件每个训练驱动调用给C时钟增加8.6秒（六次51.6），输入实际arm阶段保留足够cue时间，成功观测0010/0100/0101；完整重说/CAL再拟合/独立验证到ready通过，校验缓存/全部文件SHA/文档链接通过。service.unit与前版逐字节相同，overlay复用/PS卡死仍未修，不冒报上板稳定性。
+
+新整包和同名SHA放仓库根目录，旧包保留，不手换文件、不自动入Git。仅推C，交A验证本轮150秒与提示；不新增A/B代码或无关旧测评要求。

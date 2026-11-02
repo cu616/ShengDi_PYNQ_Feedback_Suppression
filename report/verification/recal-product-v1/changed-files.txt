@@ -197,3 +197,20 @@ report/ai-records/recal-product-v1.md
 report/verification/recal-product-v1/bootfix-8799-assets.json
 report/verification/recal-product-v1/bootfix-8799-package-check.json
 report/verification/recal-product-v1/changed-files.txt
+
+# 2026-11-02 io150慢采集预算与分离灯光
+board/audio_replay/recal_link.py
+board/audio_replay/recal_product.py
+docs/STATE.md
+docs/contracts/README.md
+docs/contracts/recal-runtime-v8.md
+docs/lines/c-measurement.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/changed-files.txt
+report/verification/recal-product-v1/io150-assets.json
+report/verification/recal-product-v1/io150-package-check.json
+report/verification/recal-product-v1/io150-software.json
+scripts/assemble_experiment.py
+sim/feedback/test_recal_io_indicator.py
