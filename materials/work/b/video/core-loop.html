@@ -4,12 +4,22 @@
 <meta charset="utf-8">
 <title>声堤 · 核心原理动画（原理示意）</title>
 <style>
+  /* ---- 想改字体就动这一段 ----
+     --fs      全局字号倍数，1 = 现在这样。1.15 大约大一号，1.3 明显更大
+     --fwb     标题类文字的粗细（600 是半粗，700 更粗，400 是常规）
+     --font    换字体；逗号后面是"找不到时的备用字体"，按顺序找
+     改完保存，浏览器按 F5。字变大可能挤在一起，撞车了告诉我挪位置。 */
+  :root{
+    --fs: 1;
+    --fwb: 600;
+    --font: "Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
+  }
   html,body{margin:0;padding:0;background:#f6f7f9;overflow:hidden}
-  svg{display:block;width:100vw;height:100vh;font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif}
-  .lbl{font-size:26px;fill:#5b6672}
-  .big{font-size:34px;fill:#1f2933;font-weight:600}
-  .small{font-size:21px;fill:#8b95a1}
-  .k{font-size:23px;fill:#1f2933}
+  svg{display:block;width:100vw;height:100vh;font-family:var(--font)}
+  .lbl{font-size:calc(26px * var(--fs));fill:#5b6672}
+  .big{font-size:calc(34px * var(--fs));fill:#1f2933;font-weight:var(--fwb)}
+  .small{font-size:calc(21px * var(--fs));fill:#8b95a1}
+  .k{font-size:calc(23px * var(--fs));fill:#1f2933}
 </style>
 </head>
 <body>
@@ -107,7 +117,7 @@
          1052,224    落在处理器框顶部，箭头向下 -->
     <path id="predPath" d="M1420,232 C1330,152 1120,140 1052,224" fill="none"
           stroke="#2e9e6b" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
-    <text id="predLbl" x="1258" y="128" text-anchor="middle" class="lbl" fill="#237a52">预测回传分量</text>
+    <text id="predLbl" x="1258" y="145" text-anchor="middle" class="lbl" fill="#237a52">预测回传分量</text>
 
     <!-- 相减符号（处理器框内已用文字表达，这里不再单独画，避免压住文字） -->
 
@@ -267,6 +277,8 @@ function enableEdit(){
   document.querySelectorAll('#scene [id], #signals [id]').forEach(el => {
     if (el.id === 'scene' || el.id === 'signals') return;
     el.style.cursor = 'move';
+    // 细线的可点区域只有 6px 描边，鼠标很难点中；放大到整个包围盒后好拖得多
+    if (el.tagName === 'path') el.setAttribute('pointer-events', 'bounding-box');
     el.addEventListener('pointerdown', e => {
       e.preventDefault();
       cur = el; start = svgPoint(e);
