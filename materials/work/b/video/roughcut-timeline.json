@@ -1,0 +1,86 @@
+{
+ "total_s": 165,
+ "segments": [
+  {
+   "id": "S1",
+   "start_s": 0,
+   "duration_s": 12,
+   "kind": "card",
+   "source": "a01 整体装配与连接全貌",
+   "note": "实物慢摇 · 待实拍",
+   "status": "placeholder"
+  },
+  {
+   "id": "S2",
+   "start_s": 12,
+   "duration_s": 30,
+   "kind": "card",
+   "source": "a02 真人扩声（长镜头）",
+   "note": "静音 → 扩声 → 静音 · 待实拍",
+   "status": "placeholder"
+  },
+  {
+   "id": "S3",
+   "start_s": 42,
+   "duration_s": 25,
+   "kind": "clip",
+   "source": "core-loop.mp4",
+   "note": "原理动画 · 已有",
+   "status": "available"
+  },
+  {
+   "id": "S4",
+   "start_s": 67,
+   "duration_s": 35,
+   "kind": "image",
+   "source": "fig-data-1-three-arm.png",
+   "note": "配 a03 实测操作 · 待实拍",
+   "status": "available"
+  },
+  {
+   "id": "S5",
+   "start_s": 102,
+   "duration_s": 12,
+   "kind": "image",
+   "source": "fig-data-2-model-quality.png",
+   "note": "配 a07 重标定+拨码 · 待实拍",
+   "status": "available"
+  },
+  {
+   "id": "S6",
+   "start_s": 114,
+   "duration_s": 8,
+   "kind": "card",
+   "source": "a04 板卡正面与接线",
+   "note": "待实拍",
+   "status": "placeholder"
+  },
+  {
+   "id": "S7",
+   "start_s": 122,
+   "duration_s": 20,
+   "kind": "card",
+   "source": "a05 连续运行节选",
+   "note": "待实拍",
+   "status": "placeholder"
+  },
+  {
+   "id": "S8",
+   "start_s": 142,
+   "duration_s": 15,
+   "kind": "card",
+   "source": "C 的技能包片段",
+   "note": "待提供",
+   "status": "placeholder"
+  },
+  {
+   "id": "S9",
+   "start_s": 157,
+   "duration_s": 8,
+   "kind": "card",
+   "source": "a01 复用（全貌）",
+   "note": "待实拍",
+   "status": "placeholder"
+  }
+ ]
+}
