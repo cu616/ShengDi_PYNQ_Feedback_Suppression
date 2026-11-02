@@ -8,7 +8,8 @@
 
 | 契约 | 覆盖什么 | 生产方 | 消费方 | 状态 |
 |---|---|---|---|---|
-| [recal-runtime-v10.md](recal-runtime-v10.md) | 固定6900增益、8秒演示、零增益标定与证据边界 | C | A / C | 配置与软件验证，待产品现场核验 |
+| [recal-runtime-v11.md](recal-runtime-v11.md) | 最终5786/8秒演示、维护低档及未验收项 | C | A / C | 软件验证，待产品现场核验 |
+| [recal-runtime-v10.md](recal-runtime-v10.md) | 旧6900演示草案 | C | A / C | 已由v11替代，不交付 |
 | [recal-runtime-v9.md](recal-runtime-v9.md) | 150秒计算预算、START保护留证、A新arm基线与原始字接入 | C | A / C | 0cab原件软件复核通过，待A整包实机验收 |
 | [recal-runtime-v8.md](recal-runtime-v8.md) | 150秒I/O阶段预算与安静/采集/讲话实体提示 | C | A / C | 软件验证，待现场复核 |
 | [recal-runtime-v7.md](recal-runtime-v7.md) | 上电AUX初始化门槛、失败长按CAL恢复及原件目录 | C / A | A / C | 两侧已交，待上板复核 |
