@@ -91,12 +91,20 @@
           stroke="#2f7ed8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
     <text id="outLbl" x="1250" y="296" text-anchor="middle" class="small">输出</text>
 
-    <!-- 回传弧：扬声器底 406 → 麦克风支架底 438，箭头朝上落在支架末端 -->
+    <!-- 回传弧。d 的读法：M 起点  C 控制点1 控制点2 终点（坐标是 1920×1080 画布上的像素）
+         M 1470,406  起点：扬声器右下角外侧
+         C 1560,640  控制点1：决定"从起点往哪个方向出发"，往右下甩
+           560,700   控制点2：决定"从哪个方向进终点"，这里是正下方，所以最后垂直上升
+           560,444   终点：麦克风支架底端，箭头朝上
+         想改弯度就改这两个控制点；想让起终点换个位置就改 M 和最后一个点。 -->
     <path id="fbPath" d="M1470,406 C1560,640 560,700 560,444" fill="none"
           stroke="#e8833a" stroke-width="7" stroke-linecap="round" stroke-dasharray="18 14"/>
     <text id="fbLbl" x="960" y="742" text-anchor="middle" class="lbl" fill="#c96a1e">扬声器声音回传到麦克风 = 反馈</text>
 
-    <!-- 预测支路：从扬声器上方回到处理器框顶部，箭头向下进框 -->
+    <!-- 预测支路，同样是 M 起点 + C 两个控制点 + 终点
+         M 1420,232  从扬声器上方出发
+         C 1330,152 / 1120,140  往左上拱
+         1052,224    落在处理器框顶部，箭头向下 -->
     <path id="predPath" d="M1420,232 C1330,152 1120,140 1052,224" fill="none"
           stroke="#2e9e6b" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
     <text id="predLbl" x="1258" y="128" text-anchor="middle" class="lbl" fill="#237a52">预测回传分量</text>
@@ -289,9 +297,13 @@ function enableEdit(){
   };
 }
 
-// 截图模式：#t=12.5 渲染该时刻的静态帧；#edit 进微调；无 hash 则循环播放
+// 截图模式：#t=12.5 渲染该时刻的静态帧；#edit 或 ?edit 进微调；无参数则循环播放。
+// 改完地址栏如果画面没变，是浏览器只当成"页内跳转"没有重新加载——这里监听一次，自动刷新。
+window.addEventListener('hashchange', () => location.reload());
+
 function boot(){
-  if (/edit/.test(location.hash || '')) { enableEdit(); return; }
+  const q = (location.hash || '') + (location.search || '');
+  if (/edit/.test(q)) { enableEdit(); return; }
   const m = /t=([\d.]+)/.exec(location.hash || '');
   if (m) {
     render(Math.min(DUR, parseFloat(m[1])));
