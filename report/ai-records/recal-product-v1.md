@@ -295,3 +295,5 @@ C先查工作区干净并fetch/快进main，逐字核验A原件，未改A/B。�
 只改两处顶层配置不足：旧phase_gain_q12仍0/1631，会拒收新安装/运行读数；A构造allowed集也必须通过config实际传入。C在单独--demo冻结选项中显式绑定allowed集合、expected6900、各阶段0/6900、准备阶段旧批准档和8秒。训练/验证direct_only/zero_coeff计划保持原样，A/B字节不改；普通冻结默认仍1631/30秒。
 
 另发现维护自检会装bootstrap零模型并按expectedgain运行3秒。若直接复用6900会在维护阶段形成已知高增益旁路，故新增可选maintenance_gain_q12（本演示固定1631）并校验属于已批准集，实际维护增益写入回执；默认旧包行为不变。正式产品安装/运行依然6900，不混淆维护检查和演示效果。新增用例覆盖配置传给factory、阶段白名单/计划、固定8秒单次请求、拒绝旧运行档、普通profile不变以及维护不使用高增益，共46项相关检查通过。未新增A/B修改请求、不操板；产品保护撤销模型资格后需CAL的既有语义原样保留并写入操作单。
+
+演示ZIP=shengdi-recal-0cabfc17-0b09ef6-demo45-8s-final.zip；SHA=bb71a950ba7659f6de09e96ee77a5e6e4b9a66e414f6ff77aaee36c3c088a56e；冻结源=032e5bc3f90f975fb7bf80223c732b9f1f8d8fbd。独立解压41文件、A9原件、B算法、helper四钉、链接及check全部通过；实际A工厂allowed包括6900。冻结C/A+真实B子进程、模拟I2C/MMIO/driver下，阶段回读training=0、validation=0、install=6900、run=6900；C仅发一次gain6900/seconds8，完成390625帧（8秒）并自然结束，再CAL新scene；模式切换和原始保护状态留证保持。维护3秒安装/运行均1631，与演示隔离。导出2scene、16捕获、4模型、维护回执和算法JSON，逐项SHA检查，无人声PCM。全部为软件叶子证据，未运行installer、未操板，不增加B任务，最终交A产品入口复核。

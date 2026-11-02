@@ -27,9 +27,9 @@ A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、�
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：按A新现场授权组装独立6900（标称+4.5 dB）/8秒演示配置，运行身份保持单值6900，标定继续开环0增益；维护零模型自检单独保留−8 dB/3秒。46项相关软件检查通过，A九项运行时与B算法保持原字节。A报告的冷启动/CAL/实际扩声及直接入口短段/拨码证据保留。
+**最后动作**：按A新现场授权组装独立6900（标称+4.5 dB）/8秒演示配置，运行身份保持单值6900，标定继续开环0增益；维护零模型自检单独保留−8 dB/3秒。46项相关软件检查通过，A九项运行时与B算法保持原字节。新演示包独立核验41文件、配置传入实际A工厂及8秒完整帧计数、维护低档、两scene回包均通过（模拟硬件/真实B子进程）。A报告的冷启动/CAL/实际扩声及直接入口短段/拨码证据保留。
 **当前卡点**：新高增益产品包尚待A在既定布局和本轮有效模型下值守验收，不能把直接入口彩排外推到产品包或长期设备余量。旁路在该点可能很响并起振，驱动饱和保护停声；约0.9秒按键观察空窗仍未实测。旁路边界未独立二分，只保留A所报ASG量级，不报精确值。
-入口：[产品操作单](ref/recal-product.md)、[固定演示约定](contracts/recal-runtime-v10.md)；证据：[软件验证](../report/verification/recal-product-v1/demo45-software.json)、[冻结原件与授权](../report/verification/recal-product-v1/demo45-assets.json)、[A现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。C本轮未操板，普通30秒包与旧blocked包各保留原身份。
+入口：[产品操作单](ref/recal-product.md)、[固定演示约定](contracts/recal-runtime-v10.md)；证据：[软件验证](../report/verification/recal-product-v1/demo45-software.json)、[冻结原件与授权](../report/verification/recal-product-v1/demo45-assets.json)、[演示整包核验](../report/verification/recal-product-v1/demo45-package-check.json)、[A现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。C本轮未操板，普通30秒包与旧blocked包各保留原身份。
 C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
 
 ## 已验证 / 未验证

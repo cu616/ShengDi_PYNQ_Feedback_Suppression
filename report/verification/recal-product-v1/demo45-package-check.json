@@ -1,0 +1,436 @@
+{
+  "A_source_commit": "e6379ef331762b3162542d6325a644f5b34934da",
+  "B_source_commit": "0b09ef60b603690f7f4872c8f1527d341ce1f6d6",
+  "source_commit": "032e5bc3f90f975fb7bf80223c732b9f1f8d8fbd",
+  "source_tree_clean": true,
+  "package": "shengdi-recal-0cabfc17-0b09ef6-demo45-8s-final.zip",
+  "package_sha256": "bb71a950ba7659f6de09e96ee77a5e6e4b9a66e414f6ff77aaee36c3c088a56e",
+  "package_bytes": 383079,
+  "payload_count": 40,
+  "total_zip_files": 41,
+  "all_payload_hashes_match": true,
+  "four_pins": [
+    "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+    "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+    "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+    "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5"
+  ],
+  "A_runtime_files_exact": 9,
+  "A_manifest_original_bytes": true,
+  "A_validation_scripts_packaged": false,
+  "B_source_exact": true,
+  "document_link_errors": [],
+  "check": {
+    "exit_code": 0,
+    "stdout": "{\"identity_ok\": true, \"deployment_ready\": true, \"missing\": []}\n"
+  },
+  "deployment_ready": true,
+  "missing": [],
+  "adapter_check_allowed": true,
+  "io_timeout_seconds": 150,
+  "compute_timeout_seconds": 150,
+  "run_seconds": 8,
+  "expected_runtime_gain_q12": 6900,
+  "maintenance_gain_q12": 1631,
+  "diagnostic_model": {
+    "filename": "bootstrap-model.json",
+    "sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8",
+    "scope": "zero maintenance/bootstrap only"
+  },
+  "frozen_cli_maintenance": {
+    "exit_code": 0,
+    "stdout": "{\"success\": true, \"receipt\": \"D:\\\\Flushbonading_Contest\\\\ShengDi_PYNQ_Feedback_Suppression\\\\materials\\\\staging\\\\tmp\\\\demo45-8s-window\\\\adapter-check.json\", \"compatibility_issues\": []}\n",
+    "success": true,
+    "compatibility_issues": []
+  },
+  "frozen_product_window": {
+    "scope": "exact frozen A + C with real B subprocesses; simulated I2C/MMIO/driver leaves, not physical board",
+    "cold": {
+      "state": "uncalibrated",
+      "configuration_ready": false,
+      "identity": {
+        "aux_db": null,
+        "aux_raw_left": 0,
+        "aux_raw_right": 0,
+        "hp_volume": 40,
+        "gain_q12": 1631,
+        "sample_rate_hz": 48828.125,
+        "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+        "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+        "hwh_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+        "helper_sha256": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5"
+      }
+    },
+    "first_scene": "5682388595f54699b051411b20458a22",
+    "first_state": "ended",
+    "observed_modes": [
+      "cancel",
+      "bypass"
+    ],
+    "audio_elapsed_seconds": 8.0,
+    "completed_frames": 390625,
+    "protection_history": [
+      {
+        "time_monotonic": 47466.171,
+        "state": "ready",
+        "scene_id": "5682388595f54699b051411b20458a22",
+        "request_id": null,
+        "op": null,
+        "phase": null,
+        "effective_mode": "muted",
+        "hardware_idle": true,
+        "capture_status": 262144,
+        "control_word": 452198424,
+        "protect_baseline": 262144,
+        "raw_status_available": true,
+        "capture_status_cached": false,
+        "control_word_cached": false,
+        "protection": {
+          "fault": 1
+        },
+        "saturation": {
+          "residual_clip_pre_gain": 0,
+          "prediction_saturations": 0,
+          "gain_saturations": 0
+        },
+        "input_clip": null,
+        "action": "idle_latch_recorded"
+      }
+    ],
+    "second_scene": "118b8d217a194108a1a21bbe7fa9b1ae",
+    "second_calibration_passed": true,
+    "B_phases": [
+      "input",
+      "fit",
+      "validate"
+    ],
+    "first_model_sha256": "97157269a0cfaafb58dc7d4265056d47345880882040658212c795d0eef9034c",
+    "second_model_sha256": "763dd205cc537863ae5fcd598274eeb6cca35b00b81a3ceb018c0a5b3b26ce56",
+    "actual_AUX_writes": [
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x400b",
+        5
+      ],
+      [
+        "0x400d",
+        5
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ],
+      [
+        "0x401c",
+        0
+      ],
+      [
+        "0x401e",
+        0
+      ],
+      [
+        "0x4023",
+        229
+      ],
+      [
+        "0x4024",
+        229
+      ]
+    ]
+  },
+  "export": {
+    "exit_code": 0,
+    "identity_ok": true,
+    "layout_count": 2,
+    "inventory_all_hashes_match": true,
+    "categories": {
+      "results": 2,
+      "algorithm": 10,
+      "captures": 16,
+      "models": 4,
+      "maintenance": 1
+    },
+    "files": [
+      "algorithm/32c2c9e584ff447cad9e7a5a4833e711-reply.json",
+      "algorithm/6859231527ee4a909980a01ee8cece4c-reply.json",
+      "algorithm/6859231527ee4a909980a01ee8cece4c-request.json",
+      "algorithm/78707da7ed0e4562996b8d316f244b50-reply.json",
+      "algorithm/78707da7ed0e4562996b8d316f244b50-request.json",
+      "algorithm/79157e1f1d574d8e828a554f6a66292d-reply.json",
+      "algorithm/89684e4a0b3c4d319520b361da1ac826-reply.json",
+      "algorithm/89684e4a0b3c4d319520b361da1ac826-request.json",
+      "algorithm/e135c75b5c81486db8794bb49d439b56-reply.json",
+      "algorithm/e135c75b5c81486db8794bb49d439b56-request.json",
+      "captures/runs/118b8d217a194108a1a21bbe7fa9b1ae/io/239d0b674dfd4546aeef1387c3ac3d7e/118b8d217a194108a1a21bbe7fa9b1ae_1_training_00.npz",
+      "captures/runs/118b8d217a194108a1a21bbe7fa9b1ae/io/239d0b674dfd4546aeef1387c3ac3d7e/118b8d217a194108a1a21bbe7fa9b1ae_1_training_01.npz",
+      "captures/runs/118b8d217a194108a1a21bbe7fa9b1ae/io/239d0b674dfd4546aeef1387c3ac3d7e/118b8d217a194108a1a21bbe7fa9b1ae_1_training_02.npz",
+      "captures/runs/118b8d217a194108a1a21bbe7fa9b1ae/io/239d0b674dfd4546aeef1387c3ac3d7e/118b8d217a194108a1a21bbe7fa9b1ae_1_training_03.npz",
+      "captures/runs/118b8d217a194108a1a21bbe7fa9b1ae/io/239d0b674dfd4546aeef1387c3ac3d7e/118b8d217a194108a1a21bbe7fa9b1ae_1_training_04.npz",
+      "captures/runs/118b8d217a194108a1a21bbe7fa9b1ae/io/239d0b674dfd4546aeef1387c3ac3d7e/118b8d217a194108a1a21bbe7fa9b1ae_1_training_05.npz",
+      "captures/runs/118b8d217a194108a1a21bbe7fa9b1ae/io/6992d371f86b4d32b5edda9d4c11f460/118b8d217a194108a1a21bbe7fa9b1ae_1_validation_00.npz",
+      "captures/runs/118b8d217a194108a1a21bbe7fa9b1ae/io/6992d371f86b4d32b5edda9d4c11f460/118b8d217a194108a1a21bbe7fa9b1ae_1_validation_01.npz",
+      "captures/runs/5682388595f54699b051411b20458a22/io/1e4573ffbc4c4455be40dd29ce1be34f/5682388595f54699b051411b20458a22_1_validation_00.npz",
+      "captures/runs/5682388595f54699b051411b20458a22/io/1e4573ffbc4c4455be40dd29ce1be34f/5682388595f54699b051411b20458a22_1_validation_01.npz",
+      "captures/runs/5682388595f54699b051411b20458a22/io/7718ce82ae9945609fcb0e289bbf43ba/5682388595f54699b051411b20458a22_1_training_00.npz",
+      "captures/runs/5682388595f54699b051411b20458a22/io/7718ce82ae9945609fcb0e289bbf43ba/5682388595f54699b051411b20458a22_1_training_01.npz",
+      "captures/runs/5682388595f54699b051411b20458a22/io/7718ce82ae9945609fcb0e289bbf43ba/5682388595f54699b051411b20458a22_1_training_02.npz",
+      "captures/runs/5682388595f54699b051411b20458a22/io/7718ce82ae9945609fcb0e289bbf43ba/5682388595f54699b051411b20458a22_1_training_03.npz",
+      "captures/runs/5682388595f54699b051411b20458a22/io/7718ce82ae9945609fcb0e289bbf43ba/5682388595f54699b051411b20458a22_1_training_04.npz",
+      "captures/runs/5682388595f54699b051411b20458a22/io/7718ce82ae9945609fcb0e289bbf43ba/5682388595f54699b051411b20458a22_1_training_05.npz",
+      "maintenance/adapter-check.json",
+      "models/118b8d217a194108a1a21bbe7fa9b1ae/763dd205cc537863ae5fcd598274eeb6cca35b00b81a3ceb018c0a5b3b26ce56/model.json",
+      "models/118b8d217a194108a1a21bbe7fa9b1ae/9d6e3b5331d4cf0d41df5e9ce9499ba9e694d0cb22921a0aeff8fc65a6e70d8d/candidate_model.json",
+      "models/5682388595f54699b051411b20458a22/67cafc852e8f599e0a67e2ede34a1eede63c401340d24f0801bced833b622dea/candidate_model.json",
+      "models/5682388595f54699b051411b20458a22/97157269a0cfaafb58dc7d4265056d47345880882040658212c795d0eef9034c/model.json",
+      "results/118b8d217a194108a1a21bbe7fa9b1ae.json",
+      "results/5682388595f54699b051411b20458a22.json",
+      "return-manifest.json",
+      "summary.json"
+    ],
+    "human_PCM_exported": false,
+    "example_return_sha256": "c4773ad797c0c79272dab070479da3c870e9ad65509b82ad725be009b7bb73c0",
+    "scope": "software-generated return; actual A return pending"
+  },
+  "installer_executed": false,
+  "board_operations": 0,
+  "formal_demonstration_accepted": false,
+  "limitation": "about 0.9 seconds button observation gap during Overlay reload remains unmeasured on hardware",
+  "phase_identity_gains": {
+    "training": [
+      0
+    ],
+    "validation": [
+      0
+    ],
+    "install": [
+      6900
+    ],
+    "run": [
+      6900
+    ]
+  },
+  "allowed_gain_q12": [
+    1631,
+    2303,
+    3254,
+    4096,
+    6900
+  ],
+  "demo_authorization": {
+    "source_commit": "eb881fe405fcafbf8b0e35cc8356de3213520366",
+    "evidence_path": "report/verification/audio-replay/demo-protocol-2026-11-02/README.md",
+    "evidence_sha256": "62191285a8658b6a7dc1a1d0661817196da471ddabfd4586df5bbab9a2937283",
+    "gain_q12": 6900,
+    "run_seconds": 8,
+    "runtime_gain_identity": "single fixed value, not membership in the maintenance allowed set",
+    "limitations": [
+      "bypass at this gain can howl loudly and stop by driver saturation protection, not software limiting",
+      "long-term loudspeaker headroom and safety not evaluated",
+      "about 0.9 seconds button observation gap remains unmeasured",
+      "A direct-entry evidence does not validate this product package or a new layout/model"
+    ]
+  }
+}
