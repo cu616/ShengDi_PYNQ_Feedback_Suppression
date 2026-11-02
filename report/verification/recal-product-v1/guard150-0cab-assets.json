@@ -1,0 +1,89 @@
+{
+  "source_commit": "e6379ef331762b3162542d6325a644f5b34934da",
+  "helper_sha256": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+  "runtime_manifest_sha256": "5ba2b29858224f930737422bc2210758df6e6da7ddce9b8e201d737ffb88618b",
+  "exact_A_source_bytes": true,
+  "B_commit": "0b09ef60b603690f7f4872c8f1527d341ce1f6d6",
+  "adopted": [
+    "MMIO read gate during Overlay construction",
+    "AUX cache during driver call",
+    "driver owns arm; remove pre-arm"
+  ],
+  "arm_baseline_callback": true,
+  "raw_poll_status_exposed": true,
+  "protection_baseline_verification": "software register substitutes; no board; see A probe_baseline.py and C test_recal_guard_payload.py",
+  "limitations": [
+    "button observation may be delayed about 0.9 seconds during download; not measured end-to-end",
+    "AUX cache not independently isolated on hardware; fresh identity checked after driver return",
+    "new C package still needs cold boot, CAL, START/30-second run and repeat CAL on hardware"
+  ],
+  "no_board_access": true,
+  "A_baseline_probe": {
+    "helper_sha256": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+    "without_rebaseline": {
+      "idle": {
+        "protected": true,
+        "protection": {
+          "fault": 1
+        },
+        "capture_status": 262144,
+        "mmio_held": false
+      },
+      "after_reset": {
+        "protected": false,
+        "protection": {},
+        "protect_baseline": 262144
+      },
+      "new_fault_in_run": {
+        "protected": false,
+        "protection": {},
+        "capture_status": 262144,
+        "mmio_held": false
+      }
+    },
+    "with_rebaseline": {
+      "idle": {
+        "protected": true,
+        "protection": {
+          "fault": 1
+        },
+        "capture_status": 262144,
+        "mmio_held": false
+      },
+      "after_reset": {
+        "protected": false,
+        "protection": {},
+        "protect_baseline": 262144
+      },
+      "arm_baseline": {
+        "returned": true,
+        "protect_baseline": 0
+      },
+      "new_fault_in_run": {
+        "protected": true,
+        "protection": {
+          "fault": 1
+        },
+        "capture_status": 262144,
+        "mmio_held": false
+      }
+    },
+    "cancel_still_refuses": true
+  },
+  "probe_stdout": "{\n  \"helper_sha256\": \"0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5\",\n  \"without_rebaseline\": {\n    \"idle\": {\n      \"protected\": true,\n      \"protection\": {\n        \"fault\": 1\n      },\n      \"capture_status\": 262144,\n      \"mmio_held\": false\n    },\n    \"after_reset\": {\n      \"protected\": false,\n      \"protection\": {},\n      \"protect_baseline\": 262144\n    },\n    \"new_fault_in_run\": {\n      \"protected\": false,\n      \"protection\": {},\n      \"capture_status\": 262144,\n      \"mmio_held\": false\n    }\n  },\n  \"with_rebaseline\": {\n    \"idle\": {\n      \"protected\": true,\n      \"protection\": {\n        \"fault\": 1\n      },\n      \"capture_status\": 262144,\n      \"mmio_held\": false\n    },\n    \"after_reset\": {\n      \"protected\": false,\n      \"protection\": {},\n      \"protect_baseline\": 262144\n    },\n    \"arm_baseline\": {\n      \"returned\": true,\n      \"protect_baseline\": 0\n    },\n    \"new_fault_in_run\": {\n      \"protected\": true,\n      \"protection\": {\n        \"fault\": 1\n      },\n      \"capture_status\": 262144,\n      \"mmio_held\": false\n    }\n  },\n  \"cancel_still_refuses\": true\n}\nVERDICT PASS\n",
+  "runtime_hashes": {
+    "audio_replay.bit": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+    "audio_replay.hwh": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+    "hw_api.py": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+    "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "replay_trial_repair.py": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+    "residual_tools.py": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+    "tone_round_guard.py": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+    "manifest.json": "5ba2b29858224f930737422bc2210758df6e6da7ddce9b8e201d737ffb88618b",
+    "physical-controls.json": "4cbbd5b80464744d03e9cd82fa3d31d8e9460eeca84b73d4ce9f80126962f0ef",
+    "upstream-product-adapter.json": "28ca66a835f6cf7208f4ceb24654105219b96019e8f3d0053ef7fbc7feb400ab",
+    "hardware-provenance.json": "68e92c6ecce7a0d32e9474a8c26e09cc429a938867fbfc051d6c939638fd4c36"
+  },
+  "physical_board_verified": false
+}

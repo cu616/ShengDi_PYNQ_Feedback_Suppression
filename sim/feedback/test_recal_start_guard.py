@@ -59,13 +59,14 @@ class StartGuardTests(unittest.TestCase):
         def clipped():
             return dict(original(),protected=True,protection={'input_clip_seen':1},
                         capture_status=(1<<22)|1,control_word=(1631<<16)|1,
-                        saturation={'residual_clip_pre_gain':1})
+                        saturation={'residual_clip_pre_gain':1},protect_baseline=0,mmio_held=False)
         hw.poll=clipped;app.tick()
         self.assertEqual(app.outcome,'input_overload');self.assertEqual(hw.mode,'muted')
         record=app.protection_history[-1]
         self.assertEqual(record['capture_status'],(1<<22)|1)
         self.assertEqual(record['protection'],{'input_clip_seen':1})
         self.assertEqual(record['saturation'],{'residual_clip_pre_gain':1})
+        self.assertEqual(record['protect_baseline'],0);self.assertFalse(record['capture_status_cached'])
 
     def fit_wait(self,timeout):
         cfg=sample_config();cfg.update(compute_timeout_seconds=timeout,quiet_seconds=0)

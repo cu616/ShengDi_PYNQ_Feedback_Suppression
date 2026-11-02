@@ -4,20 +4,20 @@
 
 C维护安装包内唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
-## 本轮 C 软件与阻断复核包（guard150 review）
+## 本轮可安装验收包（A 0cabfc17 / guard150）
 
-电脑仓库根目录交付 shengdi-recal-7ae449af-0b09ef6-guard150-blocked-final.zip 及同名 .zip.sha256，**仅供文件复核，不安装、不上板运行**。采用 A 已发布测试副本原字节：下载期间的 MMIO 读闸、驱动调用期间 AUX 缓存、run 不提前 arm；hw_api.py SHA 为 7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08。包内 hardware-provenance.json 绑定 A 的补丁提交与结果 SHA；不执行其验证 shell、不携带验证脚本。B 仍是 0b09ef6 原字节。
+电脑仓库根目录交付 shengdi-recal-0cabfc17-0b09ef6-guard150-final.zip 及同名 .zip.sha256。九项 A 运行时直接取 e6379ef331762b3162542d6325a644f5b34934da 的 Git 原字节，含原 manifest.json；不套旧补丁、不包 A 验证脚本。hw_api.py SHA=0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5，B 仍为原版 0b09ef6。
 
-独立[探测](../../report/verification/recal-product-v1/guard150-baseline-probe.json)发现 A 基线跨运行保留旧 fault，可能漏报本轮同一 fault；C 不跨线修改。此包 identity_ok=true、deployment_ready=false、adapter_check_allowed=false，missing 明列这一阻塞；--check 退出2，安装/常驻/维护调用均被拒绝。A 修正后 C 再按新 SHA 发可安装整包，不能手换本包文件。
+新包 identity_ok=true、deployment_ready=true、adapter_check_allowed=true、missing=[]，可供 A 独占安装验收。旧 7ae449af blocked 包保持禁止安装，不手换其中的文件。A 的新 arm 基线、取消及缓存标记已用寄存器替身复核；本次 C 未操板，不能代替下述四项真板验收。
 
 I/O 与计算预算均 150 秒，单次扩声音频仍 30 秒。A 的 ARM 拟合约 70 秒，不能再用旧 30 秒计算预算。静音且硬件任务已全部结束时，历史粘滞保护留证后继续接收 START；活动保护仍先停声。具体范围和日志字段见 [v9](../contracts/recal-runtime-v9.md)。
 
 [阶段时限与提示v8](../contracts/recal-runtime-v8.md)区分安静0100/正在采集0101。嵌入input会在看到实际armed后等待包内21969帧提示音及0.1秒尾声，再进入讲话0010；初始化时间不计入这次等待。当前A支持armed安全写灯，已封装启用；其他适配仍保留indicator_deferred并记录原因，不盲写受保护控制寄存器。若LD3受实际旁路影响亮起，标定阶段按LD0–LD2辨认阶段。
 
-以下是修复后可安装包的预备操作，**本 review 包不执行**。后续复核冷启动、CAL→ready→START→30秒结束和重复流程；不再尝试 overlay 复用。下载时按键观察可能晚约 0.9 秒，端到端未测，不宣称所有阶段实体 BTN3 ≤200 ms。维护前停旧 service/Notebook，只允许 A 一个硬件操作者；不要另开 PYNQ 会话。获放行的新包将解压到板卡 /home/xilinx/shengdi-install/recal-guard150/：
+本轮由 A 一次复核冷启动、CAL→ready→START→30秒结束和重复流程；不再尝试 overlay 复用。下载时按键观察可能晚约 0.9 秒，端到端未测，不宣称所有阶段实体 BTN3 ≤200 ms。维护前停旧 service/Notebook，只允许 A 一个硬件操作者；不要另开 PYNQ 会话。将 ZIP 整包解压到板卡 /home/xilinx/shengdi-install/recal-guard150-0cab/：
 
 ```bash
-BASE=/home/xilinx/shengdi-install/recal-guard150
+BASE=/home/xilinx/shengdi-install/recal-guard150-0cab
 sudo bash "$BASE/recal_entry.sh" --check
 sudo bash "$BASE/recal_entry.sh" \
   --adapter-check \
@@ -26,7 +26,7 @@ sudo bash "$BASE/recal_entry.sh" \
   --state-dir /home/xilinx/.local/state/shengdi
 ```
 
-A 在既定独占窗口安装复核时使用 sudo bash /home/xilinx/shengdi-install/recal-guard150/product-install.sh；安装器及 service 行为未改。断电重启应静音待标定，不先写 AUX。长按 BTN0 ≥1秒重标定；三连音结束后持续讲话至安静灯，0010 提示讲话，0100 等待安静，0101 训练/验证采样；计算可能再需约70秒。0110 就绪后按 BTN1 扩声，SW0 切换由 LD3 显示，BTN3 停止；30秒自然结束后回就绪灯。普通失败可长按 BTN0 新 scene 重来，身份混搭/无法静音仍锁定。按键检测与 abort 调用耗时分别记，不用旧9.8ms冒充端到端响应。
+A 在既定独占窗口安装复核时使用 sudo bash /home/xilinx/shengdi-install/recal-guard150-0cab/product-install.sh；安装器及 service 行为未改。断电重启应静音待标定，不先写 AUX。长按 BTN0 ≥1秒重标定；三连音结束后持续讲话至安静灯，0010 提示讲话，0100 等待安静，0101 训练/验证采样；计算可能再需约70秒。0110 就绪后按 BTN1 扩声，SW0 切换由 LD3 显示，BTN3 停止；30秒自然结束后回就绪灯。普通失败可长按 BTN0 新 scene 重来，身份混搭/无法静音仍锁定。按键检测与 abort 调用耗时分别记，不用旧9.8ms冒充端到端响应。
 
 维护模型固定为包内 bootstrap-model.json，SHA=6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8；只用于静音初始化/适配检查，不是现场通过模型。正式流程自动拟合并安装本轮模型；文件路径与 SHA 见 status.json 的 bundle，不手选旧模型。
 
@@ -34,9 +34,9 @@ A 在既定独占窗口安装复核时使用 sudo bash /home/xilinx/shengdi-inst
 
 ```bash
 sudo systemctl stop shengdi-product.service
-sudo bash /home/xilinx/shengdi-install/recal-guard150/recal_entry.sh \
+sudo bash /home/xilinx/shengdi-install/recal-guard150-0cab/recal_entry.sh \
   --state-dir /home/xilinx/.local/state/shengdi \
-  --export /home/xilinx/shengdi-install/recal-product-return-guard150.zip
+  --export /home/xilinx/shengdi-install/recal-product-return-0cabfc17.zip
 ```
 
 回包包含 return-manifest.json、summary.json、results/<scene>.json、算法收据、训练/验证原件、已安装模型及已有 maintenance/adapter-check.json；具体名称以 return-manifest.json 为准。protection_history 随 results 留证。人声 PCM、原片、授权书不自动导出。下方均为历史交付，旧 SHA 保留，不手换包内文件；以本节路径为准。

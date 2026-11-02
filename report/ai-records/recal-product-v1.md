@@ -277,3 +277,10 @@ A三处修法采用其仓库full_cal_guard3.sh中已发布六处字符串替换�
 独立探测又发现原A保护基线会跨运行掩盖同一fault：真实冻结poll+模拟状态输入，空闲bit18=1后baseline=262144；_current_op=run，状态0后再bit18=1，protected仍false。这不是新的真板观察，不据此否认A已完成的CAL与直接扩声；它是候选保护逻辑的确定漏报。C不能修改A底层，也不让已知漏报的包继续标deployment_ready。归一化A元数据追加blocker、adapter_check_allowed=false，改交禁止安装的review包，普通入口、安装器和维护链路都必须拒绝。原预检包保存在staging，未交付。已给用户一条可原样转A的消息，请A在新装载且取消检查通过后的before_start建立本轮基线，并返回原始状态字/缓存标记；这次转发是实际新增阻塞，不给B追加工作。
 
 最终review包40文件独立解压核验全部SHA、四钉值、入口和链接通过。--check退出2，identity_ok=true但deployment_ready=false；常驻与维护均在硬件对象构造前拒绝（factory调用0次）。installer仅静态确认set -eu及--check先于mkdir，未执行。空状态导出只验清单/隐私结构、0个scene，不冒报A现场回包。完整JSON见guard150-package-check.json；ZIP=shengdi-recal-7ae449af-0b09ef6-guard150-blocked-final.zip，SHA=6854654f71d39058f35c0b6dd8cce8823aca62aa55e8c04695fed0da0f632f72，冻结源=4f8c27c8aacba140596c6273b9a7ab7900307ef2。
+
+
+## 2026-11-02 A 0cabfc17原件重冻结
+
+用户转发A main=e6379ef331762b3162542d6325a644f5b34934da，功能提交0d349af6b6984c299cc04da1d57f90921a836b7f：五处before_start通过_arm_baseline先检查取消再回读基线；poll带capture_status/control_word/mmio_held/protect_baseline。完整helper SHA=0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5。A要求重钉四处并交非blocked整包；若仍封锁须明确原因。A接包后按既定四条真板验收，约0.9秒按键空窗保持未验收，不扩展本轮。
+
+C先查工作区干净并fetch/快进main，逐字核验A原件，未改A/B。冻结器改为复制该提交九项运行时与原manifest，不再应用旧测试脚本。独立载入A探测程序，只将其原硬编码本机路径绑定到C暂存原件，执行的MMIO仍为两个寄存器替身，未访问板卡。对照无rebaseline漏报、加回调报告新fault、取消拒绝与基线不动均与A返回一致；另测缓存/实读字标记，AST核对五回调。73项相关软件检查全部通过。C日志额外保存protect_baseline，原始字不反推。旧blocked包原SHA保留，新包放行范围为A现场四条验收，不能提前写成整机通过。

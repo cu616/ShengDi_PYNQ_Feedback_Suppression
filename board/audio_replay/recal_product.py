@@ -569,6 +569,7 @@ class Product:
             request_id=request.get('request_id'),op=request.get('op'),phase=request.get('phase'),
             effective_mode=poll.get('effective_mode'),hardware_idle=self.hw_idle.is_set(),
             capture_status=poll.get('capture_status'),control_word=poll.get('control_word'),
+            protect_baseline=poll.get('protect_baseline'),
             raw_status_available=poll.get('capture_status') is not None,
             capture_status_cached=poll.get('capture_status_cached',poll.get('mmio_held')),
             control_word_cached=poll.get('control_word_cached',poll.get('mmio_held')),

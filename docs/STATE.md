@@ -27,9 +27,9 @@ A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、�
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：已同步 main 并修正计算预算为150秒；活动保护仍停声，已静音且硬件任务全部退出时的粘滞位留证后接收START。70项相关软件检查通过；采用A已发布六处补丁组出的原测试副本字节，未改A/B源码。独立探测另发现A基线跨运行保留旧fault，新运行同一fault会漏报，因此候选改为禁止安装的review包。
-**当前卡点**：等A在新驱动即将实际arm时建立本轮保护基线，并提供原始状态字/缓存标记；证据为[基线探测](../report/verification/recal-product-v1/guard150-baseline-probe.json)。修正版未到前不发可安装包；后续才由A独占复核冷启动、CAL、START与重复流程。闸门约0.9秒按键观察空窗端到端未测，不能宣称全阶段≤200ms；overlay复用按对照结果停止。
-入口：[产品操作单](ref/recal-product.md)；证据：[软件验证](../report/verification/recal-product-v1/guard150-software.json)、[阻断包核验](../report/verification/recal-product-v1/guard150-package-check.json)、[A真板对照](../report/verification/audio-replay/guard-2026-11-02/README.md)。A完成过完整CAL与硬件层运行的证据保留；此处不把新C整包实机验收提前报通过。
+**最后动作**：已核对A=e6379ef的0cabfc17原件，九项运行时直接取Git字节；独立复跑新arm基线、预取消和MMIO缓存标记，73项相关软件检查通过。C保护历史保留原始状态字、基线和缓存标记；计算/I/O均150秒、运行30秒，旧blocked包保持不放行。
+**当前卡点**：新0cab整包交A独占完成冷启动、完整CAL、BTN1扩声30秒及重复CAL/START真板验收；本轮C未操板，不能提前报整机验收通过。约0.9秒下载期按键观察空窗仍未实测，不属于本轮改动；overlay复用不启用。
+入口：[产品操作单](ref/recal-product.md)；证据：[73项软件验证](../report/verification/recal-product-v1/guard150-0cab-software.json)、[原件与基线复核](../report/verification/recal-product-v1/guard150-0cab-assets.json)、[A真板对照](../report/verification/audio-replay/guard-2026-11-02/README.md)。既有A真板成功记录保留，新C整包仍按上述四项验收。
 C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
 
 ## 已验证 / 未验证

@@ -1,22 +1,17 @@
-"""Stage A's exact published guard patch and B's frozen algorithm, without board I/O.
+"""Stage A's committed baseline repair and B's frozen algorithm without board I/O.
 
-This is payload assembly, not a second entry or a hardware implementation. The
-six replacements are read from A's committed script; the resulting bytes must
-match A's reported test-copy digest before they can be packaged.
+All nine A runtime files are copied as Git blob bytes; no patch is applied.
 """
 import argparse
-import ast
 import hashlib
 import json
 from pathlib import Path
 import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
-A='dd0825065462a8433bde2ffaff120798ae73ca2f'
+A='e6379ef331762b3162542d6325a644f5b34934da'
 B='0b09ef6'
-OLD='8799f40b6d9f7ecbfa8f9b2491b084f046b4b9d8d7ffd013feca0c84dbca95e0'
-GUARDED='7ae449af37f270503a8448892ee0dba03d790b54fb718c8b852e8de68843ee08'
-PATCH='report/verification/audio-replay/guard-2026-11-02/full_cal_guard3.sh'
+HELPER='0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5'
 
 
 def blob(ref,path):
@@ -29,54 +24,42 @@ def sha(raw):return hashlib.sha256(raw).hexdigest()
 def stage(destination):
     out=Path(destination).resolve();out.mkdir(parents=True,exist_ok=False)
     hardware=out/'a';hardware.mkdir();algorithm=out/'b';algorithm.mkdir()
-    script=blob(A,PATCH)
-    python=script.decode().split("<<'PY'\n",1)[1].split('\nPY\n',1)[0]
-    assignment=next(n for n in ast.parse(python).body if isinstance(n,ast.Assign)
-                    and any(isinstance(t,ast.Name) and t.id=='edits' for t in n.targets))
-    edits=ast.literal_eval(assignment.value)
     raw=blob(A,'board/audio_replay/v3-io/hw_api.py')
-    if sha(raw)!=OLD:raise ValueError('A patch base differs from its published input')
-    text=raw.decode().replace('\r\n','\n')
-    for before,after in edits:
-        if text.count(before)!=1:raise ValueError('A patch anchor is not unique')
-        text=text.replace(before,after)
-    guarded=text.encode()
-    if len(edits)!=6 or sha(guarded)!=GUARDED:raise ValueError('not A reported guarded bytes')
-    runtime=json.loads(blob(A,'board/audio_replay/v3-io/manifest.json'))
+    if sha(raw)!=HELPER or raw!=blob(A,'board/audio_replay/hw_api.py'):
+        raise ValueError('A helper identity or root/v3 copy differs')
+    manifest=blob(A,'board/audio_replay/v3-io/manifest.json');runtime=json.loads(manifest)
     hashes={}
     for name,digest in runtime['hashes'].items():
         original=blob(A,'board/audio_replay/v3-io/'+name)
         if sha(original)!=digest:raise ValueError('A runtime mismatch: '+name)
-        content=guarded if name=='hw_api.py' else original
-        (hardware/name).write_bytes(content);hashes[name]=sha(content)
-    runtime['hashes']=dict(hashes)
-    (hardware/'manifest.json').write_text(json.dumps(runtime,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    hashes['manifest.json']=sha((hardware/'manifest.json').read_bytes())
+        (hardware/name).write_bytes(original);hashes[name]=sha(original)
+    (hardware/'manifest.json').write_bytes(manifest);hashes['manifest.json']=sha(manifest)
     original_contract=blob(A,'docs/contracts/product-adapter.json')
     contract=json.loads(original_contract)
+    if contract['expected_identity']['helper_sha256']!=HELPER or contract['package_files_sha256']!=runtime['hashes']:
+        raise ValueError('A adapter contract differs from runtime manifest')
     for name,content in [('physical-controls.json',blob(A,'docs/contracts/physical-controls.json')),
                          ('upstream-product-adapter.json',original_contract)]:
         (hardware/name).write_bytes(content);hashes[name]=sha(content)
-    provenance=dict(base_commit=A,base_helper_sha256=OLD,patch_path=PATCH,
-        patch_sha256=sha(script),patch_edits=len(edits),result_helper_sha256=GUARDED,
-        exact_A_reported_bytes=True,B_commit=subprocess.check_output(['git','rev-parse',B],cwd=ROOT).decode().strip(),
+    provenance=dict(source_commit=A,helper_sha256=HELPER,runtime_manifest_sha256=sha(manifest),
+        exact_A_source_bytes=True,B_commit=subprocess.check_output(['git','rev-parse',B],cwd=ROOT).decode().strip(),
         adopted=['MMIO read gate during Overlay construction','AUX cache during driver call','driver owns arm; remove pre-arm'],
-        raw_poll_status_exposed=False,protection_baseline_verified=False,
+        arm_baseline_callback=True,raw_poll_status_exposed=True,
+        protection_baseline_verification='software register substitutes; no board; see A probe_baseline.py and C test_recal_guard_payload.py',
         limitations=['button observation may be delayed about 0.9 seconds during download; not measured end-to-end',
                      'AUX cache not independently isolated on hardware; fresh identity checked after driver return',
-                     'new C package still needs START/30-second run and repeat CAL on hardware',
-                     'reproduced software fault: idle baseline hides the same fault in a later capture; installation blocked'],
+                     'new C package still needs cold boot, CAL, START/30-second run and repeat CAL on hardware'],
         no_board_access=True)
     (hardware/'hardware-provenance.json').write_text(json.dumps(provenance,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     hashes['hardware-provenance.json']=sha((hardware/'hardware-provenance.json').read_bytes())
-    identity=dict(contract['expected_identity'],helper_sha256=GUARDED,gain_q12=1631)
+    identity=dict(contract['expected_identity'],gain_q12=1631)
     meta=dict(contract='recal-product-v1',kind='hardware',source_commit=A,source_derivation=provenance,
-        field_approved=True,adapter_check_allowed=False,field_trial_allowed=False,
+        field_approved=True,adapter_check_allowed=True,field_trial_allowed=False,
         hashes=hashes,expected_identity=identity,allowed_gain_q12=contract['gain_sets']['run_gain_q12'],
         capabilities={k:True for k in ('buttons','indicator','nonintrusive_events','abort_mutes',
                                       'prepared_capture','bounded_run','mode_readback')},
         allowed_calibration_gain_q12=[0],diagnostic_model='bootstrap-model.json',
-        blockers=['A protection baseline retains an idle fault across a new capture; a repeated runtime fault is hidden'],
+        blockers=[],
         upstream_blockers=contract.get('blockers',[]),
         approval_scope='A-supervised integration validation; not formal demonstration or 200ms button latency acceptance',
         config=dict(hp_volume=40,aux_db=0.,input_mode='embedded',speech_seconds=2.5,

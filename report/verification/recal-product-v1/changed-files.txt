@@ -233,3 +233,19 @@ report/verification/recal-product-v1/changed-files.txt
 report/verification/recal-product-v1/guard150-software.json
 report/verification/recal-product-v1/guard150-package-check.json
 report/verification/recal-product-v1/guard150-baseline-probe.json
+
+# 2026-11-02 A0cab原件重冻结
+scripts/freeze_recal_guard.py
+board/audio_replay/recal_product.py
+sim/feedback/test_recal_guard_payload.py
+sim/feedback/test_recal_start_guard.py
+docs/contracts/README.md
+docs/contracts/recal-runtime-v9.md
+docs/STATE.md
+docs/log/progress.md
+docs/ref/recal-product.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/changed-files.txt
+report/verification/recal-product-v1/guard150-0cab-software.json
+report/verification/recal-product-v1/guard150-0cab-assets.json
+report/verification/recal-product-v1/guard150-0cab-package-check.json
