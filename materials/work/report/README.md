@@ -13,7 +13,7 @@
 
 正文中的 `@figure`、`@photo`、`@equation` 和 `@break` 是生成器标记。Word 可直接编辑；若修改 Word，请勿直接重跑生成器覆盖，先将必要改动同步回正文。
 
-在仓库根目录运行 `python materials/work/report/build_report.py` 生成 Word。用 Word 打开后导出同名 PDF。此次使用 Codex 捆绑 Python 生成，本机 Word 导出 PDF，pypdfium2 渲染后逐页查看；14 页无空白页。PDF 为 724301 字节，低于页面要求的 50 MB。
+在仓库根目录运行 `python materials/work/report/build_report.py` 生成 Word。用 Word 打开后导出同名 PDF。此次使用 Codex 捆绑 Python 生成，本机 Word 导出 PDF，pypdfium2 渲染后逐页查看；14 页无空白页。PDF 为 725753 字节，低于页面要求的 50 MB。
 
 ## 补拍与定稿
 
@@ -34,3 +34,5 @@
 - 历史资源、时序和使用记录：`docs/STATE.md` 关键数字及其链接；报告逐项注明版本或配置。
 
 定稿前保留实测条件；无需为完善报告重新开展参数扫描。需要补充的是实际照片与最终包的既有验收结论。
+
+2026-11-03 初改：关键词改为声反馈抵消、逐帧定点处理、声学通路重标定；1.5 节以 FPGA 运算时序、定点余量和模型更新方式说明技术贡献。正文、Word/PDF 同步提交，其他人优先修改 report.md 后重新生成。
