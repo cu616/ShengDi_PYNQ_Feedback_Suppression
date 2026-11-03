@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<title>Vivado 实现后资源占用 · audio_replay v3</title>
+<title>Vivado 实现后资源占用 · 实装位流</title>
 <style>
   html,body{margin:0;padding:0;background:#0b0e13;color:#e8eef7;
     font-family:"Cascadia Mono","Consolas","DejaVu Sans Mono",monospace;}
@@ -22,19 +22,19 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Vivado 实现后资源占用 <span class="tag">audio_replay v3（实装版本）</span></h1>
-  <p class="sub">器件 xc7z020clg400-2（PYNQ-Z2）· 实现（place &amp; route）后 utilization 报告</p>
+  <h1>Vivado 实现后资源占用 <span class="tag">实装位流 · Design State: Routed</span></h1>
+  <p class="sub">器件 xc7z020clg400-1（PYNQ-Z2）· Vivado 2018.3 · 与板上实际运行的位流同一实现</p>
 
   <table>
     <tr><th>资源</th><th style="text-align:right">使用</th><th style="text-align:right">可用</th><th style="text-align:right">占比</th></tr>
     <tr><td>Block RAM Tile（RAMB36/FIFO）</td><td class="num">112</td><td class="num">140</td><td class="num pct">80.00 %</td></tr>
     <tr><td>DSP48E1</td><td class="num">3</td><td class="num">220</td><td class="num pct low">1.36 %</td></tr>
-    <tr><td>Slice LUTs</td><td class="num">3 588</td><td class="num">53 200</td><td class="num pct low">6.74 %</td></tr>
-    <tr><td>Slice Registers（FF）</td><td class="num">5 018</td><td class="num">106 400</td><td class="num pct low">4.72 %</td></tr>
+    <tr><td>Slice LUTs</td><td class="num">3 587</td><td class="num">53 200</td><td class="num pct low">6.74 %</td></tr>
+    <tr><td>Slice Registers（FF）</td><td class="num">5 030</td><td class="num">106 400</td><td class="num pct low">4.73 %</td></tr>
   </table>
 
   <p class="note">
-    数据来源：Vivado 实现后导出的 utilization 报告（随实装位流归档）。<br>
+    数据来源：实装位流对应实现的 routed checkpoint（Vivado 2018.3 重新导出，Design State: Routed）。<br>
     该位流 sha256 = 322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e。<br>
     资源占用反映本系统（含 512 抽头 FIR 与音频帧缓冲）在 xc7z020 上的实现规模。
   </p>
