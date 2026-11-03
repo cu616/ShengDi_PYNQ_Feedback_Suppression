@@ -26,10 +26,10 @@ A/C完成整机可靠性与现场验收；本轮队长按用户要求接手B的+
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：按队长授权实现protected状态短按BTN2免标定恢复ready，同scene最多3次，BTN1再启动；模型SHA/硬件收尾/静音/错误锁存检查保留。基线4596/60秒、4训练2验证，所有阶段含runtime为[0,4596]、prepare保留历史档，B采用main的2026-11-02.1原件；A/驱动/RTL/算法未改。
-**当前卡点**：A实机进展见A段，复频响计算由队长接手B任务；原相位根因表已发现不自洽，不据此变更正式包。C包的现场验收与身份状态检查按现有任务继续。
-入口：[产品操作单](ref/recal-product.md)、[BTN2约定](contracts/recal-product-v1.md)、[A收束证据](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)；本轮[三个单测](../report/verification/recal-product-v1/resume3-software.json)。C未操板，既有声压/热安全、按键空窗、install bit_exact异常未验收项仍保留。
-C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
+**最后动作**：原BTN2恢复包保持原ZIP/manifest，A已实机验收的证据保留。新批量调度C侧接入就绪：训练/验证按能力声明各一次驱动调用，逐段原NPZ/状态JSON/算术bit_exact与环形缓存保留证明在后台复核；5个批量/面板用例及原3个BTN2用例共8项软件检查通过。只改C编排及获授权的hw_api薄调用层，A驱动/位流/RTL/算法和运行参数未改。
+**当前卡点**：A驱动尚无replay_capture_plan，实际批量路径未启用。现驱动停声后只读末尾16384帧，不能将长运行尾窗拆成多段冒称独立捕获；需A提供运行中安全取窗入口。训练≤7秒/总CAL≤125秒均未实测，不出提速正式包，现有已验包不替换。接口及文件边界见[产品约定v3](contracts/recal-product-v1.md)。
+证据：[静态边界](../report/verification/recal-product-v1/capture-plan-review.json)、[8项软件检查](../report/verification/recal-product-v1/capture-plan-software.json)、[原包A验收](../report/verification/recal-product-v1/resume3-acceptance.json)。fixture副本仅用于新批量采集，原模型/旧捕获不改；C未操板，声压/热安全、按键空窗和旧install异常仍保留。
+C入口仍为recal_product_entry.sh（包内recal_entry.sh），不新增正式入口。A下一步只实现驱动批量函数，C待其原件后统一重钉整包。
 
 ## 已验证 / 未验证
 

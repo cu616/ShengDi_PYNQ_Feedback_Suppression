@@ -1,0 +1,29 @@
+{
+  "scope": "static source review, not board measurement",
+  "review_commit": "e553471359bea9ca5c7169b3a856bf907ee9d441",
+  "driver_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+  "rtl_sha256": "87bc96178c7742dd4a9530f2414ad16ecd0a48bfd162987e8ed794fc22863d8d",
+  "current_driver_batch_api": false,
+  "capture_ring_frames": 16384,
+  "sample_rate_hz": 48828.125,
+  "ring_seconds": 0.33554432,
+  "current_driver_behavior": "arm one bounded run; disarm/mute; read min(16384,completed) from tail ring",
+  "overwrite_evidence": "RTL writes memory[completed_count % CAPTURE_FRAMES]; current driver read_ring occurs only after control=0",
+  "existing_read_mmio_operations_per_frame": 8,
+  "continuous_minimum_mmio_operations_per_second": 390625.0,
+  "required_A_change": "replay_capture_plan: live chunk drain with before/after counter proof; one overlay/source/arm; per-window original NPZ/status/verify_replay",
+  "no_RTL_or_driver_modified_by_C": true,
+  "hardware_speedup_verified": false,
+  "hardware_wall_target_seconds": 7,
+  "cal_wall_target_seconds": 125,
+  "source_schedule": {
+    "stride": 16388,
+    "window_frames": 16384,
+    "valid_frames": 16382,
+    "training_source_frames": 65550,
+    "training_budget": 65552,
+    "validation_source_frames": 32774,
+    "validation_budget": 32776
+  },
+  "board_operations": 0
+}

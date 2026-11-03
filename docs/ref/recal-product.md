@@ -4,6 +4,10 @@
 
 C维护安装包内唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
+## 批量采集使用条件
+
+仅当A驱动声明recal-capture-plan-v1并提供真实批量入口，training/validation才自动走单次调用；接口缺失时维持原串行模式，不能称已提速。段文件、原有bit_exact、保护与取消必须保留，任一段失败整批拒绝。接口和所有权见[产品约定v3](../contracts/recal-product-v1.md)；阶段速度与是否可出新正式包查[STATE](../STATE.md)。不要单换现有包内驱动/辅助文件，待整包哈希重新冻结后再安装。
+
 ## 本轮4596/60秒保护恢复包
 
 电脑交付 shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip 与同名SHA文件；唯一入口仍为包内recal_entry.sh。基线固定4596（+1.0 dB）、每次60秒；每档训练4段、独立验证2段，算法原字节为recal-algorithm-2026-11-02.1。非prepare阶段phase_gain_q12均为[0,4596]，prepare保留历史批准档并加入4596；维护自检仍1631/3秒。

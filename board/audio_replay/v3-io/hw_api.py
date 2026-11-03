@@ -463,6 +463,9 @@ class ProductHardware:
                                              're-downloads the bitstream; that path is not what this flag '
                                              'claims.',
                 'bounded_run': True, 'mode_readback': True,
+                'capture_plan_batch': ('recal-capture-plan-v1' if
+                    getattr(self._driver(),'CAPTURE_PLAN_API',None)=='recal-capture-plan-v1'
+                    and callable(getattr(self._driver(),'replay_capture_plan',None)) else None),
                 'led_legend': LED_LEGEND, 'button_legend': BUTTON_LEGEND,
                 'allowed_gain_q12': self.allowed_gain_q12,
                 'max_run_frames': 3000000, 'max_run_seconds': round(3000000 / 48828.125, 2)}
@@ -873,6 +876,12 @@ class ProductHardwareV2(ProductHardware):
                 'legend': LED_LEGEND.get(format(mask, '04b'), 'custom'), 'effective_mode': mode}
 
     # ---- training / validation: execute the encapsulated plan -------------------------
+    def perform_capture_plan(self, request, cancel_event=None):
+        """C-owned scheduling bridge; A implements the driver batch entry."""
+        import threading
+        from recal_link import perform_capture_plan
+        return perform_capture_plan(self,request,cancel_event or threading.Event())
+
     def _run_plan(self, request, op, cancel_event=None):
         import hashlib
         import numpy as np
