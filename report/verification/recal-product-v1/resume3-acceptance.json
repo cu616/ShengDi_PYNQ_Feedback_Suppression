@@ -1,0 +1,61 @@
+{
+  "topic": "recal-product-v1 BTN2 protection-resume package, A-side board acceptance",
+  "package": "shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip",
+  "package_sha256": "b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4",
+  "manifest_sha256": "beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef",
+  "source_commit": "4de1834aff7ac92b66e9028a7d568e43ca189a17",
+  "installed_release": "/opt/shengdi/releases/beb36216d26b6cbb",
+  "board": "PYNQ-Z2, audio_replay.bit, hp_volume=40, AUX 0 dB, gain_q12=4596, run_seconds=60",
+  "checks": {
+    "zip_sha256_on_board": "b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4",
+    "manifest_sha256_on_board": "beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef",
+    "files": 41,
+    "manifest_hashes_match": true,
+    "recal_entry_check": "{\"identity_ok\": true, \"deployment_ready\": true, \"missing\": []}",
+    "config": {
+      "expected_gain_q12": 4596,
+      "run_seconds": 60,
+      "training_captures": [4, 4, 4],
+      "validation_captures": [2, 2, 2],
+      "allowed_gain_q12": [1631, 2303, 3254, 4096, 5786, 4596],
+      "phase_gain_q12_run": [0, 4596],
+      "phase_gain_q12_runtime": [0, 4596],
+      "algorithm": "recal-algorithm-2026-11-02.1"
+    }
+  },
+  "unit_tests": {
+    "runner": "/usr/local/share/pynq-venv/bin/python sim/feedback/test_recal_resume.py -v (board, software stub)",
+    "cases": [
+      "test_normal_resume_uses_same_model_and_start_runs_without_CAL: ok",
+      "test_changed_model_hash_is_rejected_and_stays_protected: ok",
+      "test_fourth_resume_is_rejected_after_three_in_same_scene: ok"
+    ],
+    "result": "Ran 3 tests in 7.719s, OK"
+  },
+  "board_acceptance": {
+    "scene": "e73eaed98e3c4ff585abd49f6ae01356",
+    "model_sha256": "fe4c52445751d3b072b23fe85aa4cf6ee7211a471948e19c3a0b562fbd304891",
+    "coefficients_sha256": "a39a73496b1dd274dd5457c2069ea1b731cfbe71e83e47d14dc76f0d0ca239a8",
+    "steps": [
+      {"step": "CAL via BTN0", "result": "pass", "evidence": "validating -> installing -> ready at monotonic 9225.6; fit valid_pass"},
+      {"step": "BTN1 amplification", "result": "pass", "evidence": "running 9310.9, effective mode cancel at 9313.9"},
+      {"step": "SW0 -> howl -> protection", "result": "pass", "evidence": "protected 9321.8, 4 LEDs"},
+      {"step": "BTN2 short press -> ready", "result": "pass", "evidence": "ready 9329.6; status resumed_from=protected, resume_count=1..3 across repeated trials"},
+      {"step": "BTN1 again after resume", "result": "pass", "evidence": "running 9332.1, cancel 9334.3"},
+      {"step": "BTN1 normal stop -> ended (runtime whitelist fix)", "result": "pass", "evidence": "stopping 9355.7 -> ended 9399.9, outcome=user_cancelled, NO four-light failure (yesterday this path raised hardware_error '阶段数字增益回读不符')"},
+      {"step": "fourth resume in same scene rejected", "result": "pass", "evidence": "after resume_count reached 3, state stayed protected for 34.4 s until CAL; unit test covers the message"}
+    ],
+    "run_statuses": [
+      {"run": 1, "stop_reason": "guard", "frames": 371208, "seconds": 7.6, "gain_saturations": 13, "input_full_scale_seen": false,
+       "note": "expected: SW0 flip -> bypass howl -> protection"},
+      {"run": 2, "stop_reason": "incomplete", "frames": 1055134, "seconds": 21.61, "gain_saturations": 0, "input_full_scale_seen": false,
+       "note": "resumed run stopped by operator; normal end, no protection"}
+    ],
+    "product_hang": false
+  },
+  "observations": [
+    "During CAL captures the live mode briefly read 'bypass' at each capture start (4 times). Training/validation captures run with direct_only=True, zero_coeff=True and gain_q12=0, so the recorded audio is unaffected (played = source), but the SW0 input appeared to read high intermittently; operator confirms the switch was physically moved only for the howl step. Flagged as a hardware observation, not a package defect.",
+    "Operator stop (BTN1) took about 44 s from 'stopping' to 'ended' because the run was still executing its requested 60 s window; the request eventually returned as 'incomplete' after 21.61 s of audio. Not a functional failure, but the stop latency is worth watching."
+  ],
+  "scope": "A-side acceptance only: package hashes, --check, 3 unit cases, one full product-panel flow (CAL -> run -> protection -> BTN2 resume -> run -> normal end) plus the previous 3-resume sequence. No new acoustic acceptance criteria."
+}

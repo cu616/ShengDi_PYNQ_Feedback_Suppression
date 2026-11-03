@@ -8,29 +8,28 @@
 
 ## 当前唯一目标
 
-A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、动画、图表及海报交付。按用户 2026-11-02 决定，三线合入 main 后在 main 小步提交；文件职责、单板排他和人工转发保留，具体见 [工作流](WORKFLOW.md#9-提交与拉取让人只按回车)。
+A/C完成整机可靠性与现场验收；本轮队长按用户要求接手B的+3 dB高频复算，既有视频、图表及海报交付保留。按用户 2026-11-02 决定，三线合入 main 后在 main 小步提交；文件职责、单板排他和人工转发保留，具体见 [工作流](WORKFLOW.md#9-提交与拉取让人只按回车)。
 
 ## 三条线
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**：2026-11-02 真板跑通完整链路并给出演示参数：冷启动不写 AUX 进待标定、CAL `valid_pass`（L1 2.170、验证带内抑制中位 +4.63 dB）、BTN1 扩声、SW0 现场切换起振。逐点二分得旁路边界 +2.1 dB（±0.1，不可复现）、抵消边界 +5.0/+5.5 dB，ASG 约 3.2 dB（2.9–3.4）；演示点 +3.0 dB，啸叫窗口 3.49 秒。按队长授权就地改包把扩声从 8 秒延到 60 秒（`run_seconds` 8→60，重算清单），并发起判据代改（`max|conv(h,ref)| < 0.30` 主判据、`L1` 退为 8.0 兜底、去掉 `REJECT_SCALE` 重试），三组原被拒模型离线验证全部放行；算法版本身份升至 `recal-algorithm-2026-11-02.1`。
-证据：[演示协议与现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)、[io150 核验](../report/verification/audio-replay/package-io150-2026-11-02/README.md)、[运行目录修复](../report/verification/audio-replay/run-dir-fix-2026-11-02/README.md)、[交接](ref/a-line-handover.md)。
-**当前卡点**：+1 dB 基线保留（包 de2a640e、模型 a432ad1…、场景 6b2e43d4、60.00 秒 completed）。主线已转 +3 dB：入口对照证明直接入口与产品入口执行**同一条 _run_v2 硬件路径**，差异仅增益来源与取消/记账；现场 4 次 +3 dB（q12 5786、arm 回读确认）——静音 6 秒完整通过，真人说话均在 **0.06–0.11 秒**输出饱和，主峰 **8353.6 Hz**。根因定量：8.35–8.5 kHz 处 \|H\|≈1.28、模型 \|Ĥ\|≈1.08–1.14、**相位差 −152°/+32°** 使复残差 0.81–1.14，+3 dB 环路增益 1.15–1.61**>1**；现有验证只覆盖 300–460 Hz（相位差仅 16.9°、环路 0.65），故一直通过。已作为具体算法问题交回队长（失败频段/配置/数据/所需改善：8.3–8.6 kHz 复残差降到 ≤0.70，并把验证频带扩展到该段）。A 侧未改包/模型/算法。详见 [队长复盘 §12](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)。
-本轮保留仓库 `board/audio_replay/recal_entry.sh` 为 A 原旧入口，不能当作 C 常驻服务启动脚本；旧脚本保留不等于重新推荐为最终产品。
+**最后动作**：2026-11-03 A 验收 C 的 BTN2 恢复包（`beb36216d26b6cbb`）：ZIP/manifest 哈希一致、41 文件清单匹配、`--check` 通过、3 个单测全过；板上面板实测 CAL→BTN1→SW0 啸叫→保护→**BTN2 恢复成功**（`resumed_from=protected`，`resume_count` 1→3，第 4 次被拒）→恢复后再扩声→BTN1 正常停止→`ended`，且昨天必失败的 runtime 白名单路径已修复。证据 [验收记录](../report/verification/recal-product-v1/resume3-acceptance.json)。+1 dB 真人 60 秒基线保留。
+**当前卡点**：BTN2 恢复包已通过 A 侧验收，等 C 的正式包确认后即可用于演示与交付。+3 dB 讲话试次仍在 0.06–0.11 秒输出饱和、峰约 8.35 kHz；A 的复频响表被 B/队长判定不自洽，相位根因改为**待核**，A 不修改也不据该表改 RTL，等 B 段复算结论。两项观察：CAL 采集期间 SW0 输入偶发读到 bypass（采集为 gain=0/zero_coeff 开环，音频不受影响）；操作员停止到 ended 约 44 秒延迟。
+本轮保留仓库 `board/audio_replay/recal_entry.sh` 为A原旧入口，C常驻入口另见C段。
 
 ### B 数据与算法／提交材料
 
-**最后动作**：数值算法冻结于 recal-algorithm-2026-11-01.1。视频侧已交核心原理动画、两张数据图、165 秒粗剪与执行分镜；海报中英两版改为纯文字替换——与 AMD 模板逐个形状比对，50 个形状只少 9 条黄色填写说明，5 张图片原位原尺寸换标注框，文字只改 `<a:t>`。2026-11-02 按队长授权把交付线从 B 分支转到 main：main 快进到 `132a5dd` 后，本线两个提交（海报重做、动画文字位置）已直推 main 至 `52beaaf`。当前任务转视频和材料收尾，不新增算法或参数扫描。
-**当前卡点**：+1 dB 基线保留（包 de2a640e、模型 a432ad1…、场景 6b2e43d4、60.00 秒 completed）。主线已转 +3 dB：入口对照证明直接入口与产品入口执行**同一条 _run_v2 硬件路径**，差异仅增益来源与取消/记账；现场 4 次 +3 dB（q12 5786、arm 回读确认）——静音 6 秒完整通过，真人说话均在 **0.06–0.11 秒**输出饱和，主峰 **8353.6 Hz**。根因定量：8.35–8.5 kHz 处 \|H\|≈1.28、模型 \|Ĥ\|≈1.08–1.14、**相位差 −152°/+32°** 使复残差 0.81–1.14，+3 dB 环路增益 1.15–1.61**>1**；现有验证只覆盖 300–460 Hz（相位差仅 16.9°、环路 0.65），故一直通过。已作为具体算法问题交回队长（失败频段/配置/数据/所需改善：8.3–8.6 kHz 复残差降到 ≤0.70，并把验证频带扩展到该段）。A 侧未改包/模型/算法。详见 [队长复盘 §12](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)。
-入口：[视频方案](../materials/planning/video-plan.md)、[教程](../materials/learning/index.html)。粗剪仍有实拍占位和待核数字，不能直接当提交成片。
+**最后动作**：队长同步A阻塞证据e553471，确认fixture在install才绑定，修复历史数据只读分析：按原场景收据核验模型双SHA与采集文件SHA，保留旧标签并限定例外；固定板上根路径，失败也输出诊断JSON。11项软件测试通过。证据见[独立复算](../report/verification/highfreq-fix-2026-11-03/README.md)。
+**当前卡点**：待A重跑单文件只读脚本返回JSON；不重新标定、不改产品。4.1 kHz已纳入输出；新阶梯L1约3.96模型与旧3.662模型分开，未合并解释。尚未取得目标复频响或修复候选。
+入口：[视频方案](../materials/planning/video-plan.md)、[教程](../materials/learning/index.html)。视频/海报既有交付保留。
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：按队长授权实现protected状态短按BTN2免标定恢复ready，同scene最多3次，BTN1再启动；模型SHA/硬件收尾/静音/错误锁存检查保留。基线4596/60秒、4训练2验证，所有阶段含runtime为[0,4596]、prepare保留历史档，B采用main的2026-11-02.1原件；A/驱动/RTL/算法未改。
-**当前卡点**：+1 dB 基线保留（包 de2a640e、模型 a432ad1…、场景 6b2e43d4、60.00 秒 completed）。主线已转 +3 dB：入口对照证明直接入口与产品入口执行**同一条 _run_v2 硬件路径**，差异仅增益来源与取消/记账；现场 4 次 +3 dB（q12 5786、arm 回读确认）——静音 6 秒完整通过，真人说话均在 **0.06–0.11 秒**输出饱和，主峰 **8353.6 Hz**。根因定量：8.35–8.5 kHz 处 \|H\|≈1.28、模型 \|Ĥ\|≈1.08–1.14、**相位差 −152°/+32°** 使复残差 0.81–1.14，+3 dB 环路增益 1.15–1.61**>1**；现有验证只覆盖 300–460 Hz（相位差仅 16.9°、环路 0.65），故一直通过。已作为具体算法问题交回队长（失败频段/配置/数据/所需改善：8.3–8.6 kHz 复残差降到 ≤0.70，并把验证频带扩展到该段）。A 侧未改包/模型/算法。详见 [队长复盘 §12](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)。
-入口：[产品操作单](ref/recal-product.md)、[BTN2约定](contracts/recal-product-v1.md)、[A收束证据](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)；本轮[三个单测](../report/verification/recal-product-v1/resume3-software.json)。C未操板，既有声压/热安全、按键空窗、install bit_exact异常未验收项仍保留。
-C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
+**最后动作**：原BTN2恢复包保持原ZIP/manifest，A已实机验收的证据保留。新批量调度C侧接入就绪：训练/验证按能力声明各一次驱动调用，逐段原NPZ/状态JSON/算术bit_exact与环形缓存保留证明在后台复核；5个批量/面板用例及原3个BTN2用例共8项软件检查通过。只改C编排及获授权的hw_api薄调用层，A驱动/位流/RTL/算法和运行参数未改。
+**当前卡点**：A驱动尚无replay_capture_plan，实际批量路径未启用。现驱动停声后只读末尾16384帧，不能将长运行尾窗拆成多段冒称独立捕获；需A提供运行中安全取窗入口。训练≤7秒/总CAL≤125秒均未实测，不出提速正式包，现有已验包不替换。接口及文件边界见[产品约定v3](contracts/recal-product-v1.md)。
+证据：[静态边界](../report/verification/recal-product-v1/capture-plan-review.json)、[8项软件检查](../report/verification/recal-product-v1/capture-plan-software.json)、[原包A验收](../report/verification/recal-product-v1/resume3-acceptance.json)。fixture副本仅用于新批量采集，原模型/旧捕获不改；C未操板，声压/热安全、按键空窗和旧install异常仍保留。
+C入口仍为recal_product_entry.sh（包内recal_entry.sh），不新增正式入口。A下一步只实现驱动批量函数，C待其原件后统一重钉整包。
 
 ## 已验证 / 未验证
 

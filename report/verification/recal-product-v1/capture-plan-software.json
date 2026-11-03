@@ -1,0 +1,18 @@
+{
+  "scope": "5 batch scheduling/retention/panel cases + existing 3 BTN2 cases; synthetic driver files only",
+  "tests_run": 8,
+  "success": true,
+  "stdout": "test_four_training_and_two_validation_each_call_driver_once (test_recal_capture_plan.CapturePlanTests.test_four_training_and_two_validation_each_call_driver_once) ... ok\ntest_middle_segment_failure_rejects_whole_plan_without_retry (test_recal_capture_plan.CapturePlanTests.test_middle_segment_failure_rejects_whole_plan_without_retry) ... ok\ntest_mixed_fixture_and_overwritten_ring_are_rejected (test_recal_capture_plan.CapturePlanTests.test_mixed_fixture_and_overwritten_ring_are_rejected) ... ok\ntest_panel_flow_with_batch_CAL_and_BTN2_resume (test_recal_capture_plan.CapturePlanTests.test_panel_flow_with_batch_CAL_and_BTN2_resume) ... ok\ntest_pre_cancel_does_not_invoke_driver (test_recal_capture_plan.CapturePlanTests.test_pre_cancel_does_not_invoke_driver) ... ok\ntest_changed_model_hash_is_rejected_and_stays_protected (test_recal_resume.ResumeTests.test_changed_model_hash_is_rejected_and_stays_protected) ... ok\ntest_fourth_resume_is_rejected_after_three_in_same_scene (test_recal_resume.ResumeTests.test_fourth_resume_is_rejected_after_three_in_same_scene) ... ok\ntest_normal_resume_uses_same_model_and_start_runs_without_CAL (test_recal_resume.ResumeTests.test_normal_resume_uses_same_model_and_start_runs_without_CAL) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 3.208s\n\nOK\n",
+  "failures": [],
+  "errors": [],
+  "source_sha256": {
+    "board/audio_replay/recal_product.py": "b524d7e6d54eda318cd0a180a05d28af3c4b64051862e74e42e08318d099439a",
+    "board/audio_replay/recal_link.py": "03cce73b440ace14d32d58cf9163fce44348309b16da3c3a2dd86ec02ae61bf6",
+    "board/audio_replay/hw_api.py": "7db1097233e2bff4fbffd093442bfaf5a083366a265ed7ab50395ea74c7a9234",
+    "sim/feedback/test_recal_capture_plan.py": "ceac881ccd2c3dfafebbc84f78873d4dede5892bc20db520fbf55a0995a9761e"
+  },
+  "hardware_operations": 0,
+  "hardware_speedup_verified": false,
+  "driver_batch_api_present": false,
+  "formal_package_changed": false
+}

@@ -325,3 +325,29 @@ C先fetch/快进指定main，更新--demo默认5786并排除6900，仍严格单�
 同步到dd19cf3时A已实改C状态卡，已向用户协调并得到“保留双方事实继续交包”的明确答复。仅合入新C段，远端A/B及公共段原字节保留，记录其唯一候选和60秒成功证据。A另报静音回读0导致runtime缺键拒绝；按本任务“所有阶段[0,4596]”显式增加runtime键，正常恢复测试覆盖静音0回读，仍只3个测试。
 
 最终41文件包=shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip；ZIP SHA=b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4；manifest SHA=beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef；冻结源=4efd43036555c667924fc415d31cf95d785fbb24。已逐项assert所有phase含runtime为0/4596（prepare历史例外），训练attempts/capture_plans均[4,4,4]，run60/gain4596；A9原件及B3ed完整字节、所有payload SHA、check输出通过。原Word修改未动，ZIP及sidecar复制回原仓库根目录。未执行上板/额外矩阵，只3单测与必要配置/哈希/CLI检查。
+
+
+## 2026-11-03 队长接手B数值复算
+
+用户原话：“B因为上下文记忆有很多错误，希望该为你算”。
+
+队长同步B的1e368e7，独立核算原表并修复只读脚本；发现旧脚本混合捕获、默许采样率不一致、解缠跨缺口和无条件延迟结论。保留已知信号6项测试记录；没有目标原件时不以旧布局替代。产品源码中拟合/验证平移microphone仅登记为待验证线索。交付与数据边界见[复算说明](../verification/highfreq-fix-2026-11-03/README.md)。
+
+
+## 2026-11-03 历史fixture元数据阻塞的处理
+
+用户转发A的e553471：目标模型与采集fixture相差一场，询问改驱动重采或放宽诊断检查。
+队长选择历史证据修复：保持原件，用原场景result收据核验模型双SHA与NPZ SHA，只接受确证旧标签这一例；未给通用忽略开关。
+脚本固定板上用户数据根目录，失败也保存诊断JSON；11项软件测试通过。未操板、未触发发声、未部署包。
+4.1 kHz新阶梯使用不同L1模型，未与旧3dB失败合并。相关说明见[复算记录](../verification/highfreq-fix-2026-11-03/README.md)。
+
+
+## 2026-11-03 capture_plan调度优化
+
+用户转发A队长授权：一次capture_plan N段一次overlay/source/arm，独立npz及全字段/逐段bit_exact不变，不改算法/判据/增益/时限/位流/RTL；需要驱动API交A实现，C负责产品/hw_api调用层。目标训练4段硬件≤7秒、总CAL≤125秒，validation2段同批量、原BTN2和面板流程不回归，任一段失败整批失败并定位。
+
+C同步e553471后先查源码：replay_trial_repair在停声后read_ring，只取min(FRAMES,completed)尾窗，RTL为16384环形覆盖。把budget放大后再拆尾窗不能恢复被覆盖数据；没有据此宣布不改RTL必然无解，给A运行中分块读取的入口及硬件计数无覆盖条件，让A实测吞吐。源码source_begin固定写1<<17也不能仅凭reuse_overlay开关推断复用可行，本轮指定一次source加载，不擅自改为多次arm。
+
+C新增能力门控路由与hw_api薄调用方法（根/v3同字节），实读/写硬件仍归A。C准备完全相同的每段16386刺激+原2帧尾零，整批源一次交A；每窗16384、有效16382、first_frame真实全局，不伪造复位，npz保留完整预载源以保持既有verify_replay与B source切片口径。C显式scene模型副本只改fixture标签，记录原/副本SHA，不改原模型/PCM、不补写旧捕获标签，避免把已发现fixture问题带入新入口。
+
+后台逐文件查数量、身份、状态JSON、source SHA、原bit_exact复算与read_proof计数边界，任一失败不送拟合/安装，保留具体段/检查和部分文件；主线程继续处理停止，旧epoch丢弃。8项合成驱动文件软件检查覆盖4训练/2验证各一次调用、中段失败不重试、混身份/覆盖拒绝、预取消，以及CAL→运行→保护→BTN2→结束；原3个BTN2仍全过。没有真实驱动入口和板上时长，不发提速正式ZIP、不宣称达标；原b167恢复包未改，等A交真实replay_capture_plan后再统一冻结。

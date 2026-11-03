@@ -293,3 +293,21 @@ docs/log/progress.md
 report/ai-records/recal-product-v1.md
 report/verification/recal-product-v1/resume3-software.json
 report/verification/recal-product-v1/resume3-package-check.json
+
+# 2026-11-03 capture-plan C bridge
+board/audio_replay/recal_link.py
+board/audio_replay/recal_product.py
+board/audio_replay/hw_api.py
+board/audio_replay/v3-io/hw_api.py
+board/audio_replay/v3-io/manifest.json
+docs/contracts/product-adapter.json
+docs/contracts/recal-product-v1.md
+docs/ref/recal-product.md
+docs/STATE.md
+docs/log/progress.md
+report/ai-records/recal-product-v1.md
+sim/feedback/test_recal_capture_plan.py
+report/verification/recal-product-v1/capture-plan-review.json
+report/verification/recal-product-v1/capture-plan-software.json
+docs/contracts/README.md
+report/verification/recal-product-v1/changed-files.txt

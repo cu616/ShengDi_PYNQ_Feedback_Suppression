@@ -7,6 +7,145 @@ import shutil
 import threading
 import uuid
 
+CAPTURE_PLAN_CONTRACT='recal-capture-plan-v1'
+
+
+class CapturePlanError(ValueError):
+    def __init__(self,index,check):
+        self.index=index;self.check=check
+        super().__init__('capture plan segment %s: %s'%(index,check))
+
+
+def perform_capture_plan(hardware, request, cancel):
+    """C calling layer; A supplies replay_capture_plan and all actual hardware I/O."""
+    import numpy as np
+    result={k:request[k] for k in ('contract','request_id','scene_id','op')}
+    result.update(ok=False,status='error',failed_index=None,failed_check=None,captures=[])
+    old_op=hardware._current_op
+    try:
+        if cancel.is_set():raise ValueError('cancelled')
+        driver=hardware._driver()
+        if (getattr(driver,'CAPTURE_PLAN_API',None)!=CAPTURE_PLAN_CONTRACT
+                or not callable(getattr(driver,'replay_capture_plan',None))):
+            raise ValueError('capture_plan_driver_unavailable')
+        plan=request['plan'];items=plan['captures'];outputs=[];sources=[]
+        if request['op'] not in ('training','validation') or not items:raise ValueError('capture_plan_shape')
+        levels=plan.get('levels',[plan.get('level_dbfs')])
+        if len(levels)!=1:raise ValueError('capture_plan_requires_one_approved_level')
+        hardware.run_dir=request['run_dir']
+        for index,item in enumerate(items):
+            result['failed_index']=index
+            if int(item.get('frames',16384))!=16384:raise ValueError('window_frames')
+            seed=int(item.get('seed',plan['seed']));level=float(item.get('level_dbfs',levels[0]))
+            source=hardware._make_stimulus(seed=seed,level_dbfs=level)
+            if source is None:raise ValueError('stimulus_unreachable')
+            if len(source)!=16386:raise ValueError('source_frames')
+            path,cid=hardware._capture_path(request['scene_id'],request['op'],index)
+            start=index*16388
+            outputs.append(dict(capture_id=item.get('capture_id',cid),output_path=str(path),
+                first_frame=start+4,end_frame=start+16388,valid_frames=16382,
+                source_first_frame=start,source_end_frame=start+16386,seed=seed,level_dbfs=level))
+            sources.extend((source,np.zeros(2,dtype=np.int16)))
+        source=np.concatenate(sources)[:-2]
+        result['failed_index']=None
+        if len(source)>131072:raise ValueError('source_ram_capacity')
+        # Bind an explicit calibration-only copy, never relabel the original model or PCM.
+        original=Path(hardware.model_path);model=json.loads(original.read_text(encoding='utf-8'))
+        result['source_model_sha256']=hashlib.sha256(original.read_bytes()).hexdigest()
+        model['fixture_id']=request['scene_id'];bound=Path(request['run_dir'])/'batch-source-model.json'
+        with bound.open('xb') as stream:stream.write(json.dumps(model,ensure_ascii=False).encode())
+        if cancel.is_set():raise ValueError('cancelled')
+        result['failed_index']=None;hardware._current_op=request['op'];hardware._op_hold+=1
+        try:
+            raw=driver.replay_capture_plan(outputs,request['scene_id'],str(bound),source,
+                request_id=request['request_id'],scene_id=request['scene_id'],op=request['op'],
+                hp_volume=hardware.hp_volume,gain_q12=0,direct_only=True,zero_coeff=True,
+                speaker_confirmed=True,local_capture_confirmed=True,restore_stock=False,
+                before_start=lambda:hardware._arm_baseline(cancel),cancel_event=cancel)
+        finally:hardware._op_hold-=1
+        if raw.get('contract')!=CAPTURE_PLAN_CONTRACT or any(raw.get(k)!=request[k] for k in ('request_id','scene_id','op')):
+            raise ValueError('capture_plan_envelope')
+        result.update({k:raw.get(k) for k in ('ok','status','captures','failed_index','failed_check','reason','input_clip')})
+        result['batch']=dict(raw.get('batch',{}),contract=raw['contract'])
+        result['planned_windows']=outputs;result['planned_source_sha256']=hashlib.sha256(source.tobytes()).hexdigest()
+        result['calibration_model_sha256']=hashlib.sha256(bound.read_bytes()).hexdigest()
+        for index,item in enumerate(result.get('captures') or []):
+            try:item['sha256']=hashlib.sha256(Path(item['path']).read_bytes()).hexdigest()
+            except (OSError,KeyError,TypeError) as exc:raise CapturePlanError(index,'capture_file: '+str(exc))
+        hardware._scene_frames+=16384*len(result.get('captures') or [])
+        if result.get('ok') is True and result.get('status')=='completed':
+            check_capture_plan(request,result)
+            result['capture_plan_check']=dict(ok=True,segments=len(result['captures']))
+    except Exception as exc:
+        result.update(ok=False,status='error',failed_check=result.get('failed_check') or str(exc),reason=str(exc))
+        if isinstance(exc,CapturePlanError):result.update(failed_index=exc.index,failed_check=exc.check)
+        result['capture_plan_check']=dict(ok=False,reason=str(exc))
+    finally:
+        hardware._current_op=old_op
+        result['identity']=hardware.identity()
+    return result
+
+
+def check_capture_plan(request, reply):
+    """Reject a partial/mixed/overwritten batch before fitting any segment."""
+    import numpy as np
+    from replay_tools import verify_replay
+    def reject(index,check):raise CapturePlanError(index,check)
+    if reply.get('ok') is not True or reply.get('status')!='completed':
+        reject(reply.get('failed_index'),reply.get('failed_check') or reply.get('reason') or 'batch_failed')
+    count=len(request['plan']['captures']);batch=reply.get('batch',{});captures=reply.get('captures',[])
+    if not isinstance(batch,dict) or not isinstance(captures,list) or len(reply.get('planned_windows',[]))!=count:
+        reject(None,'batch_shape')
+    if (batch.get('contract')!=CAPTURE_PLAN_CONTRACT or len(captures)!=count
+            or batch.get('completed_segments')!=count or batch.get('ring_overrun') is not False
+            or any(batch.get(k)!=1 for k in ('overlay_downloads','source_loads','arm_count'))):
+        reject(None,'batch_count_or_retention')
+    if len({c.get('capture_id') for c in captures})!=count:reject(None,'capture_id_duplicate')
+    for index,(cap,window) in enumerate(zip(captures,reply['planned_windows'])):
+        try:
+            path=Path(cap['path']).resolve();path.relative_to(Path(request['run_dir']).resolve())
+            if cap['capture_id']!=window['capture_id']:raise ValueError('capture_id')
+            if cap.get('source_sha256')!=reply['planned_source_sha256']:raise ValueError('capture_source_sha256')
+            status_path=Path(cap['status_path']).resolve();status_path.relative_to(Path(request['run_dir']).resolve())
+            status=json.loads(status_path.read_text(encoding='utf-8'))
+            with np.load(path,allow_pickle=False) as z:
+                md=json.loads(str(z['metadata_json']));source=z['source_pcm16']
+                raw=np.column_stack((np.rint(z['reference']*2**23),np.rint(z['microphone']*2**23),z['prediction_pcm'],z['residual_pcm'])).astype(np.int64)
+                q=z['coefficients_q20']
+                if len(raw)!=16384 or np.any(q) or len(q)!=512:raise ValueError('frames_or_zero_coefficients')
+                if source.dtype!=np.int16 or source.ndim!=1:raise ValueError('source_pcm16_format')
+                if hashlib.sha256(source.tobytes()).hexdigest()!=reply['planned_source_sha256']:raise ValueError('source_sha256')
+                if (md.get('fixture_id')!=request['scene_id'] or md.get('capture_id')!=cap['capture_id']
+                        or md.get('gain_q12')!=0 or md.get('hp_volume')!=request['identity']['hp_volume']
+                        or md.get('sample_rate_hz')!=request['identity']['sample_rate_hz']
+                        or md.get('model_sha256')!=reply['calibration_model_sha256']):raise ValueError('capture_identity')
+                if (md.get('zero_coeff') is not True or md.get('forward_path_open') is not True
+                        or md.get('bypass') is not False or md.get('frames')!=16384
+                        or md.get('completed_frames')!=count*16388
+                        or int(md.get('capture_status',0)) & ((1<<22)|(1<<21)|(1<<19)|(1<<18)|(1<<17))):
+                    raise ValueError('capture_mode_or_protection')
+                if any(md.get(k)!=request['identity'][k] for k in ('driver_sha256','bit_sha256','hwh_sha256','helper_sha256')):
+                    raise ValueError('capture_payload_identity')
+                if (md.get('first_frame')!=window['first_frame'] or cap.get('first_frame')!=window['first_frame']
+                        or cap.get('end_frame')!=window['end_frame'] or cap.get('valid_frames')!=16382
+                        or md.get('stop_reason')!='completed' or md.get('source_schedule_verified') is not True):raise ValueError('window_or_completion')
+                checks=verify_replay(raw,q,False,0,source,md['first_frame'])
+            if md.get('verification',{}).get('bit_exact') is not True or checks['bit_exact'] is not True:
+                raise ValueError('bit_exact')
+            if (status.get('recovery_ok') is not True or status.get('save_error')
+                    or status.get('fixture_id')!=request['scene_id'] or status.get('first_frame')!=window['first_frame']
+                    or status.get('frames')!=16384 or status.get('stop_reason')!='completed'):
+                raise ValueError('status_json')
+            cursor=window['first_frame']
+            for chunk in cap.get('read_proof',[]):
+                a,b=chunk['first_frame'],chunk['end_frame'];before,after=chunk['completed_before'],chunk['completed_after']
+                if not (all(type(v) is int for v in (a,b,before,after))
+                        and a==cursor<b<=window['end_frame'] and b<=before<=after<=a+16384):raise ValueError('ring_retention')
+                cursor=b
+            if cursor!=window['end_frame']:raise ValueError('ring_read_incomplete')
+        except (ValueError,KeyError,OSError,TypeError) as exc:reject(index,str(exc))
+    return reply
+
 
 def frozen_policy(algorithm):
     identity=algorithm.identity()

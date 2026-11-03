@@ -15,7 +15,7 @@ import threading
 import time
 import uuid
 from recal_policy_consumer import consume_reply
-from recal_link import ingest, adapter_check, installed_model, run_evidence
+from recal_link import ingest, adapter_check, installed_model, run_evidence, CAPTURE_PLAN_CONTRACT
 
 CONTRACT = 'recal-product-v1'
 RESUME_MAX = 3
@@ -400,7 +400,11 @@ class Product:
         if self.cfg.get('request_capture_directories'):
             folder=self.run_dir/'io'/request['request_id'];folder.mkdir(parents=True)
             request['run_dir']=str(folder.resolve())
-        self._submit('hw',request,self.hw.perform)
+        function=self.hw.perform
+        if op in ('training','validation') and self.caps.get('capture_plan_batch')==CAPTURE_PLAN_CONTRACT:
+            request['capture_plan_contract']=CAPTURE_PLAN_CONTRACT
+            function=self.hw.perform_capture_plan
+        self._submit('hw',request,function)
     def _alg(self, phase):
         request=self._request(phase=phase,training=self.training,validation=self.validation,
             input=self.training if phase=='input' and self.cfg.get('runtime_profile')=='b-heldout-v1' else self.input_records,
@@ -434,6 +438,12 @@ class Product:
         self._envelope(req,reply)
         self.hardware_receipts.append(dict(request=req,reply=reply))
         self.checkpoint()  # Preserve protection/failure metadata before rejecting it.
+        if req.get('capture_plan_contract')==CAPTURE_PLAN_CONTRACT:
+            check=reply.get('capture_plan_check',{})
+            if (reply.get('ok') is not True or reply.get('status')!='completed'
+                    or check.get('ok') is not True or check.get('segments')!=len(req['plan']['captures'])):
+                outcome='input_overload' if reply.get('input_clip') else ('protected' if reply.get('status')=='protected' else 'hardware_error')
+                raise Failure(outcome,'capture plan segment %s: %s'%(reply.get('failed_index'),reply.get('failed_check') or 'batch_validation'))
         self._identity(reply['identity'],prepared=(req['op']=='prepare' and reply.get('ok') is True
                                                   and reply.get('status')=='completed'))
         if reply.get('input_clip'): raise Failure('input_overload','输入过载，已保护停声')

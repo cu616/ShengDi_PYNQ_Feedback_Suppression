@@ -1,0 +1,44 @@
+{
+  "topic": "recal-capture-plan-v1 driver batch entry (A-side implementation)",
+  "contract": "docs/contracts/recal-product-v1.md v3: 一次 arm 的 capture_plan 批量入口",
+  "file": "board/audio_replay/v3-io/replay_trial_repair.py",
+  "api": {
+    "CAPTURE_PLAN_API": "recal-capture-plan-v1",
+    "function": "replay_capture_plan(outputs, fixture_id, model_path, source_pcm16, *, request_id, scene_id, op, hp_volume, gain_q12, direct_only, zero_coeff, speaker_confirmed, local_capture_confirmed, restore_stock, before_start, cancel_event)"
+  },
+  "design": [
+    "One fresh overlay download, one complete source load (all segments + 2-frame zero tail), one coefficient load (zero coefficients, direct_only/zero_coeff), one arm.",
+    "The 16384-frame ring is drained DURING the run in 2048-frame chunks aligned to each planned window; no second download, no replay of the tail window.",
+    "Each chunk is recorded in read_proof {first_frame, end_frame, completed_before, completed_after} and the driver aborts the whole batch with ring_overrun when completed_after - first_frame > 16384.",
+    "Each planned window is written as its own NPZ (16384 frames, coefficients_q20 zero, full batch source_pcm16, metadata_json with fixture/gain/hp/model/driver/bit/hwh/helper hashes) plus its own .status.json.",
+    "Each segment is verified with replay_tools.verify_replay against the full batch source and its global first_frame; bit_exact is required.",
+    "Any failure returns ok=false with failed_index/failed_check and captures=[] (whole-batch failure, no retry, no partial success).",
+    "No RTL / bitstream / algorithm / run-parameter change; C's recal_link/hw_api calling layer untouched."
+  ],
+  "static_checks": {
+    "py_compile": "pass",
+    "contract_fields_produced": ["contract", "request_id", "scene_id", "op", "ok", "status",
+      "failed_index", "failed_check", "captures", "input_clip", "reason", "batch",
+      "batch.completed_segments", "batch.ring_overrun", "batch.overlay_downloads",
+      "batch.source_loads", "batch.arm_count", "batch.completed_frames", "batch.drain_chunks",
+      "batch.max_ring_lag_frames"],
+    "per_segment_fields_produced": ["capture_id", "path", "status_path", "first_frame",
+      "end_frame", "valid_frames", "source_sha256", "sha256", "read_proof"]
+  },
+  "timing": {
+    "4_training_measured": null,
+    "2_validation_measured": null,
+    "status": "NOT MEASURED - board was taken for video shooting and is not connectable",
+    "design_estimate_do_not_quote_as_measurement": {
+      "overlay_download_s": "~6-7 (single, unavoidable)",
+      "source_load_65550_samples": "~0.15-0.3",
+      "run_65552_frames": "1.343 (fixed by RATE)",
+      "ring_stream_read_65536_frames": "unmeasured; 65536 x 8 MMIO ops = 524288 ops",
+      "risk": "if the Python MMIO read loop is slower than ~1x audio rate the ring overruns; the driver then fails the batch with ring_overrun instead of faking a tail window"
+    }
+  },
+  "next": [
+    "When the board is free: install the C-repinned package, run one CAL, report real 4-training and 2-validation batch wall times and drain_chunks/max_ring_lag_frames.",
+    "If ring_overrun appears, A reduces per-frame MMIO ops (drop the two command echo reads after establishing the read latency on hardware) or lowers BATCH_CHUNK_FRAMES; both are driver-internal and do not touch RTL."
+  ]
+}

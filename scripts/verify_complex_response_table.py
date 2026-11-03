@@ -1,104 +1,65 @@
-"""检验一张复频响表是否自洽：|H|、|Ĥ|、相位差、|H−Ĥ| 四列必须满足余弦定理。
-
-现场报告里"相位差"与"复残差"两列经常来自不同口径（一个取自峰值读数的角度，
-一个取自相减后的模），肉眼看不出，但用余弦定理一验就露。
-
-判读：
-  偏差 |余弦值 − 报告值| <= 0.05       → 该行自洽，可用
-  偏差明显但方向一致                  → 某一列整体偏移（多为相位列取了 ∠H 而非 ∠H−∠Ĥ）
-  偏差方向不一致                      → 几列来自不同数据/不同频点，整张表不可用
-
-用法：
-  python scripts/verify_complex_response_table.py
-  python scripts/verify_complex_response_table.py --json out.json   # 指定自定义表
+"""Check reported complex magnitudes against phase, respecting printed rounding.
+No column is selected as ground truth. This is algebra, not a stability test.
 """
-from __future__ import annotations
-
 import argparse
 import json
+import math
 from pathlib import Path
 
-import numpy as np
-
-# lead-report §12.4 的原表：(f, |H|, |Ĥ|, 报告|H−Ĥ|, 报告相位差°)
 DEFAULT_ROWS = [
-    (400,  1.331, 0.994, 0.459,   16.9),
-    (4000, 0.515, 0.628, 0.262, -109.2),
-    (8000, 0.505, 0.476, 0.372,  174.5),
-    (8350, 1.276, 1.079, 0.815, -152.0),
-    (8500, 1.295, 1.135, 1.141,   32.3),
-    (9000, 0.320, 0.269, 0.245, -136.0),
-]
-
-GAIN_3DB = 5786 / 4096          # +3 dB 数字增益
-TOL = 0.05
+    (400,1.331,.994,.459,16.9), (4000,.515,.628,.262,-109.2),
+    (8000,.505,.476,.372,174.5), (8350,1.276,1.079,.815,-152.),
+    (8500,1.295,1.135,1.141,32.3), (9000,.320,.269,.245,-136.)]
+FS=48828.125
+GAIN_3DB=5786/4096
 
 
-def check(rows, gain=GAIN_3DB):
-    out = []
-    for f, a, b, rep, dphi in rows:
-        cosd = np.cos(np.deg2rad(dphi))
-        calc = float(np.sqrt(max(a * a + b * b - 2 * a * b * cosd, 0.0)))
-        # 反方向：由残差反解相位差，看报告相位是否落在同一支
-        c = (a * a + b * b - rep * rep) / max(2 * a * b, 1e-12)
-        back = float(np.degrees(np.arccos(np.clip(c, -1, 1))))
-        out.append({
-            "hz": f, "H_abs": a, "Hh_abs": b,
-            "reported_resid": rep, "cosine_resid": calc,
-            "delta": calc - rep,
-            "consistent": abs(calc - rep) <= TOL,
-            "reported_phase_deg": dphi, "implied_phase_deg": back,
-            "loop_from_reported": rep * gain, "loop_from_cosine": calc * gain,
-        })
-    return out
+def residual(a,b,deg):
+    return math.sqrt(max(0,a*a+b*b-2*a*b*math.cos(math.radians(deg))))
+
+
+def check(rows):
+    result=[]
+    for f,a,b,r,p in rows:
+        calc=residual(a,b,p)
+        # Conservative error bound from complex-vector perturbations. Each printed
+        # magnitude has +/-0.0005 uncertainty; printed phase has +/-0.05 degrees.
+        bound=.001+(b+.0005)*2*math.sin(math.radians(.05)/2)
+        c=(a*a+b*b-r*r)/(2*a*b) if a*b else None
+        implied=math.degrees(math.acos(c)) if c is not None and -1<=c<=1 else None
+        result.append(dict(hz=f,H_abs=a,Hh_abs=b,reported_residual=r,
+            reported_phase_deg=p,residual_from_reported_phase=calc,
+            discrepancy=calc-r,rounding_difference_bound=bound+.0005,
+            consistent_with_printed_precision=abs(calc-r)<=bound+.0005,
+            implied_phase_magnitude_deg_if_magnitudes_correct=implied,
+            phase_sign_and_cycle_unknown=True,
+            gain3_times_reported_residual=GAIN_3DB*r,
+            gain3_times_phase_derived_residual=GAIN_3DB*calc))
+    return result
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--json", default=None, help="自定义表：[[f,|H|,|Ĥ|,残差,相位°], ...]")
-    ap.add_argument("--out", default=None)
-    args = ap.parse_args()
-
-    rows = DEFAULT_ROWS
-    if args.json:
-        rows = [tuple(r) for r in json.loads(Path(args.json).read_text(encoding="utf-8"))]
-
-    res = check(rows)
-    print("+3 dB 线性增益 = %.5f（q12 5786 / 4096）" % GAIN_3DB)
-    print()
-    print("%7s %7s %7s %11s %11s %8s %9s %10s" % (
-        "f/Hz", "|H|", "|Ĥ|", "报告残差", "余弦推出", "偏差", "报告Δφ", "反解Δφ"))
-    print("-" * 82)
-    for r in res:
-        flag = "" if r["consistent"] else "  <-- 不自洽"
-        print("%7.0f %7.3f %7.3f %11.3f %11.3f %+8.3f %8.1f° %9.1f°%s" % (
-            r["hz"], r["H_abs"], r["Hh_abs"], r["reported_resid"],
-            r["cosine_resid"], r["delta"], r["reported_phase_deg"],
-            r["implied_phase_deg"], flag))
-
-    n_bad = sum(1 for r in res if not r["consistent"])
-    deltas = [r["delta"] for r in res if not r["consistent"]]
-    print()
-    print("自洽 %d / %d 行" % (len(res) - n_bad, len(res)))
-    if n_bad:
-        same_sign = all(d > 0 for d in deltas) or all(d < 0 for d in deltas)
-        print("不自洽行偏差方向%s" % ("一致（疑似某列整体偏移）" if same_sign else
-                                "不一致（几列来自不同数据/频点，整表不可用）"))
-        print("提示：若报告相位列实际是 ∠H 而非 ∠H−∠Ĥ，用'反解Δφ'替代后再核一次。")
-
-    print()
-    print("同一残差下的 +3 dB 环路增益：")
-    for r in res:
-        print("  %5.0f Hz  报告值 %.3f → %.2f %-4s | 余弦值 %.3f → %.2f %-4s" % (
-            r["hz"], r["reported_resid"], r["loop_from_reported"],
-            "越界" if r["loop_from_reported"] > 1 else "可",
-            r["cosine_resid"], r["loop_from_cosine"],
-            "越界" if r["loop_from_cosine"] > 1 else "可"))
-
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--out',type=Path)
+    args=p.parse_args()
+    rows=check(DEFAULT_ROWS)
+    out={'source':'A forwarded table, not raw captures', 'rows':rows,
+         'scalar_checks':{
+           '39_4_deg_at_8350_hz_pure_delay_samples':39.4/360*FS/8350,
+           '152_deg_at_8350_hz_pure_delay_samples':152/360*FS/8350,
+           'gain3_q12':5786,'gain3_linear':GAIN_3DB,
+           'residual_for_unity_magnitude':1/GAIN_3DB,
+           'magnitude_headroom_db_at_residual_0_70':-20*math.log10(GAIN_3DB*.70),
+           'residual_for_3db_magnitude_headroom':10**(-3/20)/GAIN_3DB,
+           'center_db_if_beta_is_0_65_amplitude':20*math.log10(.65)},
+         'interpretation':'Conditional arithmetic only. Actual complex H and Hhat required.'}
+    for r in rows:
+        print('%5d Hz reported %.6f calculated %.6f rounding_bound %.6f consistent=%s' %
+              (r['hz'],r['reported_residual'],r['residual_from_reported_phase'],
+               r['rounding_difference_bound'],r['consistent_with_printed_precision']))
+    print(json.dumps(out['scalar_checks'],indent=2))
     if args.out:
-        Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
-        print("\nJSON 已写: %s" % args.out)
+        with args.out.open('x',encoding='utf-8') as stream:
+            json.dump(out,stream,ensure_ascii=False,indent=2,allow_nan=False)
 
 
-if __name__ == "__main__":
-    main()
+if __name__=='__main__':main()

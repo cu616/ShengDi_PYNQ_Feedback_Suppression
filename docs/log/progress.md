@@ -1,3 +1,29 @@
+## 2026-11-03 C 接入capture_plan单次调用，驱动实现待A（接口修订v3）
+
+- 源码确认现接口只在停声后读16384尾窗，不能通过延长budget得到4窗。C给出一次下载/source/arm的replay_capture_plan签名、真实全局窗坐标、逐段NPZ/status及bit_exact、环形缓存无覆盖证明与整批失败口径。
+- C薄调用层保留原刺激、零增益、参数及取消/基线回调，只有驱动明确声明能力才启用；旧接口路径保留，不改正式ZIP。元数据新scene用显式模型副本绑定，原件不修改。文件/算术复核在后台，前台仍处理停止。
+- 5项批量/面板与原3项BTN2[软件检查](../../report/verification/recal-product-v1/capture-plan-software.json)通过；未操板、未改驱动/RTL/算法，硬件7秒/总125秒未验。见[静态审阅](../../report/verification/recal-product-v1/capture-plan-review.json)和[接口](../contracts/recal-product-v1.md)。
+
+## 2026-11-03 队长修复历史fixture标签导致的只读复算阻塞
+
+- 核对A的e553471证据与驱动调用，保留NPZ旧fixture原值，按原场景result收据的模型双SHA、最终训练验证清单与文件SHA限定历史例外；不改运行保护与产品语义。
+- 修复root HOME路径问题；增加4.1 kHz终端输出/连续频带斜率；数据检查失败也保留诊断JSON。11项软件测试及文档检查通过，未操板、未重采。
+- 新阶梯与旧模型分别登记，不据不同模型的峰值推主频迁移。入口：[复算说明](../../report/verification/highfreq-fix-2026-11-03/README.md)。
+
+## 2026-11-03 队长接手高频复算并修复只读脚本
+
+- 同步B提交1e368e7，按打印精度复核A表：六行均不自洽；纠正相位/延迟、+1 dB乘法和陷波环路解释，未选择任一列作为实测真值。
+- 脚本改为双SHA绑定、训练验证分开、开环与单位检查、不平移PCM、同网格复数导出；6项软件测试通过。没有操板、没有修改产品算法或RTL。
+- 本地180个模型/候选JSON未命中目标；交付一次板上已有数据只读计算入口，派生JSON不含PCM。依据与入口：[独立复算](../../report/verification/highfreq-fix-2026-11-03/README.md)。
+
+## 2026-11-03 A 验收 C 的 BTN2 恢复包（通过）
+
+- 包 shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip（zip sha256 b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4，manifest beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef），装到 /opt/shengdi/releases/beb36216d26b6cbb。
+- 板卡核验：41 文件清单全匹配、recal_entry --check 返回 identity_ok/deployment_ready/missing=[]、配置 4596/60s/训练 4-4-4/验证 2-2-2/phase_gain_q12 含 runtime=[0,4596]。
+- 3 个单测在板 Linux 环境全部通过（Ran 3 tests in 7.719s, OK）。
+- 面板实测：CAL→ready→BTN1→SW0 啸叫→保护→BTN2 恢复成功（resumed_from=protected，resume_count 1→3）→第 4 次恢复被拒（保持 protected 34.4s 直到 CAL）→恢复后再扩声→BTN1 正常停止→ended，且不再出现昨天的 runtime 白名单 failed。
+- 观察：CAL 采集期间 SW0 输入偶发读到 bypass（采集 gain=0/zero_coeff 开环，不影响音频，登记硬件观察）；操作员停止到 ended 约 44 秒延迟（请求仍跑 60 秒窗口，最终 incomplete 返回）。
+- 证据：report/verification/recal-product-v1/resume3-acceptance.json
 ## 2026-11-03 C 交付41文件BTN2恢复包
 
 - 新包配置逐项核验：4596/60秒，三档attempt及训练captures均4，验证2；含runtime在内的所有非prepare白名单[0,4596]，prepare保留历史档并加入4596。B原件为2026-11-02.1，A9件/驱动/位流未改。

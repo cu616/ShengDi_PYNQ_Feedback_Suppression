@@ -21,7 +21,7 @@
 | [recalibration-algorithm-v1.md](recalibration-algorithm-v1.md) | B真实evaluate、六训练两验证和时间域预测判据 | B | C / A | 离线通过，待上板 |
 | [recal-policy-consumer-v1.md](recal-policy-consumer-v1.md) | C消费B判定、四类cause、本轮延迟及验收缺项 | C | A / B / C | 实现待验证 |
 | [recalibration-policy-v1.md](recalibration-policy-v1.md) | B采集/激励/拟合/三点判定；阈值唯一来源 | B | C / A | B已交库，待上板验证 |
-| [recal-product-v1.md](recal-product-v1.md) | 常驻产品编排、A/B接口及原子模型事务 | C / A / B | A / B / C | C接口/模拟实现；实体适配待验 |
+| [recal-product-v1.md](recal-product-v1.md) | 常驻产品编排、A/B接口及原子模型事务；文档v3含批量capture_plan | C / A / B | A / B / C | wire保持v1；批量驱动/实测待A，状态见STATE |
 | [audio-closed-v1.md](audio-closed-v1.md) | 闭环 overlay 的控制位、增益编码、帧关系、缓存读回 | C | A / B | 已实现并构建，未上板验收 |
 | [audio-replay-v1.md](audio-replay-v1.md) | 预录声源注入、实际混音反馈参考、限时播放及摘要 | A | A / B / C | 软件/仿真/构建完成，未上板 |
 | [audio-replay-v3.md](audio-replay-v3.md) | **现行**：宽残差过增益后再钳位、输入满幅（bit22）**即停声**、增益前残差只作诊断、位流/驱动配对校验 | A | A / B / C | **冻结主线**（队长 2026-10-28）；软件验证 16 项通过；上板复验与 C 增量验收未闭合 |
