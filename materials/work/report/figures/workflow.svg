@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="680" viewBox="0 0 1400 680">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="30" y="45" width="380" height="128" fill="#e8f3f2" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="220.0" y="94.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">按键发起</text>
+<text x="220.0" y="137.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">固定当前布局</text>
+<rect x="510" y="45" width="380" height="128" fill="#f3f5f7" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="700.0" y="94.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">输入检查</text>
+<text x="700.0" y="137.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">按提示讲话</text>
+<rect x="990" y="45" width="380" height="128" fill="#f3f5f7" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="1180.0" y="94.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">训练采集</text>
+<text x="1180.0" y="137.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">已知噪声激励</text>
+<polyline points="410.0,110.0 510.0,110.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="510.0,110.0 496.49329346470984,116.52448301166845 496.49329346470984,103.47551698833155" fill="#222533"/>
+<polyline points="890.0,110.0 990.0,110.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="990.0,110.0 976.4932934647098,116.52448301166845 976.4932934647098,103.47551698833155" fill="#222533"/>
+<polyline points="1180.0,173.0 1180.0,276.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="1180.0,276.0 1173.4755169883315,262.49329346470984 1186.5244830116685,262.49329346470984" fill="#222533"/>
+<rect x="990" y="276" width="380" height="128" fill="#f2eaf4" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="1180.0" y="325.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">拟合与量化</text>
+<text x="1180.0" y="368.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">512 抽头 / Q20</text>
+<rect x="510" y="276" width="380" height="128" fill="#f2eaf4" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="700.0" y="325.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">独立验证</text>
+<text x="700.0" y="368.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">分离的采集与激励</text>
+<rect x="30" y="276" width="380" height="128" fill="#f2eaf4" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="220.0" y="325.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">安装与登记</text>
+<text x="220.0" y="368.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">绑定场景和包身份</text>
+<polyline points="990.0,340.0 890.0,340.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="890.0,340.0 903.5067065352902,333.47551698833155 903.5067065352902,346.52448301166845" fill="#222533"/>
+<polyline points="510.0,340.0 410.0,340.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="410.0,340.0 423.50670653529016,333.47551698833155 423.50670653529016,346.52448301166845" fill="#222533"/>
+<polyline points="220.0,404.0 220.0,514.0" fill="none" stroke="#222533" stroke-width="3"/>
+<polygon points="220.0,514.0 213.47551698833155,500.49329346470984 226.52448301166845,500.49329346470984" fill="#222533"/>
+<rect x="30" y="514" width="380" height="128" fill="#e8f3f2" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="220.0" y="563.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">实时扩声</text>
+<text x="220.0" y="606.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">BTN1 启停 / SW0 对照</text>
+<rect x="605" y="514" width="765" height="128" fill="#f3f5f7" stroke="#aeb5bf" stroke-width="1.5"/>
+<text x="987.5" y="563.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">失败分支</text>
+<text x="987.5" y="606.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">保持静音 · 保存原因 · 按提示重试</text>
+<polyline points="700.0,404.0 700.0,514.0" fill="none" stroke="#64206e" stroke-width="3" stroke-dasharray="10 7"/>
+<polygon points="700.0,514.0 693.4755169883315,500.49329346470984 706.5244830116685,500.49329346470984" fill="#64206e"/>
+<text x="700" y="231.76" font-family="Microsoft YaHei, sans-serif" font-size="27" font-weight="400" text-anchor="middle" fill="#626875">每阶段完成后推进；缺少有效数据时给出具体原因</text>
+</svg>

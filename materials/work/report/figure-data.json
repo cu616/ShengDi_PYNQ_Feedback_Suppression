@@ -1,0 +1,22 @@
+{
+  "comparison": {
+    "frequency_hz": 322,
+    "frame_start": 91037,
+    "frame_end": 97656,
+    "metric": "microphone_level_relative_to_open_db",
+    "values": {
+      "open": 0.0,
+      "bypass": 3.7016,
+      "cancel": -1.2486
+    },
+    "source": "report/verification/audio-replay/wide-residual-v3/C-tone-1746930178556850644.json"
+  },
+  "timeline": {
+    "gain_q12": 5786,
+    "sw0_flip_seconds": 9.13,
+    "flip_to_stop_seconds": 3.49,
+    "stop_seconds_derived": 12.62,
+    "source": "report/verification/audio-replay/demo-protocol-2026-11-02/README.md section 17",
+    "note": "Event timing only. No reconstructed waveform or measured SPL."
+  }
+}
