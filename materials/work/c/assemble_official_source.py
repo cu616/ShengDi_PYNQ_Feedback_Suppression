@@ -30,6 +30,12 @@ HISTORICAL = {
 }
 PRIVATE_EXTENSIONS = {'.wav', '.mp3', '.flac', '.m4a', '.aac', '.npz', '.npy', '.pcm', '.mp4', '.mov', '.mkv'}
 ARCHIVE_EXTENSIONS = {'.zip', '.rar', '.7z'}
+PUBLICATION_DOCS = {
+    'data/README.md': 'data/README.md',
+    'src/README.md': 'materials/work/c/submission-docs/source-readme.txt',
+    'models/README.md': 'materials/work/c/submission-docs/models-readme.txt',
+    'report/README.md': 'materials/work/c/submission-docs/report-readme.txt',
+}
 
 
 def git(*args):
@@ -106,12 +112,30 @@ def assemble(args):
         target.write_bytes(data)
         records[path] = dict(sha256=digest(data), bytes=len(data), source=source, role=role, **extra)
 
+    def publication_file(destination, source, role):
+        data = (ROOT / source).read_bytes()
+        origin = 'C publication material:' + source
+        commit = git('log', '-1', '--format=%H', '--', source).decode().strip()
+        if commit and blob(commit, source) == data:
+            origin = commit + ':' + source
+        put(destination, data, origin, role)
+
     # Source/verification helpers at the original frozen release source commit.
     for path, data in archive_files(RUNTIME, 'src', 'sim', 'scripts', 'models', 'build/scripts', 'data'):
+        if path in PUBLICATION_DOCS or path.startswith('data/'):
+            continue  # publish reader-facing documentation and verified vectors below
         if Path(path).suffix.lower() in PRIVATE_EXTENSIONS | ARCHIVE_EXTENSIONS:
             excluded.append(dict(path=path, source=RUNTIME, reason='raw media/data or redundant archive'))
             continue
-        put(path, data, RUNTIME + ':' + path, 'reproduction-source-or-test')
+        if path == 'models/manifest.json':
+            original_sha256 = digest(data)
+            registry = json.loads(data)
+            registry['note'] = '历史标定模型注册表；系数为24位补码、20位小数的整数。适用场景由各模型身份限定。'
+            registry['registry_rule'] = 'models为历史模型注册条目；derived_artifacts为补零派生件，单独登记以避免系数身份重复匹配。正式部署以冻结运行目录为准。'
+            put(path, json_bytes(registry), RUNTIME + ':' + path, 'historical-model-registry',
+                original_sha256=original_sha256, editorial_change='descriptive note/registry_rule only; model entries and numeric fields unchanged')
+        else:
+            put(path, data, RUNTIME + ':' + path, 'reproduction-source-or-test')
     # Support mock stays outside the exact 41-file runtime directory.
     put('sim/support/recal_mock.py', blob(RUNTIME, 'board/audio_replay/recal_mock.py'),
         RUNTIME + ':board/audio_replay/recal_mock.py', 'software-test-support-only')
@@ -120,6 +144,8 @@ def assemble(args):
     for path, data in archive_files(snapshot, 'report', 'skill'):
         if path.startswith(IMPLEMENTATION):
             continue  # handled below with original/delivery hashes and explicit DCP exclusion
+        if path in PUBLICATION_DOCS:
+            continue
         ext = Path(path).suffix.lower()
         if ext in PRIVATE_EXTENSIONS | ARCHIVE_EXTENSIONS or (ext in {'.txt', '.log'} and len(data) > 300000):
             excluded.append(dict(path=path, source=snapshot, reason='private/raw data, repeated archive or long regenerable log'))
@@ -146,11 +172,19 @@ def assemble(args):
         'board/audio_replay/recal_product.py', 'board/audio_replay/hw_api.py',
         'board/audio_replay/recal_link.py', 'board/audio_replay/v3-io/replay_trial_repair.py',
         'sim/feedback/test_recal_capture_plan.py', 'scripts/diag_highfreq_phase.py',
-        'sim/feedback/test_highfreq_phase_audit.py', 'docs/STATE.md',
+        'sim/feedback/test_highfreq_phase_audit.py',
     ]
     for path in development:
         put('development/main/' + path, blob(snapshot, path), snapshot + ':' + path,
             'later-development-not-deployed')
+    excluded.append(dict(path='docs/STATE.md', source=snapshot,
+                         reason='internal coordination status; not a submitted operation guide'))
+    for destination, source in PUBLICATION_DOCS.items():
+        publication_file(destination, source, 'reviewer-facing-directory-guide')
+    for path in sorted((ROOT / 'data/reference').glob('*')):
+        if path.is_file():
+            publication_file(path.relative_to(ROOT).as_posix(), path.relative_to(ROOT).as_posix(),
+                             'synthetic-software-reference-not-board-capture')
 
     frozen_zip = blob(snapshot, PACKAGE)
     if digest(frozen_zip) != ZIP_SHA:
@@ -334,10 +368,10 @@ sha256sums.txt是A原件清单（含未分发DCP与引用日志），不得用�
     put('report/submission/missing-items.json', json_bytes(missing), 'C package review', 'declared-incomplete-items')
     put('report/submission/excluded-files.json', json_bytes(excluded), 'C inclusion policy', 'exclusion-index')
 
-    readme = f'''# 声堤完整工程候选（待缺项关闭）
+    readme = f'''# 声堤 FPGA 语音反馈抑制工程
 
 唯一部署身份：release beb36216d26b6cbb，ZIP `{ZIP_SHA}`，product-manifest `{MANIFEST_SHA}`。
-这是可检查候选，尚非最终上传批准。缺项见 report/submission/missing-items.json；不以旧报告或空文件补齐。
+本包包含冻结部署版本、设计源码、构建脚本、参考数据及验证依据。设计报告为审阅稿；文档状态与依赖范围见 report/submission/missing-items.json。
 
 ## 目录与复现
 
@@ -347,7 +381,7 @@ sha256sums.txt是A原件清单（含未分发DCP与引用日志），不得用�
 | sim | 既有仿真/软件验证源；sim/support仅为模拟辅助，不属于部署41文件 |
 | build | 可复现Tcl/XDC；正式I/O入口为build/scripts/create_audio_replay_io.tcl |
 | board | audio_replay为原ZIP原样解压的41文件；packages为原ZIP；provenance为外部来源/差异表 |
-| data / models | 非私人数据说明及既有模型/参考；不包含私人PCM或返回录音包 |
+| data / models | 三组合成算术参考向量、预期结果与历史标定模型；不包含私人PCM或返回录音包 |
 | skill | main快照{snapshot}的技能包、引用与失效边界 |
 | report | 同稿设计报告、验证证据及协作纠错记录；所有旧版/开发结果保留其原范围 |
 | scripts / tools | 兼容既有测试工具及本次外层打包/核验工具 |
@@ -358,13 +392,15 @@ sha256sums.txt是A原件清单（含未分发DCP与引用日志），不得用�
 source-map.md中的PowerShell重定向示例不用于本次取件；所有字节由ZIP或git原始输出读取。
 
 1. 解压后在本目录执行 `python tools/submission/verify_official_source.py .`，要求ok=true、frozen_files=41。
-2. 板卡部署只按board/audio_replay/OPERATIONS.md及product-install.sh执行，由A独占板卡。
+2. 板卡部署按board/audio_replay/OPERATIONS.md及product-install.sh执行，由一名现场操作人员独占板卡。
    包内配置4596/+1dB、60秒、4训练2验证、runtime白名单不重建、不修改。
 3. 仅需重新生成FPGA工程时，依赖合法Vivado2018.3、xc7z020clg400-1及`tul.com.tw:pynq-z2:part0:1.0`。
    匹配入口命令为 `vivado -mode batch -source build/scripts/create_audio_replay_io.tcl -tclargs build`。
-   本轮未执行此命令；构建对应关系的缺项必须先核实，不保证重新构建bit逐字节复现。
+   现有构建来源与报告见build/frozen-bit-source-audit.json；本包整理过程未重新综合或生成位流，不保证新构建bit逐字节相同。
 4. 单独复核软件测试需Python>=3.8、NumPy；将sim/support加入PYTHONPATH后使用sim/feedback下既有测试。
    软件通过不能代替声学/板上复现；包内源代码、模型、构建工具各自版本按清单解释。
+5. 参考数据的用途、格式和复核命令见data/README.md；执行
+   `python -B tools/submission/submission_reference.py --root . --verify`，预期三组全部通过。
 
 ## 必要边界
 
@@ -386,10 +422,11 @@ source-map.md中的PowerShell重定向示例不用于本次取件；所有字节
 submission-manifest.json列出所有其他文件的SHA256/字节/逐文件来源，自身不自哈希；其SHA在外部交付回执。
 原ZIP及解压41文件、四个历史源都已按外部source-map核验；main同名文件只用于差异表。
 跨设备请发送shengdi-source.rar与.sha256文本作为原始文件；接收方先核SHA，再独立解压运行上面的核验。
-RAR不随Git自动发布；Git只传小型打包工具、清单和回执。RAR工具通过官方RARLAB取得，不随包分发。
+目录说明面向工程使用者；原始提示、分工和纠错记录集中归档于report/ai-records及历史分析记录，并在report/README.md标明范围。
+RAR工具通过官方RARLAB取得，不随包分发。
 '''
     put('README.md', readme.encode(), 'C outer assembly instructions', 'submission-entry')
-    for name in ['assemble_official_source.py', 'verify_official_source.py']:
+    for name in ['assemble_official_source.py', 'verify_official_source.py', 'submission_reference.py']:
         path = 'materials/work/c/' + name
         data = (Path(__file__).parent / name).read_bytes()
         origin = '仅包内，由C组装；packaging tool working source'
@@ -400,6 +437,28 @@ RAR不随Git自动发布；Git只传小型打包工具、清单和回执。RAR�
         except subprocess.CalledProcessError:
             pass
         put('tools/submission/' + name, data, origin, 'outer-packaging-tool-not-runtime')
+    reference = subprocess.run([sys.executable, '-B', '-X', 'utf8',
+        str(package_root / 'tools/submission/submission_reference.py'), '--root', str(package_root), '--verify'],
+        capture_output=True, text=True, encoding='utf-8', check=True)
+    reference_check = json.loads(reference.stdout)
+    put('report/submission/reference-data-check.json', json_bytes(reference_check),
+        'C offline verification of existing software reference cases', 'reference-data-verification')
+    reader_checks = []
+    forbidden = re.compile(r'待收录|对话引用|B 线交付|按 C 的夹具|由A独占|尚无已完成|收件人|转给C|转给 C')
+    for name in ['README.md', *PUBLICATION_DOCS]:
+        if forbidden.search((package_root / name).read_text(encoding='utf-8')):
+            raise ValueError('internal handoff language in publication guide: ' + name)
+        reader_checks.append(name)
+    historical_registry = json.loads(blob(RUNTIME, 'models/manifest.json'))
+    publication_registry = json.loads((package_root / 'models/manifest.json').read_bytes())
+    if ({k: v for k, v in historical_registry.items() if k not in {'note', 'registry_rule'}} !=
+            {k: v for k, v in publication_registry.items() if k not in {'note', 'registry_rule'}}):
+        raise ValueError('historical model registry values changed')
+    put('report/submission/publication-readme-audit.json', json_bytes(dict(
+        ok=True, guides_checked=reader_checks, reference_cases=3,
+        historical_model_entries_unchanged=True,
+        historical_collaboration_records='explicitly archived under report; not current operation instructions',
+        frozen_payload_changed=False)), 'C publication-document review', 'publication-readme-audit')
     put('tools/submission/README.txt', (
         'verify_official_source.py可在独立解压后直接运行。\n'
         'assemble_official_source.py仅在含完整Git历史的开发仓库materials/work/c下使用；不在发布解压目录重组冻结ZIP。\n'
@@ -441,6 +500,7 @@ RAR不随Git自动发布；Git只传小型打包工具、清单和回执。RAR�
         final_path=str(output), source_files=len(records), frozen_files=41, hardware_operations=0,
         frozen_zip_regenerated=False, product_source_changed=False,
         frozen_cli_check=cli_check, frozen_cli_check_exit=cli.returncode,
+        reference_data_check=reference_check, publication_guides_checked=reader_checks,
         cross_device='Transfer the RAR and its .rar.sha256 as files; verify SHA256 then extract and run tools/submission/verify_official_source.py .')
     receipt_dir = ROOT / 'report/verification/recal-product-v1'
     (receipt_dir / 'official-source-candidate.json').write_bytes(json_bytes(receipt))

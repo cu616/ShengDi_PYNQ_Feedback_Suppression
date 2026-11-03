@@ -72,10 +72,15 @@ def verify(root):
         source_references_not_in_supplied_commit=implementation['unavailable_originals'],
         dcp_in_archive=False, resources=implementation['resources'], timing_ns=implementation['timing_ns'],
         scope=implementation['wording'])
+    reference_check = json.loads((root / 'report/submission/reference-data-check.json').read_text(encoding='utf-8'))
+    readme_audit = json.loads((root / 'report/submission/publication-readme-audit.json').read_text(encoding='utf-8'))
+    if reference_check.get('ok') is not True or len(reference_check.get('cases', [])) != 3 or readme_audit.get('ok') is not True:
+        raise ValueError('reference data/publication-guide audit differs')
     return dict(ok=True, outer_files=len(actual), frozen_files=41, zip_sha256=ZIP_SHA,
                 product_manifest_sha256=MANIFEST_SHA, bit_sha256=BIT_SHA,
                 submission_manifest_sha256=digest((root / 'submission-manifest.json').read_bytes()),
                 implementation_check=implementation_check,
+                synthetic_reference_cases=3, publication_guides_checked=readme_audit['guides_checked'],
                 upload_ready=manifest['upload_ready'], missing=manifest['missing'], hardware_operations=0)
 
 

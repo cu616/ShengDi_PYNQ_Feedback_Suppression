@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "kind": "synthetic_software_reference",
+  "is_board_capture": false,
+  "source": "4efd43036555c667924fc415d31cf95d785fbb24:board/audio_replay/v3/test_verify_replay_v3.py",
+  "sample_rate_hz": 48828.125,
+  "helper_sha256": {
+    "replay_tools.py": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+    "closed_tools.py": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54"
+  },
+  "meaning": "integer arithmetic and overflow accounting only; not acoustic performance",
+  "parameter_scope": "two zero taps and unity gain are offline test parameters, not deployment configuration",
+  "files": [
+    {
+      "file": "ordinary.csv",
+      "sha256": "4e3e02949e15e72f76ec403796671efd4f1ee6fe08e3e1784436a2646cc16633",
+      "rows": 8,
+      "first_frame": 0,
+      "gain_q12": 4096,
+      "bypass": false,
+      "coefficients_q20": [
+        0,
+        0
+      ],
+      "source_pcm16": [],
+      "expected": {
+        "bit_exact": true,
+        "wide_residual_frames": 0,
+        "wide_residual_frames_prefix": 0
+      }
+    },
+    {
+      "file": "negative-rail.csv",
+      "sha256": "2cdf126b5b2a227d9ecf9bcd019a110d31da3679bb322c90cc292ba0f938f871",
+      "rows": 8,
+      "first_frame": 0,
+      "gain_q12": 4096,
+      "bypass": false,
+      "coefficients_q20": [
+        0,
+        0
+      ],
+      "source_pcm16": [],
+      "expected": {
+        "bit_exact": true,
+        "wide_residual_frames": 0,
+        "wide_residual_frames_prefix": 0
+      }
+    },
+    {
+      "file": "prefix-overflow.csv",
+      "sha256": "b7f110e24d1c5719ce29f9b37e068c30240125a3787aaa6e58770d6a86b392fd",
+      "rows": 10,
+      "first_frame": 1000,
+      "gain_q12": 4096,
+      "bypass": false,
+      "coefficients_q20": [
+        0,
+        0
+      ],
+      "source_pcm16": [],
+      "expected": {
+        "bit_exact": true,
+        "wide_residual_frames": 1,
+        "wide_residual_frames_prefix": 1
+      }
+    }
+  ]
+}
