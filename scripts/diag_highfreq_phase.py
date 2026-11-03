@@ -15,7 +15,8 @@ import numpy as np
 SCENE = '6b2e43d4b77c4b73b84923ea17d4a5e6'
 MODEL_SHA = 'ba432ad195711069c5160480b21eb6ec2073c423144d4e21f15e93b8b2799580'
 COEFF_SHA = '6507565c444929737d8b44486c7064d4226792070e4f6eac8a3f84827287f1cf'
-POINTS = (400, 4000, 8000, 8350, 8500, 9000)
+STALE_FIXTURE = '9dc20d41edc047b6a86db0b242c95ea8'
+POINTS = (400, 4000, 4134, 4148, 4200, 8000, 8350, 8500, 9000)
 
 
 def sha(path):
@@ -69,7 +70,63 @@ def stage_for(path):
     return None
 
 
-def read_capture(path, fs, model_info):
+def receipt_inputs(receipt_path, run_dir, model_info):
+    """Use the completed scene's final training/validation lists, not all attempts.
+
+    This verifies file membership, not an unchanged physical fixture. The original
+    driver fixture label is retained separately even when the receipt repairs its
+    scene association for the one documented historical bug.
+    """
+    receipt_path = Path(receipt_path)
+    record = json.loads(receipt_path.read_text(encoding='utf-8-sig'))
+    scene = model_info['fixture_id']
+    bundle = record.get('bundle') or {}
+    if record.get('scene_id') != scene or bundle.get('scene_id') != scene:
+        raise ValueError('RECEIPT_SCENE_MISMATCH')
+    if (bundle.get('model_sha256') != model_info['sha256'] or
+            bundle.get('coefficients_sha256') != model_info['coefficients_sha256']):
+        raise ValueError('RECEIPT_MODEL_IDENTITY_MISMATCH')
+    selected, seen, source_sets = [], set(), {}
+    root = Path(run_dir).resolve()
+    for stage in ('training', 'validation'):
+        items = record.get(stage)
+        if not isinstance(items, list) or not items:
+            raise ValueError('RECEIPT_MISSING_' + stage)
+        source_sets[stage] = set()
+        for entry in items:
+            candidates = [Path(entry[k]).resolve() for k in ('path','original_path') if entry.get(k)]
+            matches = []
+            for path in candidates:
+                try:
+                    path.relative_to(root)
+                except ValueError:
+                    continue
+                if path.is_file() and sha(path) == entry.get('sha256'):
+                    matches.append(path)
+            if not matches:
+                raise ValueError('RECEIPT_CAPTURE_HASH_OR_PATH_MISMATCH ' + str(entry.get('path')))
+            path = matches[0]
+            if path in seen:
+                raise ValueError('RECEIPT_DUPLICATE_CAPTURE')
+            seen.add(path)
+            label = stage_for(path)
+            if label is not None and label != stage:
+                raise ValueError('RECEIPT_STAGE_MISMATCH')
+            source_sha = entry.get('source_sha256')
+            if source_sha:
+                source_sets[stage].add(source_sha)
+            selected.append((path, stage, {
+                'receipt_path': str(receipt_path), 'receipt_sha256': sha(receipt_path),
+                'scene_id': scene, 'model_sha256': bundle['model_sha256'],
+                'coefficients_sha256': bundle['coefficients_sha256'],
+                'capture_sha256': entry['sha256'], 'stage': stage,
+                'receipt_capture_id': entry.get('capture_id'), 'source_sha256': source_sha}))
+    if source_sets['training'] & source_sets['validation']:
+        raise ValueError('RECEIPT_TRAIN_VALIDATION_SOURCE_OVERLAP')
+    return selected
+
+
+def read_capture(path, fs, model_info, provenance=None):
     with np.load(path, allow_pickle=False) as z:
         u, m = np.asarray(z['reference']), np.asarray(z['microphone'])
         md = json.loads(str(z['metadata_json'].item()))
@@ -93,9 +150,32 @@ def read_capture(path, fs, model_info):
                 raise ValueError('CAPTURE_SATURATED_' + key)
         if np.any(np.abs(u) >= 1) or np.any(m <= -1) or np.any(m >= 1 - 2**-23):
             raise ValueError('NORMALIZED_PCM_CLIPPED')
-        for key in ('fixture_id', 'hp_volume'):
-            if model_info.get(key) is not None and md.get(key) != model_info[key]:
-                raise ValueError('CONFIG_MISMATCH_' + key)
+        if model_info.get('hp_volume') is not None and md.get('hp_volume') != model_info['hp_volume']:
+            raise ValueError('CONFIG_MISMATCH_hp_volume')
+        fixture_note = None
+        if model_info.get('fixture_id') is not None and md.get('fixture_id') != model_info['fixture_id']:
+            known_case = (model_info['fixture_id'] == SCENE and
+                          model_info['sha256'] == MODEL_SHA and
+                          model_info['coefficients_sha256'] == COEFF_SHA and
+                          md.get('fixture_id') == STALE_FIXTURE)
+            verified = (provenance and provenance['scene_id'] == model_info['fixture_id'] and
+                        provenance['model_sha256'] == model_info['sha256'] and
+                        provenance['coefficients_sha256'] == model_info['coefficients_sha256'] and
+                        provenance['capture_sha256'] == sha(path))
+            if not (known_case and verified):
+                raise ValueError('CONFIG_MISMATCH_fixture_id; requires matching scene receipt and documented case')
+            fixture_note = {'kind': 'documented_stale_fixture_label',
+                            'raw_fixture_id': md.get('fixture_id'),
+                            'receipt_scene_id': provenance['scene_id'],
+                            'basis': 'A e553471; install-time fixture binding; unchanged NPZ hash',
+                            'scope': 'historical diagnostic only; not proof of unchanged acoustics'}
+        if provenance and provenance.get('source_sha256'):
+            if md.get('source_pcm16_sha256') != provenance['source_sha256']:
+                raise ValueError('RECEIPT_SOURCE_HASH_MISMATCH')
+            if 'source_pcm16' in z.files:
+                source_digest = hashlib.sha256(np.asarray(z['source_pcm16'],dtype='<i2').tobytes()).hexdigest()
+                if source_digest != provenance['source_sha256']:
+                    raise ValueError('SOURCE_BYTES_HASH_MISMATCH')
         first = int(md['first_frame'])
         end = int(md.get('source_end_frame_exclusive', md.get('source_frames', -1)))
         if 'source_pcm16' in z.files:
@@ -113,7 +193,8 @@ def read_capture(path, fs, model_info):
                 'source_pcm16_sha256', 'verification')
         info = {k: md[k] for k in keys if k in md}
         info.update(path=str(path), sha256=sha(path), source_window_frames=n,
-                    capture_frames=len(u), alignment='unchanged_same_frame')
+                    capture_frames=len(u), alignment='unchanged_same_frame',
+                    scene_provenance=provenance, fixture_annotation=fixture_note)
         return u[:n].astype(float), m[:n].astype(float), info
 
 
@@ -144,7 +225,7 @@ def phase_slopes(f, H, Hh, coh, fs):
     # Never unwrap across rejected gaps. Slopes describe response differences, not a cause.
     good = (coh >= .8) & (np.abs(H) > 1e-8) & (np.abs(Hh) > 1e-8)
     out = []
-    for lo, hi in ((300, 2000), (8000, 8800)):
+    for lo, hi in ((300, 2000), (3800, 4500), (8000, 8800)):
         ids = np.flatnonzero(good & (f >= lo) & (f <= hi))
         for run in np.split(ids, np.flatnonzero(np.diff(ids) > 1) + 1):
             if len(run) < 8:
@@ -191,15 +272,24 @@ def response_report(sums, windows, h, lag, fs, nfft, gain, forward_delay):
             'interpretation': 'sampled open-loop estimates; no stability, MSG or ASG certification'}
 
 
-def analyze(run_dir, model_path, expected=None, expected_q=None, nfft=4096, gain_q12=5786, forward_delay=2):
+def analyze(run_dir, model_path, expected=None, expected_q=None, nfft=4096, gain_q12=5786, forward_delay=2,
+            scene_receipt=None):
     h, lag, fs, mi = read_model(model_path, expected, expected_q)
     outputs, groups, ignored = [], {}, []
     seen = set()
-    for path in sorted(Path(run_dir).rglob('*.npz')):
-        stage = stage_for(path)
-        if stage is None:
-            ignored.append(str(path)); continue
-        u, m, info = read_capture(path, fs, mi)
+    if scene_receipt:
+        selected = receipt_inputs(scene_receipt, run_dir, mi)
+        chosen = {path.resolve() for path,_,_ in selected}
+        ignored = [str(p) for p in sorted(Path(run_dir).rglob('*.npz')) if p.resolve() not in chosen]
+    else:
+        selected = []
+        for path in sorted(Path(run_dir).rglob('*.npz')):
+            stage = stage_for(path)
+            if stage is None:
+                ignored.append(str(path)); continue
+            selected.append((path,stage,None))
+    for path,stage,provenance in selected:
+        u, m, info = read_capture(path, fs, mi, provenance)
         cid = info.get('capture_id')
         if not cid or cid in seen:
             raise ValueError('MISSING_OR_DUPLICATE_CAPTURE_ID ' + str(path))
@@ -221,7 +311,7 @@ def analyze(run_dir, model_path, expected=None, expected_q=None, nfft=4096, gain
             groups[stage][0] += sums; groups[stage][1] += windows
     if not outputs:
         raise ValueError('NO_TRAINING_OR_VALIDATION_CAPTURES')
-    return {'schema_version': 2, 'script_sha256': sha(__file__), 'model': mi,
+    return {'schema_version': 3, 'script_sha256': sha(__file__), 'model': mi,
             'nfft': nfft, 'window': 'periodic Hann; per-window mean removed; 50% overlap',
             'gain_q12': gain_q12, 'assumed_forward_delay_samples': forward_delay,
             'alignment': 'no sample shift; model lag_first applied once',
@@ -237,6 +327,8 @@ def analyze(run_dir, model_path, expected=None, expected_q=None, nfft=4096, gain
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--board-scene', action='store_true')
+    p.add_argument('--state-root', type=Path, default=Path('/home/xilinx/.local/state/shengdi'))
+    p.add_argument('--scene-receipt', type=Path)
     p.add_argument('--run-dir', type=Path)
     p.add_argument('--model', type=Path)
     p.add_argument('--model-sha256', default=MODEL_SHA)
@@ -247,17 +339,34 @@ def main():
     if args.nfft < 256 or args.nfft % 2:
         p.error('nfft must be even and >=256')
     if args.board_scene:
-        base = Path.home()/'.local/state/shengdi'
+        base = args.state_root
         args.run_dir = base/'runs'/SCENE/'io'
+        args.scene_receipt = base/'runs'/SCENE/'result.json'
         roots = [base/'runs'/SCENE, base/'models', base/'compute']
-        args.model = find_model(roots,args.model_sha256)
-    if args.run_dir is None or args.model is None:
+    if args.run_dir is None or (not args.board_scene and args.model is None):
         p.error('use --board-scene or supply --run-dir and --model')
     if args.out.exists():
         p.error('output already exists; choose a new filename')
-    result = analyze(args.run_dir,args.model,args.model_sha256,args.coefficients_sha256,nfft=args.nfft)
+    try:
+        if args.board_scene:
+            args.model = find_model(roots,args.model_sha256)
+        result = analyze(args.run_dir,args.model,args.model_sha256,args.coefficients_sha256,
+                         nfft=args.nfft,scene_receipt=args.scene_receipt)
+        result['status'] = 'computed'
+    except (ValueError,KeyError,OSError,TypeError) as exc:
+        # Return useful diagnostics even when a further evidence problem exists.
+        result = {'schema_version': 3, 'status': 'blocked', 'error': str(exc),
+                  'error_type': type(exc).__name__, 'script_sha256': sha(__file__),
+                  'run_dir': str(args.run_dir), 'model_path': str(args.model),
+                  'scene_receipt': str(args.scene_receipt),
+                  'npz_paths': [str(p) for p in sorted(args.run_dir.rglob('*.npz'))],
+                  'interpretation': 'no numerical result; no PCM exported; no hardware accessed'}
     with args.out.open('x',encoding='utf-8') as out:
         json.dump(result,out,ensure_ascii=False,indent=1,allow_nan=False)
+    if result['status'] != 'computed':
+        print('ANALYSIS_BLOCKED',result['error'])
+        print('DIAGNOSTIC_JSON',str(args.out))
+        raise SystemExit(2)
     print('MODEL_SHA256',result['model']['sha256'])
     print('COEFFICIENTS_SHA256',result['model']['coefficients_sha256'])
     for rec in result['files']:

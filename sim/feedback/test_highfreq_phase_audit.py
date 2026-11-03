@@ -4,6 +4,9 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+import subprocess
+import sys
 
 import numpy as np
 
@@ -98,6 +101,80 @@ class PhaseAuditTests(unittest.TestCase):
             self.assertEqual(len(a),16382)
             self.save(p,u,m[:-1],md)
             with self.assertRaises(ValueError):hf.read_capture(p,fs,mi)
+
+    def receipt_fixture(self, root):
+        mp,u,m,md=self.fixture(root)
+        _,_,_,mi=hf.read_model(mp)
+        io=root/'io';io.mkdir()
+        record={'scene_id':'test','bundle':{
+            'scene_id':'test','model_sha256':mi['sha256'],
+            'coefficients_sha256':mi['coefficients_sha256']}}
+        for stage in ('training','validation'):
+            f=io/('a_'+stage+'_00.npz')
+            self.save(f,u,m,dict(md,capture_id=stage,fixture_id='previous'))
+            record[stage]=[{'path':str(f),'sha256':hf.sha(f),'capture_id':'receipt-'+stage}]
+        receipt=root/'result.json';receipt.write_text(json.dumps(record))
+        return mp,io,receipt,mi,u,m,md
+
+    def test_stale_fixture_accepted_only_with_bound_receipt(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);mp,io,receipt,mi,u,m,md=self.receipt_fixture(root)
+            before={p.name:hf.sha(p) for p in io.glob('*.npz')}
+            with patch.multiple(hf,SCENE='test',MODEL_SHA=mi['sha256'],
+                                COEFF_SHA=mi['coefficients_sha256'],STALE_FIXTURE='previous'):
+                with self.assertRaisesRegex(ValueError,'fixture_id'):
+                    hf.analyze(io,mp)
+                r=hf.analyze(io,mp,scene_receipt=receipt)
+                self.assertEqual(len(r['files']),2)
+                for f in r['files']:
+                    self.assertEqual(f['fixture_id'],'previous')
+                    self.assertEqual(f['fixture_annotation']['receipt_scene_id'],'test')
+                    self.assertEqual(f['scene_provenance']['receipt_sha256'],hf.sha(receipt))
+            self.assertEqual(before,{p.name:hf.sha(p) for p in io.glob('*.npz')})
+
+    def test_other_fixture_mismatch_still_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            mp,io,receipt,mi,u,m,md=self.receipt_fixture(Path(d))
+            with self.assertRaisesRegex(ValueError,'fixture_id'):
+                hf.analyze(io,mp,scene_receipt=receipt)
+
+    def test_receipt_wrong_model_file_scene_stage_and_source_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            mp,io,receipt,mi,u,m,md=self.receipt_fixture(Path(d))
+            original=json.loads(receipt.read_text())
+            for variant in ('scene','model','coeff','capture','stage','duplicate_source'):
+                r=json.loads(json.dumps(original))
+                if variant=='scene':r['scene_id']='wrong'
+                if variant=='model':r['bundle']['model_sha256']='wrong'
+                if variant=='coeff':r['bundle']['coefficients_sha256']='wrong'
+                if variant=='capture':r['training'][0]['sha256']='wrong'
+                if variant=='stage':r['training'],r['validation']=r['validation'],r['training']
+                if variant=='duplicate_source':
+                    r['training'][0]['source_sha256']=r['validation'][0]['source_sha256']='same'
+                receipt.write_text(json.dumps(r))
+                with self.assertRaises(ValueError):hf.receipt_inputs(receipt,io,mi)
+
+    def test_receipt_excludes_previous_attempt(self):
+        with tempfile.TemporaryDirectory() as d:
+            mp,io,receipt,mi,u,m,md=self.receipt_fixture(Path(d))
+            old=io/'old_training_99.npz'
+            self.save(old,u,m,dict(md,capture_id='old',forward_path_open=False,gain_q12=5786))
+            with patch.multiple(hf,SCENE='test',MODEL_SHA=mi['sha256'],
+                                COEFF_SHA=mi['coefficients_sha256'],STALE_FIXTURE='previous'):
+                r=hf.analyze(io,mp,scene_receipt=receipt)
+            self.assertEqual(len(r['files']),2)
+            self.assertIn(str(old),r['ignored_noncalibration_files'])
+
+    def test_cli_writes_failure_json_without_home_dependency(self):
+        with tempfile.TemporaryDirectory() as d:
+            out=Path(d)/'failure.json'
+            r=subprocess.run([sys.executable,str(ROOT/'scripts/diag_highfreq_phase.py'),
+                '--board-scene','--state-root',d,'--out',str(out)],capture_output=True,text=True)
+            self.assertEqual(r.returncode,2,r.stderr)
+            result=json.loads(out.read_text())
+            self.assertEqual(result['status'],'blocked')
+            self.assertIn('MATCHING_MODEL_NOT_FOUND',result['error'])
+            self.assertTrue(result['run_dir'].startswith(d))
 
 
 if __name__=='__main__':unittest.main()
