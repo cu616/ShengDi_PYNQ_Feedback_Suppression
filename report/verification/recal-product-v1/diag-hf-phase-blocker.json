@@ -1,0 +1,40 @@
+{
+  "topic": "captain diag_highfreq_phase.py on board: blocked by capture/model fixture_id mismatch",
+  "script": "scripts/diag_highfreq_phase.py @ main 2d80fdd",
+  "command": "env HOME=/home/xilinx /usr/local/share/pynq-venv/bin/python /home/xilinx/diag_highfreq_phase.py --board-scene --out /tmp/hf-phase-captain-1747073063.json",
+  "result": "ERROR, no JSON produced",
+  "error_full": "Traceback (most recent call last):\n  File \"/home/xilinx/diag_highfreq_phase.py\", line 274, in <module>\n    main()\n  File \"/home/xilinx/diag_highfreq_phase.py\", line 258, in main\n    result = analyze(args.run_dir,args.model,args.model_sha256,args.coefficients_sha256,nfft=args.nfft)\n  File \"/home/xilinx/diag_highfreq_phase.py\", line 202, in analyze\n    u, m, info = read_capture(path, fs, mi)\n  File \"/home/xilinx/diag_highfreq_phase.py\", line 98, in read_capture\n    raise ValueError('CONFIG_MISMATCH_' + key)\nValueError: CONFIG_MISMATCH_fixture_id",
+  "notes": [
+    "First attempt failed earlier with MATCHING_MODEL_NOT_FOUND because board_run2 runs as root, so Path.home() was /root; re-ran with HOME=/home/xilinx, model then found by file sha256 ba432ad1... and coefficient sha256 6507565c...",
+    "No hardware was accessed, nothing was played, no recalibration, no service restart.",
+    "The capture data itself passes every other check in the script (open loop, gain_q12=0, zero_coeff, source=board, completed, no dropped frames, no clipping, no saturation) — the only failing field is fixture_id."
+  ],
+  "scene": "6b2e43d4b77c4b73b84923ea17d4a5e6",
+  "model_fixture_id": "6b2e43d4b77c4b73b84923ea17d4a5e6",
+  "capture_fixture_ids": {
+    "training_00..03": "9dc20d41edc047b6a86db0b242c95ea8",
+    "input_00": "9dc20d41edc047b6a86db0b242c95ea8",
+    "validation_00..01": "9dc20d41edc047b6a86db0b242c95ea8",
+    "run_00": "6b2e43d4b77c4b73b84923ea17d4a5e6",
+    "install_00": "6b2e43d4b77c4b73b84923ea17d4a5e6"
+  },
+  "is_it_universal": true,
+  "universal_evidence": [
+    "d1387c3e: capture 6e730f1c... vs model d1387c3e... (previous scene)",
+    "e73eaed9: capture 9a8ea3f6... vs model e73eaed9... (previous scene)",
+    "fba1a974: capture 'bootstrap-muted' vs model fba1a974...",
+    "fbec3d85: capture 6b612c25... vs model fbec3d85...",
+    "and many more: every scene with training captures shows MISMATCH"
+  ],
+  "root_cause": {
+    "file": "board/audio_replay/hw_api.py",
+    "lines": "1032-1041 in _install",
+    "mechanism": "self.fixture is only rebound to the current scene_id at install time (end of a CAL). Training/validation/input captures of the same CAL happen before install, so the driver records the stale fixture (previous scene id, or 'bootstrap-muted' at service start). The model written at install carries the current scene_id. Hence the one-generation lag."
+  },
+  "options": [
+    "A-side minimal metadata fix: bind self.fixture to request.scene_id at the start of the calibration (first hw op of a scene), not only at install. Affects metadata only, not audio, not the identity tuple. Requires a repackage by C and one fresh CAL (~150 s) so a scene with consistent metadata exists; capital script then runs unchanged.",
+    "Captain-side alternative: treat capture fixture_id as informational (accept previous-scene/bootstrap values) — but this loosens the CONFIG check, so A did not do it."
+  ],
+  "a_side_action_taken": "No code change, no check loosened, no re-capture. Reported back per instruction.",
+  "pcm_location": "unchanged on board: /home/xilinx/.local/state/shengdi/runs/6b2e43d4b77c4b73b84923ea17d4a5e6/io/"
+}
