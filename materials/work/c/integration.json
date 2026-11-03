@@ -1994,10 +1994,10 @@
       }
     },
     {
-      "path": "skill/audio-collaboration-lessons.md",
+      "path": "skill/ai-collaboration/SKILL.md",
       "owner": "C",
       "source_commit": "ff8e77da4e3b77a856c9ba271b09e3b842a38706",
-      "source_path": "skill/audio-collaboration-lessons.md",
+      "source_path": "skill/ai-collaboration/SKILL.md",
       "sha256": "8a43d14fc2df3d2557051bafb3e87c916eb15a5363c15f3f18097059a5944d3f",
       "source_sha256": "8a43d14fc2df3d2557051bafb3e87c916eb15a5363c15f3f18097059a5944d3f",
       "bytes": 2513,

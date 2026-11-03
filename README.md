@@ -70,8 +70,32 @@ tmp/         本地临时文件，不纳入 Git
 | 源码包 | 本仓库（构建入口 `build/scripts/create_audio_replay.tcl`） |
 | 可复现/验证入口 | `python -X utf8 scripts/software_sweep.py`（12 项）、`python -m unittest discover -s sim/feedback` |
 | 离线教程 | `materials/learning/index.html`（双击打开，无需联网） |
-| 技能包 | `skill/audio-evidence/SKILL.md` |
+| 技能包 | `skill/README.md`（索引；单项入口 `skill/*/SKILL.md`） |
 | 板卡部署载荷 | `board/audio_replay/v3/`（先核 `v3/manifest.json`，不混装 `archive/` 里的旧件） |
+
+### 目录对照（评测指南 3.3.5.4）
+
+指南推荐结构为 `README.md / src/ / sim/ / build/ / board/ / data/ / skill/ / report/`，
+明确说明**推荐而非强制**，采用其他组织方式的仓库须在本文件给出目录对照说明。本仓库对照如下：
+
+| 指南推荐 | 本仓库 | 说明 |
+|---|---|---|
+| `README.md` | `README.md` | 本文件；项目简介、目录对照、复现入口 |
+| `src/` | `src/` | RTL、算法源码与厂商依赖 |
+| `sim/` | `sim/` | 仿真与软件测试 |
+| `build/` | `build/` | Vivado 重建脚本、约束与实现报告 |
+| `board/` | `board/` | 上板 overlay、驱动、现场脚本与实测输出 |
+| `data/` | `data/` | 测试数据与参考结果；原始录音不入库 |
+| `skill/` | `skill/` | 技能包（索引 `skill/README.md`，贡献规范 `skill/CONTRIBUTING.md`） |
+| `report/` | `report/` | 验证证据与 AI 协作原始记录 |
+| （推荐结构之外） | `docs/` | 现状/契约/流程/日志；`docs/STATE.md` 是唯一现状入口 |
+| （推荐结构之外） | `materials/` | 参赛材料：报告、视频、教程、提交清单 |
+| （推荐结构之外） | `records/`→`report/`、`models/`、`scripts/`、`tools/` | 证据归档、模型 registry、辅助脚本、交付核查 |
+| （推荐结构之外） | `references/` | 厂商手册与赛事指南 |
+
+命名规则（指南 3.3.5.4 原文要求）：仓库内目录名与文件名使用纯英文（小写字母、数字、下划线或连字符），
+不得出现中文、空格或特殊字符；中文只出现在文件正文。`README.md`、`SKILL.md` 等惯例大写名沿用原有写法。
+根目录的本地交付 ZIP、Vivado 日志与临时工作区已进 `.gitignore`，不随提交归档。
 
 
 `docs/` 内部分层（按变化速度，不按日期）：

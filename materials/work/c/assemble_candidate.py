@@ -112,7 +112,7 @@ def main():
             public_review='preserve BSD notice' if path.startswith('src/vendor/') else
                           'team source/evidence; final license and anonymity review by captain'))
     # Local C authoring outputs are explicitly enumerated, never a recursive materials copy.
-    local = ['skill/README.md','skill/audio-evidence/SKILL.md','skill/audio-collaboration-lessons.md',
+    local = ['skill/README.md','skill/audio-evidence/SKILL.md','skill/ai-collaboration/SKILL.md',
         'sim/feedback/test_replay_v3_consumer.py','sim/feedback/fixtures/legacy-replay-tools-v2.py',
         'materials/work/c/verify_candidate.py','materials/work/c/review_return.py',
         'materials/work/c/assemble_candidate.py','materials/work/c/technical-report.md',

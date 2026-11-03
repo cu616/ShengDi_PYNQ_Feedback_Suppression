@@ -30,4 +30,13 @@ description: 核对FPGA音频交付的位流/驱动/模型身份与黄金参考�
 - A `facd3de`：`board/audio_replay/v3/manifest.json`、`test_verify_replay_v3.py`，宽残差和历史排除规则。
 - C `330e135`：`scripts/review_itemized_20261027.py`、`sim/feedback/test_replay_v3_consumer.py`，窗口/身份/单位反例。
 - B `86061a7`：`sim/feedback/test_unit_scale_guard.py`，PCM单位与Q20动态范围纠错。
-- 真实纠错与引用界限：`materials/work/c/claims.md`、`materials/work/c/technical-report.md`。旧经验入口仍见 `skill/audio-collaboration-lessons.md`。
+- 真实纠错与引用界限：`materials/work/c/claims.md`、`materials/work/c/technical-report.md`。旧经验入口见 `skill/ai-collaboration/SKILL.md`。
+
+## 固定字段速查（指南 3.3.5.2）
+
+- **适用场景**：拿到按 `materials/work/c/assemble_candidate.py` 导出的候选目录，用 Python 3.12 + NumPy 做离线身份/参考/窗口/单位核对。不执行板卡或声音操作。
+- **使用方法**：按上文第 1、2 节命令依次执行；失败例必须保留原目录并重导，不得改 manifest 放行坏版本。
+- **已验证效果**：本仓库 PYNQ-Z2 v3 软件用例通过（`test_verify_replay_v3.py`、`sim/feedback` 下的 round/窗口/单位反例）；候选具体通过项见 `materials/work/c/validation.json`。
+- **失效条件**：仅离线核对；没有跨板实测，不能判定 ASG、听众收益、端到端延迟；无原件时只做身份/窗口/差值算术审核，不得捏造 PCM 重算。
+- **来源**：本项目 2026-10 多轮"哈希/窗口/单位"纠错，原始记录见 `report/`、`docs/log/` 与上列提交号。
+

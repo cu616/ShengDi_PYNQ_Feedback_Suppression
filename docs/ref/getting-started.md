@@ -139,7 +139,7 @@ Capture.validate / load_capture
 | 算法与数据 | 第四、五、六步 | 训练/验证划分、系数顺序、量化和误差判据 |
 | 硬件与实验 | 第一、二、四步及协作经验 | 接线、增益、箱体条件、操作步骤及完整结果记录 |
 
-正式改代码前，全员阅读 [AI开发规范](../rules/ai-development-policy.md) 和 [音频协作经验](../../skill/audio-collaboration-lessons.md)。各自使用独立目录和任务分支，同一时段只有一名操作者控制板卡。
+正式改代码前，全员阅读 [AI开发规范](../rules/ai-development-policy.md) 和 [音频协作经验](../../skill/ai-collaboration/SKILL.md)。各自使用独立目录和任务分支，同一时段只有一名操作者控制板卡。
 
 第一次可以跳过`docs/archive/`旧方案、`build/work/`生成IP、`.Xil/`缓存、`tmp/`临时副本，以及diag/tone等历史诊断分支的内部细节；遇到相应问题再查。不要跳过失败证据的边界说明，也不要删除这些文件。
 
