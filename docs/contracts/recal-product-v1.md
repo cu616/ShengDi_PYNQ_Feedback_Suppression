@@ -1,8 +1,14 @@
-# 常驻重标定产品接口 v1
+# 常驻重标定产品接口 v2
 
 状态：C接口/模拟实现；A/B真实适配及实体验收待交付。用户2026-11-01明确授权新接口，不改变原寄存器/算法语义。
 
 统一版本`recal-product-v1`。C拥有唯一`recal_entry.sh`、`recal_product.py`及`assemble_experiment.py`产品分支。A拥有`hw_api.py`及驱动/实体I/O；B拥有`recal_algorithm.py`及数值依赖。A/B不再改入口。原`experiment.py`、`layout_experiment.py`保留离线验收用途，不是第二个正式产品入口。
+
+## v2：保护后 BTN2 免标定恢复（2026-11-03）
+
+本次只升文档修订版，消息`contract`仍为`recal-product-v1`，兼容原A事件。扩声保护停声进入`protected`（包括`input_overload`）后，短按BTN2/`confirm_quiet`可恢复到ready，再按BTN1扩声；同一scene最多3次，第4次保持protected并提示CAL，新CAL重置计数。failed/model_rejected/inconclusive/cancelled不能恢复。
+
+恢复前须同场景已装模型文件存在且SHA匹配、硬件调用已退出、实际静音、没有硬件错误锁存。复用空闲粘滞位留证及原驱动arm基线逻辑，不改硬件基线/保护策略；仅重新提交既有验证模型的启动资格，不拟合、不装载、不自动发声。状态/导出增加`resumed_from`与`resume_count`。指示灯沿用ready图案，不新增配置键，`RESUME_MAX=3`为模块常量。
 
 ## A硬件对象
 
