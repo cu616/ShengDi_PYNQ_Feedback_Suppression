@@ -14,8 +14,8 @@ A/C完成整机可靠性与现场验收；本轮队长按用户要求接手B的+
 
 ### A 板卡底层、硬件集成与现场
 
-**最后动作**：2026-11-03 按赛事指南整理工作区与技能包（提交 `b2f23fb`）：根目录只留指南推荐目录与兼容目录，本地交付 ZIP 与 Vivado 日志移入未跟踪归档；README 增「目录对照（3.3.5.4）」；新增指南规范摘录 [ref/competition-guide-requirements.md](ref/competition-guide-requirements.md)；`skill/` 重构为 3.3.5.2 索引 + `pynq-overlay-io` 通用技能 + `CONTRIBUTING.md` 贡献规范；旧技能并入 `ai-collaboration/SKILL.md`。此前：A 验收 C 的 BTN2 恢复包（`beb36216d26b6cbb`）：ZIP/manifest 哈希一致、41 文件清单匹配、`--check` 通过、3 个单测全过；板上面板实测 CAL→BTN1→SW0 啸叫→保护→**BTN2 恢复成功**（`resumed_from=protected`，`resume_count` 1→3，第 4 次被拒）→恢复后再扩声→BTN1 正常停止→`ended`，且昨天必失败的 runtime 白名单路径已修复。证据 [验收记录](../report/verification/recal-product-v1/resume3-acceptance.json)。+1 dB 真人 60 秒基线保留。
-**当前卡点**：BTN2 恢复包已通过 A 侧验收，等 C 的正式包确认后即可用于演示与交付。+3 dB 讲话试次仍在 0.06–0.11 秒输出饱和、峰约 8.35 kHz；A 的复频响表被 B/队长判定不自洽，相位根因改为**待核**，A 不修改也不据该表改 RTL，等 B 段复算结论。两项观察：CAL 采集期间 SW0 输入偶发读到 bypass（采集为 gain=0/zero_coeff 开环，音频不受影响）；操作员停止到 ended 约 44 秒延迟。
+**最后动作**：2026-11-03 交付三件事：①验收 C 的 BTN2 恢复包（`beb36216d26b6cbb`，3 单测 + 面板"保护→恢复→再扩声"全过）；②冻结位流 `32235065…` 的资源/时序/DRC 报告与构建来源交 C；③按指南整理工作区与技能包，并刷新交接与协作习惯文档。证据：[验收](../report/verification/recal-product-v1/resume3-acceptance.json)、[位流报告](../report/verification/recal-product-v1/frozen-bitstream-32235065/build-provenance.md)、[交接](ref/a-line-handover.md)。
+**当前卡点**：批量采集驱动已实现（`c17ce77`，`CAPTURE_PLAN_API=recal-capture-plan-v1`）但未上板，等 C 重钉整包后做 4 训练/2 验证实测与逐段校验；+3 dB 等 B/队长高频复算结论，A 不改 RTL/判据；视频素材①/②录制中（数据已合格）。两项观察：CAL 采集期间 SW0 输入偶发读到 bypass（开环采集不受影响）；操作员停止到 ended 约 44 秒延迟。
 本轮保留仓库 `board/audio_replay/recal_entry.sh` 为A原旧入口，C常驻入口另见C段。
 
 ### B 数据与算法／提交材料
