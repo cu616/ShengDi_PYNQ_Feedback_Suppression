@@ -161,7 +161,7 @@ q12 = 5787（+3.0 dB），先抵消后旁路，各 8 秒：
 | 切换后 | SW0 raw/sync = 1/1，旁路立即生效 |
 | 结果 | 饱和保护停声（gain=5），第 10.5 秒截断，mic_rms −18.9 / peak −3.8 |
 
-PL 里 ypass_effective = control[1] | sw0 | sw1 是逐帧判定的，所以**同一个运行里拨开关就能立刻切**，
+PL 里 bypass_effective = control[1] | sw0 | sw1 是逐帧判定的，所以**同一个运行里拨开关就能立刻切**，
 不需要重启、不需要软件介入——观众看到的就是"同一增益，一拨就炸"。
 
 演示时的完整循环（注意第 3 步要重新起跑，因为保护停声后流水线是停的）：
@@ -259,7 +259,7 @@ PL 里 ypass_effective = control[1] | sw0 | sw1 是逐帧判定的，所以**�
 ### 一个未解释的异常（记录在案）
 
 +2.5 dB 那轮的 install 采集出现 CLOSED_VERIFICATION bit_exact=False（residual 15872 帧全部不匹配），
-下一轮同样的 install 又恢复 it_exact=True。**出现一次、未复现**，原因未知，后续需盯。
+下一轮同样的 install 又恢复 bit_exact=True。**出现一次、未复现**，原因未知，后续需盯。
 ## 十六、2026-11-02 试验记录：+2.7 dB（后被现场听感否决）
 
 | 增益 | 从拨 SW0 到被保护停 | 有效性 | 听感（A 现场判断） |
@@ -301,7 +301,7 @@ PL 里 ypass_effective = control[1] | sw0 | sw1 是逐帧判定的，所以**�
 ### 测量协议的教训
 
 前一轮 +3.0/+4.0 两段作废，原因是**开跑时 SW0 仍拨在上**，等于全程旁路，测的不是"拨上去之后"。
-脚本已加硬闸：开跑前 SW0 必须为 0，任何 lip_at ≤ 0 的记录一律判无效。
+脚本已加硬闸：开跑前 SW0 必须为 0，任何 flip_at ≤ 0 的记录一律判无效。
 ## 十八、2026-11-02 截断电平核查：数字域已满幅，无可再提
 
 A 现场反馈"+3.0 dB 截断时电平偏低、不够尖"。核查停声瞬间的采集原件：
@@ -341,7 +341,7 @@ stop_reason             = guard
 但它是物理满幅限制，不存在"调高门限"的余地。现场规避：把嘴离麦克风保持约 35–40 cm、正常音量；
 仍触发就退到 +2.5 dB（旁路照样起振，啸叫窗口约 15 秒）。
 
-另：同一批次里另一次标定出现 it attempt=1 retry（L1 4.195 > 4.0），说明 L1 判据在摆位/电平略变时
+另：同一批次里另一次标定出现 fit attempt=1 retry（L1 4.195 > 4.0），说明 L1 判据在摆位/电平略变时
 仍会触发重试，一次标定约 2 分钟 × 次数。
 ## 二十、2026-11-02 回应 B：正对摆位三个 attempt 的 max|conv(h, ref)|
 
@@ -373,24 +373,24 @@ REJECT_SCALE 的重试，实际只会用到 attempt 0 那组，**0.1241 / 余量
 C 交付包 shengdi-recal-0cabfc17-0b09ef6-demo30-8s-final.zip
 （zip sha256 23b8f64fddb895fd7d81b249aabd73c191490850d59969028acce2608ec2f59d）就地改动：
 
-- product-config.json：un_seconds 8 → 60（全文仅此一处）；
+- product-config.json：run_seconds 8 → 60（全文仅此一处）；
 - 重算 product-manifest.json 中该文件的 sha256；
-  旧  9c32e2028dbcdf6… → 新 678a6f78be9cf23e…；
+  旧 09c32e2028dbcdf6… → 新 678a6f78be9cf23e…；
 - 重新打包为 shengdi-recal-0cabfc17-0b09ef6-demo30-60s-amod.zip，
-  zip sha256  d9c2f26bf0f39ec6307df636dddfcbc20d4a21f9298f90b45ce09d53c5a70a6，41 个文件，
+  zip sha256 0d9c2f26bf0f39ec6307df636dddfcbc20d4a21f9298f90b45ce09d53c5a70a6，41 个文件，
   重建后清单 40 个哈希全部匹配。
 
 上板：--check = {identity_ok: true, deployment_ready: true, missing: []}，装到
 /opt/shengdi/releases/33fad35ba987cc3d，服务 active，state=uncalibrated，
 package_manifest_sha256 = 33fad35ba987cc3d74c793a5436cb302bd64581036883812f10c84a59c4a83a5。
 
-**身份已变**：板上不再是 C 交付的那个包（原 manifest 1390e8b…）。本改动仅为效率优先的临时验证，
+**身份已变**：板上不再是 C 交付的那个包（原 manifest a1390e8b…）。本改动仅为效率优先的临时验证，
 正式交付仍需 C 出 60 秒官方包后覆盖安装，以恢复交付链。
 ## 二十二、2026-11-02 判据变更（A 代改，待 B 追认）：L1 门限改为预测峰值门限
 
 B 已书面提案、A 按提案实施，**算法归属仍是 B**，本改动需 B 追认后由 C 重钉正式版本。
 
-改动（ecal_algorithm.py，版本 `recal-algorithm-2026-11-01.1` → `recal-algorithm-2026-11-02.1`）：
+改动（recal_algorithm.py，版本 `recal-algorithm-2026-11-01.1` → `recal-algorithm-2026-11-02.1`）：
 
 1. 主判据：`max|conv(h, ref)| < 0.30`（`PRED_PEAK_MAX`），在 _phase_fit 里用本轮训练 reference 卷积
    拟合出的 h 求得，随 metrics 记录为 `pred_peak`；
@@ -417,9 +417,9 @@ zip sha256 `b823e8787b684bf756b296007e0382eab54bd65707247e35b5f949ffe1a72bd4`，
 判据修正包安装成功：
 
 - /opt/shengdi/current → /opt/shengdi/releases/db1b7d97226cbe7b
-- package_manifest_sha256 = db1b7d97226cbe7b…，un_seconds = 60，增益 5786
-- 算法版本 ecal-algorithm-2026-11-02.1，ecal_algorithm.py sha256
-  3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77（与包内 lgorithm_identity.file_sha256 一致）
+- package_manifest_sha256 = db1b7d97226cbe7b…，run_seconds = 60，增益 5786
+- 算法版本 recal-algorithm-2026-11-02.1，recal_algorithm.py sha256
+  3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77（与包内 algorithm_identity.file_sha256 一致）
 - --check = {identity_ok: true, deployment_ready: true, missing: []}
 - 安装后 state = uncalibrated、hardware_error_latched = false
 
@@ -428,14 +428,14 @@ zip sha256 `b823e8787b684bf756b296007e0382eab54bd65707247e35b5f949ffe1a72bd4`，
 
 ### 22.2 新判据在产品链路上的首次确认（2026-11-02）
 
-装板后按 CAL 跑完一整轮产品流程，**L1 = 4.117 被接受、alid_pass**——
+装板后按 CAL 跑完一整轮产品流程，**L1 = 4.117 被接受、valid_pass**——
 按旧判据 L1 ≤ 4.0 这组模型会被直接拒掉，因此这条实测证明包 db1b7d97 里的
-ecal-algorithm-2026-11-02.1 确实替换生效（不是只改了文档）。
+recal-algorithm-2026-11-02.1 确实替换生效（不是只改了文档）。
 
-同批次另一次标定 L1 3.543、峰位 123 = 实测延迟 123；两次验证均为 alid_pass。
-板上状态 eady / valid_pass，模型 sha cf4b41c…，包 db1b7d97…。
+同批次另一次标定 L1 3.543、峰位 123 = 实测延迟 123；两次验证均为 valid_pass。
+板上状态 ready / valid_pass，模型 sha acf4b41c…，包 db1b7d97…。
 
-另记录一次按键排查：驱动层按键位与事件均正常（长按产生 ecalibrate、短按产生 ecalibrate、
+另记录一次按键排查：驱动层按键位与事件均正常（长按产生 recalibrate、短按产生 recalibrate、
 BTN3 产生 cancel），此前"按键无反应"实为标定本身约 2.5 分钟、期间 LED 多次变化被误判为无响应。
 
 ## 二十三、2026-11-02 压缩标定耗时：训练段 6 → 4（实测 −33 秒）
@@ -444,8 +444,8 @@ BTN3 产生 cancel），此前"按键无反应"实为标定本身约 2.5 分钟�
 product-config.json（A 就地改包，非 C 交付链）：
 
 - capture_plans[*].training.captures：6 → 4（三个 attempt 都改）
-- ttempts[*].training.segments：6 → 4
-- 重算清单哈希：product-config.json sha256  d350591050ec0ee…
+- attempts[*].training.segments：6 → 4
+- 重算清单哈希：product-config.json sha256 0d350591050ec0ee…
 - 新 release /opt/shengdi/releases/f5cf4fce919394a2，--check 通过
 
 实测（追踪日志逐阶段计时）：
@@ -458,7 +458,7 @@ product-config.json（A 就地改包，非 C 交付链）：
 | **整轮 CAL** | **~183 s** | **~150 s** | **−33 s（−18%）** |
 
 质量对照：改前 L1 3.543/4.117、验证 +6.73/+6.17 dB；改后 L1 4.299、验证 **+7.9 / +6.4 dB**，
-alid_pass 不变。4 段仍给出 6 万级方程行（远大于 512 抽头），最小二乘条件数不受影响；
+valid_pass 不变。4 段仍给出 6 万级方程行（远大于 512 抽头），最小二乘条件数不受影响；
 但样本减少会增大模型方差，需多次标定观察，**暂按一次通过记录，不外推为"4 段总是更好"**。
 
 其余可压缩项（未做）：拟合算法加速（B，估 −40 s）、去掉每段位流重下（A，RTL 软复位，估 −45 s）、
@@ -499,23 +499,23 @@ product-config.json（A 就地改包，非 C 交付链）：
 **结论**：当前路径下的安全演示点是 **+1.0 dB**（q12 4596），同增益下旁路必然啸叫。
 
 **新包（A 临时重建）**：shengdi-recal-demo60-gain1db-4seg-amod.zip
-zip sha256  43b4fea859fd6f3faa93970736effacb9f9f4d0bf74bfed325bc2b427e12403，41 文件；
-gain_q12 = 4596、un_seconds = 60、训练段 [4,4,4]、算法 ecal-algorithm-2026-11-02.1；
---check 通过，装到 eleases/42da66b57ed9043c。
+zip sha256 043b4fea859fd6f3faa93970736effacb9f9f4d0bf74bfed325bc2b427e12403，41 文件；
+gain_q12 = 4596、run_seconds = 60、训练段 [4,4,4]、算法 recal-algorithm-2026-11-02.1；
+--check 通过，装到 releases/42da66b57ed9043c。
 
 ## 二十五、2026-11-02 四灯根因：改包漏了 phase_gain_q12（A 的配置疏漏，已修）
 
 **现象**：把演示增益从 5786（+3.0 dB）改为 4596（+1.0 dB）后，每轮标定都在 installing 阶段
 （约 7 秒后）失败，走 hardware_error、四灯全亮。
 
-**根因**：产品按**阶段**校验数字增益回读（ecal_product.py:216-219）：
+**根因**：产品按**阶段**校验数字增益回读（recal_product.py:216-219）：
 
 ``
 allowed = cfg['phase_gain_q12'][gain_scope] (缺省 [expected_identity.gain_q12])
 回读不在 allowed 内 -> Failure('hardware_error', '阶段数字增益回读不符')
 ``
 
-A 改包时只改了 expected_identity.gain_q12 与 llowed_gain_q12，**漏改 phase_gain_q12**：
+A 改包时只改了 expected_identity.gain_q12 与 allowed_gain_q12，**漏改 phase_gain_q12**：
 
 | 阶段 | 旧白名单 | 实际写入 |
 |---|---|---|
@@ -528,7 +528,7 @@ A 改包时只改了 expected_identity.gain_q12 与 llowed_gain_q12，**漏改 
 **修复**：所有阶段白名单替换为 [0, 4596]（prepare 保留历史档位并加入 4596），重打包
 shengdi-recal-demo60-gain1db-v2-amod.zip，zip sha256
 881c2d7567e060d12d6e28982e7dd92a81316e7674327aa113a7b9ad8c845889，41 文件、清单全匹配；
---check 通过，装到 eleases/de2a640e092f470f。
+--check 通过，装到 releases/de2a640e092f470f。
 
 **教训（写给三条线）**：产品配置里凡"按阶段"约束的量（增益白名单、超时、抓取计划）与 expected_identity
 是**两处独立校验**，只改一处必然在某个阶段炸。改包后必须在每个阶段各跑一次验证，而不是只看 --check。
