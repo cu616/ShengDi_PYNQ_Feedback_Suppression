@@ -1,13 +1,15 @@
-"""Live product-panel run monitor for the a06 screen recording.
+"""Live product-panel run monitor for the a06 screen recording (ASCII output, Windows safe).
 
 Connects to the board, runs a small read-only monitor there, and streams a clean status view to
-this console. No hardware access, no playback: it only reads the product's own status/run files.
+this console. It never plays audio and never touches the hardware controls.
 """
-import json
 import os
 import sys
 import time
 from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+LOG = HERE / 'a06_monitor_last_run.log'
 
 DEPS = r'D:\OCadence_Project\Flushbonading_FPGA_Contest\tmp\a-feedback\tmp\ssh-deps'
 sys.path.insert(0, DEPS)
@@ -56,13 +58,11 @@ def fmt(x):
 
 
 print('=' * 64, flush=True)
-print(' 产品面板运行记录  ·  只读监视  ', flush=True)
+print(' PRODUCT RUN RECORD  (live, read-only)', flush=True)
 print('=' * 64, flush=True)
 
 last = None
 started = None
-# Pre-seed with the newest existing run record so an OLD run is never printed during the recording;
-# only a run that finishes AFTER the monitor starts produces the summary block.
 last_run_file = newest_run()
 while True:
     st = status()
@@ -70,13 +70,10 @@ while True:
     now = time.time()
     if state == 'running' and started is None:
         started = now
-    if state != 'running' and started is not None:
-        pass
-    line = None
     if state == 'running' and started is not None:
-        line = '状态 running    已运行 %6.1f s' % (now - started)
+        line = 'STATE  running      elapsed %6.1f s' % (now - started)
     else:
-        line = '状态 %-10s' % str(state)
+        line = 'STATE  %s' % str(state)
     if line != last:
         print(line, flush=True)
         last = line
@@ -88,29 +85,47 @@ while True:
             secs = (frames / RATE) if isinstance(frames, int) else None
             lv = tail_levels(rf)
             print('-' * 64, flush=True)
-            print(' 运行结束记录', flush=True)
-            print('   请求时长     60 s', flush=True)
-            print('   完成帧数     %s' % fmt(frames), flush=True)
-            print('   实际时长     %s s' % ('%.2f' % secs if secs else '?'), flush=True)
-            print('   结束原因     %s' % d.get('stop_reason'), flush=True)
-            print('   增益饱和     %s' % d.get('gain_saturations'), flush=True)
-            print('   麦克风满量程 %s' % ('是' if d.get('input_full_scale_seen') else '否'), flush=True)
+            print(' RUN FINISHED', flush=True)
+            print('   requested          60 s', flush=True)
+            print('   completed frames   %s' % fmt(frames), flush=True)
+            print('   actual duration    %s s' % ('%.2f' % secs if secs else '?'), flush=True)
+            print('   stop reason        %s' % d.get('stop_reason'), flush=True)
+            print('   gain saturations   %s' % d.get('gain_saturations'), flush=True)
+            print('   input full scale   %s' % ('yes' if d.get('input_full_scale_seen') else 'no'), flush=True)
             if lv:
-                print('   尾窗电平     mic_rms %.1f dBFS / mic_peak %.1f dBFS' % lv, flush=True)
+                print('   tail mic level     rms %.1f dBFS / peak %.1f dBFS' % lv, flush=True)
             print('-' * 64, flush=True)
             last_run_file = rf
         except Exception as exc:
-            print('读取运行记录失败: %s' % exc, flush=True)
+            print('read run record failed: %s' % exc, flush=True)
             last_run_file = rf
     time.sleep(0.5)
 '''
 
 
+def log(text):
+    try:
+        with LOG.open('a', encoding='utf-8') as stream:
+            stream.write(text)
+    except Exception:
+        pass
+
+
+def emit(text):
+    sys.stdout.write(text)
+    sys.stdout.flush()
+    log(text)
+
+
 def main():
+    LOG.write_text('a06 monitor session %s\n' % time.strftime('%Y-%m-%d %H:%M:%S'),
+                   encoding='utf-8')
+    emit('connecting to board...\n')
+    password = os.environ.get('SHENGDI_SSH_PASSWORD', 'xilinx')
     client = paramiko.SSHClient()
     client.load_host_keys(KNOWN)
     client.set_missing_host_key_policy(paramiko.RejectPolicy())
-    client.connect(HOST, username='xilinx', password=os.environ['SHENGDI_SSH_PASSWORD'],
+    client.connect(HOST, username='xilinx', password=password,
                    look_for_keys=False, allow_agent=False, timeout=10)
     sftp = client.open_sftp()
     with sftp.open(REMOTE, 'w') as stream:
@@ -119,12 +134,11 @@ def main():
     sftp.close()
     command = ("sudo -S -p '' /usr/local/share/pynq-venv/bin/python -u " + REMOTE)
     stdin, out, err = client.exec_command(command)
-    stdin.write((os.environ['SHENGDI_SSH_PASSWORD'] + '\n').encode())
+    stdin.write((password + '\n').encode())
     stdin.flush()
     try:
         for chunk in iter(lambda: out.channel.recv(4096), b''):
-            sys.stdout.write(chunk.decode('utf8', 'replace'))
-            sys.stdout.flush()
+            emit(chunk.decode('utf8', 'replace'))
     except KeyboardInterrupt:
         pass
     finally:
@@ -135,4 +149,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as exc:
+        print('MONITOR ERROR: %r' % (exc,))
+        log('MONITOR ERROR: %r\n' % (exc,))
+        time.sleep(3)
