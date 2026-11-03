@@ -23,6 +23,16 @@ venv/
 /build/work/
 .vscode/
 .idea/
+
+# 本地交付副本与临时工作区：只留在本机，不进提交归档
+/_a_work/
+/.ai-group-state/
+/.workbuddy/
+/*.zip
+/*.zip.sha256
+/*.docx
+
+# 历史根目录交付包命名（保留旧规则，防止再次误提交）
 /shengdi-recal-*-maintenance.zip
 /shengdi-recal-*-maintenance.zip.sha256
 /shengdi-recal-*-final.zip

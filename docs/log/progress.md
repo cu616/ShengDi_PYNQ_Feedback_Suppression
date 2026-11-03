@@ -1,3 +1,10 @@
+## 2026-11-03 A 按赛事指南整理工作区与技能包
+
+- 通读选题指南 3.3 节（PDF 第 22–25 页），摘录工程规范到 [ref/competition-guide-requirements.md](../ref/competition-guide-requirements.md)：3.3.3 工具/大模型协作/技能包要求、3.3.4 优化目标、3.3.5.1 工程包、3.3.5.2 技能包（`skill/` + README，四类内容，可复用性评价，须写适用场景/使用方法/已验证效果/失效条件/来源）、3.3.5.3 报告要素、3.3.5.4 推荐目录与纯英文命名规则、3.3.5.5 权重。
+- 工作区：根目录只留 `README.md/AGENTS.md/.gitignore/.gitattributes` + 指南推荐八目录 + 兼容目录；根目录 29 个本地交付 ZIP 与临时文档移入未跟踪的 `_a_work/local-delivery-archive/`，Vivado 日志删除，`NA/`（无源码价值的 ps7_summary）从仓库移除；`.gitignore` 增加 `/_a_work/`、`/.ai-group-state/`、`/.workbuddy/`、根目录 `/*.zip`、`/*.docx`。根 README 增加「目录对照（评测指南 3.3.5.4）」。
+- 技能包重构：`skill/README.md` 改为指南 3.3.5.2 的索引（每项含适用场景/已验证效果/失效条件）；新增 `skill/CONTRIBUTING.md`（五节模板、硬性要求、提交清单、给其他会话的最短上手提示词）；新增通用技能 `skill/pynq-overlay-io/SKILL.md`（overlay 加载与重载保护、ip_dict 取址、写后回读、loader 握手、环形缓冲边跑边取，与本题无关可复用）；`audio-collaboration-lessons.md` 迁入 `skill/ai-collaboration/SKILL.md` 并补齐五节；`audio-evidence/SKILL.md` 增补固定字段速查。
+- 旧技能路径引用 5 处已机械更新（docs/log 两条历史、getting-started、C 的 assemble_candidate.py/integration.json），内容未改写；`check_docs` 跟踪文件 0 错误。
+
 ## 2026-11-03 C 接入capture_plan单次调用，驱动实现待A（接口修订v3）
 
 - 源码确认现接口只在停声后读16384尾窗，不能通过延长budget得到4窗。C给出一次下载/source/arm的replay_capture_plan签名、真实全局窗坐标、逐段NPZ/status及bit_exact、环形缓存无覆盖证明与整批失败口径。
@@ -64,8 +71,10 @@
 
 - 真板完整链路首次走通：冷启动不写 AUX 进待标定；CAL alid_pass（L1 2.170、峰位 126 = 实测延迟 126、300–460 Hz 带内抑制中位 +4.63 dB）；BTN1 进 running 并听到扩声；SW0 在同一运行内拨上即起振。
 - 逐点二分：旁路边界 +2.1 dB（同点先稳后炸，只能报 ±0.1）、抵消边界 +5.0 稳 / +5.5 失稳，ASG 约 3.2 dB（2.9–3.4，5 秒与 20 秒两个窗口）；演示点 +3.0 dB，现场 SW0 切换后 3.49 秒被饱和保护停声。静音下 +3.0/+2.5/+2.0 dB 各跑满 60 秒（2929687 帧、零饱和），证明环路本身可稳 60 秒，60 秒失败由讲话电平推满导致。
-- 按队长授权就地改包：un_seconds 8→60（重算 product-config.json 清单哈希），装到板上验证 --check 通过；包身份变为 33fad35b…，不在 C 交付链。
-- 代实施 B 的判据提案（待 B 追认）：主判据改为 max|conv(h,ref)| < 0.30、L1_MAX 4.0→8.0 兜底、去掉 REJECT_SCALE 重试；算法版本升至 ecal-algorithm-2026-11-02.1。用板上真实 data 验证：原被拒的三组模型（L1 4.455/4.467/4.339，max|conv| 0.1241/0.1714/0.2301）全部 DEPLOYABLE_FIT。包 shengdi-recal-0cabfc17-0b09ef6-demo60-pred-peak-amod.zip，zip sha256 823e8787b684bf756b296007e0382eab54bd65707247e35b5f949ffe1a72bd4。
+- 按队长授权就地改包：
+un_seconds 8→60（重算 product-config.json 清单哈希），装到板上验证 --check 通过；包身份变为 33fad35b…，不在 C 交付链。
+- 代实施 B 的判据提案（待 B 追认）：主判据改为 max|conv(h,ref)| < 0.30、L1_MAX 4.0→8.0 兜底、去掉 REJECT_SCALE 重试；算法版本升至 
+ecal-algorithm-2026-11-02.1。用板上真实 data 验证：原被拒的三组模型（L1 4.455/4.467/4.339，max|conv| 0.1241/0.1714/0.2301）全部 DEPLOYABLE_FIT。包 shengdi-recal-0cabfc17-0b09ef6-demo60-pred-peak-amod.zip，zip sha256 823e8787b684bf756b296007e0382eab54bd65707247e35b5f949ffe1a72bd4。
 - 未验收：换电源后路径与模型匹配性；正对摆位 60 秒连续扩声的输入余量（+3.0 dB 连续讲话 8.8 秒因 input_full_scale_seen 停声）；旁路边界复现性；声压/热安全；0.9 秒按键空窗；一次 install it_exact=False 未复现。证据：[演示协议](../../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。
 ## 2026-11-02 C 交付最终5786/8秒演示整包
 
@@ -2322,7 +2331,7 @@ JSON 每项与 CSV 增加驱动返回的实际增益编码、Codec 音量码和 
 
 ## 2026-10-17 交接文档同步
 
-新增 [工程交接](handoffs/2026-10-17.md)、[日志证据索引](../../report/evidence-index.md) 和 [协作经验](../../skill/audio-collaboration-lessons.md)，统一README及接口中的过时状态。近期技术结论仍为下节两轮标定及开环预测9.69 dB；本轮仅整理文档，未操作板卡、未新增性能测试、未提交或推送。基线未冻结、板卡数据未备份及人员待指定等缺口已写入交接页。
+新增 [工程交接](handoffs/2026-10-17.md)、[日志证据索引](../../report/evidence-index.md) 和 [协作经验](../../skill/ai-collaboration/SKILL.md)，统一README及接口中的过时状态。近期技术结论仍为下节两轮标定及开环预测9.69 dB；本轮仅整理文档，未操作板卡、未新增性能测试、未提交或推送。基线未冻结、板卡数据未备份及人员待指定等缺口已写入交接页。
 
 以下按事件保留历史状态，同日较新条目位于上方；旧条目的“未上传/未验证”仅描述当时状态。
 
@@ -2790,7 +2799,7 @@ B 预测的 381 Hz 共振两次都没成为起振点。
 
 ## 2026-10-17 交接文档同步
 
-新增 [工程交接](handoffs/2026-10-17.md)、[日志证据索引](../../report/evidence-index.md) 和 [协作经验](../../skill/audio-collaboration-lessons.md)，统一README及接口中的过时状态。近期技术结论仍为下节两轮标定及开环预测9.69 dB；本轮仅整理文档，未操作板卡、未新增性能测试、未提交或推送。基线未冻结、板卡数据未备份及人员待指定等缺口已写入交接页。
+新增 [工程交接](handoffs/2026-10-17.md)、[日志证据索引](../../report/evidence-index.md) 和 [协作经验](../../skill/ai-collaboration/SKILL.md)，统一README及接口中的过时状态。近期技术结论仍为下节两轮标定及开环预测9.69 dB；本轮仅整理文档，未操作板卡、未新增性能测试、未提交或推送。基线未冻结、板卡数据未备份及人员待指定等缺口已写入交接页。
 
 以下按事件保留历史状态，同日较新条目位于上方；旧条目的“未上传/未验证”仅描述当时状态。
 

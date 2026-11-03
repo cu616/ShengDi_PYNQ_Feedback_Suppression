@@ -17,6 +17,7 @@
 | 准备提交材料、视频、HTML教程与三线集成 | [materials 入口](../materials/README.md) | 不把根目录旧 main 或临时压缩包当最终交付 |
 | 查某个接口 / 寄存器 / 系数格式 | [contracts/README.md](contracts/README.md) | frozen/ 下的诊断接口 |
 | 改代码前先懂结构 | [ref/workspace-architecture.md](ref/workspace-architecture.md)、[ref/code-reading-guide.md](ref/code-reading-guide.md) | — |
+| 对照赛事指南要求与目录/技能包规范 | [ref/competition-guide-requirements.md](ref/competition-guide-requirements.md) | 官方 PDF 全文（只用本页摘录） |
 | 查某次实验到底做过什么 | [log/experiments/](log/experiments/) | — |
 | 知道用户明确提出过哪些硬要求 | [rules/progress-mandate.md](rules/progress-mandate.md) | — |
 | 写 AI 协作记录（评分项） | [templates/ai-session-record.md](templates/ai-session-record.md) | — |
