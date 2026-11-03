@@ -61,7 +61,9 @@ print('=' * 64, flush=True)
 
 last = None
 started = None
-last_run_file = None
+# Pre-seed with the newest existing run record so an OLD run is never printed during the recording;
+# only a run that finishes AFTER the monitor starts produces the summary block.
+last_run_file = newest_run()
 while True:
     st = status()
     state = st.get('state')
