@@ -427,3 +427,110 @@ DAC 实际寄存器与音响侧状态**没有记录**。能确定的只有 10.5 
 今天 3 次：进程约 97% CPU、`wchan=do_select`、状态文件长时间不更新、重启服务即恢复；
 另有多次"四灯"经查为 A 改包漏改 `phase_gain_q12` 导致增益回读校验失败（已修）。
 **与 10.1–10.5 的通路差异不作合并**；下次复现先保存进程/状态/日志只读现场，板上已有 gdb/strace。
+
+---
+
+# 11 收束：唯一候选钉死 + 产品面板完整流程验证（2026-11-02 晚）
+
+按队长第 N 轮指示：只做"一个最终包从启动到使用"的验证，不再追 +3 dB、不新增基线/监测/判据。
+
+## 11.1 唯一候选（钉死，不再"那一档/或另一个"）
+
+**包**：`/opt/shengdi/releases/de2a640e092f470f`
+`package_manifest_sha256 = de2a640e092f470f802f3d213f532a68add19fffdb098a2bb3d568502d0b6cfe`
+（A 临时重建：`+1.0 dB` / `run_seconds=60` / 训练 4 段 / `recal-algorithm-2026-11-02.1`）
+
+**模型**（即完成 +1.0 dB **真人 60 秒扩声**的那一个）：
+
+| 项 | 值 |
+|---|---|
+| 试次/场景 | `6b2e43d4b77c4b73b84923ea17d4a5e6` |
+| model.json 文件 sha256（= `bundle.model_sha256`） | `ba432ad195711069c5160480b21eb6ec2073c423144d4e21f15e93b8b2799580` |
+| Q20 系数 int32-LE sha256（= `bundle.coefficients_sha256`） | `6507565c444929737d8b44486c7064d4226792070e4f6eac8a3f84827287f1cf` |
+| L1 / taps / hp_volume | 3.662214 / 512 / 40 |
+| 该次 identity 回读 | `aux_db=0.0`、`aux_raw=5/5`、`hp_volume=40`、**`gain_q12=4596`** |
+
+> 说明：另有一次 +1.0 dB 试次 `fba1a97493e14fc49b113ec23abee02d`（模型 `33f700571c37…`），
+> 其运行 9.26 秒后被操作者拨 SW0 触发的保护中止，**不是完成的 60 秒运行**，故不作为候选；
+> 仅保留为"SW0 对照"证据。
+
+## 11.2 包变化 42da66b5 → de2a640e 的实际差异
+
+逐文件哈希比对两个 release 目录（各 50 个文件）：**载荷差异只有 2 个文件**，
+其余 9 处差异是运行时产物（7 个 `__pycache__/*.pyc` 与 `loaded.xclbin`），不属于包清单。
+
+| 文件 | 说明 |
+|---|---|
+| `product-config.json` | **唯一语义改动：`phase_gain_q12`** |
+| `product-manifest.json` | 其哈希随 config 更新 |
+
+配置差异逐阶段（旧 → 新）：
+
+| 阶段 | 42da66b5 | de2a640e |
+|---|---|---|
+| prepare | [0,1631,2303,3254,4096,**5786**] | [0,1631,2303,3254,4096,**4596**] |
+| cue / input / training / validation / install / run | [0,**5786**] | [0,**4596**] |
+
+`expected_identity.gain_q12` 两版都是 4596（42da66b5 的问题是白名单没跟上，见 §二十五）。
+
+## 11.3 `phase_gain_q12` 语义核对（队长第 2 点）
+
+**它是"允许回读列表"，不是各阶段执行增益。** 核实方式与结果：
+
+| 检查项 | 证据 |
+|---|---|
+| 训练/验证采集的实际增益 | NPZ 元数据 `forward_path_open=true`、`gain_q12=0`、`zero_coeff=true`（场景 `6b2e43d4` 的 training/validation 全部如此）→ **开环、实际执行 0** |
+| 正常运行的实际回读 | 该场景 `identity.gain_q12=4596` |
+| 语义 | `recal_product.py:216-219`：`allowed = phase_gain_q12.get(gain_scope, [expected])`，回读 ∈ allowed 才通过 |
+
+**未用扩大白名单掩盖错误采集增益**：白名单只是把 5786 换成 4596，采集端仍是 `direct_only=True` + `gain_q12=0`。
+全部结论由已有收据核实，未为此单独发声。
+
+## 11.4 产品面板完整流程记录（本轮唯一一次）
+
+| 步骤 | 结果 | 证据 |
+|---|---|---|
+| 启动服务 | ✅ `active`、`uncalibrated` | 服务重启后状态确认 |
+| 按键 CAL | ✅ `valid_pass`，模型验证与安装通过 | 场景 `6b2e43d4`，拟合 `L1 3.662`、峰位 125 = 实测延迟 125 |
+| BTN1 真人扩声 | ✅ **跑满 60.00 秒**（`completed_frames=2929687`）、`gain_saturations=0`、`input_full_scale_seen=false` | `..._1_run_00.status.json` |
+| 正常结束 | ✅ 状态机进入 `ended` | 事件 `6046.3 ended` |
+| **再次启动使用** | ❌ **`ended` 后 0.4 秒变为 `failed`**：`hardware_error / 阶段数字增益回读不符` | 事件 `6046.7 failed` |
+
+**这是今天第一次在真人、+1.0 dB、60 秒下完整跑满扩声**（此前所有运行都以保护或手动停止结束）。
+
+## 11.5 失败步骤的根因（精确定位，C 侧修一处即可）
+
+```
+recal_product.py:481
+    self._muted(self.hw.mute()); self.gain_scope='runtime'; self._identity(self.hw.poll()['identity'])
+recal_product.py:216-219
+    if key=='gain_q12':
+        allowed = self.cfg.get('phase_gain_q12',{}).get(self.gain_scope,[self.cfg['expected_identity'][key]])
+        if readback not in allowed: raise Failure('hardware_error','阶段数字增益回读不符')
+```
+
+- 运行 `completed` 后，代码先把 codec 静音，再以 `gain_scope='runtime'` 做身份校验；
+- 但**所有包（含 C 原始包 `9561f697`）的 `phase_gain_q12` 都没有 `runtime` 键**
+  （键只有 prepare/cue/input/training/validation/install/run）；
+- 于是回退到默认 `[expected_identity.gain_q12] = [4596]`；
+- 而静音后硬件 `gain_q12` 回读为 **0**，`0 ∉ [4596]` → 抛 `hardware_error` → 四灯。
+
+**为什么今天才发现**：该分支只在"运行自然跑满 `completed`"时执行；此前运行要么被保护中止、要么被手动停止，
+从未走到 `completed`。**这是潜伏 bug，不是今天改坏的。**
+
+**建议修复（C 侧，任选其一，改动都很小）**：
+1. 在 `phase_gain_q12` 增加 `"runtime": [0, <expected_gain>]`（推荐，最小且语义清晰）；
+2. 或把 `recal_product.py:216-219` 的默认值改成 `[0, expected_identity.gain_q12]`；
+3. 或把 `:481` 的身份校验挪到静音**之前**。
+
+修完需重打包、A 复跑本流程（CAL → BTN1 60 秒 → 正常停止 → 再次启动）。
+
+## 11.6 收束结论
+
+- **达成的**：唯一候选钉死（包/模型/配置齐全且全哈希）；产品面板 CAL→验证→安装→BTN1 真人 **60.00 秒扩声**已验证；
+  `phase_gain_q12` 语义已核实且未用于掩盖采集增益。
+- **仍失败的**：仅"正常结束后再次启动"一步，根因是上述潜伏 bug，属 C 侧一处小改。
+- **卡死**：本轮未发生。
+- **交接**：把本节的包、模型、配置与流程记录交 C，按同一源码与配置出正式包；重打包只做此修复，
+  不引入新功能，并核对运行载荷与参数一致。
+
