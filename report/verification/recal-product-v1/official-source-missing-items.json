@@ -1,0 +1,12 @@
+[
+  {
+    "id": "final-design-report",
+    "state": "pending-confirmation",
+    "detail": "只收录现有review同稿DOCX/PDF；内含待补实拍图及历史待验证措辞，未获终稿确认。"
+  },
+  {
+    "id": "environment-lock",
+    "state": "incomplete",
+    "detail": "Vivado2018.3/PYNQ-Z2 board_part已由Tcl固定；板上Python/NumPy/PYNQ精确版本和外部board_part定义未随冻结包完整锁定。"
+  }
+]

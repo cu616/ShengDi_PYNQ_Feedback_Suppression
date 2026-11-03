@@ -26,10 +26,9 @@ A/C完成整机可靠性与现场验收；本轮队长按用户要求接手B的+
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：原BTN2恢复包保持原ZIP/manifest，A已实机验收的证据保留。新批量调度C侧接入就绪：训练/验证按能力声明各一次驱动调用，逐段原NPZ/状态JSON/算术bit_exact与环形缓存保留证明在后台复核；5个批量/面板用例及原3个BTN2用例共8项软件检查通过。只改C编排及获授权的hw_api薄调用层，A驱动/位流/RTL/算法和运行参数未改。
-**当前卡点**：A驱动尚无replay_capture_plan，实际批量路径未启用。现驱动停声后只读末尾16384帧，不能将长运行尾窗拆成多段冒称独立捕获；需A提供运行中安全取窗入口。训练≤7秒/总CAL≤125秒均未实测，不出提速正式包，现有已验包不替换。接口及文件边界见[产品约定v3](contracts/recal-product-v1.md)。
-证据：[静态边界](../report/verification/recal-product-v1/capture-plan-review.json)、[8项软件检查](../report/verification/recal-product-v1/capture-plan-software.json)、[原包A验收](../report/verification/recal-product-v1/resume3-acceptance.json)。fixture副本仅用于新批量采集，原模型/旧捕获不改；C未操板，声压/热安全、按键空窗和旧install异常仍保留。
-C入口仍为recal_product_entry.sh（包内recal_entry.sh），不新增正式入口。A下一步只实现驱动批量函数，C待其原件后统一重钉整包。
+**最后动作**：按队长唯一resume3 ZIP/source-map完成官网工程RAR候选；正式41文件原样保留、四历史源逐字节核对、配置不重建。已纳入faab273对应实现报告，原件/脱敏副本分列SHA，DCP留仓库。RAR自检和独立解压全文件核验通过，包内check通过；后续批量/诊断源隔离为开发记录，C未操板。
+**当前卡点**：设计报告仍按队长确认保留审阅稿，待终稿替换；板上软件精确版本与外部board_part依赖锁定仍有缺项。当前RAR可检查，不标最终上传批准；logs/runme.log仅有原件哈希引用，不冒称C已独立核验。正式运行版本不因main后续提速改动重选。
+交付入口：[RAR候选与复核](../report/verification/recal-product-v1/official-source-candidate.md)、[完整回执](../report/verification/recal-product-v1/official-source-candidate.json)。RAR本体不自动进Git，通过原文件转发；源码入口仍为原ZIP内recal_entry.sh。
 
 ## 已验证 / 未验证
 

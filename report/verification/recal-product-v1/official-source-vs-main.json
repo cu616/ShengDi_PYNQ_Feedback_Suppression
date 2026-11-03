@@ -1,0 +1,293 @@
+{
+  "main_snapshot": "faab2732fea5ebac44bb81ecc7d6b745e95dfd7e",
+  "files": [
+    {
+      "file": "ALGORITHM.md",
+      "frozen_sha256": "c9504107121c8ab069b2aba89b3bd2f8cff8809887ddee2ef42d1306e91d0763",
+      "repo_path": "docs/contracts/recalibration-algorithm-v1.md",
+      "comparison": "line-ending-only",
+      "main_sha256": "e4f7e390ffc953999073863c03cb0d460f89de5a0ba08419cc431a65aa9e8b39",
+      "same_bytes": false
+    },
+    {
+      "file": "BOOT-RECOVERY.md",
+      "frozen_sha256": "a97722b7cb7e8c8b05c33274024392fe4453b6f08aeff96d2e6e7a8fa1177a21",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "DEMO-RUNTIME.md",
+      "frozen_sha256": "778edf5bc0c01b9dd14224d623bda80d8261d1aeeaae853aea164a691bae105e",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "FINAL-RUNTIME.md",
+      "frozen_sha256": "db8d68185e653d406a96793d902aa13f93d0916299faea17d7680637b8e40217",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "FROZEN-RUNTIME.md",
+      "frozen_sha256": "c9b6e60ef6be63164084dfa10cf33de9945189b3e639b1771c785db4d691bc3c",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "GUARD-RUNTIME.md",
+      "frozen_sha256": "10d5cdc3c59a203a8d10521f6a5dd275ac20e9afab56cf32602eae509e5ebf73",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "INSTALL-RUNTIME.md",
+      "frozen_sha256": "3f753250ada0d4397e44cc10f596aa0c9b92d9731dca903f06ea67d1b3464e4d",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "INTERFACE.md",
+      "frozen_sha256": "8a1801b62fa1b462d45b33ee89edd06104654ace9da7346f8e6ec49386b7e74f",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "IO-INDICATOR.md",
+      "frozen_sha256": "1e5a751c95455ff3675bbeed19b5c97cb9879a87e86ef67800d58858db1e6818",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "MAINTENANCE-RUNTIME.md",
+      "frozen_sha256": "2f4cec4b548eb6c15e23468e345671b3dd810a259fe3a309c8a1023396286412",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "OPERATIONS.md",
+      "frozen_sha256": "d6c142a9b0464251f32af5b3200a5a1d73652946c74c7b46da6a86c71d8b38d4",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "POLICY-CONSUMER.md",
+      "frozen_sha256": "70ac92cac6af3d6933c49cebe57348dda47c50569106c841d79428911294f61e",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "POLICY.md",
+      "frozen_sha256": "4f84fd063cb661b58b4d4cdb7fdce357c7e23583fdc30ecdad13a06161f1a15c",
+      "repo_path": "docs/contracts/recalibration-policy-v1.md",
+      "comparison": "line-ending-only",
+      "main_sha256": "c1d47598865f4822690b42366e6f359f26f586ca3734ab8130f494a1db44495b",
+      "same_bytes": false
+    },
+    {
+      "file": "RUNTIME.md",
+      "frozen_sha256": "12141a34bfbd8c0df69bb88a95abf2fcc1200cd5d9cb8864a9cca917aa6efe3b",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "audio_replay.bit",
+      "frozen_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "repo_path": "board/audio_replay/v3-io/audio_replay.bit",
+      "main_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "audio_replay.hwh",
+      "frozen_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+      "repo_path": "board/audio_replay/v3-io/audio_replay.hwh",
+      "main_sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "bootstrap-model.json",
+      "frozen_sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8",
+      "repo_path": "board/audio_replay/v3-io/bootstrap-model.json",
+      "comparison": "package-only; no tracked main path"
+    },
+    {
+      "file": "closed_tools.py",
+      "frozen_sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "repo_path": "board/audio_replay/closed_tools.py",
+      "main_sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "feedback/__init__.py",
+      "frozen_sha256": "39f733ab47069c23d35edd520271cc17a15787dec4fee4cc78c6c3297570ffff",
+      "repo_path": "src/feedback/__init__.py",
+      "main_sha256": "39f733ab47069c23d35edd520271cc17a15787dec4fee4cc78c6c3297570ffff",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "feedback/excitation.py",
+      "frozen_sha256": "c0d14b137837c7b3cb0af9a07ea3d985a1d834639dc343841e384031d3e54521",
+      "repo_path": "src/feedback/excitation.py",
+      "main_sha256": "c0d14b137837c7b3cb0af9a07ea3d985a1d834639dc343841e384031d3e54521",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "feedback/recal_policy.py",
+      "frozen_sha256": "7c6088b2de39d331118738c3cf1ae7dfce35010609c320227ef4641953479fc4",
+      "repo_path": "src/feedback/recal_policy.py",
+      "main_sha256": "7c6088b2de39d331118738c3cf1ae7dfce35010609c320227ef4641953479fc4",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "hardware-provenance.json",
+      "frozen_sha256": "1314a0804ebd03caff90cd202a581ba9fd2bf1113d61c319d582a59f60b9ba76",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "hw_api.py",
+      "frozen_sha256": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+      "repo_path": "board/audio_replay/hw_api.py",
+      "main_sha256": "7db1097233e2bff4fbffd093442bfaf5a083366a265ed7ab50395ea74c7a9234",
+      "same_bytes": false,
+      "comparison": "content-differs"
+    },
+    {
+      "file": "manifest.json",
+      "frozen_sha256": "5ba2b29858224f930737422bc2210758df6e6da7ddce9b8e201d737ffb88618b",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "physical-controls.json",
+      "frozen_sha256": "4cbbd5b80464744d03e9cd82fa3d31d8e9460eeca84b73d4ce9f80126962f0ef",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "product-config.json",
+      "frozen_sha256": "d35dea4002062578cb841ccd9a5563a4d4f8d0eb92b1ed203ebea2788856e9bc",
+      "repo_path": "board/audio_replay/v3-io/product-config.json",
+      "comparison": "package-only; no tracked main path"
+    },
+    {
+      "file": "product-install.sh",
+      "frozen_sha256": "91ac691137da9664de42bc3ca4a4bd6a5de9e991fb2c069bb240538cc4f444d6",
+      "repo_path": "board/audio_replay/product-install.sh",
+      "main_sha256": "91ac691137da9664de42bc3ca4a4bd6a5de9e991fb2c069bb240538cc4f444d6",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "product-manifest.json",
+      "frozen_sha256": "beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    },
+    {
+      "file": "product-policy.json",
+      "frozen_sha256": "a2c86b316b45054f8f4091893b011f6fd0aac942f93b16b1ad89d99aa97a447d",
+      "repo_path": "board/audio_replay/v3-io/product-policy.json",
+      "comparison": "package-only; no tracked main path"
+    },
+    {
+      "file": "recal_algorithm.py",
+      "frozen_sha256": "3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77",
+      "repo_path": "board/audio_replay/recal_algorithm.py",
+      "main_sha256": "3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "recal_entry.sh",
+      "frozen_sha256": "e320fcc49417f6cfe5eaa86bdc691f5180b3b8f7fab821ef8485b49cf10b0130",
+      "repo_path": "board/audio_replay/recal_product_entry.sh",
+      "main_sha256": "e320fcc49417f6cfe5eaa86bdc691f5180b3b8f7fab821ef8485b49cf10b0130",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "recal_link.py",
+      "frozen_sha256": "72e2ab65da672db49e8ec96742fd39ca61b4116d9df98fdea5587848f0ad0c12",
+      "repo_path": "board/audio_replay/recal_link.py",
+      "main_sha256": "03cce73b440ace14d32d58cf9163fce44348309b16da3c3a2dd86ec02ae61bf6",
+      "same_bytes": false,
+      "comparison": "content-differs"
+    },
+    {
+      "file": "recal_policy_consumer.py",
+      "frozen_sha256": "43bc92c89f694197a83335cca6b5732087bd8dd2b09996d2490bc25474b3d8e2",
+      "repo_path": "board/audio_replay/recal_policy_consumer.py",
+      "main_sha256": "43bc92c89f694197a83335cca6b5732087bd8dd2b09996d2490bc25474b3d8e2",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "recal_product.py",
+      "frozen_sha256": "7e0c9ba70b3dd614174892677cf7f293810bd1c4093c3a1044531c6fdb494d00",
+      "repo_path": "board/audio_replay/recal_product.py",
+      "main_sha256": "b524d7e6d54eda318cd0a180a05d28af3c4b64051862e74e42e08318d099439a",
+      "same_bytes": false,
+      "comparison": "content-differs"
+    },
+    {
+      "file": "recal_runtime.py",
+      "frozen_sha256": "39fae263663b321e11a295091556ba510a8d604b45c11367718749c2fe05232a",
+      "repo_path": "board/audio_replay/recal_runtime.py",
+      "main_sha256": "39fae263663b321e11a295091556ba510a8d604b45c11367718749c2fe05232a",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "replay_tools.py",
+      "frozen_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "repo_path": "board/audio_replay/replay_tools.py",
+      "main_sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "replay_trial_repair.py",
+      "frozen_sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+      "repo_path": "board/audio_replay/v3-io/replay_trial_repair.py",
+      "main_sha256": "b65a8606fe7d1081cf417d0f265b9b0c65f3a9fa2ab0136b3869ccc56d3c4c3a",
+      "same_bytes": false,
+      "comparison": "content-differs"
+    },
+    {
+      "file": "residual_tools.py",
+      "frozen_sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "repo_path": "board/audio_replay/residual_tools.py",
+      "main_sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "shengdi-product.service",
+      "frozen_sha256": "27697e339e7b34da444f5893fc71e7be3bb200b9da17ae0c421ebf21f9fc83f2",
+      "repo_path": "board/audio_replay/shengdi-product.service",
+      "main_sha256": "27697e339e7b34da444f5893fc71e7be3bb200b9da17ae0c421ebf21f9fc83f2",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "tone_round_guard.py",
+      "frozen_sha256": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+      "repo_path": "board/audio_replay/tone_round_guard.py",
+      "main_sha256": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+      "same_bytes": true,
+      "comparison": "same-bytes-at-pinned-main-snapshot"
+    },
+    {
+      "file": "upstream-product-adapter.json",
+      "frozen_sha256": "28ca66a835f6cf7208f4ceb24654105219b96019e8f3d0053ef7fbc7feb400ab",
+      "repo_path": null,
+      "comparison": "package-only-or-no-exact-Git-blob; never regenerate"
+    }
+  ]
+}

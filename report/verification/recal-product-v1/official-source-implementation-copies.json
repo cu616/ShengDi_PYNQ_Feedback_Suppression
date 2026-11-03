@@ -1,0 +1,219 @@
+{
+  "source_commit": "faab2732fea5ebac44bb81ecc7d6b745e95dfd7e",
+  "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+  "listed_originals": 11,
+  "checked_originals": [
+    {
+      "file": "dcp/system_wrapper_routed.dcp",
+      "sha256": "99fbc007d50ec5cc071b9a3b3df6bff8fc48fe22a6836fcfc2c69aaa3edb04e2",
+      "git_blob_sha256": "99fbc007d50ec5cc071b9a3b3df6bff8fc48fe22a6836fcfc2c69aaa3edb04e2",
+      "source_materialization": "exact Git blob"
+    },
+    {
+      "file": "reports/original/system_wrapper_clock_utilization_routed.rpt",
+      "sha256": "750119f6e8c97e7f45bef38fd36e4d8f37905965d20e4f11f7d5915184f66165",
+      "git_blob_sha256": "750119f6e8c97e7f45bef38fd36e4d8f37905965d20e4f11f7d5915184f66165",
+      "source_materialization": "exact Git blob"
+    },
+    {
+      "file": "reports/original/system_wrapper_drc_routed.rpt",
+      "sha256": "acdf48fe293a9f6d9e474ac85fd249ca31c4a28109b90d76559cb7da851c09f6",
+      "git_blob_sha256": "acdf48fe293a9f6d9e474ac85fd249ca31c4a28109b90d76559cb7da851c09f6",
+      "source_materialization": "exact Git blob"
+    },
+    {
+      "file": "reports/original/system_wrapper_methodology_drc_routed.rpt",
+      "sha256": "da299817474b13989fd6e72bbefa4775e064fe117f90940ecbfa88aef7f67115",
+      "git_blob_sha256": "da299817474b13989fd6e72bbefa4775e064fe117f90940ecbfa88aef7f67115",
+      "source_materialization": "exact Git blob"
+    },
+    {
+      "file": "reports/original/system_wrapper_timing_summary_routed.rpt",
+      "sha256": "a62ce4db81802084d2b1a99c12476b91a80ad67d623a5d63bdfe55c9b2ac0704",
+      "git_blob_sha256": "38ee31cdcad8dcc827e7e7bdbdf9f33e69331a4aafdd787f0e0fd891bca8bb12",
+      "source_materialization": "Git text-normalized EOL restored; approved original SHA256 exact"
+    },
+    {
+      "file": "reports/original/system_wrapper_utilization_placed.rpt",
+      "sha256": "0d9d04cbed18699f5e589a3065ab2edd1c4bc82cafaa82b5d58e08961e4aabe8",
+      "git_blob_sha256": "0d9d04cbed18699f5e589a3065ab2edd1c4bc82cafaa82b5d58e08961e4aabe8",
+      "source_materialization": "exact Git blob"
+    },
+    {
+      "file": "reports/project-export-2026-11-01/drc.txt",
+      "sha256": "8e34b446cc0fd545babd1237cf27bacccd2f74d04f8a13dfa65ca20eaccd1920",
+      "git_blob_sha256": "8e34b446cc0fd545babd1237cf27bacccd2f74d04f8a13dfa65ca20eaccd1920",
+      "source_materialization": "exact Git blob"
+    },
+    {
+      "file": "reports/project-export-2026-11-01/timing.txt",
+      "sha256": "39bc8232c074692036c4385d15fb1cd0a61cc7f851a53d50f299feaafe773746",
+      "git_blob_sha256": "2efcc3cb41f0d89900b26fee135cdd9fd8155cfc668474237a8cec5a3308ed6f",
+      "source_materialization": "Git text-normalized EOL restored; approved original SHA256 exact"
+    },
+    {
+      "file": "reports/project-export-2026-11-01/utilization.txt",
+      "sha256": "a29301ab4390db059ff8d7e7b7ef2f9a86e762786aac9e8b9d2ee98495873063",
+      "git_blob_sha256": "a29301ab4390db059ff8d7e7b7ef2f9a86e762786aac9e8b9d2ee98495873063",
+      "source_materialization": "exact Git blob"
+    },
+    {
+      "file": "reports/re-exported-from-dcp/utilization_routed-exported-2026-11-03.rpt",
+      "sha256": "4cb6f6d736b67edb077a08072f98aae81ad2bcbecf66c4e034b54e4177746545",
+      "git_blob_sha256": "4cb6f6d736b67edb077a08072f98aae81ad2bcbecf66c4e034b54e4177746545",
+      "source_materialization": "exact Git blob"
+    }
+  ],
+  "unavailable_originals": [
+    {
+      "file": "logs/runme.log",
+      "sha256": "48d0b6d3e67b9ba0c154f76565fed32acae3e2cb089bd8f3c4c10fbfe94de98b",
+      "reason": "listed by A, not present in supplied Git commit; reference only, not locally verified"
+    }
+  ],
+  "dcp_in_archive": false,
+  "copies": [
+    {
+      "file": "reports/original/system_wrapper_clock_utilization_routed.rpt",
+      "original_sha256": "750119f6e8c97e7f45bef38fd36e4d8f37905965d20e4f11f7d5915184f66165",
+      "delivery_sha256": "e4ee382448868bed0bf381849ec384d5ea409f0dc4b2395e132ce39f529e0361",
+      "git_blob_sha256": "750119f6e8c97e7f45bef38fd36e4d8f37905965d20e4f11f7d5915184f66165",
+      "source_materialization": "exact Git blob",
+      "privacy_redactions": 1,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "reports/original/system_wrapper_drc_routed.rpt",
+      "original_sha256": "acdf48fe293a9f6d9e474ac85fd249ca31c4a28109b90d76559cb7da851c09f6",
+      "delivery_sha256": "b834bdd456f12895600d35c181415e943847aac1ced5153a081728b8fc53a76b",
+      "git_blob_sha256": "acdf48fe293a9f6d9e474ac85fd249ca31c4a28109b90d76559cb7da851c09f6",
+      "source_materialization": "exact Git blob",
+      "privacy_redactions": 1,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "reports/original/system_wrapper_methodology_drc_routed.rpt",
+      "original_sha256": "da299817474b13989fd6e72bbefa4775e064fe117f90940ecbfa88aef7f67115",
+      "delivery_sha256": "7d83f3a24f9671b65ec79e29ecaa9bf792ab2c3d6ae5925ef85882f7a3c0aad4",
+      "git_blob_sha256": "da299817474b13989fd6e72bbefa4775e064fe117f90940ecbfa88aef7f67115",
+      "source_materialization": "exact Git blob",
+      "privacy_redactions": 1,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "reports/original/system_wrapper_timing_summary_routed.rpt",
+      "original_sha256": "a62ce4db81802084d2b1a99c12476b91a80ad67d623a5d63bdfe55c9b2ac0704",
+      "delivery_sha256": "48bfde215e2590e325c8dcba4fdb39e4b666b159f23c7bbbac4e75e6638177bf",
+      "git_blob_sha256": "38ee31cdcad8dcc827e7e7bdbdf9f33e69331a4aafdd787f0e0fd891bca8bb12",
+      "source_materialization": "Git text-normalized EOL restored; approved original SHA256 exact",
+      "privacy_redactions": 1,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "reports/original/system_wrapper_utilization_placed.rpt",
+      "original_sha256": "0d9d04cbed18699f5e589a3065ab2edd1c4bc82cafaa82b5d58e08961e4aabe8",
+      "delivery_sha256": "b0cb56fc2dd51bd936e80310617e854339f11eb1f9fe2808c9c2e07d9b057ef6",
+      "git_blob_sha256": "0d9d04cbed18699f5e589a3065ab2edd1c4bc82cafaa82b5d58e08961e4aabe8",
+      "source_materialization": "exact Git blob",
+      "privacy_redactions": 1,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "reports/project-export-2026-11-01/drc.txt",
+      "original_sha256": "8e34b446cc0fd545babd1237cf27bacccd2f74d04f8a13dfa65ca20eaccd1920",
+      "delivery_sha256": "8e35a40b7e4ce43f49a328732b37389f23c052732b94a8d00829580aa43f5997",
+      "git_blob_sha256": "8e34b446cc0fd545babd1237cf27bacccd2f74d04f8a13dfa65ca20eaccd1920",
+      "source_materialization": "exact Git blob",
+      "privacy_redactions": 2,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "reports/project-export-2026-11-01/timing.txt",
+      "original_sha256": "39bc8232c074692036c4385d15fb1cd0a61cc7f851a53d50f299feaafe773746",
+      "delivery_sha256": "4b562eed852942f1619431a140cec8bbbfa131cff1febd5b1577875cadfff661",
+      "git_blob_sha256": "2efcc3cb41f0d89900b26fee135cdd9fd8155cfc668474237a8cec5a3308ed6f",
+      "source_materialization": "Git text-normalized EOL restored; approved original SHA256 exact",
+      "privacy_redactions": 2,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "reports/project-export-2026-11-01/utilization.txt",
+      "original_sha256": "a29301ab4390db059ff8d7e7b7ef2f9a86e762786aac9e8b9d2ee98495873063",
+      "delivery_sha256": "f9805d7a7464a5d7e347257a1f99cba6f5e585e51468180bc9fe462bfd8e32f4",
+      "git_blob_sha256": "a29301ab4390db059ff8d7e7b7ef2f9a86e762786aac9e8b9d2ee98495873063",
+      "source_materialization": "exact Git blob",
+      "privacy_redactions": 2,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "reports/re-exported-from-dcp/utilization_routed-exported-2026-11-03.rpt",
+      "original_sha256": "4cb6f6d736b67edb077a08072f98aae81ad2bcbecf66c4e034b54e4177746545",
+      "delivery_sha256": "3cc995c4bdfad5d69ada270b12b52aed36bd90a73e792affd4335c5ecd15bb7c",
+      "git_blob_sha256": "4cb6f6d736b67edb077a08072f98aae81ad2bcbecf66c4e034b54e4177746545",
+      "source_materialization": "exact Git blob",
+      "privacy_redactions": 2,
+      "rules": [
+        "Windows user-home prefix",
+        "host name",
+        "machine absolute project prefix; project-relative suffix retained"
+      ]
+    },
+    {
+      "file": "build-provenance.md",
+      "original_sha256": "0bcc53648d464de6f389eb89030ca254d0466afc31a0edfac1fb1c27cb9249f5",
+      "delivery_sha256": "2a00fcbd061674fd34c95443309a4982d0e6bd6286a0ee05c977949c514b4680",
+      "privacy_redactions": 0,
+      "rules": [
+        "host/user/machine-path redaction",
+        "explicit appended delivery scope note"
+      ]
+    }
+  ],
+  "report_stage_labels_retained": true,
+  "resynthesized": false,
+  "wording": "已施加的时序约束全部满足；DRC无Error。保留时钟定义与部分I/O延迟约束告警。",
+  "resources": {
+    "lut": 3587,
+    "ff": 5030,
+    "bram_used": 112,
+    "bram_available": 140,
+    "dsp": 3
+  },
+  "timing_ns": {
+    "wns": 0.735,
+    "whs": 0.032
+  },
+  "report_origin": "original 2026-11-01 build plus separately labelled 2026-11-03 routed-utilization re-export"
+}

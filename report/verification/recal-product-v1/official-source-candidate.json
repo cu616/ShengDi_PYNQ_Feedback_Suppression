@@ -1,0 +1,141 @@
+{
+  "candidate": true,
+  "upload_ready": false,
+  "archive_name": "shengdi-source.rar",
+  "bytes": 4766719,
+  "sha256": "32a75781fb9fb3b83d55490c91a7b6f15afcf2fef1e97889cc242d751c764789",
+  "magic": "RAR5",
+  "rar_version": "7.23",
+  "archive_test_exit": 0,
+  "independent_extraction": {
+    "ok": true,
+    "outer_files": 881,
+    "frozen_files": 41,
+    "zip_sha256": "b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4",
+    "product_manifest_sha256": "beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef",
+    "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+    "submission_manifest_sha256": "b51622fbbabf5988bee6c740aafb00c42c04399cd1645e9876dad2a028eadd64",
+    "implementation_check": {
+      "delivery_copies": 10,
+      "locally_verified_originals": 10,
+      "source_listed_originals": 11,
+      "source_references_not_in_supplied_commit": [
+        {
+          "file": "logs/runme.log",
+          "sha256": "48d0b6d3e67b9ba0c154f76565fed32acae3e2cb089bd8f3c4c10fbfe94de98b",
+          "reason": "listed by A, not present in supplied Git commit; reference only, not locally verified"
+        }
+      ],
+      "dcp_in_archive": false,
+      "resources": {
+        "lut": 3587,
+        "ff": 5030,
+        "bram_used": 112,
+        "bram_available": 140,
+        "dsp": 3
+      },
+      "timing_ns": {
+        "wns": 0.735,
+        "whs": 0.032
+      },
+      "scope": "已施加的时序约束全部满足；DRC无Error。保留时钟定义与部分I/O延迟约束告警。"
+    },
+    "upload_ready": false,
+    "missing": [
+      {
+        "id": "final-design-report",
+        "state": "pending-confirmation",
+        "detail": "只收录现有review同稿DOCX/PDF；内含待补实拍图及历史待验证措辞，未获终稿确认。"
+      },
+      {
+        "id": "environment-lock",
+        "state": "incomplete",
+        "detail": "Vivado2018.3/PYNQ-Z2 board_part已由Tcl固定；板上Python/NumPy/PYNQ精确版本和外部board_part定义未随冻结包完整锁定。"
+      }
+    ],
+    "hardware_operations": 0
+  },
+  "frozen_check": {
+    "ok": true,
+    "outer_files": 881,
+    "frozen_files": 41,
+    "zip_sha256": "b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4",
+    "product_manifest_sha256": "beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef",
+    "bit_sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+    "submission_manifest_sha256": "b51622fbbabf5988bee6c740aafb00c42c04399cd1645e9876dad2a028eadd64",
+    "implementation_check": {
+      "delivery_copies": 10,
+      "locally_verified_originals": 10,
+      "source_listed_originals": 11,
+      "source_references_not_in_supplied_commit": [
+        {
+          "file": "logs/runme.log",
+          "sha256": "48d0b6d3e67b9ba0c154f76565fed32acae3e2cb089bd8f3c4c10fbfe94de98b",
+          "reason": "listed by A, not present in supplied Git commit; reference only, not locally verified"
+        }
+      ],
+      "dcp_in_archive": false,
+      "resources": {
+        "lut": 3587,
+        "ff": 5030,
+        "bram_used": 112,
+        "bram_available": 140,
+        "dsp": 3
+      },
+      "timing_ns": {
+        "wns": 0.735,
+        "whs": 0.032
+      },
+      "scope": "已施加的时序约束全部满足；DRC无Error。保留时钟定义与部分I/O延迟约束告警。"
+    },
+    "upload_ready": false,
+    "missing": [
+      {
+        "id": "final-design-report",
+        "state": "pending-confirmation",
+        "detail": "只收录现有review同稿DOCX/PDF；内含待补实拍图及历史待验证措辞，未获终稿确认。"
+      },
+      {
+        "id": "environment-lock",
+        "state": "incomplete",
+        "detail": "Vivado2018.3/PYNQ-Z2 board_part已由Tcl固定；板上Python/NumPy/PYNQ精确版本和外部board_part定义未随冻结包完整锁定。"
+      }
+    ],
+    "hardware_operations": 0
+  },
+  "snapshot": "faab2732fea5ebac44bb81ecc7d6b745e95dfd7e",
+  "runtime_source_commit": "4efd43036555c667924fc415d31cf95d785fbb24",
+  "fpga_introduction_commit": "31882e090e816ed69918d9b3fb4bec2910edaf62",
+  "staging_root": "D:\\Flushbonading_Contest\\_c_resume_main\\tmp\\official-source-3h1q4zsp\\shengdi-source",
+  "independently_extracted_root": "D:\\Flushbonading_Contest\\_c_resume_main\\tmp\\official-source-3h1q4zsp\\independent-extraction\\shengdi-source",
+  "final_path": "D:\\Flushbonading_Contest\\_c_resume_main\\materials\\final\\shengdi-source.rar",
+  "source_files": 880,
+  "frozen_files": 41,
+  "hardware_operations": 0,
+  "frozen_zip_regenerated": false,
+  "product_source_changed": false,
+  "frozen_cli_check": {
+    "identity_ok": true,
+    "deployment_ready": true,
+    "missing": []
+  },
+  "frozen_cli_check_exit": 0,
+  "cross_device": "Transfer the RAR and its .rar.sha256 as files; verify SHA256 then extract and run tools/submission/verify_official_source.py .",
+  "delivery_copy_path": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\materials\\final\\shengdi-source.rar",
+  "rar_not_committed": true,
+  "packaging_tool_commit": "46f3eb16cf13ec27fd0f5e20fc3d41073bbebff8",
+  "evidence_export_files": [
+    "official-source-file-sources.json",
+    "official-source-file-sources.csv",
+    "official-source-vs-main.json",
+    "official-source-vs-main.patch",
+    "official-source-frozen-check.json",
+    "official-source-missing-items.json",
+    "official-source-implementation-copies.json",
+    "official-source-manifest.json"
+  ],
+  "original_report_word_untouched": true,
+  "report_copy_scope": "9 technical reports have only host/user/machine-prefix redactions; source MD also has an explicit delivery-scope note",
+  "privacy_findings": "No credential-pattern matches; returned archives/raw audio excluded; historical non-JSON console output retained as evidence",
+  "historical_output_format_note": "probe_baseline-output.json is an original UTF-16 console transcript ending VERDICT PASS, not a pure JSON document"
+}
