@@ -16,11 +16,12 @@ import zipfile
 from verify_official_source import verify, ZIP_NAME, ZIP_SHA, MANIFEST_SHA, BIT_SHA, digest
 
 ROOT = Path(__file__).resolve().parents[3]
-SNAPSHOT = 'c1452f11c6ea706673951438b18469bc4d6745e0'
+SNAPSHOT = 'faab2732fea5ebac44bb81ecc7d6b745e95dfd7e'
 RUNTIME = '4efd43036555c667924fc415d31cf95d785fbb24'
 FPGA = '31882e090e816ed69918d9b3fb4bec2910edaf62'
 SOURCE_MAP = 'report/verification/recal-product-v1/resume3-source-map.json'
 PACKAGE = 'report/verification/recal-product-v1/packages/' + ZIP_NAME
+IMPLEMENTATION = 'report/verification/recal-product-v1/frozen-bitstream-32235065/'
 HISTORICAL = {
     'recal_product.py': ('4efd43036555c667924fc415d31cf95d785fbb24', 'board/audio_replay/recal_product.py'),
     'hw_api.py': ('0d349af6b6984c299cc04da1d57f90921a836b7f', 'board/audio_replay/hw_api.py'),
@@ -72,6 +73,21 @@ def redact_record(data):
     return (text.encode(encoding) if count else data), count
 
 
+def redact_implementation(data):
+    """Only host/user/machine-specific path fields; preserve dates, warnings and numbers."""
+    text = data.decode('utf-8-sig')
+    rules = [
+        (r'(?i)[A-Z]:[\\/]+Users[\\/]+[^\\/\s"\x27<>]+', '<user-home>'),
+        (r'(?i)\b(?:LAPTOP|DESKTOP)-[A-Z0-9-]+', '<host>'),
+        (r'(?i)[A-Z]:[\\/]+[^\r\n"|]*?(?=(?:_a_work|build|src|sim|report)[\\/])', '<project>/'),
+    ]
+    count = 0
+    for pattern, replacement in rules:
+        text, n = re.subn(pattern, replacement, text)
+        count += n
+    return (text.encode('utf-8-sig' if data.startswith(b'\xef\xbb\xbf') else 'utf-8') if count else data), count
+
+
 def assemble(args):
     snapshot = git('rev-parse', args.snapshot).decode().strip()
     work = Path(tempfile.mkdtemp(prefix='official-source-', dir=ROOT / 'tmp')).resolve()
@@ -102,6 +118,8 @@ def assemble(args):
 
     # Existing evidence, skills and current design report. Never publish returned PCM archives.
     for path, data in archive_files(snapshot, 'report', 'skill'):
+        if path.startswith(IMPLEMENTATION):
+            continue  # handled below with original/delivery hashes and explicit DCP exclusion
         ext = Path(path).suffix.lower()
         if ext in PRIVATE_EXTENSIONS | ARCHIVE_EXTENSIONS or (ext in {'.txt', '.log'} and len(data) > 300000):
             excluded.append(dict(path=path, source=snapshot, reason='private/raw data, repeated archive or long regenerable log'))
@@ -208,6 +226,91 @@ def assemble(args):
     put('report/submission/frozen-payload-check.json', json_bytes(frozen_check),
         'C original ZIP/Git/CLI audit; no hardware', 'frozen-payload-verification')
 
+    # Original implementation evidence, supplied by A and explicitly approved by captain.
+    sums_bytes = blob(snapshot, IMPLEMENTATION + 'sha256sums.txt')
+    listed, checked, unavailable, delivery_copies = [], [], [], []
+    for line in sums_bytes.decode('utf-8-sig').splitlines():
+        if not line.strip():
+            continue
+        expected, name = line.split(None, 1)
+        name = name.strip()
+        listed.append(dict(file=name, sha256=expected))
+        try:
+            data = blob(snapshot, IMPLEMENTATION + name)
+        except subprocess.CalledProcessError:
+            unavailable.append(dict(file=name, sha256=expected,
+                reason='listed by A, not present in supplied Git commit; reference only, not locally verified'))
+            continue
+        git_blob_sha256 = digest(data)
+        materialization = 'exact Git blob'
+        if digest(data) != expected:
+            # Some original Vivado reports were committed with text normalization.
+            # Restore a known original only if its approved full SHA256 matches.
+            if Path(name).suffix.lower() not in {'.rpt', '.txt', '.log'}:
+                raise ValueError('original implementation hash differs: ' + name)
+            normalized = data.replace(b'\r\n', b'\n')
+            variants = [normalized, normalized.replace(b'\n', b'\r\n')]
+            matching = [v for v in variants if digest(v) == expected]
+            if not matching:
+                raise ValueError('original implementation hash differs: ' + name)
+            data = matching[0]
+            materialization = 'Git text-normalized EOL restored; approved original SHA256 exact'
+        checked.append(dict(file=name, sha256=expected, git_blob_sha256=git_blob_sha256,
+                            source_materialization=materialization))
+        if name.endswith('.dcp'):
+            excluded.append(dict(path=IMPLEMENTATION + name, source=snapshot, sha256=expected,
+                reason='captain: DCP retained in repository, excluded from RAR'))
+            continue
+        published, replacements = redact_implementation(data)
+        destination = IMPLEMENTATION + name
+        put(destination, published, snapshot + ':' + destination, 'frozen-bit-implementation-report',
+            original_sha256=expected, privacy_redactions=replacements,
+            git_blob_sha256=git_blob_sha256, source_materialization=materialization,
+            transformation='only host/user/machine-path redaction; technical fields unchanged')
+        delivery_copies.append(dict(file=name, original_sha256=expected, delivery_sha256=digest(published),
+            git_blob_sha256=git_blob_sha256, source_materialization=materialization,
+            privacy_redactions=replacements, rules=['Windows user-home prefix', 'host name',
+                'machine absolute project prefix; project-relative suffix retained']))
+    source_path = IMPLEMENTATION + 'build-provenance.md'
+    original = blob(snapshot, source_path)
+    published, replacements = redact_implementation(original)
+    scope_note = '''
+
+---
+## 交付副本范围说明（C按队长2026-11-03修订口径附注）
+
+本说明中的DCP为仓库留存证据，不随RAR分发；上文相对DCP链接不是本包文件。
+仓库位置：report/verification/recal-product-v1/frozen-bitstream-32235065/dcp/system_wrapper_routed.dcp。
+其SHA256与原件清单一致；取得仓库时按该提交查看，勿将本包缺少DCP误当作空文件。
+原件清单中的logs/runme.log未包含在本次提供的Git提交中；其哈希保留为来源引用，C未宣称独立核验该日志。
+
+本包对外采用：已施加的时序约束全部满足；DRC无Error。保留时钟定义与部分I/O延迟约束告警。
+原记录中的解释性判断不扩展本包保证；不据此宣称所有接口时序均已验证。
+sha256sums.txt是A原件清单（含未分发DCP与引用日志），不得用于验证已脱敏副本。
+本包副本请核对delivery-sha256sums.txt与implementation-report-copies.json。
+'''
+    published += scope_note.encode()
+    put(source_path, published, snapshot + ':' + source_path, 'frozen-bit-build-provenance-with-delivery-scope-note',
+        original_sha256=digest(original), privacy_redactions=replacements,
+        annotations='appended scope note identifies repository-only DCP, unavailable log, approved warning wording')
+    delivery_copies.append(dict(file='build-provenance.md', original_sha256=digest(original),
+        delivery_sha256=digest(published), privacy_redactions=replacements,
+        rules=['host/user/machine-path redaction', 'explicit appended delivery scope note']))
+    put(IMPLEMENTATION + 'sha256sums.txt', sums_bytes, snapshot + ':' + IMPLEMENTATION + 'sha256sums.txt',
+        'original-source-checksums-not-delivery-copy-checksums')
+    delivery_sums = ''.join(x['delivery_sha256'] + '  ' + x['file'] + '\n' for x in delivery_copies)
+    put(IMPLEMENTATION + 'delivery-sha256sums.txt', delivery_sums.encode(), 'C delivery-copy audit', 'delivery-copy-checksums')
+    implementation_check = dict(source_commit=snapshot, bit_sha256=BIT_SHA,
+        listed_originals=len(listed), checked_originals=checked, unavailable_originals=unavailable,
+        dcp_in_archive=False, copies=delivery_copies,
+        report_stage_labels_retained=True, resynthesized=False,
+        wording='已施加的时序约束全部满足；DRC无Error。保留时钟定义与部分I/O延迟约束告警。',
+        resources=dict(lut=3587, ff=5030, bram_used=112, bram_available=140, dsp=3),
+        timing_ns=dict(wns=0.735, whs=0.032),
+        report_origin='original 2026-11-01 build plus separately labelled 2026-11-03 routed-utilization re-export')
+    put(IMPLEMENTATION + 'implementation-report-copies.json', json_bytes(implementation_check),
+        'C original/delivery hash audit; captain-approved source faab273', 'implementation-evidence-audit')
+
     # Verify the FPGA dependency closure against the commit introducing the exact bit.
     fpga_paths = ['src/rtl/audio_pl_replay.v', 'src/rtl/feedback_fir.v',
                   'src/vendor/pynq_v2_4/iis_ser.vhd', 'src/vendor/pynq_v2_4/iis_deser.vhd',
@@ -220,11 +323,11 @@ def assemble(args):
         fpga_sources.append(dict(path=path, sha256=digest(data), source=FPGA + ':' + path))
     put('build/frozen-bit-source-audit.json', json_bytes(dict(bit_sha256=BIT_SHA,
         bit_introduction_commit=FPGA, source_files=fpga_sources,
-        source_relation='same bytes as source at bit-introduction commit; not an authenticated build manifest',
-        matching_implementation_reports_available=False, rebuilt=False)), 'C static Git audit', 'build-provenance-with-declared-gap')
+        source_relation='same bytes at bit-introduction commit; A original-build provenance supplied in faab273',
+        implementation_evidence=IMPLEMENTATION + 'implementation-report-copies.json',
+        matching_implementation_reports_available=True, rebuilt=False)), 'C static Git/source-report audit', 'build-provenance')
 
     missing = [
-        dict(id='implementation-binding', state='missing', detail='缺32235065位流对应原始资源/时序/DRC报告及构建来源闭环；已有同提交RTL/Tcl/XDC，旧版报告仅为历史证据。'),
         dict(id='final-design-report', state='pending-confirmation', detail='只收录现有review同稿DOCX/PDF；内含待补实拍图及历史待验证措辞，未获终稿确认。'),
         dict(id='environment-lock', state='incomplete', detail='Vivado2018.3/PYNQ-Z2 board_part已由Tcl固定；板上Python/NumPy/PYNQ精确版本和外部board_part定义未随冻结包完整锁定。'),
     ]
@@ -265,8 +368,11 @@ source-map.md中的PowerShell重定向示例不用于本次取件；所有字节
 
 ## 必要边界
 
-- `build/frozen-bit-source-audit.json`确认六项构建源码与位流首入库提交相同；尚缺对应实现报告/构建清单。
-  report中所有其他timing/utilization/资源数字均为历史版本资料，不能作为本位流结果。
+- `build/frozen-bit-source-audit.json`确认六项构建源码与位流首入库提交相同；对应实现报告为
+  report/verification/recal-product-v1/frozen-bitstream-32235065/中的交付副本。
+  已施加的时序约束全部满足；DRC无Error。保留时钟定义与部分I/O延迟约束告警。
+  原始/补导出报告的日期与阶段分别保留；所有其他旧timing/utilization数字不能作为本位流结果。
+  DCP留在仓库，不在RAR；来源说明中的原相对链接不是随包附件。原件SHA与副本SHA分别登记。
 - report/design内是官网设计报告的现有review稿副本，无另写不同叙事；最终上传前需确认补图/措辞与实装一致。
 - 补充文档/证据若包含个人Windows主目录、主机名、本地IP或邮箱，会收录明确标注的隐私副本；
   原始Git路径/提交与原SHA保存在submission-manifest。冻结ZIP与其41文件从不进入脱敏转换。

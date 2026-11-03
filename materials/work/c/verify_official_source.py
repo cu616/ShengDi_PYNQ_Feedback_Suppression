@@ -59,9 +59,23 @@ def verify(root):
             raise ValueError('frozen capture plans differ')
         if cfg['phase_gain_q12']['runtime'] != [0, 4596]:
             raise ValueError('frozen runtime whitelist differs')
+    evidence_root = root / 'report/verification/recal-product-v1/frozen-bitstream-32235065'
+    implementation = json.loads((evidence_root / 'implementation-report-copies.json').read_text(encoding='utf-8'))
+    for item in implementation['copies']:
+        if digest((evidence_root / item['file']).read_bytes()) != item['delivery_sha256']:
+            raise ValueError('implementation delivery hash mismatch: ' + item['file'])
+    if list(root.rglob('*.dcp')):
+        raise ValueError('DCP must remain repository-only')
+    implementation_check = dict(delivery_copies=len(implementation['copies']),
+        locally_verified_originals=len(implementation['checked_originals']),
+        source_listed_originals=implementation['listed_originals'],
+        source_references_not_in_supplied_commit=implementation['unavailable_originals'],
+        dcp_in_archive=False, resources=implementation['resources'], timing_ns=implementation['timing_ns'],
+        scope=implementation['wording'])
     return dict(ok=True, outer_files=len(actual), frozen_files=41, zip_sha256=ZIP_SHA,
                 product_manifest_sha256=MANIFEST_SHA, bit_sha256=BIT_SHA,
                 submission_manifest_sha256=digest((root / 'submission-manifest.json').read_bytes()),
+                implementation_check=implementation_check,
                 upload_ready=manifest['upload_ready'], missing=manifest['missing'], hardware_operations=0)
 
 
