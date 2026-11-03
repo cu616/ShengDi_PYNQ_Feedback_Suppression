@@ -4,6 +4,14 @@
 - 脚本改为双SHA绑定、训练验证分开、开环与单位检查、不平移PCM、同网格复数导出；6项软件测试通过。没有操板、没有修改产品算法或RTL。
 - 本地180个模型/候选JSON未命中目标；交付一次板上已有数据只读计算入口，派生JSON不含PCM。依据与入口：[独立复算](../../report/verification/highfreq-fix-2026-11-03/README.md)。
 
+## 2026-11-03 A 验收 C 的 BTN2 恢复包（通过）
+
+- 包 shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip（zip sha256 b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4，manifest beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef），装到 /opt/shengdi/releases/beb36216d26b6cbb。
+- 板卡核验：41 文件清单全匹配、recal_entry --check 返回 identity_ok/deployment_ready/missing=[]、配置 4596/60s/训练 4-4-4/验证 2-2-2/phase_gain_q12 含 runtime=[0,4596]。
+- 3 个单测在板 Linux 环境全部通过（Ran 3 tests in 7.719s, OK）。
+- 面板实测：CAL→ready→BTN1→SW0 啸叫→保护→BTN2 恢复成功（resumed_from=protected，resume_count 1→3）→第 4 次恢复被拒（保持 protected 34.4s 直到 CAL）→恢复后再扩声→BTN1 正常停止→ended，且不再出现昨天的 runtime 白名单 failed。
+- 观察：CAL 采集期间 SW0 输入偶发读到 bypass（采集 gain=0/zero_coeff 开环，不影响音频，登记硬件观察）；操作员停止到 ended 约 44 秒延迟（请求仍跑 60 秒窗口，最终 incomplete 返回）。
+- 证据：report/verification/recal-product-v1/resume3-acceptance.json
 ## 2026-11-03 C 交付41文件BTN2恢复包
 
 - 新包配置逐项核验：4596/60秒，三档attempt及训练captures均4，验证2；含runtime在内的所有非prepare白名单[0,4596]，prepare保留历史档并加入4596。B原件为2026-11-02.1，A9件/驱动/位流未改。
