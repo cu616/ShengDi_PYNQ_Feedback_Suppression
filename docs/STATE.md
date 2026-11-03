@@ -16,7 +16,7 @@ A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、�
 
 **最后动作**：2026-11-02 真板跑通完整链路并给出演示参数：冷启动不写 AUX 进待标定、CAL `valid_pass`（L1 2.170、验证带内抑制中位 +4.63 dB）、BTN1 扩声、SW0 现场切换起振。逐点二分得旁路边界 +2.1 dB（±0.1，不可复现）、抵消边界 +5.0/+5.5 dB，ASG 约 3.2 dB（2.9–3.4）；演示点 +3.0 dB，啸叫窗口 3.49 秒。按队长授权就地改包把扩声从 8 秒延到 60 秒（`run_seconds` 8→60，重算清单），并发起判据代改（`max|conv(h,ref)| < 0.30` 主判据、`L1` 退为 8.0 兜底、去掉 `REJECT_SCALE` 重试），三组原被拒模型离线验证全部放行；算法版本身份升至 `recal-algorithm-2026-11-02.1`。
 证据：[演示协议与现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)、[io150 核验](../report/verification/audio-replay/package-io150-2026-11-02/README.md)、[运行目录修复](../report/verification/audio-replay/run-dir-fix-2026-11-02/README.md)、[交接](ref/a-line-handover.md)。
-**当前卡点**：板上为 A 临时包 42da66b5（+1.0 dB / 60 秒 / 4 段训练 / 新判据），不在 C 交付链；早上的 +3.0 dB 演示无法复现，****单音实测声学路径比早上强约 4.7 dB**（405 Hz `|H|` 0.667→1.14~1.29），现场声明环境未变，原因未解释。全过程、数据、假设与下一步见 [给队长的复盘报告](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)。
+**当前卡点**：按队长要求完成只读复盘（不做新试验、不改包）。更正后结论：早上''成功基线''实为**四个独立试次**（产品标定 2dbf041e、另一场标定模型 2a20c3e9、A 直接入口 +3.0 dB 演示、产品 −8 dB 运行被输入削顶）；同口径复算（Welch/H1、开环训练原件）H405 = 早上 0.855/0.983 → 当前 1.159/1.367/1.479（**差 2.5~4.6 dB**），模型估计系统性**低估约 2 dB**；已撤回''路径强 4.7 dB''与''|H|>1 必自激''。''路径为何变化''仍无证据，交叉残差复算是下一步唯一推荐动作。板卡当前 release de2a640e（+1.0 dB/60 秒/4 段，A 临时包，不在 C 交付链）；产品偶发卡死单列，与路径差异不并根因。详见 [队长复盘 §9](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)。
 本轮保留仓库 `board/audio_replay/recal_entry.sh` 为 A 原旧入口，不能当作 C 常驻服务启动脚本；旧脚本保留不等于重新推荐为最终产品。
 
 ### B 数据与算法／提交材料
