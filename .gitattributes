@@ -36,3 +36,6 @@ board/audio_replay/start-panel.sh -text
 /report/verification/audio_closed/lowband-audit-20261025/** -text
 
 board/audio_replay/recal_product_entry.sh text eol=lf
+
+# Preserve public reference vectors for byte-level SHA256 verification.
+/data/reference/** -text
