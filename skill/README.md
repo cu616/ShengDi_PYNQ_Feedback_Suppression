@@ -11,6 +11,7 @@
 | [audio-evidence](audio-evidence/SKILL.md) | 校验脚本 + 踩坑清单 | 核对 FPGA 音频交付的位流/驱动/模型身份、黄金参考、源激活窗口与幅度单位 | 本仓库 v3 软件用例通过 | 仅离线核对；不能判定 ASG/听众收益 |
 | [ai-collaboration](ai-collaboration/SKILL.md) | 提示词工作流 + 踩坑清单 | 人类操作现场与 AI 协作的节奏、单板单人、现场单写法、失败记录保留 | 本项目 10 月多轮现场验证 | 其他团队/环境的耗时与授权不同 |
 | [onboard-debug-false-alarms](onboard-debug-false-alarms/SKILL.md) | 踩坑清单 | 板上有常驻服务时用 SSH 调试、出现"连不上/没反应/阶段超时但零落盘" | PYNQ-Z2 实测三类判据（启动中、并发抢设备、单次开销超预算） | 换镜像/换板卡需重测耗时；并发卡死概率属候选 |
+| [measurement-invalidators](measurement-invalidators/SKILL.md) | 踩坑清单 + 校验脚本 | 分次运行再比较某频段差异、用硬件计数器论证"没发生"、读数不随激励变化 | 四类陷阱各有一例实测，脚本在两份真实捕获上复现判定（计数器失明 / 瞬态 vs 失控 / 非稳态源 / 接线） | 只对跨次比较有效，同窗相对量不受此限；脚本尚未经他人独立跑通（候选） |
 
 ## 每项技能的固定字段（指南 3.3.5.2 要求）
 
