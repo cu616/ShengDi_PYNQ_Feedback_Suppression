@@ -502,3 +502,33 @@ product-config.json（A 就地改包，非 C 交付链）：
 zip sha256  43b4fea859fd6f3faa93970736effacb9f9f4d0bf74bfed325bc2b427e12403，41 文件；
 gain_q12 = 4596、un_seconds = 60、训练段 [4,4,4]、算法 ecal-algorithm-2026-11-02.1；
 --check 通过，装到 eleases/42da66b57ed9043c。
+
+## 二十五、2026-11-02 四灯根因：改包漏了 phase_gain_q12（A 的配置疏漏，已修）
+
+**现象**：把演示增益从 5786（+3.0 dB）改为 4596（+1.0 dB）后，每轮标定都在 installing 阶段
+（约 7 秒后）失败，走 hardware_error、四灯全亮。
+
+**根因**：产品按**阶段**校验数字增益回读（ecal_product.py:216-219）：
+
+``
+allowed = cfg['phase_gain_q12'][gain_scope] (缺省 [expected_identity.gain_q12])
+回读不在 allowed 内 -> Failure('hardware_error', '阶段数字增益回读不符')
+``
+
+A 改包时只改了 expected_identity.gain_q12 与 llowed_gain_q12，**漏改 phase_gain_q12**：
+
+| 阶段 | 旧白名单 | 实际写入 |
+|---|---|---|
+| prepare | [0,1631,2303,3254,4096,5786] | 5786 → OK |
+| cue/input/training/validation/install/run | **[0, 5786]** | **4596 → 不在白名单 → 失败** |
+
+因此 installing 阶段写 4596 后回读 4596、与 [0,5786] 比对失败，直接 hardware_error。
+这也解释了今天多轮"四灯"里至少一部分是**同一个配置错误**，不是硬件或算法问题。
+
+**修复**：所有阶段白名单替换为 [0, 4596]（prepare 保留历史档位并加入 4596），重打包
+shengdi-recal-demo60-gain1db-v2-amod.zip，zip sha256
+881c2d7567e060d12d6e28982e7dd92a81316e7674327aa113a7b9ad8c845889，41 文件、清单全匹配；
+--check 通过，装到 eleases/de2a640e092f470f。
+
+**教训（写给三条线）**：产品配置里凡"按阶段"约束的量（增益白名单、超时、抓取计划）与 expected_identity
+是**两处独立校验**，只改一处必然在某个阶段炸。改包后必须在每个阶段各跑一次验证，而不是只看 --check。
