@@ -26,9 +26,9 @@ A/C完成整机可靠性与现场验收；本轮队长按用户要求接手B的+
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：按队长唯一resume3 ZIP/source-map完成官网工程RAR候选；正式41文件原样保留、四历史源逐字节核对、配置不重建。已纳入faab273对应实现报告，原件/脱敏副本分列SHA，DCP留仓库。RAR自检和独立解压全文件核验通过，包内check通过；后续批量/诊断源隔离为开发记录，C未操板。
-**当前卡点**：设计报告仍按队长确认保留审阅稿，待终稿替换；板上软件精确版本与外部board_part依赖锁定仍有缺项。当前RAR可检查，不标最终上传批准；logs/runme.log仅有原件哈希引用，不冒称C已独立核验。正式运行版本不因main后续提速改动重选。
-交付入口：[RAR候选与复核](../report/verification/recal-product-v1/official-source-candidate.md)、[完整回执](../report/verification/recal-product-v1/official-source-candidate.json)。RAR本体不自动进Git，通过原文件转发；源码入口仍为原ZIP内recal_entry.sh。
+**最后动作**：修订官网RAR候选的提交入口说明，清理data占位、models交接措辞及src过时状态；data/reference补三组已有用例的合成CSV及参数/预期结果，离线与解压复核通过。正式resume3 ZIP/41文件和模型数值不变；五份入口说明审查通过，内部STATE不随包。对应实现报告保留原件/脱敏副本SHA，DCP留仓库；C未操板。
+**当前卡点**：设计报告仍为审阅稿，待终稿替换；环境精确版本与外部board_part锁定缺项保留。RAR仍为可检查候选；日志runme仅来源哈希引用，不冒称已独立核验。正式运行版本不因main后续开发重选。
+入口：[候选与复核](../report/verification/recal-product-v1/official-source-candidate.md)、[入口审查](../report/verification/recal-product-v1/official-source-publication-audit.json)、[参考数据](../data/README.md)。RAR以原文件转发，大文件不自动进Git；协作记录集中归档。
 
 ## 已验证 / 未验证
 

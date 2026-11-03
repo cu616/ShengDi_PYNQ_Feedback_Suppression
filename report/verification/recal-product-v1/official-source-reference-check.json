@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "cases": [
+    {
+      "file": "ordinary.csv",
+      "ok": true,
+      "expected": {
+        "bit_exact": true,
+        "wide_residual_frames": 0,
+        "wide_residual_frames_prefix": 0
+      }
+    },
+    {
+      "file": "negative-rail.csv",
+      "ok": true,
+      "expected": {
+        "bit_exact": true,
+        "wide_residual_frames": 0,
+        "wide_residual_frames_prefix": 0
+      }
+    },
+    {
+      "file": "prefix-overflow.csv",
+      "ok": true,
+      "expected": {
+        "bit_exact": true,
+        "wide_residual_frames": 1,
+        "wide_residual_frames_prefix": 1
+      }
+    }
+  ],
+  "source": "4efd43036555c667924fc415d31cf95d785fbb24:board/audio_replay/v3/test_verify_replay_v3.py",
+  "hardware_operations": 0
+}

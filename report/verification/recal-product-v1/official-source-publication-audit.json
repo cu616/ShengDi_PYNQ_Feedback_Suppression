@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "guides_checked": [
+    "README.md",
+    "data/README.md",
+    "src/README.md",
+    "models/README.md",
+    "report/README.md"
+  ],
+  "reference_cases": 3,
+  "historical_model_entries_unchanged": true,
+  "historical_collaboration_records": "explicitly archived under report; not current operation instructions",
+  "frozen_payload_changed": false
+}
