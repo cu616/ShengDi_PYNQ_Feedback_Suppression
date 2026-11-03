@@ -1,3 +1,9 @@
+## 2026-11-03 C 接入capture_plan单次调用，驱动实现待A（接口修订v3）
+
+- 源码确认现接口只在停声后读16384尾窗，不能通过延长budget得到4窗。C给出一次下载/source/arm的replay_capture_plan签名、真实全局窗坐标、逐段NPZ/status及bit_exact、环形缓存无覆盖证明与整批失败口径。
+- C薄调用层保留原刺激、零增益、参数及取消/基线回调，只有驱动明确声明能力才启用；旧接口路径保留，不改正式ZIP。元数据新scene用显式模型副本绑定，原件不修改。文件/算术复核在后台，前台仍处理停止。
+- 5项批量/面板与原3项BTN2[软件检查](../../report/verification/recal-product-v1/capture-plan-software.json)通过；未操板、未改驱动/RTL/算法，硬件7秒/总125秒未验。见[静态审阅](../../report/verification/recal-product-v1/capture-plan-review.json)和[接口](../contracts/recal-product-v1.md)。
+
 ## 2026-11-03 队长修复历史fixture标签导致的只读复算阻塞
 
 - 核对A的e553471证据与驱动调用，保留NPZ旧fixture原值，按原场景result收据的模型双SHA、最终训练验证清单与文件SHA限定历史例外；不改运行保护与产品语义。
