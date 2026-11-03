@@ -4,48 +4,34 @@
 
 C维护安装包内唯一入口recal_entry.sh；A提供硬件适配并唯一操板，B提供原版identity/evaluate。基本消息见[产品接口](../contracts/recal-product-v1.md)，数值口径见[B契约](../contracts/recalibration-algorithm-v1.md)，本次安装事务与运行时长见[整机接入v4](../contracts/recal-runtime-v4.md)，原件和停止收尾沿用[v3](../contracts/recal-runtime-v3.md)。普通用户不用电脑、不改代码、不选模型。
 
-## 固定+3.0 dB、8秒演示包
+## 本轮4596/60秒保护恢复包
 
-电脑仓库根目录交付 shengdi-recal-0cabfc17-0b09ef6-demo30-8s-final.zip 与同名 .zip.sha256。唯一入口仍为包内 recal_entry.sh；安装器/service沿用原版本，不新增第二套正式入口。A九项运行时、B算法字节不变，helper仍为0cabfc17完整SHA；授权来源绑定A现场记录提交c254124b73f9318029552ccb8618323c588ea23d的§十七。
+电脑交付 shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip 与同名SHA文件；唯一入口仍为包内recal_entry.sh。基线固定4596（+1.0 dB）、每次60秒；每档训练4段、独立验证2段，算法原字节为recal-algorithm-2026-11-02.1。非prepare阶段phase_gain_q12均为[0,4596]，prepare保留历史批准档并加入4596；维护自检仍1631/3秒。
 
-expected_identity.gain_q12固定5786，标称+3.0 dB；allowed_gain_q12为1631/2303/3254/4096/5786。旧档仅用于静音准备/维护，运行身份严格要求5786，不改成“允许集合任取”。训练/验证继续开环0增益；安装实际回读5786后才就绪。单次请求8秒，不循环、不拼段；io/compute仍150秒。具体阶段与证据范围见[演示约定v11](../contracts/recal-runtime-v11.md)。
+**保护后短按 BTN2 可免标定恢复（上限 3 次/场景）**，进入ready后再按BTN1扩声；不是自动发声。模型文件/SHA、同scene、硬件收尾、实际静音及错误锁存检查失败时保持protected并要求CAL。failed/model_rejected/inconclusive/cancelled仍须CAL。首次启动和更换场景须CAL；新scene重置恢复计数。字段resumed_from、resume_count随原回包导出。具体见[BTN2约定](../contracts/recal-product-v1.md)。
 
-唯一最终参数来源是A c254124报告§十七；此前+4.5/+2.7仅为被推翻的试验记录。A直接入口在+3.0抵消20秒稳定，运行中拨码后3.49秒触发保护；9.13秒属于原较长运行的拨码时刻，本包8秒内不能等到该时刻才拨。新产品包仍需A值守复核，3.49秒不是保证时延。起跑前SW0必须拨下；起跑已旁路、flip_at≤0的记录不能当有效切换对照。
-
-未验收项原样保留：旁路边界±0.1同点不可复现；小音响声压/热安全未评估；约0.9秒按键空窗未验收；一次install捕获bit_exact=False、15872帧全不匹配，同条件下一轮恢复，原因未解决。播放已到0 dBFS/gain_saturations=6，不提高数字上限；417 Hz音色与电平分开说。原驱动保护不改，听感与自动判据分开保存，不把无保护或电平差直接写成ASG。
-
-### A首次安装与现场操作
-
-电脑把整ZIP传到板卡/home/xilinx/shengdi-install/，解压到/home/xilinx/shengdi-install/recal-demo30-8s/，保留feedback等子目录，不手换旧包文件。先停旧service、Notebook及其他PYNQ会话，只由A操板。以下维护检查会调用硬件：
+A把整ZIP解压到板卡/home/xilinx/shengdi-install/recal-resume3/，保留目录结构，不手换文件；先停旧service/Notebook，保持A唯一操板。
 
 ```bash
-BASE=/home/xilinx/shengdi-install/recal-demo30-8s
+BASE=/home/xilinx/shengdi-install/recal-resume3
 sudo bash "$BASE/recal_entry.sh" --check
-sudo bash "$BASE/recal_entry.sh" --adapter-check \
-  --model "$BASE/bootstrap-model.json" \
-  --model-sha256 6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8 \
-  --state-dir /home/xilinx/.local/state/shengdi
 sudo bash "$BASE/product-install.sh"
 ```
 
-维护自检固定maintenance_gain_q12=1631（−8 dB）、3秒，只检接口，不把零初始化模型带到高增益旁路；收据保存实际维护增益。它不是8秒演示验收。bootstrap-model.json只用于静音初始化/维护，不能充当通过的现场模型。新服务启动保持静音，需要本轮CAL；不自动复用旧包的scene资格。
+SW0起跑先拨下；CAL通过后BTN1扩声。保护停声后等旧驱动调用退出再短按BTN2，ready后BTN1重试；达到3次后下一次只能CAL。沿用原保护、增益与灯光语义，不提高停声阈值。小音响声压/热安全、约0.9秒按键空窗及一次install bit_exact=False异常仍未验收，不能由软件恢复功能推成现场安全或效果通过。
 
-日常按键：SW0先拨下；长按BTN0≥1秒CAL，听三连音后持续讲话至安静灯；0100/0101时保持安静，计算可能再约70秒，0110就绪。按BTN1运行固定5786、最多8秒；需要展示拨码时先正常讲话2–3秒，再拨SW0上，给本次8秒窗留出观察时间。出现起振或异常立即BTN3停声，不等待时限或保护。LD3表示实际旁路，不能只看拨码外观。
+维护模型仍为bootstrap-model.json，SHA=6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8；仅供初始化/维护，不是可用现场模型。
 
-自然8秒结束且模型仍有效可再按START。**保护后拨回SW0不会自动重启，也不能直接沿用原模型资格**；按产品提示重新CAL，通过后才能START。沿用此失败出口，不把A直接入口“重新起跑”误写成产品已支持。变更布局/模拟音量后重新CAL，仍需判断这次演示是否适用。
-
-### 本次回包
-
-结束后先停止服务，仍由同一入口一次导出；旧回包不覆盖：
+结束后停服务，再用同一入口导出；原始人声PCM不自动回传：
 
 ```bash
 sudo systemctl stop shengdi-product.service
-sudo bash /home/xilinx/shengdi-install/recal-demo30-8s/recal_entry.sh \
+sudo bash /home/xilinx/shengdi-install/recal-resume3/recal_entry.sh \
   --state-dir /home/xilinx/.local/state/shengdi \
-  --export /home/xilinx/shengdi-install/recal-product-return-demo30-8s.zip
+  --export /home/xilinx/shengdi-install/recal-product-return-resume3.zip
 ```
 
-包含return-manifest.json、summary.json、results、algorithm、captures、models及已有maintenance回执；不含人声PCM。结果分开记录自然8秒结束、保护提前结束、拨码实际模式和听感，不把保护/无保护直接等同抑制成功。下方为原30秒包操作，当前演示采用本节路径与8秒时限。
+下方为历史包说明，本包以本节与product-config.json为准。
 
 ## 本轮可安装验收包（A 0cabfc17 / guard150）
 

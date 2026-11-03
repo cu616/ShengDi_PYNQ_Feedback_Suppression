@@ -18,6 +18,7 @@ from recal_policy_consumer import consume_reply
 from recal_link import ingest, adapter_check, installed_model, run_evidence
 
 CONTRACT = 'recal-product-v1'
+RESUME_MAX = 3
 IDENTITY = ('aux_db','aux_raw_left','aux_raw_right','hp_volume','gain_q12','sample_rate_hz',
             'driver_sha256','bit_sha256','hwh_sha256','helper_sha256')
 AUX_IDENTITY = ('aux_db','aux_raw_left','aux_raw_right')
@@ -159,6 +160,7 @@ class Product:
         self.caps={};self.input_ready=None;self.indicator_deferred=False
         self.input_armed_at=None
         self.speech_retries=0
+        self.resume_count=0;self.resumed_from=None
         self.hw_idle=threading.Event();self.hw_idle.set();self.stop_target=None;self.queued_recalibrate=False
         self.store.invalidate(self.scene,'boot_requires_calibration')
         try:
@@ -241,6 +243,7 @@ class Product:
             validation_kind=self.cfg.get('validation_kind'),input_ready=self.input_ready,
             input_armed_at=self.input_armed_at,
             algorithm_identity=self.cfg.get('algorithm_identity'),speech_retries=self.speech_retries,
+            resume_count=self.resume_count,resumed_from=self.resumed_from,
             numeric_exit_reason=self.cfg.get('algorithm_identity',{}).get('strategy',{}).get('exit_reasons',{}).get(
                 self.algorithm_receipts[-1]['reply'].get('decision') if self.algorithm_receipts else None),
             hardware_draining=not self.hw_idle.is_set(),
@@ -325,6 +328,7 @@ class Product:
                 self.algorithm_receipts=[];self.cause=None
                 self.input_ready=None;self.input_armed_at=None
                 self.speech_retries=0
+                self.resume_count=0;self.resumed_from=None
                 self.attempt=0;self.cue_end=0;self.outcome=None;self.reason='';self.run_result=None
                 self.cancel=threading.Event();self._state('preparing');self._hw('prepare',phase='input')
             elif kind=='start' and self.state in ('ready','ended') and self.bundle:
@@ -340,6 +344,32 @@ class Product:
             elif kind=='confirm_quiet' and self.state=='quiet' and self.quiet_deadline is not None:
                 self.quiet_deadline=self.clock()
         except Exception as exc: self.fail(exc)
+
+    def _resume(self):
+        if self.state!='protected':return
+        try:
+            if self.fatal or not self.hw_idle.is_set():
+                self.reason='硬件尚未安全收尾，请稍候或CAL';self.checkpoint();return
+            if self.resume_count>=RESUME_MAX:
+                self.reason='保护恢复已达3次，请CAL';self.checkpoint();return
+            bundle=self.bundle
+            if (not bundle or bundle.get('scene_id')!=self.scene
+                    or not any(e.get('state')=='running' for e in self.events)
+                    or not Path(bundle['model_path']).is_file()
+                    or sha(bundle['model_path'])!=bundle['model_sha256']):
+                self.reason='已装模型身份不符，请CAL';self.checkpoint();return
+            poll=self.hw.poll()
+            if poll.get('ok') is not True or poll.get('effective_mode')!='muted':
+                self.reason='硬件未确认静音，请CAL';self.checkpoint();return
+            self.gain_scope='runtime';self._identity(poll['identity'])
+            self._protection_snapshot(poll,'idle_latch_recorded')
+            self.store.commit(bundle)
+            self.resume_count+=1;self.resumed_from='protected'
+            self.outcome=None;self.reason='保护后已恢复就绪，按BTN1扩声'
+            self._state('ready');self.event('resume')
+        except Exception as exc:
+            self.state='protected';self.store.invalidate(self.scene,'resume_rejected')
+            self.reason='恢复被拒绝，请CAL：'+str(exc);self.checkpoint()
 
     def _submit(self, kind, request, function):
         if self.pending: raise Failure('hardware_error','硬件任务尚未完成')
@@ -603,7 +633,9 @@ class Product:
                     if queued:self.event('recalibrate')
                 return
             if self.state in ('failed','protected','cancelled','inconclusive'):
-                for event in events: self.event(event['kind'])
+                for event in events:
+                    if self.state=='protected' and event['kind']=='confirm_quiet':self._resume()
+                    else:self.event(event['kind'])
                 return
             if self.pending and self.clock()>self.job_deadline: raise Failure('hardware_error','阶段超时，已停止')
             if poll.get('protected'):

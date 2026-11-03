@@ -280,3 +280,16 @@ report/verification/recal-product-v1/changed-files.txt
 report/verification/recal-product-v1/demo30-assets.json
 report/verification/recal-product-v1/demo30-software.json
 report/verification/recal-product-v1/demo30-package-check.json
+
+# 2026-11-03 BTN2 protected resume
+board/audio_replay/recal_product.py
+sim/feedback/test_recal_resume.py
+scripts/freeze_recal_guard.py
+scripts/assemble_experiment.py
+docs/contracts/recal-product-v1.md
+docs/ref/recal-product.md
+docs/STATE.md
+docs/log/progress.md
+report/ai-records/recal-product-v1.md
+report/verification/recal-product-v1/resume3-software.json
+report/verification/recal-product-v1/resume3-package-check.json

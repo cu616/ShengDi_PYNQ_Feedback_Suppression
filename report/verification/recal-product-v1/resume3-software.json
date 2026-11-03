@@ -1,0 +1,18 @@
+{
+  "scope": "only the three requested unit cases; software fixture, no board",
+  "tests_run": 3,
+  "success": true,
+  "cases": [
+    "normal protected BTN2 -> ready -> BTN1, same scene/model without fit",
+    "changed model SHA rejected, remains protected",
+    "three resumes accepted, fourth rejected and requests CAL"
+  ],
+  "command": "python -m unittest discover -s sim/feedback -p test_recal_resume.py -v",
+  "observed_output": "Ran 3 tests in 1.877s; OK",
+  "source_sha256": {
+    "board/audio_replay/recal_product.py": "7e0c9ba70b3dd614174892677cf7f293810bd1c4093c3a1044531c6fdb494d00",
+    "sim/feedback/test_recal_resume.py": "c1df96b508401db554fb70b8543e705525008d3f69572b4f0339a7fe1c364891"
+  },
+  "board_operations": 0,
+  "normal_case_includes_muted_gain_zero": true
+}

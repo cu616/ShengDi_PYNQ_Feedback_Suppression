@@ -3,18 +3,20 @@
 All nine A runtime files are copied as Git blob bytes; no patch is applied.
 """
 import argparse
+import ast
 import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 
 ROOT=Path(__file__).resolve().parents[1]
 A='e6379ef331762b3162542d6325a644f5b34934da'
-B='0b09ef6'
+B='057dfe027d81e85d3299470033582f3e0c457232'
 HELPER='0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5'
-DEMO_EVIDENCE='c254124b73f9318029552ccb8618323c588ea23d'
-DEMO_GAIN=5786
-DEMO_SECONDS=8
+DEMO_EVIDENCE='057dfe027d81e85d3299470033582f3e0c457232'
+DEMO_GAIN=4596
+DEMO_SECONDS=60
 
 
 def blob(ref,path):
@@ -69,19 +71,26 @@ def stage(destination, demo=False):
             request_capture_directories=True,indicator_armed_safe=True,bootstrap_model='bootstrap-model.json',
             install_readback_required=True,embedded_cue_frames=21969,cue_indicator_guard_seconds=.1))
     if demo:
+        b=blob(B,'board/audio_replay/recal_algorithm.py')
+        attempts=ast.literal_eval(next(n.value for n in ast.parse(b.decode('utf-8-sig')).body
+            if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='ATTEMPTS' for t in n.targets)))
+        for attempt in attempts:attempt['training']['segments']=4
+        sys.path.insert(0,str(ROOT/'board/audio_replay'))
+        from recal_link import capture_plans
         # A's explicit demonstration authorization changes configuration only.
         # Runtime still checks ONE gain; open-loop requests remain at zero.
-        allowed=list(dict.fromkeys(meta['allowed_gain_q12']+[DEMO_GAIN]))
+        allowed=list(dict.fromkeys(meta['allowed_gain_q12']+[5786,DEMO_GAIN]))
         meta['allowed_gain_q12']=allowed
         meta['expected_identity']['gain_q12']=DEMO_GAIN
         meta['config'].update(allowed_gain_q12=allowed,run_seconds=DEMO_SECONDS,maintenance_gain_q12=1631,
+            attempts=attempts,capture_plans=capture_plans(attempts),
             phase_gain_q12={op:[0,DEMO_GAIN] for op in (
-                'prepare','cue','input','training','validation','install','run')})
-        meta['approval_scope']='A-supervised fixed-gain eight-second same-layout demo; not long-term equipment or product field acceptance'
+                'prepare','cue','input','training','validation','install','run','runtime')})
+        meta['approval_scope']='A-supervised 4596/60-second/4-training baseline with BTN2 protected resume; not product field acceptance'
         evidence_path='report/verification/audio-replay/demo-protocol-2026-11-02/README.md'
         meta['demo_authorization']=dict(source_commit=DEMO_EVIDENCE,evidence_path=evidence_path,
             evidence_sha256=sha(blob(DEMO_EVIDENCE,evidence_path)),gain_q12=DEMO_GAIN,run_seconds=DEMO_SECONDS,
-            authoritative_section='十七; final 5786 selected explicitly by user, eight-second product run',
+            authoritative_section='二十三/二十五 and explicit user task: 4596, 60 seconds, four training captures, BTN2 resume up to three per scene',
             runtime_gain_identity='single fixed value, not membership in the maintenance allowed set',
             limitations=['bypass at this gain can howl loudly and stop by driver saturation protection, not software limiting',
                          'long-term loudspeaker headroom and safety not evaluated',
@@ -91,7 +100,7 @@ def stage(destination, demo=False):
                          'A direct-entry evidence does not validate this product package or a new layout/model'])
     (hardware/'product-adapter.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     b=blob(B,'board/audio_replay/recal_algorithm.py');digest=sha(b)
-    if digest!='489064051a63973c39c0f113aad28e26c2fad77fc4a5f578c44f83b0b9a1d417':
+    if digest!='3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77':
         raise ValueError('B frozen identity differs')
     (algorithm/'recal_algorithm.py').write_bytes(b)
     (algorithm/'product-adapter.json').write_text(json.dumps(dict(contract='recal-product-v1',kind='algorithm',
@@ -102,5 +111,5 @@ def stage(destination, demo=False):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--stage',required=True)
-    parser.add_argument('--demo',action='store_true',help='A-authorized fixed 5786 gain, eight-second demo only')
+    parser.add_argument('--demo',action='store_true',help='A-authorized 4596 gain, 60-second run, four training captures')
     args=parser.parse_args();print(json.dumps(stage(args.stage,args.demo),ensure_ascii=False))

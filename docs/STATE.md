@@ -27,9 +27,9 @@ A/C 完成当前整机可靠性问题与必要实机验收，B 完成视频、�
 
 ### C 产品软件、整机编排与测评
 
-**最后动作**：已按用户最终确认切换独立5786（+3.0 dB）/8秒演示配置，唯一参数来源A=c254124报告§十七；允许集不含6900，运行身份保持单值5786，标定0增益、维护−8 dB/3秒。A九项运行时和B算法保持原字节，普通30秒profile不变；旧6900候选不交付。47项相关软件检查及新包41文件/入口/配置/回包核验通过，冻结C+A/真实B子进程与模拟叶子完成两scene，安装和运行回读5786、训练/验证0。
-**当前卡点**：收束完成。唯一候选钉死：包 de2a640e092f470f（+1.0 dB/60 秒/4 段/判据 2026-11-02.1，A 临时，待 C 重钉）+ 模型 a432ad195711069c5160480b21eb6ec2073c423144d4e21f15e93b8b2799580（Q20 系数 6507565c444929737d8b44486c7064d4226792070e4f6eac8a3f84827287f1cf，L1 3.662214，场景 6b2e43d4）+ 配置 hp_volume=40/AUX 0 dB/gain_q12=4596/run_seconds=60/训练 4 段。产品面板已验：启动→CAL valid_pass→验证安装→BTN1 真人扩声**跑满 60.00 秒**（2929687 帧、零饱和）。**唯一失败步骤**：正常结束后 0.4 秒转 failed（hardware_error 阶段数字增益回读不符），根因为 ecal_product.py:481 运行完成后以 gain_scope='runtime' 校验增益，而所有包 phase_gain_q12 无 untime 键、回退默认 [4596]，静音后回读 0 不在其中——C 侧潜伏 bug，建议加 untime:[0,4596] 后重钉。详见 [队长复盘 §11](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)。
-入口：[产品操作单](ref/recal-product.md)、[最终演示约定](contracts/recal-runtime-v11.md)；证据：[软件验证](../report/verification/recal-product-v1/demo30-software.json)、[冻结原件与授权](../report/verification/recal-product-v1/demo30-assets.json)、[最终整包核验](../report/verification/recal-product-v1/demo30-package-check.json)、[A现场记录](../report/verification/audio-replay/demo-protocol-2026-11-02/README.md)。C本轮未操板，不改驱动饱和保护策略。
+**最后动作**：按队长授权实现protected状态短按BTN2免标定恢复ready，同scene最多3次，BTN1再启动；模型SHA/硬件收尾/静音/错误锁存检查保留。基线4596/60秒、4训练2验证，所有阶段含runtime为[0,4596]、prepare保留历史档，B采用main的2026-11-02.1原件；A/驱动/RTL/算法未改。
+**当前卡点**：保留A已验事实：唯一候选包de2a640e092f470f，场景6b2e43d4，模型ba432ad195711069c5160480b21eb6ec2073c423144d4e21f15e93b8b2799580，Q20系数6507565c444929737d8b44486c7064d4226792070e4f6eac8a3f84827287f1cf，L1=3.662214，hp_volume=40/AUX0/gain4596/60秒/4段；产品已跑满60.00秒（2929687帧、零饱和），正常结束后因静音回读0而被runtime白名单拒绝。本轮已显式加入runtime:[0,4596]并增加BTN2恢复，新的C整包仍待A验收，不能把旧包实测写成新包通过。原Word未提交修改完整保留，C在独立干净main副本工作。
+入口：[产品操作单](ref/recal-product.md)、[BTN2约定](contracts/recal-product-v1.md)、[A收束证据](../report/verification/audio-replay/demo-protocol-2026-11-02/lead-report.md)；本轮[三个单测](../report/verification/recal-product-v1/resume3-software.json)。C未操板，既有声压/热安全、按键空窗、install bit_exact异常未验收项仍保留。
 C 入口源码为 `board/audio_replay/recal_product_entry.sh`，打包映射为包内 `recal_entry.sh`，安装路径与参数保持原义。
 
 ## 已验证 / 未验证

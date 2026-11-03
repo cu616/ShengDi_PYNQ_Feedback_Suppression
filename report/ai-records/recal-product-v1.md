@@ -310,3 +310,16 @@ C先查工作区干净并fetch/快进main，逐字核验A原件，未改A/B。�
 C先fetch/快进指定main，更新--demo默认5786并排除6900，仍严格单值身份、阶段0/5786、prepare旧批准保留档；维护仍1631/3秒，B激励与算法不变。新增v11替代旧6900草案；包内报告链接钉c254124和§十七。起跑SW0下、8秒内2–3秒后再切换；原9.13秒切换属于更长运行，不能照搬。仅保留原保护：保护后CAL、自然结束可再START；不提高饱和阈值或延长响声。旧6900候选与原失败/未交付记录原样保存不交付。
 
 最终包=shengdi-recal-0cabfc17-0b09ef6-demo30-8s-final.zip；SHA=23b8f64fddb895fd7d81b249aabd73c191490850d59969028acce2608ec2f59d；字节=383471；冻结源=ae8571eebdd00a6d674bfa92a375e7e147e375f0（组包前已推送main，避免并发同步改写来源）。独立解压41文件/四helper钉值/原A9+B/链接/check通过；allowed严格[1631,2303,3254,4096,5786]。模拟I2C/MMIO/driver叶子+真实B子进程完成cold AUX0→CAL→ready→BTN1→cancel/bypass→自然8秒390625帧→第二scene CAL；训练/验证实际接口回读0、安装/运行5786，维护安装/运行1631/3秒。单一导出2scene、16非人声捕获、4模型及维护回执，SHA全对。包内逐项确认±0.1不可复现、声压/热安全、0.9秒空窗、bit_exact=False/15872异常保留。未操板、不改保护；产品现场待A既定验收，无新算法/硬件修改要求。
+
+
+## 2026-11-03 最高优先级BTN2恢复任务
+
+用户（A转队长授权）明确：protected含input_overload后短按BTN2免标定回ready，再BTN1运行；禁止failed/model_rejected/inconclusive/cancelled；同scene最多3次、模型SHA/静音/旧线程退出/错误锁存门槛，status增加resumed_from/resume_count。不要扩范围，只3个单测，contract原文件加小节并升文档版；wire需兼容旧A事件。配置4596/60秒，训练每档4，所有非prepare阶段[0,4596]，prepare保留历史档并加入4596，main算法2026-11-02.1。交41文件整包/ZIP SHA/manifest SHA/check输出。
+
+本线fetch后发现用户Word有未提交修改，Git安全拒绝合并。未改该文件；新建_c_resume_main干净克隆以main=057dfe0继续。最小_resume恢复模型资格（原fail会invalidate，若不恢复pointer则BTN1仍拒绝），模型同scene且已有running经历才可恢复，原驱动arm基线不动，仅复用idle_latch_recorded留证。计数0起、新CAL重置，最多3；hash错/上限保持protected、理由要求CAL。短按BTN2只有protected分支调用，其他状态不扩权限；不自动发声。3指定单测4.317秒全通过。
+
+打包仍使用已有freeze/assemble分支；A9件与驱动/位流原字节，B从main固定057dfe0拷贝SHA3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77，不改算法。只在配置覆写训练4与捕获4，运行4596/60、各阶段0/4596、prepare包含旧5786及4596；维护1631/3秒不变。只在原contract文件升文档v2加BTN2小节，不新建契约。
+
+文档检查0错误，1条现存警告为A段当前卡点格式；A段逐字节保留，未跨线修。progress历史混合行尾在追加时已按原Git字节保留，diff仅新增本轮条目。
+
+同步到dd19cf3时A已实改C状态卡，已向用户协调并得到“保留双方事实继续交包”的明确答复。仅合入新C段，远端A/B及公共段原字节保留，记录其唯一候选和60秒成功证据。A另报静音回读0导致runtime缺键拒绝；按本任务“所有阶段[0,4596]”显式增加runtime键，正常恢复测试覆盖静音0回读，仍只3个测试。

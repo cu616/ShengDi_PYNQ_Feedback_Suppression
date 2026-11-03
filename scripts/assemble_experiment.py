@@ -154,6 +154,11 @@ def assemble_product(out, hardware=None, algorithm=None, review=False):
         'recal-runtime-v9.md','GUARD-RUNTIME.md').replace('../ref/recal-product.md','OPERATIONS.md').replace(
         '../../report/verification/audio-replay/demo-protocol-2026-11-02/README.md',
         'https://github.com/cu616/ShengDi_PYNQ_Feedback_Suppression/blob/c254124b73f9318029552ccb8618323c588ea23d/report/verification/audio-replay/demo-protocol-2026-11-02/README.md'),encoding='utf-8')
+    if config['expected_identity']['gain_q12']==4596 and config['run_seconds']==60:
+        (out/'DEMO-RUNTIME.md').write_text('本包基线：4596（+1 dB）、60秒；每档训练4段、验证2段，算法recal-algorithm-2026-11-02.1。\n\n'
+            '保护后短按 BTN2 可免标定恢复（上限 3 次/场景），ready后再按BTN1；其他失败仍须CAL。\n\n'
+            '所有非prepare阶段白名单为[0,4596]，prepare保留历史档位并加入4596；标定开环0增益，维护1631/3秒。\n\n'
+            '以product-config.json、[BTN2约定](INTERFACE.md)及[操作单](OPERATIONS.md)为本包准据；其他版本说明保留历史适用范围。\n',encoding='utf-8')
     payloads=[p for p in out.rglob('*') if p.is_file() and '__pycache__' not in p.parts
               and p.suffix not in ('.pyc','.pyo')]
     manifest=dict(contract='recal-product-v1',simulation=simulation,deployment_ready=not simulation and not review and not missing,
