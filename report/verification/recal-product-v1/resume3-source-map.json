@@ -1,0 +1,366 @@
+{
+ "package": {
+  "zip": "shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip",
+  "zip_sha256": "b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4",
+  "manifest_sha256": "beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef",
+  "manifest_declared": null,
+  "files": 41
+ },
+ "config_facts": {
+  "gain_q12": 4596,
+  "run_seconds": 60,
+  "allowed_gain_q12": [
+   1631,
+   2303,
+   3254,
+   4096,
+   5786,
+   4596
+  ],
+  "phase_gain_q12": {
+   "prepare": [
+    0,
+    1631,
+    2303,
+    3254,
+    4096,
+    4596,
+    5786
+   ],
+   "cue": [
+    0,
+    4596
+   ],
+   "input": [
+    0,
+    4596
+   ],
+   "training": [
+    0,
+    4596
+   ],
+   "validation": [
+    0,
+    4596
+   ],
+   "install": [
+    0,
+    4596
+   ],
+   "run": [
+    0,
+    4596
+   ],
+   "runtime": [
+    0,
+    4596
+   ]
+  },
+  "attempts_training_segments": [
+   4,
+   4,
+   4
+  ],
+  "capture_plan_training_captures": [
+   4,
+   4,
+   4
+  ],
+  "capture_plan_validation_captures": [
+   2,
+   2,
+   2
+  ],
+  "algorithm": "recal-algorithm-2026-11-02.1",
+  "algorithm_file_sha256": "3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77",
+  "expected_identity_sample_rate_hz": 48828.125,
+  "expected_identity_hp_volume": 40,
+  "expected_identity_aux_db": 0.0
+ },
+ "files": [
+  {
+   "file": "ALGORITHM.md",
+   "sha256": "c9504107121c8ab069b2aba89b3bd2f8cff8809887ddee2ef42d1306e91d0763",
+   "bytes": 15437,
+   "repo_source": "docs/contracts/recalibration-algorithm-v1.md",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "BOOT-RECOVERY.md",
+   "sha256": "a97722b7cb7e8c8b05c33274024392fe4453b6f08aeff96d2e6e7a8fa1177a21",
+   "bytes": 2292,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "DEMO-RUNTIME.md",
+   "sha256": "778edf5bc0c01b9dd14224d623bda80d8261d1aeeaae853aea164a691bae105e",
+   "bytes": 505,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "FINAL-RUNTIME.md",
+   "sha256": "db8d68185e653d406a96793d902aa13f93d0916299faea17d7680637b8e40217",
+   "bytes": 2491,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "FROZEN-RUNTIME.md",
+   "sha256": "c9b6e60ef6be63164084dfa10cf33de9945189b3e639b1771c785db4d691bc3c",
+   "bytes": 5567,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "GUARD-RUNTIME.md",
+   "sha256": "10d5cdc3c59a203a8d10521f6a5dd275ac20e9afab56cf32602eae509e5ebf73",
+   "bytes": 3535,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "INSTALL-RUNTIME.md",
+   "sha256": "3f753250ada0d4397e44cc10f596aa0c9b92d9731dca903f06ea67d1b3464e4d",
+   "bytes": 3730,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "INTERFACE.md",
+   "sha256": "8a1801b62fa1b462d45b33ee89edd06104654ace9da7346f8e6ec49386b7e74f",
+   "bytes": 6890,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "IO-INDICATOR.md",
+   "sha256": "1e5a751c95455ff3675bbeed19b5c97cb9879a87e86ef67800d58858db1e6818",
+   "bytes": 1938,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "MAINTENANCE-RUNTIME.md",
+   "sha256": "2f4cec4b548eb6c15e23468e345671b3dd810a259fe3a309c8a1023396286412",
+   "bytes": 1382,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "OPERATIONS.md",
+   "sha256": "d6c142a9b0464251f32af5b3200a5a1d73652946c74c7b46da6a86c71d8b38d4",
+   "bytes": 17715,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "POLICY-CONSUMER.md",
+   "sha256": "70ac92cac6af3d6933c49cebe57348dda47c50569106c841d79428911294f61e",
+   "bytes": 3760,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "POLICY.md",
+   "sha256": "4f84fd063cb661b58b4d4cdb7fdce357c7e23583fdc30ecdad13a06161f1a15c",
+   "bytes": 9266,
+   "repo_source": "docs/contracts/recalibration-policy-v1.md",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "RUNTIME.md",
+   "sha256": "12141a34bfbd8c0df69bb88a95abf2fcc1200cd5d9cb8864a9cca917aa6efe3b",
+   "bytes": 5481,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "audio_replay.bit",
+   "sha256": "322350656986d91f25a63735f87e5b0b9cc2f7ea977356ce9e988014648e738e",
+   "bytes": 4045674,
+   "repo_source": "board/audio_replay/v3-io/audio_replay.bit",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "audio_replay.hwh",
+   "sha256": "bbe1eb4935b0931f8af259ef5140d9d1fa2dbe144f82c765f158652aa741b728",
+   "bytes": 405674,
+   "repo_source": "board/audio_replay/v3-io/audio_replay.hwh",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "bootstrap-model.json",
+   "sha256": "6a5ed276b0a09e9a82f28e475c97efd84bb69642ecda9f3b055471ec312123e8",
+   "bytes": 9646,
+   "provenance": "repo-history-commit",
+   "repo_path": "board/audio_replay/v3-io/bootstrap-model.json",
+   "commit": null,
+   "commit_subject": null
+  },
+  {
+   "file": "closed_tools.py",
+   "sha256": "a95265b90c83a07d439d5b8f6b6a1f227ff94177dda97c4bbb5e81db0635cd54",
+   "bytes": 2636,
+   "repo_source": "board/audio_replay/closed_tools.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "feedback/__init__.py",
+   "sha256": "39f733ab47069c23d35edd520271cc17a15787dec4fee4cc78c6c3297570ffff",
+   "bytes": 69,
+   "repo_source": "src/feedback/__init__.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "feedback/excitation.py",
+   "sha256": "c0d14b137837c7b3cb0af9a07ea3d985a1d834639dc343841e384031d3e54521",
+   "bytes": 4850,
+   "repo_source": "src/feedback/excitation.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "feedback/recal_policy.py",
+   "sha256": "7c6088b2de39d331118738c3cf1ae7dfce35010609c320227ef4641953479fc4",
+   "bytes": 38442,
+   "repo_source": "src/feedback/recal_policy.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "hardware-provenance.json",
+   "sha256": "1314a0804ebd03caff90cd202a581ba9fd2bf1113d61c319d582a59f60b9ba76",
+   "bytes": 1060,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "hw_api.py",
+   "sha256": "0cabfc17cca1fb0e2629e1b382c119b48f00e1fe9b2a437a0302ed04e06ed3c5",
+   "bytes": 59277,
+   "provenance": "repo-history-commit",
+   "repo_path": "board/audio_replay/hw_api.py",
+   "commit": "0d349af6b6984c299cc04da1d57f90921a836b7f",
+   "commit_subject": "[A] 按 C guard150 要求补齐:arm 时重建保护基线 + poll 区分实读/缓存;hw_api 0cabfc17"
+  },
+  {
+   "file": "manifest.json",
+   "sha256": "5ba2b29858224f930737422bc2210758df6e6da7ddce9b8e201d737ffb88618b",
+   "bytes": 889,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "physical-controls.json",
+   "sha256": "4cbbd5b80464744d03e9cd82fa3d31d8e9460eeca84b73d4ce9f80126962f0ef",
+   "bytes": 1241,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "product-config.json",
+   "sha256": "d35dea4002062578cb841ccd9a5563a4d4f8d0eb92b1ed203ebea2788856e9bc",
+   "bytes": 11000,
+   "provenance": "repo-history-commit",
+   "repo_path": "board/audio_replay/v3-io/product-config.json",
+   "commit": null,
+   "commit_subject": null
+  },
+  {
+   "file": "product-install.sh",
+   "sha256": "91ac691137da9664de42bc3ca4a4bd6a5de9e991fb2c069bb240538cc4f444d6",
+   "bytes": 1680,
+   "repo_source": "board/audio_replay/product-install.sh",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "product-manifest.json",
+   "sha256": "beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef",
+   "bytes": 22102,
+   "provenance": "not-in-repo-assembled-by-C"
+  },
+  {
+   "file": "product-policy.json",
+   "sha256": "a2c86b316b45054f8f4091893b011f6fd0aac942f93b16b1ad89d99aa97a447d",
+   "bytes": 11104,
+   "provenance": "repo-history-commit",
+   "repo_path": "board/audio_replay/v3-io/product-policy.json",
+   "commit": null,
+   "commit_subject": null
+  },
+  {
+   "file": "recal_algorithm.py",
+   "sha256": "3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77",
+   "bytes": 38462,
+   "repo_source": "board/audio_replay/recal_algorithm.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "recal_entry.sh",
+   "sha256": "e320fcc49417f6cfe5eaa86bdc691f5180b3b8f7fab821ef8485b49cf10b0130",
+   "bytes": 473,
+   "repo_source": "board/audio_replay/recal_product_entry.sh",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "recal_link.py",
+   "sha256": "72e2ab65da672db49e8ec96742fd39ca61b4116d9df98fdea5587848f0ad0c12",
+   "bytes": 10930,
+   "provenance": "repo-history-commit",
+   "repo_path": "board/audio_replay/recal_link.py",
+   "commit": "de775e19bfdd05d544b2d915af7dce3094bf6cd5",
+   "commit_subject": "[C] 组装固定4.5dB八秒演示配置并隔离维护增益"
+  },
+  {
+   "file": "recal_policy_consumer.py",
+   "sha256": "43bc92c89f694197a83335cca6b5732087bd8dd2b09996d2490bc25474b3d8e2",
+   "bytes": 6820,
+   "repo_source": "board/audio_replay/recal_policy_consumer.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "recal_product.py",
+   "sha256": "7e0c9ba70b3dd614174892677cf7f293810bd1c4093c3a1044531c6fdb494d00",
+   "bytes": 57459,
+   "provenance": "repo-history-commit",
+   "repo_path": "board/audio_replay/recal_product.py",
+   "commit": "4efd43036555c667924fc415d31cf95d785fbb24",
+   "commit_subject": "[C] 最小实现BTN2保护恢复并冻结4596六十秒基线"
+  },
+  {
+   "file": "recal_runtime.py",
+   "sha256": "39fae263663b321e11a295091556ba510a8d604b45c11367718749c2fe05232a",
+   "bytes": 6656,
+   "repo_source": "board/audio_replay/recal_runtime.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "replay_tools.py",
+   "sha256": "bba221020c154968939aba0f23b21a0bbe38fb0ba8051448553388210d7aa246",
+   "bytes": 7701,
+   "repo_source": "board/audio_replay/replay_tools.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "replay_trial_repair.py",
+   "sha256": "0dc80c23d4800e77a49013f21ba5b7004c5eb643fc8f5e162395d86e214cf8c4",
+   "bytes": 29111,
+   "provenance": "repo-history-commit",
+   "repo_path": "board/audio_replay/v3-io/replay_trial_repair.py",
+   "commit": "5939ee5b02b9d14dcf7fde076967f896f2cd9814",
+   "commit_subject": "[A] 修取消边界(C 26685ac):perform 分支把 cancel_event 传入 _install;驱动新增 before_start 回调并在解除静音/arm 前调用,取消后不可能再 arm;training/validation、cue+input、install、run 四处驱动调用全部透传 Event;v3-io 副本与 manifest 刷新"
+  },
+  {
+   "file": "residual_tools.py",
+   "sha256": "c4a527651a5c0859c97ac62972086d2e59a33f12329efdff9fc463366d3e0e9a",
+   "bytes": 3253,
+   "repo_source": "board/audio_replay/residual_tools.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "shengdi-product.service",
+   "sha256": "27697e339e7b34da444f5893fc71e7be3bb200b9da17ae0c421ebf21f9fc83f2",
+   "bytes": 374,
+   "repo_source": "board/audio_replay/shengdi-product.service",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "tone_round_guard.py",
+   "sha256": "76413d84985aa53301ece0a5ebde91bd64bed6e03a0ed85fa72b40d14327e1c4",
+   "bytes": 11351,
+   "repo_source": "board/audio_replay/tone_round_guard.py",
+   "provenance": "repo-same-content"
+  },
+  {
+   "file": "upstream-product-adapter.json",
+   "sha256": "28ca66a835f6cf7208f4ceb24654105219b96019e8f3d0053ef7fbc7feb400ab",
+   "bytes": 3247,
+   "provenance": "not-in-repo-assembled-by-C"
+  }
+ ]
+}
