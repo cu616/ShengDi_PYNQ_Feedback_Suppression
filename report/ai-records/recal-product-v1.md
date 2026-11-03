@@ -325,3 +325,10 @@ C先fetch/快进指定main，更新--demo默认5786并排除6900，仍严格单�
 同步到dd19cf3时A已实改C状态卡，已向用户协调并得到“保留双方事实继续交包”的明确答复。仅合入新C段，远端A/B及公共段原字节保留，记录其唯一候选和60秒成功证据。A另报静音回读0导致runtime缺键拒绝；按本任务“所有阶段[0,4596]”显式增加runtime键，正常恢复测试覆盖静音0回读，仍只3个测试。
 
 最终41文件包=shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip；ZIP SHA=b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4；manifest SHA=beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef；冻结源=4efd43036555c667924fc415d31cf95d785fbb24。已逐项assert所有phase含runtime为0/4596（prepare历史例外），训练attempts/capture_plans均[4,4,4]，run60/gain4596；A9原件及B3ed完整字节、所有payload SHA、check输出通过。原Word修改未动，ZIP及sidecar复制回原仓库根目录。未执行上板/额外矩阵，只3单测与必要配置/哈希/CLI检查。
+
+
+## 2026-11-03 队长接手B数值复算
+
+用户原话：“B因为上下文记忆有很多错误，希望该为你算”。
+
+队长同步B的1e368e7，独立核算原表并修复只读脚本；发现旧脚本混合捕获、默许采样率不一致、解缠跨缺口和无条件延迟结论。保留已知信号6项测试记录；没有目标原件时不以旧布局替代。产品源码中拟合/验证平移microphone仅登记为待验证线索。交付与数据边界见[复算说明](../verification/highfreq-fix-2026-11-03/README.md)。
