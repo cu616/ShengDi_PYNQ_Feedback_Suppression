@@ -1,3 +1,9 @@
+## 2026-11-03 C 交付41文件BTN2恢复包
+
+- 新包配置逐项核验：4596/60秒，三档attempt及训练captures均4，验证2；含runtime在内的所有非prepare白名单[0,4596]，prepare保留历史档并加入4596。B原件为2026-11-02.1，A9件/驱动/位流未改。
+- 仅3个指定单测通过；41文件全部SHA、manifest SHA及包内--check(identity_ok/deployment_ready=true、missing=[])通过。包内说明含BTN2免标定恢复上限3次/场景，状态与回包带两字段。
+- ZIP和SHA已复制到原仓库根目录，用户Word未动；新源码在独立main副本提交。完整包名/两项SHA/冻结源/配置见[交付核验](../../report/verification/recal-product-v1/resume3-package-check.json)。未操板，A按既定验收执行；不把旧候选60秒实测冒称新包已通过。
+
 ## 2026-11-03 C 实现BTN2保护恢复（产品接口文档修订v2）
 
 - 按用户明确语义：仅protected可短按BTN2回ready，BTN1再扩声，同scene最多3次；复核模型SHA、静音/硬件收尾和锁存，重新提交既有启动资格，不拟合/装载。状态与回包带resume_count/resumed_from，新CAL重置；其他失败保持原流程。

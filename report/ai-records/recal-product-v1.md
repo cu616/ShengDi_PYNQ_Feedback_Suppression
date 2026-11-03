@@ -323,3 +323,5 @@ C先fetch/快进指定main，更新--demo默认5786并排除6900，仍严格单�
 文档检查0错误，1条现存警告为A段当前卡点格式；A段逐字节保留，未跨线修。progress历史混合行尾在追加时已按原Git字节保留，diff仅新增本轮条目。
 
 同步到dd19cf3时A已实改C状态卡，已向用户协调并得到“保留双方事实继续交包”的明确答复。仅合入新C段，远端A/B及公共段原字节保留，记录其唯一候选和60秒成功证据。A另报静音回读0导致runtime缺键拒绝；按本任务“所有阶段[0,4596]”显式增加runtime键，正常恢复测试覆盖静音0回读，仍只3个测试。
+
+最终41文件包=shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip；ZIP SHA=b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4；manifest SHA=beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef；冻结源=4efd43036555c667924fc415d31cf95d785fbb24。已逐项assert所有phase含runtime为0/4596（prepare历史例外），训练attempts/capture_plans均[4,4,4]，run60/gain4596；A9原件及B3ed完整字节、所有payload SHA、check输出通过。原Word修改未动，ZIP及sidecar复制回原仓库根目录。未执行上板/额外矩阵，只3单测与必要配置/哈希/CLI检查。

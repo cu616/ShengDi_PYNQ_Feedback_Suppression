@@ -1,0 +1,81 @@
+{
+  "package": "shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip",
+  "package_sha256": "b167d0b579df94e76065b067ada8feb2b3e050f7c44aa3541f57a47319d615b4",
+  "manifest_sha256": "beb36216d26b6cbb510f6f211d139424943863693e48fee44511ad200d62d9ef",
+  "bytes": 384071,
+  "files": 41,
+  "source_commit": "4efd43036555c667924fc415d31cf95d785fbb24",
+  "all_file_hashes_match": true,
+  "A_runtime_exact": 9,
+  "B_version": "recal-algorithm-2026-11-02.1",
+  "B_sha256": "3ed7748247216a471b3dc59dda189bffb2c66216b007b1ebae1ffe5959a1ea77",
+  "run_seconds": 60,
+  "gain_q12": 4596,
+  "allowed_gain_q12": [
+    1631,
+    2303,
+    3254,
+    4096,
+    5786,
+    4596
+  ],
+  "phase_gain_q12": {
+    "prepare": [
+      0,
+      1631,
+      2303,
+      3254,
+      4096,
+      4596,
+      5786
+    ],
+    "cue": [
+      0,
+      4596
+    ],
+    "input": [
+      0,
+      4596
+    ],
+    "training": [
+      0,
+      4596
+    ],
+    "validation": [
+      0,
+      4596
+    ],
+    "install": [
+      0,
+      4596
+    ],
+    "run": [
+      0,
+      4596
+    ],
+    "runtime": [
+      0,
+      4596
+    ]
+  },
+  "training_segments": [
+    4,
+    4,
+    4
+  ],
+  "training_captures": [
+    4,
+    4,
+    4
+  ],
+  "check": {
+    "exit_code": 0,
+    "stdout": "{\"identity_ok\": true, \"deployment_ready\": true, \"missing\": []}\n"
+  },
+  "resumed_from_and_resume_count_in_snapshot": true,
+  "unit_cases": 3,
+  "unit_passed": true,
+  "package_on_original_workspace": "D:\\Flushbonading_Contest\\ShengDi_PYNQ_Feedback_Suppression\\shengdi-recal-0cabfc17-alg1102-resume3-gain1-60s-final.zip",
+  "board_operations": 0,
+  "scope": "only 3 requested unit cases plus sealed configuration/hash/CLI check; no board; no new acoustic acceptance"
+}
