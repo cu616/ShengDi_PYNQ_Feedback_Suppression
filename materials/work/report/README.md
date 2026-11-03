@@ -13,7 +13,7 @@
 
 正文中的 `@figure`、`@photo`、`@equation` 和 `@break` 是生成器标记。Word 可直接编辑；若修改 Word，请勿直接重跑生成器覆盖，先将必要改动同步回正文。
 
-在仓库根目录运行 `python materials/work/report/build_report.py` 生成 Word。用 Word 打开后导出同名 PDF。此次使用 Codex 捆绑 Python 生成，本机 Word 导出 PDF，pypdfium2 渲染后逐页查看；14 页无空白页。PDF 为 725753 字节，低于页面要求的 50 MB。
+在仓库根目录运行 `python materials/work/report/build_report.py` 生成 Word。用 Word 打开后导出同名 PDF。此次使用 Codex 捆绑 Python 生成，本机 Word 导出 PDF，pypdfium2 渲染后逐页查看；14 页无空白页。PDF 为 727834 字节，低于页面要求的 50 MB。
 
 ## 补拍与定稿
 

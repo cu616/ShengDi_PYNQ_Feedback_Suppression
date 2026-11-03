@@ -122,9 +122,9 @@ for x1,x2 in [(240,295),(510,565),(825,880),(1095,1150)]:c.line([(x1,250),(x2,25
 c.line([(1260,317),(1260,408),(135,408),(135,317)],color=TEAL,arrow=True)
 c.text(700,420,'声学反馈 H：音箱播放声重新进入麦克风',28,color=TEAL)
 c.box(385,505,630,120,'ARM 处理器与 PYNQ','采集编排 · 模型求解 · 独立验证 · 版本管理',fill=GREEN)
-c.line([(695,505),(695,317)],color=PURPLE,arrow=True,dashed=True)
+c.line([(385,565),(260,565),(260,350),(695,350),(695,317)],color=PURPLE,arrow=True,dashed=True)
 c.text(705,345,'系数 / 控制',25,color=PURPLE,anchor='start')
-c.text(700,86,'实际播放字同时作为 FIR 的反馈预测参考',29,color=MUTED)
+c.text(700,86,'以实际输出音频为参考，估计音箱回传至麦克风的反馈声',29,color=MUTED)
 c.save()
 
 c=Canvas('wiring',420)

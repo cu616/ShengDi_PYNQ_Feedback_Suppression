@@ -30,8 +30,8 @@
 <rect x="385" y="505" width="630" height="120" fill="#e8f3f2" stroke="#aeb5bf" stroke-width="1.5"/>
 <text x="700.0" y="554.28" font-family="Microsoft YaHei, sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#222533">ARM 处理器与 PYNQ</text>
 <text x="700.0" y="597.88" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#626875">采集编排 · 模型求解 · 独立验证 · 版本管理</text>
-<polyline points="695.0,505.0 695.0,317.0" fill="none" stroke="#64206e" stroke-width="3" stroke-dasharray="10 7"/>
+<polyline points="385.0,565.0 260.0,565.0 260.0,350.0 695.0,350.0 695.0,317.0" fill="none" stroke="#64206e" stroke-width="3" stroke-dasharray="10 7"/>
 <polygon points="695.0,317.0 701.5244830116685,330.50670653529016 688.4755169883315,330.50670653529016" fill="#64206e"/>
 <text x="705" y="367.0" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" text-anchor="start" fill="#64206e">系数 / 控制</text>
-<text x="700" y="111.52" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="400" text-anchor="middle" fill="#626875">实际播放字同时作为 FIR 的反馈预测参考</text>
+<text x="700" y="111.52" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="400" text-anchor="middle" fill="#626875">以实际输出音频为参考，估计音箱回传至麦克风的反馈声</text>
 </svg>
