@@ -42,19 +42,30 @@
 ## 怎么复现
 
 ```bash
-# 1. 原理动画：逐帧截图 + 合成（需要本机 Chrome，约 3–5 分钟）
-python materials/work/b/video/render_frames.py --fps 5 --workers 5
+# 1. 原理动画：渲染 25 fps 原生帧（约 70 秒）
+python materials/work/b/video/render_frames_cdp.py --fps 25 --duration 32.8
 
-# 2. 粗剪（依赖 core-loop.mp4）
+# 2. 合成 mp4
+ffmpeg -y -framerate 25 -i tmp/vid/frames/f%05d.png \
+       -vf "scale=1920:1080:flags=lanczos,format=yuv420p" \
+       -c:v libx264 -preset medium -crf 19 -movflags +faststart \
+       materials/work/b/video/core-loop.mp4
+
+# 3. 粗剪（依赖 core-loop.mp4）
 python materials/work/b/video/make_roughcut.py
 
-# 3. 两张备用数据图（数据硬编码在脚本里，带出处注释）
+# 4. 两张备用数据图（数据硬编码在脚本里，带出处注释）
 python materials/work/b/video/make_charts.py
 ```
 
 全部离线生成，不联网、不调用在线服务。
 
-`render_frames.py` 会跳过已存在的帧；**改了 `core-loop.html` 之后必须先清空 `tmp/vid/frames/*.png`**，否则渲染的是旧画面。
+**渲染用 `render_frames_cdp.py`，不要用旧的 `render_frames.py`。** 旧脚本每帧启动一次浏览器，
+单帧约 3.5 秒，只能按 5 fps 渲染再插值到 25 fps——补出来的是复制帧，快速转场会顿。
+新脚本只启动一次浏览器，用 CDP 调 `render(t)` 再连续截图，单帧 **0.087 秒**，
+可 25 fps 原生渲染，全片 820 帧约 71 秒。
+
+`render_frames_cdp.py` 默认先清空输出目录；**改了 `core-loop.html` 之后不要加 `--keep`**，否则渲的是旧画面。
 
 ## 想自己调位置 / 改文字
 
